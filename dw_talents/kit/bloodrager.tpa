@@ -1,0 +1,97 @@
+DEFINE_ACTION_FUNCTION bloodrager BEGIN
+
+	// load required resources
+
+	LAF run STR_VAR file=319ify_item_restrictions locbase=shared END
+	LAF run STR_VAR file=one_fewer_spell locbase=shared END
+	LAF run STR_VAR file=armored_mages locbase=shared END
+	LAF include STR_VAR file=multiclass.tph locbase=shared END
+
+	// build the kit description
+
+	
+
+	// make the spell that boosts THAC0
+	
+	spl.make[%spl_bloodrager_thac0_boost%]
+	[
+		m.ab.add{}
+		m.ab_fx.add{s_opcode=54 s_target=2 s_timing=9 s_parameter1=1}
+	]
+	
+	kit.copy[SORCERER=>DW_BLOODRAGER]
+	[
+		k_name:=@1
+		LPF adjust_rage_descriptions INT_VAR tra_ref=2 RET desc END	
+		k_description:="%desc%"
+		k.kit_apply_powers{%spl_bloodrager_thac0_boost% 3 3,%spl_leather_armor_usable% 1,%spl_chain_armor_usable% 1,%spl_animation_armored_sorcerer% 1,%spl_one_fewer_spell% 1}
+		k.kit_grant_powers{%BERSERKER_RAGE% 1 4}
+		k.kit_remove_powers{%spl_mage_unusability_flag%}
+		k_melee=2
+		k_ranged=0
+		k_2handed=2
+		k_singleweapon=2
+		k_2weapon=2
+		k_min_str=9
+		k_colors:="72,46,47,2,93"
+		k_l_g=0
+		k_l_n=0
+		k_l_e=0
+		k_hp_table:=hpdd
+	]
+	
+	// impose the spell restrictions
+	
+	LAF set_spell_list INT_VAR chargen_choose_spells=1 STR_VAR kit=DW_BLOODRAGER block_learn="divination enchantment illusion conjuration" END	
+
+	// sort out item usability
+	
+	LAF kit_get_id STR_VAR kit=DW_BLOODRAGER RET kit_id END
+	COPY_EXISTING_REGEXP ".*\.itm" override
+      // is it droppable?
+	  SET proceed= (((BYTE_AT 0x18) BAND 0b00000100) = 0b00000100)
+	  PATCH_IF proceed BEGIN
+		// is it heavy armor?
+		READ_LONG 0x8 desc
+		PATCH_MATCH "%desc%" WITH
+		6677 // splint mail
+		267 // plate mail
+		26879 // field plate (IWD)
+		6642 // full plate
+		BEGIN
+			is_plate=1
+		END
+		DEFAULT
+			is_plate=0
+		END
+		// if it's not plate, is it a missile weapon?
+		PATCH_IF !is_plate BEGIN
+			is_missile=0
+			GET_OFFSET_ARRAY ab_arr ITM_V10_HEADERS
+			PHP_EACH ab_arr AS ab_ind=>ab_off BEGIN
+				READ_BYTE ab_off ab_type
+				PATCH_IF ab_type=2 || ab_type=4 BEGIN 
+					is_missile=1
+				END
+			END
+		END
+		PATCH_IF is_plate || is_missile BEGIN
+			LPF ADD_ITEM_EQEFFECT INT_VAR opcode=319 target=2 timing=2 parameter1=kit_id parameter2=9 END
+		END
+	  END
+		
+
+	BUT_ONLY
+	
+	// log extra weapons for prof
+	
+	LAF include STR_VAR file=prof_tools.tph locbase=prof END
+	LAF prof_add_kit_weapons STR_VAR kit=DW_BLOODRAGER weapons="axe flailmorningstar twohandedsword" END
+	
+	// re-externalize proficiencies if appropriate
+	ACTION_IF FILE_EXISTS "%data_loc_shared%/weapprof.2da" BEGIN
+		LAF externalize_weapprof END
+	END
+
+
+END

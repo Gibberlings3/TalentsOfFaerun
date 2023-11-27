@@ -1,0 +1,102 @@
+DEFINE_DIMORPHIC_FUNCTION find_cleric_kits 
+	RET_ARRAY 	cleric_kit_array
+				gods_installed
+BEGIN
+	ACTION_IF !VARIABLE_IS_SET $gods_installed("LATHANDER") BEGIN // safe check
+		
+		ACTION_IF !FILE_EXISTS "%data_loc%/gods_kits.2da" BEGIN
+			LAF make_cleric_kit_2da RET_ARRAY cleric_kit_array gods_installed END		
+		END ELSE BEGIN
+			LAF 2da_read STR_VAR file="gods_kits.2da" path="%data_loc%" RET_ARRAY gods_installed=rows cleric_kit_array=array END
+		END
+	END
+END
+
+
+DEFINE_ACTION_FUNCTION make_cleric_kit_2da RET_ARRAY gods_installed cleric_kit_array BEGIN
+
+	ACTION_PHP_EACH cleric_kit_array AS k=>v BEGIN
+		OUTER_SPRINT $cleric_kit_array("%k_0%" "%k_1%") "*" 
+	END
+	ACTION_CLEAR_ARRAY gods_installed
+	ACTION_CLEAR_ARRAY cleric_kit_array
+	ACTION_CLEAR_ARRAY classes_present
+	// parse the marker file to find which gods are present
+	ACTION_BASH_FOR "%marker_loc%" "dw#.*_shared\.mrk" BEGIN
+		OUTER_PATCH "%BASH_FOR_RES%" BEGIN
+			REPLACE_EVALUATE CASE_INSENSITIVE "dw#\([a-z0-9_]+\)_SHARED" BEGIN
+				SPRINT god "%MATCH1%"
+				TO_UPPER god
+				SET $gods_installed("%god%")=1
+			END
+			""
+		END
+	END
+	OUTER_SET $gods_installed("GHAUNADAR")=1
+	// load in kitlist
+	
+	LAF 2da_read STR_VAR file=kitlist.2da RET_ARRAY kitlist_rows=rows kitlist_array=array END
+	
+	// go through
+	
+	ACTION_PHP_EACH kitlist_rows AS row=>discard BEGIN
+		OUTER_SPRINT kitname $kitlist_array("%row%" ROWNAME)
+		OUTER_SPRINT god_here ""
+		ACTION_MATCH "%kitname%" WITH
+		LATHANDER HELM TALOS BEGIN
+			OUTER_SPRINT god_here "%kitname%"
+		END
+		OHTEMPUS OHTYR BEGIN
+			OUTER_PATCH_SAVE god_here "%kitname%" BEGIN
+				DELETE_BYTES 0x0 2
+			END
+		END
+		DEFAULT
+		// gods without '_'
+			OUTER_PATCH "%kitname%" BEGIN
+				REPLACE_EVALUATE "DW_\([^_]+\)_.*" BEGIN
+					SPRINT check "%MATCH1%"
+					TO_UPPER check
+					PATCH_IF VARIABLE_IS_SET $gods_installed("%check%") BEGIN
+						SPRINT god_here "%check%"
+					END
+				END
+				""
+			END
+			// gods like BANE_XVIM
+			OUTER_PATCH "%kitname%" BEGIN
+				REPLACE_EVALUATE "DW_\([^_]+_[^_]+\)_.*" BEGIN
+					SPRINT check "%MATCH1%"
+					TO_UPPER check
+					PATCH_IF VARIABLE_IS_SET $gods_installed("%check%") BEGIN
+						SPRINT god_here "%check%"
+					END
+				END
+				""
+			END	
+		END
+		ACTION_IF "%god_here%" STR_CMP "" BEGIN
+			OUTER_PATCH "" BEGIN
+				LOOKUP_IDS_SYMBOL_OF_INT class class $kitlist_array("%row%" CLASS)
+			END
+			OUTER_SPRINT $cleric_kit_array("%god_here%" "%class%") "%kitname%"
+			OUTER_SET $classes_present("%class%")=1
+		END
+	END
+
+	// fill blank spaces
+	
+	ACTION_PHP_EACH gods_installed AS god=>discard BEGIN
+		ACTION_PHP_EACH classes_present AS class=>discard2 BEGIN
+			ACTION_IF !VARIABLE_IS_SET $cleric_kit_array("%god%" "%class%") BEGIN
+				OUTER_SPRINT $cleric_kit_array("%god%" "%class%") "*"
+			END
+		END
+	END
+	
+	// write output
+	
+	LAF 2da_write STR_VAR type=2da array=cleric_kit_array file=gods_kits.2da path="%data_loc%" END
+
+
+END

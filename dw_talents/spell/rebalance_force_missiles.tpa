@@ -1,0 +1,12 @@
+DEFINE_ACTION_FUNCTION rebalance_force_missiles BEGIN
+   LAF log_this INT_VAR repeat=0 STR_VAR file="scs_modified_spells_iwd.2da" input=WIZARD_MORDENKAINENS_FORCE_MISSILES END
+
+	spl.edit[%WIZARD_MORDENKAINENS_FORCE_MISSILES%|edit_strrefs_in_place:i=1]
+	[
+		m_description:=@40200
+		m.ab.delete{s_level>16}
+		m.ab_fx.alter{s_parameter2=15|match="p_level=16 AND s_opcode=333"}
+	]
+
+
+END

@@ -1,0 +1,230 @@
+DEFINE_ACTION_FUNCTION pointbuy STR_VAR version="-1" BEGIN
+
+	LAF ui_detect_class_kit END
+
+	OUTER_SET base_abil=10
+	OUTER_SET point_total=version
+
+	LAF kit_race_abil_mod END
+	LAF UI_install_function STR_VAR new_function_path="%MOD_FOLDER%/%lua_path%/ui_adjust_abilities.lua" lua_file="m_dw_shr" search_string=dwGetAbilityValue END
+
+	ACTION_IF point_total>=0 && MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 80000 BEGIN
+		OUTER_SET hide_reroll=1
+	END ELSE BEGIN
+		OUTER_SET hide_reroll=0
+	END
+	
+	
+
+	COPY ".../stratagems-inline/m_dw_pbf.lua" "override/m_dw_pbf.lua"
+	COPY_EXISTING ui.menu override
+		LPF UI_alter_object STR_VAR object=CHARGEN_ABILITIES object_type=menu patch=UI_pointbuy_patch END
+		PATCH_IF hide_reroll BEGIN
+			LPF UI_alter_object STR_VAR object=CHARGEN_ABILITIES object_type=menu patch=UI_pointbuy_remove_reroll END
+		END
+	BUT_ONLY
+	
+	ACTION_IF hide_reroll BEGIN
+		COPY_EXISTING "l_%EE_LANGUAGE%.lua" override
+			SPRINT new @1
+			REPLACE_TEXTUALLY ~TOTAL_ROLL_NORMAL.*~ ~TOTAL_ROLL_NORMAL = "%new%",~
+		BUT_ONLY
+		
+		ACTION_IF GAME_IS BG2EE BEGIN
+			LAF mos_install_v2 STR_VAR mos_name=guismdb mos_loc="%MOD_FOLDER%/%component_loc%/resource/bg2_gui" END
+		END
+	END
+	
+	
+		
+
+END
+
+DEFINE_PATCH_FUNCTION UI_pointbuy_patch BEGIN
+
+		REPLACE_TEXTUALLY ~onOpen\([^"]*\)"~ ~onOpen\1"dwAbilityPointBuy(%point_total%,%base_abil%)%WNL%~
+		REPLACE_TEXTUALLY ~createCharScreen:OnAbilityReRollButtonClick()~ ~createCharScreen:OnAbilityReRollButtonClick()dwAbilityPointBuy(%point_total%,%base_abil%)~
+
+END
+
+DEFINE_PATCH_FUNCTION UI_pointbuy_remove_reroll BEGIN
+
+		REPLACE_TEXTUALLY ~text "\(REROLL\|STORE\|RECALL\)_BUTTON"~ ~enabled "false"~
+
+END
+
+DEFINE_ACTION_FUNCTION kit_race_abil_mod BEGIN
+
+	// install the core file
+
+	COPY ".../stratagems-inline/m_dw_pbd.lua" override
+	
+	// get the data
+	
+	// class data ... hardcode the lack of class-based ability modifiers, life's too short
+	
+	COPY_EXISTING "kitlist.2da" "%workspace%"
+		COUNT_2DA_COLS colcount
+		READ_2DA_ENTRIES_NOW kitlist_data colcount
+		FOR (row=0;row<kitlist_data;++row) BEGIN
+			READ_2DA_ENTRY_FORMER kitlist_data row 0 ind
+			READ_2DA_ENTRY_FORMER kitlist_data row 1 name
+			TO_UPPER name
+			SPRINT $kit_ids("%name%") "%ind%"
+		END
+	BUT_ONLY
+	COPY_EXISTING "abclsmod.2da" "%workspace%"
+		COUNT_2DA_COLS colcount
+		READ_2DA_ENTRIES_NOW classlist_data colcount
+		FOR (row=0;row<classlist_data;++row) BEGIN
+			READ_2DA_ENTRY_FORMER classlist_data row 0 name
+			TO_UPPER name
+			PATCH_IF VARIABLE_IS_SET $kit_ids("%name%") BEGIN
+				SET ids=$kit_ids("%name%")
+				READ_2DA_ENTRY_FORMER classlist_data row 1 abil1
+				SPRINT temp "{ %abil1%"
+				FOR (col=2;col<colcount;++col) BEGIN
+					READ_2DA_ENTRY_FORMER classlist_data row col abil
+					SPRINT temp "%temp%, %abil%"
+				END
+				SPRINT temp "%temp%}"
+				INNER_ACTION BEGIN
+					APPEND "m_dw_pbd.lua" "dwKitAbMod[%ids%]=%temp%"
+				END
+			END
+		END
+	BUT_ONLY
+	COPY_EXISTING "abracead.2da" "%workspace%"
+		COUNT_2DA_COLS colcount
+		READ_2DA_ENTRIES_NOW racelist_data colcount
+		FOR (row=0;row<racelist_data;++row) BEGIN
+			READ_2DA_ENTRY_FORMER racelist_data row 0 race_name
+			SET ids=IDS_OF_SYMBOL (race "%race_name%")
+			READ_2DA_ENTRY_FORMER racelist_data row 1 abil1
+			SPRINT temp "{ %abil1%"
+			FOR (col=2;col<colcount;++col) BEGIN
+				READ_2DA_ENTRY_FORMER racelist_data row col abil
+				SPRINT temp "%temp%, %abil%"
+			END
+			SPRINT temp "%temp%}"
+			INNER_ACTION BEGIN
+				APPEND "m_dw_pbd.lua" "dwRaceAbMod[%ids%]=%temp%"
+			END
+		END
+	BUT_ONLY
+
+END
+
+<<<<<<<< .../stratagems-inline/m_dw_pbd.lua
+
+dwKitAbMod={}
+dwRaceAbMod={}
+
+>>>>>>>>
+
+<<<<<<<< .../stratagems-inline/m_dw_pbf.lua
+
+function dwAbilityPointBuy(points_total,target_base)
+
+	-- get baseline data
+
+	race=dwFindRace(1)
+
+	
+	if dwRaceAbMod[race] then
+		raceMod=dwRaceAbMod[race]
+	end
+	
+	class,kit=dwFindClassKit(1)
+	
+	if chargen.kit[kit] and dwKitAbMod[chargen.kit[kit].id] then
+		kitMod=dwKitAbMod[chargen.kit[kit].id]
+	end
+
+	-- check if we have a fighter class
+	
+	wantsExStr=nil
+	fighterlist={2,12,6,7,8,9,10,16,17}
+	for _,v in pairs(fighterlist) do
+		if class==v then 
+			wantsExStr=true
+		end
+	end
+
+	-- adjust the total by net ability modifications
+	
+	adjust=0
+	for abil=1,6 do
+		if raceMod then
+			adjust=adjust + raceMod[abil]
+		end
+		if kitMod then
+			adjust=adjust + kitMod[abil]
+		end
+	
+	
+	end
+
+	-- reroll until we get the right points total
+	if points_total>0 then
+	  while points_total~=chargen.totalRoll - adjust do
+		createCharScreen:OnAbilityReRollButtonClick()	
+	  end
+	end
+	-- reduce everything to the minimum
+	for abil=1,6 do
+		dwReduceAbility(abil)
+	end
+	-- move everything to the target value
+	for abil=1,6 do
+	
+		target=target_base
+		if raceMod then 
+			target=target + raceMod[abil]
+		end 
+		if kitMod then 
+			target=target + kitMod[abil]
+		end	
+		if wantsExStr and abil==1 and not dwHideExStr then
+			target=18
+		end
+		dwIncreaseAbilityTo(abil,target)
+	end
+
+end
+
+
+
+function dwIncreaseAbilityTo(abil,target) 
+
+
+	still_rising=true
+	val=dwGetAbilityValue(abil)
+	while val<target and still_rising do
+		points_before=chargen.extraAbilityPoints
+		createCharScreen:OnAbilityPlusMinusButtonClick(abil,true)	
+		val = val + 1
+		points_after=chargen.extraAbilityPoints
+		still_rising = (points_before ~=points_after)
+
+	end
+
+
+end
+
+function dwReduceAbility(abil)
+
+	
+	reduction=-1
+	reduced=true
+	while reduced do
+		reduction = reduction + 1
+		points_before=chargen.extraAbilityPoints
+		createCharScreen:OnAbilityPlusMinusButtonClick(abil,false)	
+		points_after=chargen.extraAbilityPoints
+		reduced = (points_before ~=points_after)
+	end
+	return reduction
+end
+
+>>>>>>>>

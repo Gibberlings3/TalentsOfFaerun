@@ -1,0 +1,6 @@
+DEFINE_ACTION_FUNCTION meteors BEGIN
+
+    COPY_EXISTING "melfmet.itm" override
+		WRITE_LONG 0x60 2
+
+END

@@ -1,0 +1,136 @@
+DEFINE_ACTION_FUNCTION amalgamate_class_checks BEGIN
+
+	LAF check_label STR_VAR label=dw-amalgamate_class_checks RET value END
+	ACTION_IF !value BEGIN
+
+		LAF make_label STR_VAR label=dw-amalgamate_class_checks END
+
+		//bears
+		LAF ALTER_SCRIPT_BLOCK STR_VAR script=BEAR match1=CLERIC_RANGER function=swap_to_not_ranger_all END
+		LAF ALTER_SCRIPT_BLOCK STR_VAR script=BEAR match1=FIGHTER_DRUID function=swap_to_not_druid_all END
+
+
+		ACTION_IF is_iwd BEGIN
+
+		// Accalia
+
+			COPY_EXISTING "daccalia.dlg" override
+				DECOMPILE_AND_PATCH BEGIN
+				//amalgamate ranger checks (do this first)
+					REPLACE_TEXTUALLY
+						"OR(2)[%WNL%%TAB% ]*Class(LastTalkedToBy,RANGER)[%WNL%%TAB% ]*Class(LastTalkedToBy,CLERIC_RANGER)"
+						"Class(LastTalkedToBy,RANGER_ALL)"
+				// amalgamate cleric checks
+					REPLACE_TEXTUALLY "Class(LastTalkedToBy,CLERIC_[^)]*)" "False()"
+					REPLACE_TEXTUALLY "Class(LastTalkedToBy,FIGHTER_CLERIC)" "False()"
+					REPLACE_TEXTUALLY "Class(LastTalkedToBy,FIGHTER_MAGE_CLERIC)" "False()"
+					REPLACE_TEXTUALLY "Class(LastTalkedToBy,CLERIC)" "Class(LastTalkedToBy,CLERIC_ALL)"
+				//amalgamate druid checks
+					REPLACE_TEXTUALLY 
+						"OR(2)[%WNL%%TAB% ]*Class(LastTalkedToBy,DRUID)[%WNL%%TAB% ]*Class(LastTalkedToBy,FIGHTER_DRUID)"
+						"Class(LastTalkedToBy,DRUID_ALL)"
+				END
+			BUT_ONLY
+
+
+		END
+
+		ACTION_IF is_bg2 BEGIN
+
+			//area scripts for Temple District 
+
+			LAF ALTER_SCRIPT_BLOCK STR_VAR script=ar0900 match1=GaalSpoke match2="!Class(Player1,CLERIC)" function=swap_to_not_cleric_all END
+			LAF ALTER_SCRIPT_BLOCK STR_VAR script=ar0900 match1=GaalSpoke match2="Class(Player1,CLERIC)" function=swap_to_cleric_all END
+
+			LAF ALTER_SCRIPT_BLOCK STR_VAR script=ar0901 match1=TelwynSpawn match2="!Class(Player1,CLERIC)" function=swap_to_not_cleric_all END
+			LAF ALTER_SCRIPT_BLOCK STR_VAR script=ar0901 match1=TelwynSpawn match2="Class(Player1,CLERIC)" function=swap_to_cleric_all END
+
+			LAF ALTER_SCRIPT_BLOCK STR_VAR script=ar0902 match1=SainSpawn match2="Class(Player1,CLERIC)" function=swap_to_cleric_all END
+
+			LAF ALTER_SCRIPT_BLOCK STR_VAR script=ar0904 match1=YarrylSpawn match2="Class(Player1,CLERIC)" function=swap_to_cleric_all END
+
+			// questgiver script in temple district
+
+			LAF ALTER_SCRIPT_BLOCK STR_VAR script=arval match1=GaalSpoke match2="Class(Player1,CLERIC)" function=swap_to_cleric_all END
+
+			LAF ALTER_SCRIPT_BLOCK STR_VAR script=oisig match1=GaalSpoke match2="!Class(Player1,CLERIC)" function=swap_to_not_cleric_all END
+			LAF ALTER_SCRIPT_BLOCK STR_VAR script=oisig match1=GaalSpoke match2="Class(Player1,CLERIC)" function=swap_to_cleric_all END
+
+			LAF ALTER_SCRIPT_BLOCK STR_VAR script=nallabir match1=GaalSpoke match2="Class(Player1,CLERIC)" function=swap_to_cleric_all END
+
+			// questgivers in TD
+
+			ACTION_FOR_EACH dialog IN bharval bhnalla bhoisig scsain travin BEGIN
+
+				COPY_EXISTING "%dialog%.dlg" override
+					DECOMPILE_AND_PATCH BEGIN
+						REPLACE_TEXTUALLY
+						"OR(6)[%WNL%%TAB% ]*Class(Player1,CLERIC)[%WNL%%TAB% ]*Class(Player1,FIGHTER_CLERIC)[%WNL%%TAB% ]*Class(Player1,CLERIC_MAGE)[%WNL%%TAB% ]*Class(Player1,CLERIC_THIEF)[%WNL%%TAB% ]*Class(Player1,FIGHTER_MAGE_CLERIC)[%WNL%%TAB% ]*Class(Player1,CLERIC_RANGER)"
+						"Class(Player1,CLERIC_ALL)"
+						REPLACE_TEXTUALLY
+						"!Class(Player1,CLERIC)[%WNL%%TAB% ]*!Class(Player1,FIGHTER_CLERIC)[%WNL%%TAB% ]*!Class(Player1,CLERIC_MAGE)[%WNL%%TAB% ]*!Class(Player1,CLERIC_THIEF)[%WNL%%TAB% ]*!Class(Player1,FIGHTER_MAGE_CLERIC)[%WNL%%TAB% ]*!Class(Player1,CLERIC_RANGER)"
+						"!Class(Player1,CLERIC_ALL)"
+					END
+
+			END
+
+			COPY_EXISTING "scsain.dlg" override
+				DECOMPILE_AND_PATCH BEGIN
+					REPLACE_TEXTUALLY
+						"OR(7)[%WNL%%TAB% ]*Class(Player1,CLERIC)[%WNL%%TAB% ]*Class(Player1,FIGHTER_CLERIC)[%WNL%%TAB% ]*Class(Player1,CLERIC_MAGE)[%WNL%%TAB% ]*Class(Player1,CLERIC_THIEF)[%WNL%%TAB% ]*Class(Player1,FIGHTER_MAGE_CLERIC)[%WNL%%TAB% ]*Class(Player1,CLERIC_RANGER)"
+						"OR(2)Class(Player1,CLERIC_ALL)"
+						REPLACE_TEXTUALLY
+						"!Class(Player1,CLERIC_RANGER)[%WNL%%TAB% ]*!Class(Player1,CLERIC)[%WNL%%TAB% ]*!Class(Player1,FIGHTER_CLERIC)[%WNL%%TAB% ]*!Class(Player1,CLERIC_MAGE)[%WNL%%TAB% ]*!Class(Player1,CLERIC_THIEF)[%WNL%%TAB% ]*!Class(Player1,FIGHTER_MAGE_CLERIC)"
+						"!Class(Player1,CLERIC_ALL)"
+				
+				
+				END
+
+			//places we genuinely want cleric-rangers
+
+			LAF disjunctive_substitution STR_VAR dialog="bhoisig" match="Class(Player1,CLERIC_RANGER)" replace="Class(Player1,CLERIC_ALL)|Class(Player1,RANGER_ALL)" END
+
+			COPY_EXISTING "gaelan.dlg" override
+				DECOMPILE_AND_PATCH BEGIN
+					REPLACE_TEXTUALLY
+					"OR(2)[%WNL%%TAB% ]*Class(Player1,CLERIC)[%WNL%%TAB% ]*Class(Player1,CLERIC_RANGER)"
+					"Class(Player1,CLERIC_ALL)OR(2)Class(Player1,CLERIC)Class(Player1,RANGER_ALL)"
+				END
+		END
+	
+	END
+	
+END
+
+
+
+DEFINE_PATCH_FUNCTION swap_to_cleric_all BEGIN
+	REPLACE_TEXTUALLY "OR([56])[%TAB%%WNL%%MNL%%LNL% ]*Class(\([^,]*\),CLERIC)"
+					  "Class(\1,CLERIC_ALL)"
+	REPLACE_TEXTUALLY "Class(\([^,]*\),\(FIGHTER_CLERIC\|CLERIC_MAGE\|CLERIC_THIEF\|FIGHTER_MAGE_CLERIC\|CLERIC_RANGER\))" ""
+END
+
+DEFINE_PATCH_FUNCTION swap_to_not_cleric_all BEGIN
+	REPLACE_TEXTUALLY "!Class(\([^,]*\),CLERIC)" "!Class(\1,CLERIC_ALL)"
+	REPLACE_TEXTUALLY "!Class(\([^,]*\),\(FIGHTER_CLERIC\|CLERIC_MAGE\|CLERIC_THIEF\|FIGHTER_MAGE_CLERIC\|CLERIC_RANGER\))" ""
+END
+
+DEFINE_PATCH_FUNCTION swap_to_druid_all BEGIN
+	REPLACE_TEXTUALLY "OR(2)[%TAB%%WNL%%MNL%%LNL% ]*Class(\([^,]*\),DRUID)"
+					  "Class((\1,DRUID_ALL)!Class(\1,SHAMAN)"
+	REPLACE_TEXTUALLY "Class([^,],FIGHTER_DRUID)" ""
+END
+
+DEFINE_PATCH_FUNCTION swap_to_not_druid_all BEGIN
+	REPLACE_TEXTUALLY "!Class(\([^,]*\),DRUID)" "OR(2)!Class(\1,DRUID_ALL)Class(\1,SHAMAN)"
+	REPLACE_TEXTUALLY "!Class(\([^,]*\),\(FIGHTER_DRUID\))" ""
+	REPLACE_TEXTUALLY "!See(\[PC\.0\.0\.DRUID\])" "!See([PC.0.0.DRUID_ALL])"
+	REPLACE_TEXTUALLY "!See(\[PC\.0\.0\.FIGHTER_DRUID\])" ""
+END
+
+DEFINE_PATCH_FUNCTION swap_to_not_ranger_all BEGIN
+	REPLACE_TEXTUALLY "!See(\[PC\.0\.0\.RANGER\])" "!See([PC.0.0.RANGER_ALL])"
+	REPLACE_TEXTUALLY "!See(\[PC\.0\.0\.CLERIC_RANGER\])" ""
+END
+
+

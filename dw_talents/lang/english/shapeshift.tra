@@ -1,0 +1,666 @@
+@1="Shapeshift: Boring Beetle
+
+Strength: 18/51
+Dexterity: 8
+
+Base Armor Class: -2
+Number of Attacks: 1
+Attack Damage: 5d4 slashing, strikes as +1 weapon
+
+Special Abilities:
+- Slashing Resistance: 25%
+- Piercing Resistance: 25%
+- Missile Resistance: 50%
+
+The Druid is healed 12 Hit Points after using this ability. This cannot occur more often than once per hour."
+@2="Shapeshift: Polar Bear
+
+Strength: 19
+Dexterity: 10
+
+Base Armor Class: 4
+Number of Attacks: 3
+Attack Damage: 1d12 slashing, strikes as +1 weapon
+
+Special Abilities:
+- Cold Resistance: 50%
+
+The Druid is healed 12 Hit Points after using this ability. This cannot occur more often than once per hour."
+@3="Shapeshift: Cave Bear
+
+Strength: 19
+Dexterity: 10
+
+Base Armor Class: 4
+Number of Attacks: 3
+Attack Damage: 1d12 slashing, strikes as +1 weapon
+
+The Druid is healed 12 Hit Points after using this ability. This cannot occur more often than once per hour."
+@4="Shapeshift: Winter Wolf
+
+Strength: 18/76
+Dexterity: 16
+
+Base Armor Class: 2
+Number of Attacks: 2
+Attack Damage: 1d8 piercing + 1d6 cold, strikes as +1 weapon
+
+Special Abilities:
+- Cold Resistance: 75%
+- Fire Resistance: -25%
+- Breathe a cone of cold for 4d6 cold damage (Save vs. Breath for 1/2)
+
+The Druid is healed 12 Hit Points after using this ability. This cannot occur more often than once per hour."
+@5="Shapeshift: Dire Wolf
+
+Strength: 18/76
+Dexterity: 16
+
+Base Armor Class: 2
+Number of Attacks: 2
+Attack Damage: 1d8 piercing, strikes as +1 weapon
+
+The Druid is healed 12 Hit Points after using this ability. This cannot occur more often than once per hour."
+@6="Shapeshift: Wolf
+
+Strength: 18
+Dexterity: 15
+
+Base Armor Class: 6
+Number of Attacks: 2
+Attack Damage: 1d6 piercing, strikes as +1 weapon
+
+The Druid is healed 12 Hit Points after using this ability. This cannot occur more often than once per hour."
+@7="Shapeshift: Black Bear
+
+Strength: 18/00
+Dexterity: 10
+
+Base Armor Class: 7
+Number of Attacks: 3
+Attack Damage: 1d6 piercing, strikes as +1 weapon
+
+The Druid is healed 12 Hit Points after using this ability. This cannot occur more often than once per hour."
+
+@8="Druid Shapeshift"
+@9="Druid Shapeshift
+
+The druid shapeshifts into one of several animal or elemental forms, depending on <PRO_HISHER> level:
+
+3rd level: wolf 
+5th level: wolf or black bear
+7th level: dire wolf, black bear, or boring beetle
+9th level: dire wolf, cave bear, or boring beetle
+12th level: dire wolf, cave bear, boring beetle, or lesser elemental
+15th level: dire wolf, cave bear, boring beetle, or elemental"
+
+@10="Druid Shapeshift
+
+The druid shapeshifts into one of several animal or elemental forms, depending on <PRO_HISHER> level:
+
+3rd level: wolf 
+5th level: wolf or black bear
+7th level: dire wolf, black bear, or boring beetle
+9th level: dire wolf, polar bear, or boring beetle
+9th level: dire wolf, polar bear, boring beetle, or lesser elemental
+9th level: dire wolf, polar bear, boring beetle, or elemental"
+
+
+@20="Shapeshift: Lesser Fire Elemental"
+@21="Shapeshift: Lesser Fire Elemental
+
+Strength: 18/00
+Dexterity: 10
+
+Base Armor Class: 2
+Number of Attacks: 1
+Attack Damage: 2d8 crushing + 2d6 fire + burn (1d6/rd, save vs. breath weapon at +2 each round to remove)
+
+Special Abilities:
+- Fire aura: nearby enemies take 2d6 fire damage/rd, save vs. breath weapon at +2 for 1/2 damage)
+- Immune to fire damage
+- 50% extra damage from cold
+
+The Druid is healed 12 Hit Points after using this ability. This cannot occur more often than once per hour."
+
+@22="Shapeshift: Fire Elemental"
+@23="Shapeshift: Fire Elemental
+
+Strength: 20
+Dexterity: 10
+
+Base Armor Class: 0
+Number of Attacks: 1
+Attack Damage: 3d8 crushing + 3d6 fire + burn (2d6/rd, save vs. breath weapon each round to remove)
+
+Special Abilities:
+- Fire aura: nearby enemies take 3d6 fire damage/rd, save vs. breath weapon for 1/2 damage)
+- Immune to fire damage
+- 50% extra damage from cold
+
+The Druid is healed 12 Hit Points after using this ability. This cannot occur more often than once per hour."
+
+@24="Shapeshift: Lesser Air Elemental"
+@25="Shapeshift: Lesser Air Elemental
+
+Strength: 18/00
+Dexterity: 10
+
+Base Armor Class: 2
+Number of Attacks: 1
+Attack Damage: 2d10 slashing + 1d6 electrical; mist creatures take an additional 2d8 damage
+
+Special Abilities:
+- Whirlwind aura: nearby enemies take 2d8 slashing damage/rd, save vs. breath weapon at +2 for 1/2 damage; 25% spell failure chance; cloud spells disrupted)
+- Immune to electricity damage
+- 75% resistance to missile damage
+
+The Druid is healed 12 Hit Points after using this ability. This cannot occur more often than once per hour."
+
+@26="Shapeshift: Air Elemental"
+@27="Shapeshift: Air Elemental
+
+Strength: 20
+Dexterity: 10
+
+Base Armor Class: 0
+Number of Attacks: 1
+Attack Damage: 3d10 slashing + 2d6 electrical; mist creatures take an additional 2d8 damage
+
+Special Abilities:
+- Whirlwind aura: nearby enemies take 3d8 slashing damage/rd, save vs. breath weapon for 1/2 damage; 25% spell failure chance; cloud spells disrupted)
+- Immune to electricity damage
+- 75% resistance to missile damage
+
+The Druid is healed 12 Hit Points after using this ability. This cannot occur more often than once per hour."
+
+@28="Shapeshift: Lesser Earth Elemental"
+@29="Shapeshift: Lesser Earth Elemental
+
+Strength: 18/00
+Dexterity: 10
+
+Base Armor Class: 2
+Number of Attacks: 1
+Attack Damage: 3d8 crushing + knockback (save vs. breath weapon at +2 to avoid)
+
+Special Abilities:
+- 50% resistance to missile damage
+- 50% resistance to slashing damage
+- 50% resistance to piercing damage
+- 25% extra damage from crushing weapons
+
+The Druid is healed 12 Hit Points after using this ability. This cannot occur more often than once per hour."
+
+
+@30="Shapeshift: Earth Elemental"
+@31="Shapeshift: Earth Elemental
+
+Strength: 20
+Dexterity: 10
+
+Base Armor Class: 0
+Number of Attacks: 1
+Attack Damage: 4d8 crushing + knockback (save vs. breath weapon to avoid)
+
+Special Abilities:
+- 50% resistance to missile damage
+- 50% resistance to slashing damage
+- 50% resistance to piercing damage
+- 25% extra damage from crushing weapons
+
+The Druid is healed 12 Hit Points after using this ability. This cannot occur more often than once per hour."
+
+@32="Shapeshift: Lesser Water Elemental"
+@33="Shapeshift: Lesser Water Elemental
+
+Strength: 18/00
+Dexterity: 10
+
+Base Armor Class: 2
+Number of Attacks: 1
+Attack Damage: 3d6 crushing + drown (-4 to hit, -4 AC, -4 saves, can't spellcast, and 1d3 damage per second; save vs. spell at +2 1/rd to end)
+
+Special Abilities:
+- Quench: extinguish nearby persistent fire effects
+- 25% resistance to missile damage
+- 25% resistance to slashing damage
+- 25% resistance to piercing damage
+- 75% resistance to crushing damage
+
+The Druid is healed 12 Hit Points after using this ability. This cannot occur more often than once per hour."
+
+
+@34="Shapeshift: Water Elemental"
+@35="Shapeshift: Water Elemental
+
+Strength: 20
+Dexterity: 10
+
+Base Armor Class: 0
+Number of Attacks: 1
+Attack Damage: 4d6 crushing + drown (-4 to hit, -4 AC, -4 saves, can't spellcast, and 1d3 damage per second; save vs. spell 1/rd to end)
+
+Special Abilities:
+- Quench: extinguish nearby persistent fire effects
+- 25% resistance to missile damage
+- 25% resistance to slashing damage
+- 25% resistance to piercing damage
+- 75% resistance to crushing damage
+
+The Druid is healed 12 Hit Points after using this ability. This cannot occur more often than once per hour."
+
+@36="Shapeshift: Hunting Spider"
+@37="Shapeshift: Hunting Spider
+
+Strength: 15
+Dexterity: 15
+
+Base Armor Class: 5
+Number of Attacks: 2
+Attack Damage: 2d4 (piercing)
+
+Special Abilities:
+- Immunity to web
+
+The Druid is healed 12 Hit Points after using this ability. This cannot occur more often than once per hour."
+
+@38="Shapeshift: Wyvern"
+@39="Shapeshift: Wyvern
+
+Strength: 18
+Dexterity: 17
+
+Base Armor Class: 1
+Number of Attacks: 3
+Attack Damage: 2d8 (piercing), on hit it causes 3 poison damage/second for 2 rounds (Save vs. Poison negates)
+
+Special Abilities:
+- Immunity to hold, paralysis, slow, level drain, web, entangle, and grease.
+
+The Druid is healed 12 Hit Points after using this ability. This cannot occur more often than once per hour."
+
+
+
+@40="Avenger Shapeshift"
+@41="Avenger Shapeshift
+
+The avenger shapeshifts into one of several animal or elemental forms, depending on <PRO_HISHER> level:
+
+3rd level: wolf 
+4th level: wolf or hunting spider
+5th level: wolf, hunting spider, or black bear
+6th level: wolf, hunting spider, black bear, or baby wyvern
+7th level: winter wolf, hunting spider, black bear, baby wyvern, or boring beetle
+8th level: winter wolf, sword spider, black bear, baby wyvern, boring beetle, or fire salamander
+9th level: winter wolf, sword spider, cave bear, baby wyvern, boring beetle, or fire salamander
+10th level: winter wolf, sword spider, cave bear, wyvern, boring beetle, or fire salamander
+12th level: winter wolf, sword spider, cave bear, wyvern, boring beetle, fire salamander, or lesser elemental
+15th level: winter wolf, sword spider, cave bear, wyvern, boring beetle, fire salamander, or elemental"
+
+@42="Avenger Shapeshift
+
+The avenger shapeshifts into one of several animal or elemental forms, depending on <PRO_HISHER> level:
+
+3rd level: wolf 
+4th level: wolf or hunting spider
+5th level: wolf, hunting spider, or black bear
+6th level: wolf, hunting spider, black bear, or baby wyvern
+7th level: winter wolf, hunting spider, black bear, baby wyvern, or boring beetle
+8th level: winter wolf, sword spider, black bear, baby wyvern, boring beetle, or fire salamander
+9th level: winter wolf, sword spider, polar bear, baby wyvern, boring beetle, or fire salamander
+10th level: winter wolf, sword spider, polar bear, wyvern, boring beetle, or fire salamander
+12th level: winter wolf, sword spider, polar bear, wyvern, boring beetle, fire salamander, or lesser elemental
+15th level: winter wolf, sword spider, polar bear, wyvern, boring beetle, fire salamander, or elemental"
+
+@43="Shapechange: Mind Flayer"
+
+@44="Shapechange: Mind Flayer
+
+Strength: 10
+Dexterity: 10
+
+Base Armor Class: 5
+Number of Attacks: 4
+Base THAC0: 11
+Attack Damage: 1d2 (crushing), -5 Intelligence
+
+Special Abilities:
+- 90% magic resistance
+- Psionic Blast at will
+- Can cast wizard spells in this form"
+
+@45="Shapechange: Iron Golem"
+@46="Shapechange: Iron Golem
+
+Strength: 24
+Dexterity: 9
+
+Base Armor Class: 3
+Number of Attacks: 1
+Base THAC0: 3
+Attack Damage: 4d10 (crushing)
+
+Special Abilities:
+ - Fire Resistance: 125%
+ - Cold Resistance: 100%
+ - Electrical Resistance: 100%
+ - Acid Resistance: 100%
+ - Magic Resistance: 100% (cannot be lowered)
+ - Magic Fire Resistance: 125%
+ - Magic Cold Resistance: 100%
+ - Slashing Resistance: 20%
+ - Crushing Resistance: 20%
+ - Piercing Resistance: 20%
+ - Missile Resistance: 20%
+ - Immune to backstab, weapons of +2 enchantment or less, sleep, fear, hold, charm, paralysis, poison.
+ - Cannot cast wizard spells in this form"
+ 
+@47="Shapechange: Giant Troll"
+ 
+@48="Shapechange: Giant Troll
+
+Strength: 22
+Dexterity: 18
+
+Base Armor Class: 4
+Number of Attacks: 3
+Base THAC0: 8
+Attack Damage: 2d6 (piercing)
+
+Special Abilities: 
+ - Immune to stun, sleep, hold, paralysis
+ - Regenerates 5 Hit Points per second
+ - Can cast wizard spells in this form"
+ 
+ 
+@49="Shapechange: Marilith"
+
+@50="Shapechange: Marilith
+
+Strength: 19
+Dexterity: 18
+
+Base Armor Class: -6
+Number of Attacks: 5
+Base THAC0: 6
+Attack Damage: 1d8, plus additional fire, acid, cold, electricity, magic, or poison damage, at random
+
+Special Abilities:
+ - Teleport, at will
+ - Immunity to charm, fear, poison, and disease
+ - Magic resistance: 85%
+ - Fire resistance: 100%
+ - Electricity resistance: 100%
+ - Cold resistance: 50%
+ - Can cast wizard spells in this form"
+ 
+@51="Shapechange: Greater Basilisk"
+@52="Shapechange: Greater Basilisk
+
+Strength: 18
+Dexterity: 10
+
+Base Armor Class: 2
+Number of Attacks: 3
+Base THAC0: 11
+Damage: 1d8 piercing +poison (3 hp damage per second for 6 seconds)
+
+Special Abilities:
+- Petrifying gaze (target must save vs. petrification at -4 or be turned to stone permanently) once per round"
+
+@53="Petrifying Gaze" 
+ 
+ 
+@54="Petrifying Gaze
+
+The basilisk can turn any creature on which it gazes to stone unless the creature makes a save vs. petrification at -4. This power may be used once per round."
+
+@55="Psionic Blast
+
+The mind flayer can release a blast of psionic energy which stuns all enemies in a small area for 10 rounds unless they make a successful save vs. spells. This power may be used once per round."
+
+@56="Teleport Without Error
+
+The marilith may disappear and instantly reappear at any point within visual range. This power may be used once per round."
+
+@57="Gas Cloud
+
+The iron golem breathes out a cloud of poisonous gas around itself. The cloud lasts for 10 seconds, and anyone exposed to it must save vs. poison at -2 once per round or be poisoned.  Poisoned creatures take three hit point of damage per second for 3 rounds. The iron golem may use this power once every three rounds."
+
+@58="Shapechange: Invisible Stalker"
+
+@59="Shapechange: Invisible Stalker
+
+Strength: 18/10
+Dexterity: 17
+
+Base Armor Class: -3
+Number of Attacks: 1
+Base THAC0: 11
+Atack Damage: 2d8 crushing
+
+Special Abilities:
+- Automatically becomes Improved Invisible once per round (unless suppressed by True Seeing, Glitterdust or similar)
+- Immunity to poison and disease
+- Magic Resistance: 30%
+- Fire Resistance: 30%
+- Cold Resistance: 30%
+- Acid Resistance: 30%
+- Electricity Resistance: 30%
+- Missile Resistance: 30%
+- Can cast wizard spells in this form"
+
+@60="Shapechange
+(Alteration) 
+
+Level: 9
+Range: 0
+Duration: 1 hour
+Casting Time: 9
+Area of Effect: The caster
+Saving Throw: None 
+
+With this spell, a wizard is able to assume the form of a powerful creature. The spellcaster becomes the creature <PRO_HESHE> wishes and has almost all of its abilities. Thus, <PRO_HESHE> can change into a mind flayer to stun <PRO_HISHER> opponents and then become an iron golem to crush <PRO_HISHER> foes. These creatures have whatever Hit Points the wizard had at the time of the shapechange. Each alteration in form requires only a second, and no system shock is incurred.
+
+The caster may choose between these six forms:
+- Iron Golem (immune to most magic and elemental damage, powerful crushing attacks, poison breath weapon).
+- Mind Flayer (95% magic resistance, 50% physical damage resistance, intelligence-drain attack, psionic blast at will).
+- Giant Troll (regenerates 5 hp per second, powerful claw attacks).
+- Marilith Demon (5 attacks per round, 85% magic resistance, immune to electrical and fire damage, 50% cold resistance, teleport at will).
+- Greater Basilisk (petrifying gaze usable 1/rd, poisonous claws).
+- Invisible Stalker (30% magic resistance, fairly powerful crushing attacks, becomes improved-invisible automatically once per round).
+
+The caster may use wizard spells normally in all forms except the Iron Golem and Greater Basilisk forms (which cannot speak the words of a spell)."
+
+@61="Shapeshift: Hill Giant Barbarian"
+@62="Shapeshift: Hill Giant Barbarian
+
+Strength: 19
+Dexterity: 10
+
+Base Armor Class: 3
+Number of Attacks: 1
+Attack Damage: 2d8 piercing (attacks as +1 weapon)
+
+Special Abilities:
+- Barbarian Rage 1/day"
+@63="Shapeshift: Ogre Mage"
+@64="Shapeshift: Ogre Mage
+
+Strength: 18/00
+Dexterity: 12
+
+Base Armor Class: 4
+Number of Attacks: 1
+Attack Damage: 1d10 slashing (attacks as +1 weapon)
+
+Special Abilities:
+- Can cast spells in this form"
+
+@65="Shapeshift: Spider
+
+Strength: 15
+Dexterity: 17
+
+Base Armor Class: 4
+Number of Attacks: 2
+Attack Damage: 1d4 (piercing), strikes as a +1 weapon, poison (1 damage per 2 seconds for 5 rounds; Save vs. Poison at +1 negates)
+
+Special Abilities:
+- Immunity to web
+- Increased movement rate
+- Spit a web tangle once per 2 rds at a single target (must save vs. breath or be webbed for 2 rds)"
+
+@66="Web Tangle"
+
+@67="Web Tangle
+
+The spider shoots a stream of webbing which entangles and immobilizes its target for 2 rounds (save vs. breath to resist). The ability can be used once per 2 rounds."
+
+@68="Shapeshift: Hell Hound"
+@69="Shapeshift: Hell Hound
+
+Strength: 18
+Dexterity: 15
+
+Base Armor Class: 4
+Number of Attacks: 1
+Attack Damage: 1d10 piercing + 1d6 fire
+
+Special Abilities:
+- Immune to fire damage
+- +50% cold damage
+- Breathe a cone of flame once per 3 rounds. Creatures caught in the cone take 3d6 fire damage (save vs. breath for 1/2)"
+
+@70="Hell Hound Fiery Breath"
+
+@71="Hell Hound Fiery Breath
+
+The hell hound breathes a cone of flame that inflicts 3d6 fire damage to any creature caught in the cone (save vs. breath for 1/2). The hell hound can use this ability once per 3 rounds."
+
+@72="Shapeshift: Rat"
+@73="Shapeshift: Rat
+
+Strength: 10
+Dexterity: 20
+
+Base Armor Class: 4
+Number of Attacks: 1
+Attack Damage: 1d2 piercing
+
+Special Abilities:
+- Hide, at will (cannot be used in combat)"
+
+@74="Hide"
+
+@75="Hide
+
+The rat hides from view, effectively becoming invisible. This cannot be done in combat."
+
+@76="Polymorph Self
+(Alteration)
+
+Level: 4
+Range: 0
+Duration: 1 turn + 3 rounds/level
+Casting Time: 4
+Area of Effect: The caster
+Saving Throw: None
+
+When this spell is cast, the wizard is able to assume the form of several creatures creature. For the duration of the spell, the caster can transform into any of the new forms at any time and as many times as <PRO_HESHE> wishes. The caster gains the natural attacks of the new form in some cases and may use weapons in others. The mental attributes of the wizard remain the same, but all physical attributes are obtained from the new form. Also, any natural protections that the new form offers are conferred to the wizard, such as the resistance to missile and crushing weapons possessed by the slime form.
+
+The possible forms given by Polymorph Self are:
+- Hill Giant Barbarian: can cause massive damage; barbarian rage protects against many attacks
+- Ogre Mage: can make powerful slashing attacks; this is the only form in which the wizard can cast spells
+- Mustard Jelly: capable of poisoning or slowing opponents 
+- Spider: can poison an opponent or trap them in webs
+- Hell Hound: immune to fire, and can breathe fire on an opponent
+- Rat: difficult to hit; can move stealthily"
+
+@77="Hidden"
+
+@78="Winter Wolf Icy Breath"
+
+@79="Winter Wolf Icy Breath
+
+The winter wolf breathes a cone of ice that inflicts 4d6 cold damage to any creature caught in the cone (save vs. breath for 1/2). The winter wolf can use this ability once per 3 rounds."
+
+@80="DRUID: The Druid serves the cause of nature and neutrality; the wilderness is <PRO_HISHER> community, and <PRO_HESHE> uses <PRO_HISHER> special powers to protect it and to preserve balance in the world.
+
+CLASS FEATURES:
+
+- May only wear non-metallic armor.
+- May only equip bucklers and non-metallic shields.
+- May only use the following weapons: scimitar, dagger, club, spear, quarterstaff, dart, sling.
+- May only become Proficient (one slot) in any weapon class that <PRO_HESHE> can use.
+- May only become Proficient (one slot) in any fighting style.
+- May cast druidic spells.
+- 3rd level: May Shapeshift once per day. An additional use is gained every 3 levels. Initially, the only creature the druid can shapeshift into is a wolf.
+- 5th level: May Shapeshift into a black bear
+- 7th level: May Shapeshift into a boring beetle. Wolf form is replaced by dire wolf.
+- 9th level: Becomes immune to poison. Black bear form is replaced by cave bear (or, in arctic environs, a polar bear).
+- 12th level: May Shapeshift into a lesser elemental.
+- 15th level: Gains the Timeless Body ability, becoming immune to fatigue. May Shapeshift into an elemental.
+- Alignment restricted to true neutral.
+- Hit Die: d8
+
+Prime Requisites For Dual-Classing: Wisdom, Charisma"
+
+@81="AVENGER: A member of a special sect within the druidic order, a Druid of this type is dedicated to fighting those who would defile nature. Avengers have powers the average Druid does not - additional abilities that have been earned through extensive rituals, a process that is very physically draining.
+
+Advantages:
+- Six mage spells are added to <PRO_HISHER> repertoire, all the way up to the 6th level. These are listed below:
+ 1st level: Chromatic Orb.
+ 2nd level: Web.
+ 3rd level: Lightning Bolt.
+ 4th level: Improved Invisibility.
+ 5th level: Chaos.
+ 6th level: Chain Lightning.
+- 3rd level: May shapeshift more frequently: One use at 3rd level and an addtional use every 2 levels thereafter.
+- 4th level: May shapeshift into a hunting spider.
+- 6th level: May shapeshift into a baby wyvern.
+- 7th level: Shapeshifts into a winter wolf in place of a dire wolf.
+- 8th level: Hunting spider form is replaced by sword spider.
+- 10th level: Baby wyvern form is replaced by wyvern.
+
+Disadvantages:
+– May not wear armor heavier than leather.
+– Incurs a -2 penalty to Strength and Constitution."
+
+@82="Shapeshift: Winter Wolf"
+@83="Shapeshift: Dire Wolf"
+
+@84="Shapeshift: Sword Spider
+
+Strength: 16
+Dexterity: 16
+
+Base Armor Class: 3
+Number of Attacks: 4
+Attack Damage: 2d6 (piercing)
+
+Special Abilities:
+- Immunity to web
+- Hasted
+
+The Druid is healed 12 Hit Points after using this ability. This cannot occur more often than once per hour."
+
+@85="Shapeshift: Baby Wyvern
+
+Strength: 16
+Dexterity: 17
+
+Base Armor Class: 3
+Number of Attacks: 2
+Attack Damage: 1d8 (piercing), on hit it causes 1 poison damage/second for 1 round (Save vs. Poison negates)
+
+Special Abilities:
+- Immunity to hold, paralysis, slow, level drain, web, entangle, and grease
+
+The Druid is healed 12 Hit Points after using this ability. This cannot occur more often than once per hour."
+
+
+@86="Shapeshift: Boring Beetle"
+@87="Shapeshift: Polar Bear"
+@88="Shapeshift: Cave Bear"

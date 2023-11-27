@@ -1,0 +1,90 @@
+DEFINE_ACTION_FUNCTION make_cha_payload BEGIN
+
+
+	// get splprot entry
+	LAF resolve_splprot_entry INT_VAR stat=42 value="-1" STR_VAR relation=equal RET splprot_value=value END
+
+	// master spells
+	
+	// spells 
+	CREATE spl "dw3echa" 
+		LPF add_basic_spell_ability END
+		FOR (value=minimum_bonus_spell_abil;value<=25;value+=1) BEGIN
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 STR_VAR resource="dw3em%value%" END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 parameter1=value parameter2=splprot_value STR_VAR resource="dw3em%value%" END 
+		END
+	// saves
+	CREATE spl "dw3ech2"  
+		LPF add_basic_spell_ability END
+		FOR (value=1;value<=25;value+=1) BEGIN
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 STR_VAR resource="dw3ew%value%" END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 parameter1=value parameter2=splprot_value STR_VAR resource="dw3ew%value%" END // w is not a typo - we borrow Wisdom for force of personality
+		END
+	// divine spells (for favored souls)
+	CREATE spl "dw3ech3" 
+		LPF add_basic_spell_ability END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=318 target=2 timing=1 parameter1=favored_soul_stat parameter2=splprot_value_nostate STR_VAR resource=dw3ech3 END
+		FOR (value=minimum_bonus_spell_abil;value<=25;value+=1) BEGIN
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 STR_VAR resource="dw3ep%value%" END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 parameter1=value parameter2=splprot_value STR_VAR resource="dw3ep%value%" END 
+		END
+	//turning bonus
+	CREATE spl "dw3echu" 
+		LPF add_basic_spell_ability END
+		FOR (value=1;value<=25;value+=1) BEGIN
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 STR_VAR resource="dw3eu%value%" END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 parameter1=value parameter2=splprot_value STR_VAR resource="dw3eu%value%" END 
+			INNER_ACTION BEGIN
+				LAF make_cha_turning_secondary_spell INT_VAR cha=value END
+			END
+		END
+	
+	// paladin save bonuses
+	
+
+	CREATE spl "dw3echp" 
+		LPF add_basic_spell_ability END
+		FOR (value=1;value<=25;value+=1) BEGIN
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 STR_VAR resource="dw3eq%value%" END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 parameter1=value parameter2=splprot_value STR_VAR resource="dw3eq%value%" END
+			INNER_ACTION BEGIN
+				LAF make_cha_paladin_secondary_spell INT_VAR cha=value END
+			END
+		END
+		
+
+
+END
+
+
+DEFINE_ACTION_FUNCTION make_cha_turning_secondary_spell
+	INT_VAR cha=0
+BEGIN
+	LAF check_ini STR_VAR ini=cha_turn_undead_delta RET delta=value END
+	LAF check_ini STR_VAR ini=cha_turn_undead_multiplier RET mult=value END
+	LAF check_ini STR_VAR ini=cha_turn_undead_divider RET div=value END	
+	CREATE spl "dw3eu%cha%" 
+		LPF add_basic_spell_ability END
+		LPF 3e_abil_standard INT_VAR ability=cha RET modifier END
+		modifier+=delta
+		modifier = (modifier* mult) / div
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=323 target=2 timing=9 parameter1=modifier END
+
+END
+
+
+DEFINE_ACTION_FUNCTION make_cha_paladin_secondary_spell
+	INT_VAR cha=0
+BEGIN
+	CREATE spl "dw3eq%cha%" 
+		LPF add_basic_spell_ability END
+		LPF 3e_abil_standard INT_VAR ability=cha RET modifier END
+		modifer = modifier>0 ? modifier: 0
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=33 target=2 timing=9 parameter1=modifier END // death/poison
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=34 target=2 timing=9 parameter1=modifier END // wand
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=35 target=2 timing=9 parameter1=modifier END // petrify/polymorph
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=36 target=2 timing=9 parameter1=modifier END // breath weapon
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=37 target=2 timing=9 parameter1=modifier END // spell
+
+END
+

@@ -1,0 +1,346 @@
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+DEFINE_ACTION_FUNCTION poison BEGIN
+
+   // repurpose a STAT for poison use
+   LAF check_ini STR_VAR ini=poison_stat RET poison_stat=value END
+
+   // set needed SPLPROT entries
+
+   LAF resolve_splprot_entry INT_VAR stat=poison_stat value="-1" STR_VAR relation=equal RET splprot_poison=value END
+   LAF resolve_splprot_entry INT_VAR stat=88 value="-1" STR_VAR relation=greater RET splprot_stoneskin=value END
+
+   // get needed SPLSTATE entries
+
+   LAF ds_resolve_stat STR_VAR id=DW_POWER_UPGRADE_T2 RET aptitude_stat=stat_ind END
+   LAF ds_resolve_stat STR_VAR id=DW_POWER_UPGRADE_T3 RET expertise_stat=stat_ind END
+
+   // make a spell that displays an immunity string (for stoneskin)
+
+   spl.make[%spl_display_poison_stoneskin_string%]
+   [
+      m.ab.add{}
+      m.ab_fx.add{s_opcode=139 s_target=2 s_timing=1 s_parameter1=RESOLVE_STR_REF (@170)}
+   ]
+
+	// on IWD, install the BG version of Poison Weapon
+	
+	ACTION_IF is_iwd BEGIN
+		WITH_TRA "%scs_tra_loc%/english/class_race.tra" "%scs_tra_loc%/%LANGUAGE%/class_race.tra" BEGIN 
+			spl.copy[spcl423|source_locbase="shared/bg_poison"]
+			[
+				s_name=36031
+				s_description:=@56
+			]
+			LAF install STR_VAR files="bdpweapn.eff bdpweapn.spl" locbase="shared/bg_poison" END
+		END
+	END
+
+	
+   // a little research
+   
+   COPY_EXISTING "%ASSASSIN_POISON%.spl" override
+         SPRINT base_effect ""
+         GET_OFFSET_ARRAY ab_array SPL_V10_HEADERS
+         SET ab_off=$ab_array(0)
+         GET_OFFSET_ARRAY2 fx_array ab_off SPL_V10_HEAD_EFFECTS
+         PHP_EACH fx_array AS number=>fx_off BEGIN
+            READ_SHORT fx_off opcode
+            PATCH_IF opcode=248 BEGIN
+               READ_ASCII (0x14+fx_off) base_effect
+            END
+         END
+   BUT_ONLY
+   OUTER_SPRINT base_spell ""
+   ACTION_IF FILE_EXISTS_IN_GAME "%base_effect%.eff" BEGIN
+      COPY_EXISTING "%base_effect%.eff" override
+          READ_ASCII 0x30 base_spell
+      BUT_ONLY
+   END
+   ACTION_IF ("%base_spell%" STRING_EQUAL "" || "%base_effect%" STRING_EQUAL "") BEGIN
+          LAF warning STR_VAR warning="ASSASSIN_POISON differs too much from baseline to apply poison component" END
+   END ELSE BEGIN
+
+	   // clone the standard poison
+	   // impose stoneskin immunity, and immunity for golems, undead, demons and elementals
+
+	   spl.copy[%base_spell%=>dwpsn0]
+	   [
+			m_description:=@150
+			m.ab_fx.add{s_opcode=324 s_target=2 s_duration=1 s_resource:="%base_spell%" s_parameter1=145 s_parameter2=104} // elementals
+			m.ab_fx.add{s_opcode=324 s_target=2 s_duration=1 s_resource:="%base_spell%" s_parameter1=144 s_parameter2=104} // golems
+			m.ab_fx.add{s_opcode=324 s_target=2 s_duration=1 s_resource:="%base_spell%" s_parameter1=121 s_parameter2=104} // demons
+			m.ab_fx.add{s_opcode=324 s_target=2 s_duration=1 s_resource:="%base_spell%" s_parameter1=4 s_parameter2=103} // undead
+			m.ab_fx.add{s_opcode=326 s_target=2 s_duration=1 s_resource:="%spl_display_poison_stoneskin_string%" s_parameter1=0 parameter2:="%splprot_stoneskin%"}
+			m.ab_fx.add{s_opcode=318 s_target=2 s_duration=1 s_resource:="%base_spell%" s_parameter1=0 s_parameter2:="%splprot_stoneskin%"}
+	   ]
+
+	   spl.copy[dwpsn0=>dwpsn2 dwpsn2=>dwpsn4]
+	   [
+			m.ab_fx.delete{s_opcode=206}
+			m.ab_fx.alter{s_savebonus=s_savebonus - 2|match="s_save_vs_poison=1"}
+	   ]
+
+
+	   // create the various special poisons
+
+	   // Sleep poison (blue whinnis)
+
+	   spl.copy[dwpsn0=>dwpsn1]
+	   [
+		  m_name:=@165
+		  m_description:=@155
+		  m.ab_fx.clone{s_opcode=146 s_parameter2=1 s_target=2 s_timing=1 s_resource:=dwpsn1p|match="s_opcode=25"}
+		  m.ab_fx.delete{s_opcode=25 OR s_opcode=142} // no continuing poison damage, no icon
+	   ]
+
+	   spl.make[dwpsn1p]
+	   [
+		  m.ab.add{}
+		  m.ab_fx.add{s_opcode=39 s_target=2 s_duration=36}
+		  m.ab_fx.add{s_opcode=142 s_duration=36 s_target=2 s_parameter2=6}
+		  m.ab_fx.add{s_opcode=139 s_target=2 s_timing=1 s_parameter1=14001}
+		  m.ab_fx.add{s_opcode=206 s_target=2 s_duration=36 s_resource:="%sfo_filename%"}
+	   ]
+	   
+	   // Paralytic poison (carrion crawler ichor)
+
+	   spl.copy[dwpsn0=>dwpsn2]
+	   [
+		  m_name:=@157
+		  m_description:=@151
+		  m.ab_fx.clone{s_opcode=146 s_parameter2=2 s_target=2 s_timing=1 s_resource:=dwpsn2p|match="s_opcode=25"}
+		  m.ab_fx.delete{s_opcode=25 OR s_opcode=142}
+	   ]
+	 
+		spl.make[dwpsn2p]
+		[
+			m.ab.add{}
+			m.ab_fx.add{s_opcode=109 s_target=2 s_parameter2=2 s_duration=18}
+			m.ab_fx.add{s_opcode=142 s_duration=18 s_target=2 s_parameter2=6}
+			m.ab_fx.add{s_opcode=142 s_duration=18 s_target=2 s_parameter2=13}
+			m.ab_fx.add{s_opcode=139 s_target=2 s_timing=1 s_parameter1=14650}
+			m.ab_fx.add{s_opcode=206 s_target=2 s_duration=18 s_resource:="%sfo_filename%"}
+		]
+
+	   // confusion poison (Nightmare paste)
+
+		spl.copy[dwpsn0=>dwpsn3]
+		[
+			m_name:=@159
+			m_description:=@152
+			m.ab_fx.clone{s_opcode=146 s_parameter2=2 s_target=2 s_timing=1 s_resource:=dwpsn3p|match="s_opcode=25"}
+			m.ab_fx.delete{s_opcode=25 OR s_opcode=142}
+		]
+
+		spl.make[dwpsn3p]  
+		[
+			m.ab.add{}
+			m.ab_fx.add{s_opcode=128 s_target=2 s_duration=24} // main confusion
+			m.ab_fx.add{s_opcode=139 s_timing=1 s_target=2 s_parameter1=14782} // display string
+			m.ab_fx.add{s_opcode=142 s_duration=24 s_target=2 s_parameter2=3} // confusion icon
+			m.ab_fx.add{s_opcode=215 s_target=2 s_duration=24 s_parameter2=1 s_resource:=spconfus} // confusion animation
+			m.ab_fx.add{s_opcode=206 s_target=2 s_duration=24 s_resource:="%sfo_filename%"}
+		]
+
+
+	   // PW:Kill poison (Deathkiss)
+
+		spl.copy[dwpsn0=>dwpsn4]
+		[
+			m_name:=@161
+			m_description:=@153
+			m.ab_fx.clone{s_opcode=146 s_parameter2=2 s_target=2 s_timing=1 s_resource:=dwpsn4p|match="s_opcode=25"}
+			m.ab_fx.delete{s_opcode=25 OR s_opcode=142}
+		]
+
+		spl.make[dwpsn4p]
+		[
+			m.ab.add{}
+			m.ab_fx.add{s_opcode=209 s_target=2} // PW:Kill
+		]
+
+	   // nerve venom
+
+		spl.copy[dwpsn0=>dwpsn5]
+		[
+			m_name:=@163
+			m_description:=@154
+			m.ab_fx.clone{s_opcode=146 s_parameter2=2 s_target=2 s_timing=1 s_resource:=dwpsn5p|match="s_opcode=25"}
+			m.ab_fx.delete{s_opcode=25 OR s_opcode=142}
+		]
+
+
+		spl.make[dwpsn5p]
+		[
+			m.ab.add{}
+			m.ab_fx.add{s_opcode=54 s_parameter1="-4" s_target=2 s_duration=30}
+			m.ab_fx.add{s_opcode=73 s_parameter1="-4" s_target=2 s_duration=30}
+			m.ab_fx.add{s_opcode=0 s_parameter1="-4" s_target=2 s_duration=30}
+			m.ab_fx.add{s_opcode=60 s_parameter1=25 s_parameter2=0 s_target=2 s_duration=30}
+			m.ab_fx.add{opcode=60 s_parameter1=25 s_parameter2=1 s_target=2 s_duration=30}
+			m.ab_fx.add{s_opcode=142 s_target=2 s_parameter2=6 s_duration=30}
+			m.ab_fx.add{s_opcode=206 s_target=2 s_duration=30 s_resource:="%sfo_filename%"}
+		]
+	 
+
+	   // sort out saving throw penalties and self references
+	   
+		ACTION_FOR_EACH code IN 0 1 2 3 4 5 BEGIN
+			spl.copy[dwpsn%code%=>dwpsn%code%2 dwpsn%code%2=>dwpsn%code%4]
+			[
+				m.ab_fx.alter{s_savebonus = s_savebonus - 2|match="s_save_vs_poison=1"}
+			]
+			COPY_EXISTING "dwpsn%code%.spl" override
+				REPLACE_TEXTUALLY "%base_spell%" "dwpsn%code%" (8)
+			BUT_ONLY
+			COPY_EXISTING "dwpsn%code%2.spl" override
+				REPLACE_TEXTUALLY "%base_spell%" "dwpsn%code%2" (8)
+			BUT_ONLY
+			COPY_EXISTING "dwpsn%code%4.spl" override
+				REPLACE_TEXTUALLY "%base_spell%" "dwpsn%code%4" (8)
+			BUT_ONLY
+			
+		END
+
+	   // make the various effects and applicator spells
+	   
+		ACTION_FOR_EACH code IN 0 1 2 3 4 5 BEGIN
+			ACTION_FOR_EACH code2 IN 0 2 4 BEGIN
+				ACTION_IF code2=0 BEGIN
+					OUTER_SPRINT code2 ""
+				END
+
+				eff.copy[%base_effect%=>dwpsn%code%%code2%]
+				[
+					m_resource:="dwpsn%code%%code2%"
+				]
+
+				spl.copy[%ASSASSIN_POISON%=>dwpsa%code%%code2%]
+				[
+					m_name="-1"
+				]
+
+				COPY_EXISTING "dwpsa%code%%code2%.spl" override
+					REPLACE_TEXTUALLY "%base_effect%" "dwpsn%code%%code2%" (8)
+				BUT_ONLY
+			END
+		END
+
+	   // make the master applicator spells
+
+	   // spcl423 - checks for aptitude stat; if found, runs spcl423a; if not, applies effect
+
+		spl.edit[spcl423]
+		[
+			m.ab_fx.delete{}
+			m.ab_fx.add{s_opcode=326 s_target=1 s_parameter1=aptitude_stat s_parameter2=110 s_resource:=spcl423a}
+			m.ab_fx.add{s_opcode=324 s_target=1 s_parameter1=aptitude_stat s_parameter2=110 s_resource:=spcl423}
+			m.ab_fx.add{s_opcode=326 s_target=1 s_parameter1=5 s_parameter2=splprot_poison s_resource:=dwpsa5}
+			m.ab_fx.add{s_opcode=326 s_target=1 s_parameter1=4 s_parameter2=splprot_poison s_resource:=dwpsa4}
+			m.ab_fx.add{s_opcode=326 s_target=1 s_parameter1=3 s_parameter2=splprot_poison s_resource:=dwpsa3}
+			m.ab_fx.add{s_opcode=326 s_target=1 s_parameter1=2 s_parameter2=splprot_poison s_resource:=dwpsa2}
+			m.ab_fx.add{s_opcode=326 s_target=1 s_parameter1=1 s_parameter2=splprot_poison s_resource:=dwpsa1}
+			m.ab_fx.add{s_opcode=326 s_target=1 s_parameter1=0 s_parameter2=splprot_poison s_resource:=dwpsa0}
+	   ]
+
+	   // spcl423a - checks for expertise stat; if found, runs spcl423b; if not, applies effect
+
+	   spl.copy[spcl423=>spcl423a]
+	   [
+			m_name="-1"
+			m.ab_fx.delete{}
+			m.ab_fx.add{s_opcode=326 s_target=1 s_parameter1=expertise_stat s_parameter2=110 s_resource:=spcl423b}
+			m.ab_fx.add{s_opcode=324 s_target=1 s_parameter1=expertise_stat s_parameter2=110 s_resource:=spcl423a}
+			m.ab_fx.add{s_opcode=326 s_target=1 s_parameter1=5 s_parameter2=splprot_poison s_resource:=dwpsa52}
+			m.ab_fx.add{s_opcode=326 s_target=1 s_parameter1=4 s_parameter2=splprot_poison s_resource:=dwpsa42}
+			m.ab_fx.add{s_opcode=326 s_target=1 s_parameter1=3 s_parameter2=splprot_poison s_resource:=dwpsa32}
+			m.ab_fx.add{s_opcode=326 s_target=1 s_parameter1=2 s_parameter2=splprot_poison s_resource:=dwpsa22}
+			m.ab_fx.add{s_opcode=326 s_target=1 s_parameter1=1 s_parameter2=splprot_poison s_resource:=dwpsa12}
+			m.ab_fx.add{s_opcode=326 s_target=1 s_parameter1=0 s_parameter2=splprot_poison s_resource:=dwpsa02}
+	   ]
+
+	   // spcl423b - just applies effects
+	   
+	   spl.copy[spcl423=>spcl423b]
+	   [
+			m_name="-1"
+			m.ab_fx.delete{}
+			m.ab_fx.add{s_opcode=326 s_target=1 s_parameter1=5 s_parameter2=splprot_poison s_resource:=dwpsa54}
+			m.ab_fx.add{s_opcode=326 s_target=1 s_parameter1=4 s_parameter2=splprot_poison s_resource:=dwpsa44}
+			m.ab_fx.add{s_opcode=326 s_target=1 s_parameter1=3 s_parameter2=splprot_poison s_resource:=dwpsa34}
+			m.ab_fx.add{s_opcode=326 s_target=1 s_parameter1=2 s_parameter2=splprot_poison s_resource:=dwpsa24}
+			m.ab_fx.add{s_opcode=326 s_target=1 s_parameter1=1 s_parameter2=splprot_poison s_resource:=dwpsa14}
+			m.ab_fx.add{s_opcode=326 s_target=1 s_parameter1=0 s_parameter2=splprot_poison s_resource:=dwpsa04}
+	   ]
+
+	   // make the selection options
+	   
+	   <<<<<<<< .../stratagems-inline/poison_table.2da
+	   label      	number:i name:i    desc:i	icon
+	   default   	0        166       150		dw#psn0
+	   sleep    	1        164       155		dw#psn1
+	   paralysis 	2        156       151		dw#psn2
+	   confusion 	3        158       152		dw#psn3
+	   pw:kill   	4        160       153		dw#psn4
+	   nerve     	5        162       154		dw#psn5
+	   >>>>>>>>
+	   LAF 2da_process_table INT_VAR inline=1 STR_VAR table=poison_table.2da function=poison_setup_helper END
+	   
+	   // append original description
+	   
+	   COPY_EXISTING "%ASSASSIN_POISON%.spl" override
+		READ_LONG 0x50 desc_strref
+	   BUT_ONLY
+	   
+		ACTION_GET_STRREF desc_strref desc_string
+		OUTER_SPRINT new @172
+		OUTER_SPRINT desc_string "%desc_string%%WNL%%WNL%%new%"
+		STRING_SET_EVALUATE desc_strref "%desc_string%"
+
+		// neutralize poison and the like need to remove the effects of assassin poisons
+		
+		spl.edit[%DEVAHEAL% %CLERIC_HEAL% %CLERIC_NEUTRALIZE_POISON% %CLERIC_SLOW_POISON% %INNATE_SLOW_POISON%|allow_missing:i=1]
+		[
+			array.new{psn_array}{0=>dwpsn1p 1=>dwpsn2p 2=>dwpsn3p 3=>dwpsn5p}
+			m.ab_fx.add{s_opcode=321 s_target=2 s_timing=1 s_resource:=$psn_array("%entry_index%")|number:i=4 }
+		]
+		itm.edit[potn17 potn20|allow_missing:i=1]
+		[
+			array.new{psn_array}{0=>dwpsn1p 1=>dwpsn2p 2=>dwpsn3p 3=>dwpsn5p}
+			m.ab_fx.add{s_opcode=321 s_target=2 s_timing=1 s_resource:=$psn_array("%entry_index%")|number:i=4 }
+		]
+
+
+	END
+
+END
+
+DEFINE_ACTION_FUNCTION poison_setup_helper
+	INT_VAR number=0 name=0 desc=0
+    STR_VAR label="" icon="" 
+BEGIN
+
+   spl.make[dwpss%number%]
+   [
+      m_name:=(AT name)
+	  m_description:=(AT desc)
+      m_type:=innate
+      m.ab.add{}
+      m.ab.alter{s_icon:=%icon% s_location=4 s_target=5}
+      m.ab_fx.add{s_opcode=321 s_target=1 s_resource:=dwpss0}  // delete all previous iterations
+      m.ab_fx.add{s_opcode=321 s_target=1 s_resource:=dwpss1}
+      m.ab_fx.add{s_opcode=321 s_target=1 s_resource:=dwpss2}
+      m.ab_fx.add{s_opcode=321 s_target=1 s_resource:=dwpss3}
+      m.ab_fx.add{s_opcode=321 s_target=1 s_resource:=dwpss4}
+      m.ab_fx.add{s_opcode=321 s_target=1 s_resource:=dwpss5}
+      m.ab_fx.add{s_opcode=139 s_timing=1 s_target=2 s_parameter1=RESOLVE_STR_REF (@171)} // display string
+      m.ab_fx.add{s_opcode=172 s_target=1 s_resource:="dwpss%number%"}
+      m.ab_fx.add{s_opcode=171 s_target=1 s_resource:="dwpss%number%"}   // remove and re-grant ability
+      m.ab_fx.add{s_opcode=282 s_target=1 s_timing=1 s_parameter1=number s_parameter2=(poison_stat - 156)}
+   ]
+   COPY "%MOD_FOLDER%/%component_loc%/resource/icon_poison/%icon%.bam" override
+END
+

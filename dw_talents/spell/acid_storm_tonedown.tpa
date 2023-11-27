@@ -1,0 +1,33 @@
+DEFINE_ACTION_FUNCTION acid_storm_tonedown
+BEGIN
+
+    LAF log_this INT_VAR repeat=0 STR_VAR file="scs_modified_spells_iwd.2da" input=WIZARD_ACID_STORM END
+
+    // patch main spell
+
+	ACTION_IF FILE_EXISTS_IN_GAME "%WIZARD_ACID_STORM%D.spl" BEGIN //  NWN spell deflection
+	  OUTER_SPRINT spell "%WIZARD_ACID_STORM%D"
+	END ELSE BEGIN
+	  OUTER_SPRINT spell "%WIZARD_ACID_STORM%"
+	END	
+	
+	spl.edit[%spell%|edit_strrefs_in_place:i=1]
+	[
+		m.ab.delete{s_level>1}
+		m.ab_fx.delete{s_opcode=12 AND s_timing==DelayPermanent} // remove all delayed-effect acid consequences
+		m.ab_fx.add{s_opcode=146 s_target=2 s_power=7 s_parameter1=8 s_parameter2=1 s_timing=4 s_duration=6 s_resource:=%WIZARD_ACID_STORM%Z s_dispel_resist=1}
+		m.ab_fx.add{s_opcode=142 s_target=2 s_power=7 s_parameter2=102 s_timing=4 s_duration=6 s_dispel_resist=1}
+		m.ab_fx.alter{s_dicenumber=10 s_dicesize=6|match="s_opcode=12"}
+		m_description:=@40013
+	]
+
+    // make payload, copying from Vitriolic Sphere
+      
+	spl.copy[SPWI431Z=>%WIZARD_ACID_STORM%Z|source_location="resource"]
+	[
+		m.ab_fx.alter{s_power=7}
+		m.ab_fx.alter{s_dicesize=6|match="s_opcode=12"}
+		m.ab_fx.alter{s_resource:=%WIZARD_ACID_STORM%Z|match="~%s_resource%~ STR_EQ spwi431Z"}
+	]
+
+END

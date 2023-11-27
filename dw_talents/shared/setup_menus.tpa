@@ -1,0 +1,48 @@
+DEFINE_ACTION_FUNCTION setup_menus BEGIN
+
+	// include functions
+	INCLUDE "%MOD_FOLDER%/%lua_loc%/ui_virtual_class.tph"
+	INCLUDE "%MOD_FOLDER%/%lua_loc%/ui_detect_class_kit.tph"
+	
+	LAF check_label STR_VAR label=dw#setup_kit_menus RET value END
+	ACTION_IF !value BEGIN
+		LAF ui_detect_class_kit END
+		WITH_TRA "%scs_tra_loc%/english/virtual_class.tra" "%scs_tra_loc%/%LANGUAGE%/virtual_class.tra" BEGIN
+
+			LAF make_label STR_VAR label=dw#setup_kit_menus END
+			// setup
+			LAF virtual_class_setup END
+			// Move Blackguard into a virtual class
+			LAF blackguard_is_virtual_class END
+			
+			// collect speciality mages into a category
+			
+			LAF add_kit_menu INT_VAR name=5 desc=6 title=7 STR_VAR id=specialist kits="ABJURER CONJURER DIVINER ENCHANTER ILLUSIONIST INVOKER NECROMANCER TRANSMUTER" class=MAGE END
+
+		END
+	END
+
+END
+
+DEFINE_ACTION_FUNCTION blackguard_is_virtual_class BEGIN
+
+	LAF 2da_read STR_VAR file=clastext.2da RET_ARRAY clastext_array=array END
+	OUTER_SET name_strref=$clastext_array("BLACKGUARD" "MIXED")
+	OUTER_SET desc_strref=$clastext_array("BLACKGUARD" "DESCSTR")
+
+	LAF 2da_read STR_VAR file=clsrcreq.2da case=lower RET_ARRAY clsrcreq_array=array END
+	ACTION_FOR_EACH column IN human elf dwarf gnome halfling half_elf halforc BEGIN
+		OUTER_SET "%column%"=$clsrcreq_array("blackguard" "%column%")
+	END
+	
+	LAF add_virtual_class INT_VAR name_strref desc_strref STR_VAR parent=paladin ident=class_blackguard human elf dwarf gnome halfling half_elf halforc all_races="false" END
+	LAF assign_kit_to_virtual_class STR_VAR kit=blackguard class=class_blackguard END
+
+
+
+
+
+
+
+END
+

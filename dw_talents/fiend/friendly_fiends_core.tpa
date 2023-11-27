@@ -1,0 +1,439 @@
+///////////////////////////////////////////////////////////////////////////////////////////////
+//// This is a conversion of SCS's friendly_fiends_core to SFO2e
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+DEFINE_ACTION_FUNCTION friendly_fiends_core
+        INT_VAR grimoire=1
+        STR_VAR script_loc=""     // carries the locbase for the scripts
+                tph_loc=""        // where to find the maker for fiend spells
+                boot_loc="resource"       // where to find the fiend-hiding boots
+                missing_loc="resource/missing" // where to find the IWD missing spells
+BEGIN
+  LAF check_label STR_VAR label=dw#friendly_fiends RET value END
+  ACTION_IF !value BEGIN
+
+    LAF make_label STR_VAR label=dw#friendly_fiends END
+
+    ACTION_IF demivrgvs BEGIN
+       LAF friendly_fiends_isolate_sr END
+    END
+
+    LAF friendly_fiends_resources END
+    LAF friendly_fiends_scripts END
+
+    // if appropriate, make the Grimoires of Demon Binding
+    
+    ACTION_IF (grimoire && enhanced_edition && !demivrgvs && is_bg2) BEGIN
+       LAF grimoire END
+    END
+
+    // if enhanced edition (and no Demi), make the damnation resources
+    
+    ACTION_IF enhanced_edition && !demivrgvs && is_bg2 BEGIN
+       LAF damnation END
+    END
+  END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION damnation INT_VAR damned=40011 no_resurrection=40010 more_evil=40012 BEGIN
+	ACTION_IF !FILE_EXISTS_IN_GAME dw#damn.spl BEGIN // only do all this once
+		LAF check_ini STR_VAR ini=do_not_lose_soul RET value END
+		ACTION_IF !value BEGIN
+
+			OUTER_SPRINT splstate_low DW_POWER_UPGRADE_M1
+			OUTER_SPRINT splstate_high DW_POWER_UPGRADE_M2
+
+			LAF ds_resolve_stat STR_VAR id="%splstate_low%" RET stat_ind_low=stat_ind END
+			LAF ds_resolve_stat STR_VAR id="%splstate_high%" RET stat_ind_high=stat_ind END
+
+			// resolve some strrefs
+			
+			OUTER_SET damned_strref=RESOLVE_STR_REF (( AT damned))
+			OUTER_SET no_resurrection_strref=RESOLVE_STR_REF ((AT no_resurrection))
+			OUTER_SET more_evil_strref=RESOLVE_STR_REF ((AT more_evil))
+
+
+		   // create a specific-alignment-check SPLPROT entry
+		    LAF resolve_splprot_entry INT_VAR stat=0x110 value="-1" STR_VAR relation=equal  RET splprot_align=value END
+		   
+		   // create the spell that marks you as damned
+		   
+		    CREATE spl "dw#damn"
+				LPF add_basic_spell_ability END
+				WRITE_LONG 0x8 damned_strref
+				LPF ADD_SPELL_EFFECT INT_VAR opcode=232 target=1 timing=9 parameter2=16 STR_VAR resource="dw#dampl" END
+		   
+		   // create the actual payload, that deletes you if you die
+
+			COPY_EXISTING "spin864.spl" "override/dw#dampl.spl" // clone of Rapture of the Father
+				WRITE_LONG 0x8 "-1"
+				WRITE_LONG 0xc "-1"
+				LPF DELETE_EFFECT INT_VAR match_opcode=12 END
+				LPF ADD_SPELL_EFFECT INT_VAR opcode=330 target=2 parameter1=no_resurrection_strref END
+				LPF ALTER_EFFECT INT_VAR match_opcode=55 opcode=168 parameter1=0 parameter2=0 END
+				
+		   // create the "become more evil" spell
+		   
+			ACTION_DEFINE_ASSOCIATIVE_ARRAY evil_array BEGIN
+				17=>ln
+				18=>le
+				33=>nn
+				34=>ne
+				49=>cn
+				50=>ce
+			END
+		   
+			CREATE spl "dw#evil"
+				LPF add_basic_spell_ability END
+				LPF ADD_SPELL_EFFECT INT_VAR target=2 opcode=139 parameter1=more_evil_strref END
+				PHP_EACH evil_array AS parameter1=>align BEGIN
+					LPF ADD_SPELL_EFFECT INT_VAR target=2 opcode=326 parameter1 parameter2=splprot_align STR_VAR resource="dw#amk%align%" END
+				END
+		  
+			// create its needed subspells
+
+			ACTION_PHP_EACH evil_array AS val=>code BEGIN
+				CREATE spl "dw#amk%code%"
+					LPF add_basic_spell_ability END
+					LPF ADD_SPELL_EFFECT INT_VAR target=2 timing=9 opcode=57 parameter2=val+1 END
+			END
+	
+			// edit the various fiend-summoning spells
+			ACTION_FOR_EACH spell IN WIZARD_CACOFIEND WIZARD_SUMMON_FIEND WIZARD_GATE DW#HLBA DW#HLPF DW#HLIC DW#HLAP BEGIN
+				// set parameters
+				ACTION_MATCH "%spell%" WITH
+				WIZARD_GATE DW#HLBA DW#HLPF BEGIN
+					  OUTER_SET stat_ind=stat_ind_high
+					  OUTER_SET damnation_chance=24
+				END 
+				DEFAULT
+					  OUTER_SET stat_ind=stat_ind_low
+					  OUTER_SET damnation_chance=9
+				END
+
+				// edit the baseline spell
+				ACTION_IF VARIABLE_IS_SET "%spell%" BEGIN
+					OUTER_SPRINT resref EVAL "%%spell%%"
+				END ELSE BEGIN
+					OUTER_SPRINT resref "%spell%"
+				END
+				COPY_EXISTING "%resref%.spl" override
+					LPF ADD_SPELL_EFFECT INT_VAR opcode=318 target=1 parameter1=stat_ind parameter2=111 STR_VAR resource="%resref%" END // block rest of spell if variable is not set
+					LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=1 probability1=damnation_chance parameter2=38 STR_VAR resource="dw#evil" END  // make evil (skip if already evil)
+					LPF ADD_SPELL_EFFECT INT_VAR opcode=318 target=1 probability1=damnation_chance parameter2=38 STR_VAR resource="%resref%" END  // if you're nonevil, skip the rest
+					LPF ADD_SPELL_EFFECT INT_VAR opcode=146 target=1 probability1=damnation_chance parameter2=1 STR_VAR resource="dw#damn" END
+					LPF ADD_SPELL_EFFECT INT_VAR opcode=206 target=1 parameter1="-1" timing=4 duration=6 probability1=damnation_chance STR_VAR resource="dw#damn" END // only apply damnation effect once (but delay this a few seconds so as to give dw#damn a chance to kick in)
+				IF_EXISTS
+			END
+		END
+	END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION grimoire BEGIN
+
+	OUTER_SPRINT splstate_low DW_POWER_UPGRADE_M1
+	OUTER_SPRINT splstate_high DW_POWER_UPGRADE_M2
+
+	LAF ds_resolve_stat STR_VAR id="%splstate_low%" RET stat_ind_low=stat_ind END
+	LAF ds_resolve_stat STR_VAR id="%splstate_high%" RET stat_ind_high=stat_ind END
+
+
+	OUTER_SET strref_low=RESOLVE_STR_REF (@40004)
+	OUTER_SET strref_high=RESOLVE_STR_REF (@40005)
+
+	COPY_EXISTING "book03.itm" "override/dw#grmls.itm"
+		LPF DELETE_EFFECT END
+		WRITE_BYTE 0x1f 0b01011110 // usability
+		WRITE_BYTE 0x20 0b00110010
+		WRITE_BYTE 0x21 0b01100000
+		LPF ADD_ITEM_EFFECT INT_VAR opcode=215 target=1 power=1 STR_VAR resource=spcontin END
+	
+	COPY_EXISTING "dw#grmls.itm" "override/dw#grmgt.itm"
+		
+	COPY_EXISTING "dw#grmls.itm" override
+		SAY 0xc @40000
+		SAY 0x54 @40001
+		LPF ADD_ITEM_EFFECT INT_VAR opcode=139 target=1 timing=1 parameter1=strref_low END
+		LPF ADD_ITEM_EFFECT INT_VAR target=1 timing=9 opcode=328 special=1 parameter2=stat_ind_low END
+
+	COPY_EXISTING "dw#grmgt.itm" override
+		SAY 0xc @40002
+		SAY 0x54 @40003
+		LPF ADD_ITEM_EFFECT INT_VAR opcode=139 target=1 timing=1 parameter1=strref_high END
+		LPF ADD_ITEM_EFFECT INT_VAR target=1 timing=9 opcode=328 special=1 parameter2=stat_ind_high END
+
+    // Shangalar has the Lesser Grimoire
+   
+    COPY_EXISTING "hlshang.cre" override
+		ADD_CRE_ITEM "dw#grmls" #0 #0 #0 "NONE" INV
+   
+    // Azamantes has the Greater Grimoire
+	COPY_EXISTING "ar3027.are" override
+		placed=0
+		GET_OFFSET_ARRAY cont_arr ARE_V10_CONTAINERS
+		PHP_EACH cont_arr AS cont_id=>cont_off BEGIN
+			READ_ASCII cont_off cont_name
+			PATCH_IF "%cont_name%" STR_EQ "Container 1" BEGIN
+				GET_OFFSET_ARRAY2 itm_arr cont_off ARE_V10_ITEMS
+				PHP_EACH itm_arr AS itm_id=>itm_off BEGIN
+					PATCH_IF !placed BEGIN
+						READ_ASCII itm_off itm_res
+						PATCH_IF "%itm_res%" STR_EQ "rndtre05" BEGIN
+							placed=1
+							WRITE_ASCII itm_off "dw#grmgt"
+						END
+					END
+				END
+			END
+		END
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+// make needed resources
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION friendly_fiends_resources BEGIN
+
+    // on IWD install, SPIN996-9 are missing (even though used by core scripts, i.e. this is an IWDEE bug).
+    // Replace them.
+    ACTION_IF is_iwd BEGIN
+     ACTION_BASH_FOR "%MOD_FOLDER%/%component_loc%/%missing_loc%" ".*\.spl" BEGIN
+       COPY "%BASH_FOR_FILESPEC%" override
+     END
+    END
+
+    // make needed spells
+
+    // vanilla is:
+    // - nabassu (demnabsu): silence once; Vampiric Touch and paralysis at will; death gaze overlaid
+    // - glabrezu (demglasu): Remove Magic once; PW:Stun at will (but maybe make 7 x)
+    // - pit fiend (dempitsu): Fear once; Remove Magic once; Symbol: Fear (or Pain if available) and Deathknight Fireball at will
+
+    // extra from SCS summon-alignment-based-fiends is:
+    // - bone fiend (dw#bfsum): Fear once; II at will; Cone of Cold 3x/day
+    // - cornugon (dw#cosum): fear once; LB at will
+    // - balor (dw#basum): Symbol: stun 3x/day, Remove Magic once, Confusion once, paralysis at will
+
+    // make SPL files
+
+    LAF run STR_VAR file=fiend_spells_basic locbase="%tph_loc%" END
+
+    // edit CRE files
+    
+	COPY_EXISTING "demnabsu.cre" override
+		WRITE_BYTE 0x270 5
+		REMOVE_KNOWN_SPELLS
+		REMOVE_MEMORIZED_SPELLS
+		ADD_MEMORIZED_SPELL "%TANARI_PARALYZE%" #0 innate
+		ADD_MEMORIZED_SPELL "%TANARI_VAMPIRIC_TOUCH%" #0 innate
+		ADD_MEMORIZED_SPELL "%TANARI_SILENCE%" #0 innate
+		ADD_MEMORIZED_SPELL "%TANARI_DEATH_GAZE%" #0 innate
+
+	COPY_EXISTING "demglasu.cre" override
+		WRITE_BYTE 0x270 5
+		REMOVE_KNOWN_SPELLS
+		REMOVE_MEMORIZED_SPELLS
+		ADD_MEMORIZED_SPELL "%WIZARD_POWER_WORD_STUN%" #6 wizard (7)
+		ADD_MEMORIZED_SPELL "%WIZARD_DISPEL_MAGIC%" #2 wizard 
+		
+	COPY_EXISTING "dempitsu.cre" override
+		WRITE_BYTE 0x270 5
+		REMOVE_KNOWN_SPELLS
+		REMOVE_MEMORIZED_SPELLS
+		ADD_MEMORIZED_SPELL "%INNATE_FIEND_FIREBALL%" #0 innate 
+		ADD_MEMORIZED_SPELL "%WIZARD_DISPEL_MAGIC%" #2 wizard
+		PATCH_IF VARIABLE_IS_SET "CLERIC_SYMBOL_PAIN" BEGIN
+			ADD_MEMORIZED_SPELL "%CLERIC_SYMBOL_PAIN%" #6 priest 
+		END ELSE BEGIN
+			ADD_MEMORIZED_SPELL "%WIZARD_SYMBOL_FEAR%" #7 wizard		
+		END
+	
+	COPY_EXISTING "dw#bfsum.cre" override
+		WRITE_BYTE 0x270 5
+		REMOVE_KNOWN_SPELLS
+		REMOVE_MEMORIZED_SPELLS
+		ADD_MEMORIZED_SPELL "%WIZARD_CONE_OF_COLD%" #4 wizard (3)
+		ADD_MEMORIZED_SPELL "%INNATE_FIEND_IMPROVED_INVISIBILITY%" #0 innate
+	IF_EXISTS
+
+	COPY_EXISTING "dw#cosum.cre" override
+		WRITE_BYTE 0x270 5
+		REMOVE_KNOWN_SPELLS
+		REMOVE_MEMORIZED_SPELLS
+		ADD_MEMORIZED_SPELL "%WIZARD_LIGHTNING_BOLT%" #2 wizard (3)
+		ADD_MEMORIZED_SPELL "%WIZARD_FIREBALL%" #2 wizard (3)
+	IF_EXISTS
+		
+	COPY_EXISTING "dw#basum.cre" override
+		WRITE_BYTE 0x270 5
+		REMOVE_KNOWN_SPELLS
+		REMOVE_MEMORIZED_SPELLS
+		ADD_MEMORIZED_SPELL "%WIZARD_NPC_SYMBOL_STUN%" #7 wizard (3)
+		ADD_MEMORIZED_SPELL "%WIZARD_DISPEL_MAGIC%" #2 wizard 
+		ADD_MEMORIZED_SPELL "%WIZARD_CONFUSION%" #3 wizard
+		ADD_MEMORIZED_SPELL "%TANARI_PARALYZE%" #0 innate
+	IF_EXISTS
+		
+    // hide fiends until they're summoned
+
+	COPY "%MOD_FOLDER%/%component_loc%/resource/dw#sumfi.itm" override
+	
+    LAF ds_resolve_stat STR_VAR id=DO_NOT_TARGET_SPELLS RET parameter2=stat_ind END
+    COPY_EXISTING "dw#sumfi.itm" override
+       PATCH_IF enhanced_edition BEGIN
+           LPF ADD_ITEM_EQEFFECT INT_VAR opcode=328 target=1 parameter2 timing=2 special=1 END
+       END ELSE BEGIN
+           LPF ADD_ITEM_EQEFFECT INT_VAR opcode=318 target=1 parameter2 timing=2 END
+       END
+    
+    // the hide-summons boots should protect against demons and undead, to stop liches/other fiends from
+    // targetting
+    
+	COPY_EXISTING "dw#sumfi.itm" override
+		LPF ADD_ITEM_EQEFFECT INT_VAR target=1 timing=2 opcode=100 parameter1=4 parameter2=3 END
+		LPF ADD_ITEM_EQEFFECT INT_VAR target=1 timing=2 opcode=100 parameter1=121 parameter2=4 END
+	
+	ACTION_FOR_EACH creature IN dempitsu demglasu demnabsu dw#bfsum dw#cosum dw#basum BEGIN
+		COPY_EXISTING "%creature%.cre" override
+			ADD_CRE_ITEM "dw#sumfi" #0 #0 #0 NONE BOOTS
+			WRITE_BYTE 0x275 9 // summoned demon
+		IF_EXISTS
+	END
+
+END
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+// isolate fiends summoned by SR Summon Fiend / Gate
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION friendly_fiends_isolate_sr BEGIN
+       COPY_EXISTING "spfiend.eff" "override/dwdvgla.eff"
+           REPLACE_TEXTUALLY demglasu dwdvglab
+       COPY_EXISTING "%WIZARD_SUMMON_FIEND%.spl" override
+           REPLACE_TEXTUALLY spfiend dwdvgla
+       COPY_EXISTING "demglasu.cre" "override/dwdvglab.cre"
+       COPY_EXISTING "demglasu.cre" override
+           WRITE_ASCII 0x248 demglasu
+
+       COPY_EXISTING "spgate.eff" "override/dwdvpf.eff"
+          REPLACE_TEXTUALLY dempitsu dwdvpitf
+       COPY_EXISTING "%WIZARD_GATE%.spl" override
+          REPLACE_TEXTUALLY spgate dwdvpf
+       COPY_EXISTING "dempitsu.cre" "override/dwdvpitf.cre"
+       COPY_EXISTING "dempitsu.cre" override
+           WRITE_ASCII 0x248 dempitsu
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+// make scripts and amend existing scripts
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION friendly_fiends_scripts BEGIN
+
+    OUTER_SPRINT splstate_low DW_POWER_UPGRADE_M1
+    OUTER_SPRINT splstate_high DW_POWER_UPGRADE_M2
+    // define variables
+
+    LAF ds_resolve_stat STR_VAR id=DW_SCS_CASTER RET stat_ind_npc=stat_ind END
+    LAF ds_resolve_stat STR_VAR id="%splstate_low%" RET stat_ind_low=stat_ind END
+    LAF ds_resolve_stat STR_VAR id="%splstate_high%" RET stat_ind_high=stat_ind END
+
+
+    CLEAR_IDS_MAP
+    //
+    LAF check_label STR_VAR label=dw#fiend RET value END
+    ACTION_IF value THEN BEGIN
+        OUTER_SPRINT variables "ImprovedFiends=True"
+    END ELSE BEGIN
+        OUTER_SPRINT variables ""
+    END
+
+    ACTION_CLEAR_ARRAY patch_data
+	ACTION_DEFINE_ASSOCIATIVE_ARRAY patch_data BEGIN
+       dempitsu=>dw#hlpit
+       demglasu=>dw#hlgla
+       demnabsu=>dw#hlnab
+       dw#llbnf=>dw#hlbnf
+       dw#llcor=>dw#hlcor
+       dw#llbal=>dw#hlbal
+    END
+	ACTION_IF "%MOD_FOLDER%" STR_EQ "stratagems" BEGIN
+		LAF define_difficulty STR_VAR type=fiend RET difficulty_variable END
+	END
+    ACTION_PHP_EACH patch_data AS script=>newscript BEGIN
+		ACTION_IF (FILE_EXISTS_IN_GAME "%script%.bcs") BEGIN
+		// make the scripts if they don't exist
+			ACTION_IF !FILE_EXISTS_IN_GAME "%newscript%.bcs" BEGIN
+				ACTION_IF FILE_EXISTS "%MOD_FOLDER%/%script_loc%/%newscript%.ssl" BEGIN
+					LAF ssl_to_bcs STR_VAR locbase="%script_loc%" script="%newscript%" variables END
+				END ELSE BEGIN
+					COMPILE "%MOD_FOLDER%/%script_loc%/%newscript%.baf" EVALUATE_BUFFER
+				END
+			END
+			ACTION_MATCH "%script%" WITH
+			dempitsu dw#llbal BEGIN
+				 OUTER_SPRINT splstate "%splstate_high%"
+			END
+			DEFAULT
+				OUTER_SPRINT splstate "%splstate_low%"
+			END
+			
+			<<<<<<<< .../stratagems-inline/demontop.baf
+
+			IF
+				 OnCreation()
+				 CheckSpellState(LastSummonerOf(Myself),%splstate%)
+				 Allegiance(LastSummonerOf(Myself),GOODCUTOFF)
+			THEN
+			   RESPONSE #100
+				 ChangeGender(Myself,OTHER)
+				 ChangeAIScript("%newscript%",OVERRIDE)
+				 ChangeAIScript("",DEFAULT)
+			 DestroyItem("dw#sumfi")
+			 SmallWait(1)
+			 //ChangeEnemyAlly(Myself,ALLY)
+			 
+			END
+
+			IF
+				 OnCreation()
+				 OR(2)
+					 CheckSpellState(LastSummonerOf(Myself),%splstate%)
+					 CheckSpellState(LastSummonerOf(Myself),%stat_ind_npc%)
+				 Allegiance(LastSummonerOf(Myself),EVILCUTOFF)
+			THEN
+			   RESPONSE #100
+				 ChangeGender(Myself,OTHER)
+				 ChangeAIScript("%newscript%",OVERRIDE)
+				 ChangeAIScript("",DEFAULT)
+			 DestroyItem("dw#sumfi")
+			 SmallWait(1)
+			 ChangeEnemyAlly(Myself,ENEMY)
+			END
+			
+			IF
+				 OnCreation()
+			THEN
+			   RESPONSE #100
+			 DestroyItem("dw#sumfi")
+			 Enemy() // this stops the party being able to control a GOODBUTRED creature
+			 SmallWait(1)
+			   ChangeEnemyAlly(Myself,GOODBUTRED)
+			 Continue()
+			END
+			>>>>>>>>
+
+			EXTEND_TOP "%script%.bcs" ".../stratagems-inline/demontop.baf" EVALUATE_BUFFER
+		END
+    END
+
+
+END

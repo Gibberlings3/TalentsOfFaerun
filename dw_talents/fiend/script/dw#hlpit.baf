@@ -1,0 +1,33 @@
+/// super-basic, vanilla-level, script for player-controlled fiend
+
+IF
+	ActionListEmpty()
+	See(NearestEnemyOf(Myself))
+	Global("PITFEAR","LOCALS",0)
+THEN
+	RESPONSE #100
+		ForceSpell(LastSeenBy(Myself),DEMON_FEAR)  // SPIN890.SPL (Demon Fear)
+		SetGlobal("PITFEAR","LOCALS",1)
+END
+
+IF
+	ActionListEmpty()
+	See(NearestEnemyOf(Myself))
+	HaveSpell(INNATE_FIEND_FIREBALL)
+THEN
+	RESPONSE #100
+		Spell(LastSeenBy(Myself),INNATE_FIEND_FIREBALL)
+		AttackOneRound(LastSeenBy(Myself))
+	RESPONSE #100
+		AttackOneRound(LastSeenBy(Myself))
+		AttackOneRound(LastSeenBy(Myself))
+END		
+
+IF
+	ActionListEmpty()
+	See(NearestEnemyOf(Myself))
+THEN
+	RESPONSE #100
+		AttackReevaluate(LastSeenBy(Myself),30)
+END
+

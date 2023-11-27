@@ -1,0 +1,44 @@
+DEFINE_ACTION_FUNCTION kit_ft BEGIN
+
+	LAF include STR_VAR file=multiclass.tph locbase=shared END
+	
+	LAF include STR_VAR file=fighter_thief.tph location=kits END
+	ACTION_FOR_EACH ft IN
+		silent_sword
+		fighter_assassin
+		magetracker
+	BEGIN
+		LAF check_ini STR_VAR ini="%ft%" RET value END
+		ACTION_IF is_iwd BEGIN
+			LAF check_ini INT_VAR silent=1 STR_VAR ini="iwd_story_block_%ft%" RET story_block=value END
+		END ELSE BEGIN
+			LAF check_ini INT_VAR silent=1 STR_VAR ini="bg_story_block_%ft%" RET story_block=value END		
+		END
+		ACTION_IF value && !story_block BEGIN
+			ACTION_TIME "%ft%" BEGIN
+				LAF "%ft%" END
+			END
+		END
+		
+	END
+
+	// update the kit-identification LUA
+	LAF ui_detect_class_kit END
+
+	// externalize proficiencies
+	LAF externalize_weapprof END
+
+	// if appropriate, rebuild dual-class grid
+	
+	ACTION_IF FILE_EXISTS_IN_GAME "m_dw_dud.lua" BEGIN
+		LAF collect_dual_class_kit_data END
+	END
+
+	
+	// NPCs
+	
+	LAF run STR_VAR file=npc_kits END
+
+END
+
+

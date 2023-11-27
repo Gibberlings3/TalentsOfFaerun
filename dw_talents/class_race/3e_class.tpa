@@ -1,0 +1,393 @@
+DEFINE_ACTION_FUNCTION 3e_class BEGIN
+
+	// sort out the menu
+
+    LAF run STR_VAR file=setup_menus locbase=shared END // also INCLUDEs the virtual_class tools
+
+	// create needed animation entries
+	
+	LAF 3e_class_anims END
+
+	// standardise class and dual-class-destination ability requirements at 10
+	
+	LAF standardise_entries INT_VAR value=10 minimum=1 STR_VAR file="abclasrq abdcdsrq" END
+
+	// wipe dual-class-source ability requirements
+
+	LAF standardise_entries INT_VAR value=0 STR_VAR file="abdcscrq" END
+
+	// remove class/race restrictions
+	
+	LAF no_class_race_restrictions END
+
+	// remove race restrictions on mage specialists
+	
+	LAF standardise_entries INT_VAR value=1 STR_VAR file="mgsrcreq" END
+
+	// update the kit tables
+
+	LAF build_kit_tables END
+
+	// specifically allow dwarven defenders to dual-class
+	
+	COPY_EXISTING "dualclas.2da" override
+		REPLACE_TEXTUALLY "DWARVEN_DEFENDER.+0.+0.+0.+0.+0.+0" "DWARVEN_DEFENDER 0 1 1 1 1 0"
+		PRETTY_PRINT_2DA
+
+	// correct descriptions
+	
+	LAF 3e_class_desc_updates END
+	
+	// allow for non-core races
+	ACTION_IF FILE_EXISTS "%data_loc_shared%/dw_subrace_data.2da" BEGIN
+		LAF run STR_VAR file=UI_dualclass_hack END
+	END
+	
+	// get rid of the note saying that multiclass gnomes are illusionists
+
+	LAF run STR_VAR file=remove_gnome_note END
+
+	// rebuild the dual-class LUA data to record new ability restrictions
+	
+	INCLUDE "%MOD_FOLDER%/%lua_loc%/ui_dual_class_kits.tph" 
+	LAF collect_dual_class_kit_data END
+
+
+END
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION 3e_class_anims BEGIN
+
+// halfling mages
+
+	COPY_EXISTING 
+		"6204.ini" "override/6203.ini"
+		"6214.ini" "override/6213.ini"
+			REPLACE_TEXTUALLY "mage_\(?f?e?male\)_gnome" "mage_\1_halfling"
+			REPLACE_TEXTUALLY "resref=CDMW" "resref=CIMT"
+			REPLACE_TEXTUALLY "resref_paperdoll=CDMW" "resref_paperdoll=CIMT"
+
+// monks
+
+	COPY_EXISTING
+		"6001.ini" "override/6501.ini"  // elves
+		"6011.ini" "override/6511.ini" 
+		"6002.ini" "override/6502.ini"  // dwarves
+		"6012.ini" "override/6512.ini" 
+		"6003.ini" "override/6503.ini"  // halflings
+		"6013.ini" "override/6513.ini" 
+		"6004.ini" "override/6504.ini"  // gnomes
+		"6014.ini" "override/6514.ini"
+			REPLACE_TEXTUALLY "cleric_" "monk_"
+			REPLACE_TEXTUALLY "armor_max_code=4" "armor_max_code=1"
+
+	COPY_EXISTING
+		"6500.ini" "override/6505.ini"  // half-orcs
+		"6510.ini" "override/6515.ini" 
+			REPLACE_TEXTUALLY "resref_paperdoll=CH\([FM]\)M" "resref_paperdoll=CO\1B" 
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+DEFINE_ACTION_FUNCTION standardise_entries
+	INT_VAR value=0
+			minimum=0
+	STR_VAR file=""
+BEGIN
+	ACTION_IF "%file%" STRING_COMPARE_CASE "" BEGIN
+      LAF return_first_entry STR_VAR list="%file%" RET entry file=list END
+	  COPY_EXISTING "%entry%.2da" override
+		COUNT_2DA_COLS colcount
+		READ_2DA_ENTRIES_NOW entries_here colcount
+		FOR (row=0;row<entries_here;++row) BEGIN
+			FOR (col=1;col<colcount;++col) BEGIN
+				READ_2DA_ENTRY_FORMER entries_here row col val
+				PATCH_IF IS_AN_INT val BEGIN
+					PATCH_IF val>=minimum BEGIN
+						SET_2DA_ENTRY_LATER entries_here_new row col value
+					END
+				END
+			END
+		END
+		SET_2DA_ENTRIES_NOW entries_here_new colcount
+		PRETTY_PRINT_2DA
+	  BUT_ONLY		
+	  LAF standardise_entries INT_VAR value minimum STR_VAR file END // recurse
+	END
+
+
+END
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION no_class_race_restrictions BEGIN
+
+	// start by parsing KITLIST to determine parent classes
+	
+	COPY_EXISTING "kitlist.2da" "%workspace%"
+		COUNT_2DA_COLS colcount
+		READ_2DA_ENTRIES_NOW kitlist_contents colcount
+		FOR (row=0;row<kitlist_contents;++row) BEGIN
+			READ_2DA_ENTRY_FORMER kitlist_contents row 1 class
+			READ_2DA_ENTRY_FORMER kitlist_contents row 8 parent_id
+			PATCH_IF IS_AN_INT parent_id BEGIN
+				LOOKUP_IDS_SYMBOL_OF_INT parent class parent_id
+				SPRINT $parent("%class%") "%parent%"
+			END
+		END
+	BUT_ONLY
+	
+	COPY_EXISTING "clsrcreq.2da" override
+		COUNT_2DA_COLS colcount
+		READ_2DA_ENTRIES_NOW clsrcreq_contents colcount
+		// first go through and get the data for true classes, and make them available to everyone
+		FOR (row=0;row<clsrcreq_contents;++row) BEGIN
+			READ_2DA_ENTRY_FORMER clsrcreq_contents row 0 class
+			PATCH_IF !VARIABLE_IS_SET $parent("%class%") BEGIN
+				FOR (col=1;col<colcount;++col) BEGIN
+					READ_2DA_ENTRY_FORMER clsrcreq_contents row col val
+					SET $trueclass_data("%class%" "%col%")=val
+					SET_2DA_ENTRY_LATER clsrcreq_contents_new row col 1
+				END
+			END
+		END
+		// go through again, doing the kits
+		// rule: alter a kit only if its availability is the same as the parent class
+		FOR (row=0;row<clsrcreq_contents;++row) BEGIN
+			READ_2DA_ENTRY_FORMER clsrcreq_contents row 0 class
+			PATCH_IF VARIABLE_IS_SET $parent("%class%") BEGIN
+					SPRINT parent $parent("%class%")
+					SET matches_parent=1
+					PATCH_MATCH "%class%" WITH
+					ABJURER CONJURER DIVINER ENCHANTER ILLUSIONIST INVOKER NECROMANCER TRANSMUTER WILDMAGE 
+					BEGIN
+					// these get made available to everyone, irrespective of mismatches
+					END
+					DEFAULT
+						FOR (col=1;col<colcount;++col) BEGIN
+							READ_2DA_ENTRY_FORMER clsrcreq_contents row col val
+							SET val_parent=$trueclass_data("%parent%" "%col%")
+							PATCH_IF !(val=val_parent) BEGIN
+								SET matches_parent=0
+							END
+						END
+					END
+					PATCH_IF matches_parent BEGIN
+						FOR (col=1;col<colcount;++col) BEGIN
+							SET_2DA_ENTRY_LATER clsrcreq_contents_new row col 1
+						END
+					
+					END	
+
+			END
+		END	
+		SET_2DA_ENTRIES_NOW clsrcreq_contents_new colcount
+		PRETTY_PRINT_2DA
+	BUT_ONLY
+
+	// if we've virtualized Blackguard, we need to change the settings
+	ACTION_IF FILE_EXISTS_IN_GAME "m_dw_vcd.lua" BEGIN
+		COPY_EXISTING "m_dw_vcd.lua" override
+		REPLACE_TEXTUALLY 
+			"\(dwVirtualClass\[[0-9]+\]={ident='class_blackguard',.*\)race={[^}]*}\(.*\)"
+			"\1race={all=true}\2"
+		BUT_ONLY
+	END
+
+END
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION build_kit_tables BEGIN
+
+	// parse clsrcreq to get the kit/race maps
+	
+	COPY_EXISTING "clsrcreq.2da" override
+		COUNT_2DA_COLS colcount
+		FOR (col=1;col<colcount;++col) BEGIN
+			READ_2DA_ENTRY 0 (col - 1) (colcount - 1) race
+			SPRINT $header("%col%") "%race%"
+			SPRINT $racelist("%race%") null
+		END
+		READ_2DA_ENTRIES_NOW clsrcreq_data colcount 
+		FOR (row=0;row<clsrcreq_data;++row) BEGIN
+			READ_2DA_ENTRY_FORMER clsrcreq_data row 0 class
+			TO_UPPER class
+			FOR (col=1;col<colcount;++col) BEGIN
+				SPRINT race $header("%col%")
+				READ_2DA_ENTRY_FORMER clsrcreq_data row col value
+				PATCH_IF value BEGIN
+					SET $kit_race("%class%" "%race%")=1
+				END
+			END
+		END
+	BUT_ONLY
+	
+	// parse class.ids to get the class IDs
+	
+	COPY_EXISTING "class.ids" override
+		READ_2DA_ENTRIES_NOW class_ids_data 2
+		FOR (row=0;row<class_ids_data;++row) BEGIN
+			READ_2DA_ENTRY_FORMER class_ids_data row 1 class
+			READ_2DA_ENTRY_FORMER class_ids_data row 0 id
+			TO_UPPER class
+			SPRINT $class("%id%") "%class%"
+			PHP_EACH racelist AS race=>discard BEGIN
+				SPRINT $class_kit_list("%class%" "%race%") ""
+				SET $class_kit_count("%class%" "%race%")=0
+			END
+		END
+	BUT_ONLY
+		
+	// parse kitlist to get the kit numbers and IDs and the class/kit maps
+		
+	COPY_EXISTING "kitlist.2da" override
+		COUNT_2DA_COLS colcount
+		READ_2DA_ENTRIES_NOW kitlist_data colcount
+		FOR (row=0;row<kitlist_data;++row) BEGIN
+			READ_2DA_ENTRY_FORMER kitlist_data row 1 kit
+			READ_2DA_ENTRY_FORMER kitlist_data row 0 kit_num
+			READ_2DA_ENTRY_FORMER kitlist_data row 8 class_num
+			TO_UPPER kit
+			PATCH_IF IS_AN_INT class_num BEGIN
+			  SPRINT class $class("%class_num%")
+			  PHP_EACH racelist AS race=>discard BEGIN
+				PATCH_IF VARIABLE_IS_SET $kit_race("%kit%" "%race%") BEGIN
+					SPRINT temp $class_kit_list("%class%" "%race%")
+					SET number=$class_kit_count("%class%" "%race%") + 2
+					SPRINT $class_kit_list("%class%" "%race%") "%temp%%number%%TAB%%kit_num%%WNL%"
+					SET $class_kit_count("%class%" "%race%") +=1
+				END
+			  END
+			END
+		END
+	BUT_ONLY
+		
+	
+	// parse kittable to generate the actual tables
+	
+	COPY_EXISTING kittable.2da override
+		COUNT_2DA_COLS colcount
+		FOR (col=1;col<colcount;++col) BEGIN
+			READ_2DA_ENTRY 0 (col - 1) (colcount - 1) header
+			TO_UPPER header
+			SPRINT $header("%col%") "%header%"
+		END
+		READ_2DA_ENTRIES_NOW kittable_data colcount
+		FOR (row=0;row<kittable_data;++row) BEGIN
+			READ_2DA_ENTRY_FORMER kittable_data row 0 class
+			TO_UPPER class
+			PATCH_MATCH "%class%" WITH
+			BARBARIAN BLACKGUARD BEGIN
+			END
+			DEFAULT
+			FOR (col=1;col<colcount;++col) BEGIN
+				READ_2DA_ENTRY_FORMER kittable_data row col file
+				PATCH_IF FILE_EXISTS_IN_GAME "%file%.2da" BEGIN
+					SPRINT race $header("%col%")
+					SPRINT list $class_kit_list("%class%" "%race%")
+					INNER_ACTION BEGIN
+						COPY ".../stratagems-inline/kit_list_template.2da" "override/%file%.2da" EVALUATE_BUFFER
+					END
+				END
+			END
+			END
+		END
+	BUT_ONLY
+END
+
+
+<<<<<<<< .../stratagems-inline/kit_list_template.2da
+2DA V1.0
+*
+    KIT
+1	0
+%list%
+>>>>>>>>
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION 3e_class_desc_updates BEGIN
+
+	// remove mention of class/race restrictions from the race select screen
+	
+	STRING_SET 17237 @100
+
+	// remove mention of multi-classing and dual-classing from the human description
+	
+	ACTION_IF is_iwd BEGIN
+		OUTER_SET strref=37481
+		OUTER_SPRINT swap @400
+	END ELSE
+		OUTER_SET strref=9550
+	ACTION_IF is_bg2 BEGIN
+		OUTER_SPRINT swap @300
+	END ELSE BEGIN
+		OUTER_SPRINT swap @200
+	END
+	ACTION_GET_STRREF strref string
+	OUTER_INNER_PATCH_SAVE string "%string%" BEGIN
+		REPLACE_TEXTUALLY "%swap%" ""
+	END
+	STRING_SET_EVALUATE strref "%string%"
+	
+	// remove humans-only text from the explanation of dual-classing
+	
+	ACTION_IF is_iwd BEGIN
+		OUTER_SPRINT swap @401
+		OUTER_SPRINT swap2 @402
+	END ELSE
+	ACTION_IF is_bg2 BEGIN
+		OUTER_SPRINT swap @301
+		OUTER_SPRINT swap2 @302
+	END ELSE BEGIN
+		OUTER_SPRINT swap @201
+		OUTER_SPRINT swap2 @202
+	END
+	OUTER_SPRINT swap_new @101
+	OUTER_SPRINT swap2_new @102
+	
+	ACTION_GET_STRREF 10811 string
+	OUTER_INNER_PATCH_SAVE string "%string%" BEGIN
+		REPLACE_TEXTUALLY "%swap%" "%swap_new%"
+		REPLACE_TEXTUALLY "%swap2%" "%swap2_new%"
+	END
+	STRING_SET 10811 "%string%"
+	
+	// remove the note about gnomes from the descriptions of multiclass mages
+	
+	array.new[patch_data]
+	[
+		FIGHTER_MAGE=>500
+		MAGE_THIEF=>501
+		CLERIC_MAGE=>502
+	]
+	LAF 2da_read STR_VAR file=clastext.2da RET_ARRAY clastext_array=array  END
+	ACTION_PHP_EACH patch_data AS row=>tra BEGIN
+		OUTER_SET desc_strref=$clastext_array("%row%" "DESCSTR")
+		strref.patch[desc_strref][
+			old:=(AT tra)
+			REPLACE_TEXTUALLY EXACT_MATCH "%old%" ""
+		]
+	END
+
+
+END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+END

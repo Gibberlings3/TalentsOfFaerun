@@ -1,0 +1,40 @@
+@900="Sphere:"
+@901="May learn priest spells from these spheres: "
+
+@1000="Air"
+@1001="All"
+@1002="Animal"
+@1003="Charm"
+@1004="Combat"
+@1005="Divination"
+@1006="Divine"
+@1007="Earth"
+@1008="Fey"
+@1009="Fire"
+@1010="Good"
+@1011="Healing"
+@1012="Moon"
+@1013="Nature"
+@1014="Necromantic"
+@1015="Plant"
+@1016="Protection"
+@1017="Summoning"
+@1018="Sun"
+@1019="Wards"
+@1020="Water"
+@1021="Evil"
+
+@1030="May cast druidic spells" // should be the first few words of the description of spellcasting for, e.g., rangers and druids
+@1031="May cast priest spells" // should be the first few words of the description of spellcasting for, e.g., paladins and clerics
+@1032="May cast priest spells from the spheres of All, Charm, Combat, Divination, Divine, Evil, Good, Healing, Necromantic, Protection, Summoning, and Wards"
+@1033="May cast priest spells from the spheres of All, Air, Animal, Divination, Earth, Fey, Fire, Healing, Moon, Nature, Plant, Protection, Sun, and Water"
+@1034="May cast priest spells from the spheres of All, Air, Animal, Divination, Earth, Fire, Healing, Moon, Nature, Plant, Protection, Sun, Wards, and Water"
+@1035="May cast priest spells from the spheres of All, Combat, Divine, Healing, Protection, and Good"
+@1036="May cast priest spells from the spheres of All, Animal, Plant, Healing, and Nature"
+@1037="May cast priest spells from the spheres of All, Combat, Divine, Evil, Necromantic, and Protection."
+
+@2027 = ~^\(Level:\)\( *.+\)~ // should be 1-7 or 'Quest'
+
+/*	OUTER_SPRINT cleric_spheres_default "all charm combat divination divine evil good healing necromantic protection summoning wards"
+	OUTER_SPRINT druid_spheres_default "all air animal divination earth fey fire healing moon nature plant protection sun water"
+E*/

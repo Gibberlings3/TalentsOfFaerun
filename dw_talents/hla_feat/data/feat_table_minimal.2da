@@ -1,0 +1,4 @@
+id							resref		type	name	desc	prerequisite			max_count	require_1		require_2		require_3		require_4	require_5	exclude_kit												special   		special_string
+AEGIS_OF_RIME				dw-ftaeg	apply	1		2		*						2			FULL_CASTER		PALADIN_7		SORCERER_19		*			*			DW_ELEMENTALIST_FIRE|DW_FORCE_MAGE						* 				61
+EXTRA_LEVEL_1				dw-ftex1	apply	11		12		AEGIS_OF_RIME			1			ARCANE_2		*				*				*			*			*														*				*
+EXTRA_LEVEL_6				spcl928		apply	-1		22		*						1			ARCANE_7		*				*				*			*			*														do_not_make		*

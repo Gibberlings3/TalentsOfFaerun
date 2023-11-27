@@ -1,0 +1,3169 @@
+DEFINE_ACTION_FUNCTION make_hlas
+    STR_VAR version="highlevel"
+BEGIN
+
+    OUTER_SPRINT component_loc hla
+
+    // 3rd-party
+
+    ACTION_IF demivrgvs BEGIN
+       OUTER_SET NOT_DEMI=0
+    END ELSE BEGIN
+       OUTER_SET NOT_DEMI=1
+    END
+
+    // initialise
+
+    ACTION_IF "%version%" STRING_EQUAL_CASE highlevel BEGIN
+       OUTER_SPRINT extant_list extant_hlas
+       OUTER_SPRINT extant_list_dir data
+    END ELSE BEGIN
+       OUTER_SPRINT extant_list vanilla_hlas
+       OUTER_SPRINT extant_list_dir data
+    END
+    LAF include STR_VAR file=initialise_hla_feat.tph locbase=lib END
+    LAF initialise_hla_feat STR_VAR extant_list extant_list_dir END
+
+    // permitted overwrites - all others sound warning
+    
+    ACTION_FOR_EACH resref IN spcl900 spcl902 spcl907 spcl908 spcl910 spcl911 spcl913 spcl915 spcl920 spcl921 spcl922 dwhpt1 dwhpt2 dwhpt3 dwhpt4 dwhpt5 dwdds3a BEGIN
+       ACTION_TO_UPPER resref
+       OUTER_SPRINT $permitted_overwrite("%resref%") ""
+    END
+
+    // initial resources
+
+     ADD_PROJECTILE "%scsroot%/%component_loc%/pro/li#bard1.pro"
+     ADD_PROJECTILE "%scsroot%/%component_loc%/pro/li#bard2.pro"
+     ADD_PROJECTILE "%scsroot%/%component_loc%/pro/tg#toxt.pro"
+     ADD_PROJECTILE "%scsroot%/%component_loc%/pro/rr#trpex.pro"
+     ADD_PROJECTILE "%scsroot%/%component_loc%/pro/rr#vrnp.pro"
+     ADD_PROJECTILE "%scsroot%/%component_loc%/pro/rr#vrpo.pro"
+     ADD_PROJECTILE "%scsroot%/%component_loc%/pro/tg#hola.pro"
+     COPY "%scsroot%/%component_loc%/anim" "override"
+     LAF include STR_VAR file=shared_hla_feat_setup.tph locbase=lib END
+
+    // main install
+    ACTION_IF "%version%" STRING_EQUAL_CASE highlevel BEGIN
+        LAF process_table STR_VAR table=hla_list.2da locbase=data function=install_hlas_core END
+    END ELSE BEGIN
+        LAF process_table STR_VAR table=hla_feat_shared.2da function=install_hlas_core END
+    END
+
+
+    // a few after-process tasks
+    ACTION_IF "%version%" STRING_EQUAL_CASE highlevel BEGIN
+      LAF check_ini STR_VAR ini=Do_Not_Lose_Soul RET value END
+      ACTION_IF !value BEGIN
+         LAF damnation END
+      END
+    END
+    LAF blackguard_alignment_markers END
+    LAF swift_shapeshift_setup END // this is at the end because it needs to modify some HLAs
+    LAF enhanced_shapeshifter_setup END // this needs to come after the swift_shapeshift setup
+
+    COPY "%data_loc_root%/dw_shared/dw#hla_feat.2da" "%data_loc_root%/dw_shared"
+             PRETTY_PRINT_2DA
+    BUT_ONLY
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+DEFINE_ACTION_FUNCTION install_hlas_core
+   STR_VAR ids=""
+           resref=""
+           name=""
+           desc=""
+           desc2="*"
+           type=""
+           check=""
+BEGIN
+ ACTION_IF "%check%" STRING_COMPARE "*" BEGIN
+     OUTER_SET proceed=0
+     ACTION_IF IS_AN_INT "%check%" BEGIN
+        ACTION_IF "%check%"=1 BEGIN
+            OUTER_SET proceed=1
+        END
+     END
+ END ELSE BEGIN
+    OUTER_SET proceed=1
+ END
+ ACTION_IF FILE_EXISTS_IN_GAME "%resref%.spl" BEGIN
+    ACTION_TO_UPPER resref
+    ACTION_IF !VARIABLE_IS_SET $permitted_overwrite("%resref%") BEGIN
+       LAF warning STR_VAR warning="HLA resref %resref% appears to be in use" END
+    END
+ END
+ ACTION_IF proceed BEGIN
+   ACTION_IF (FILE_EXISTS "%scsroot%/%component_loc%/%ids%/%resref%.spl" || FILE_EXISTS "%scsroot%/%component_loc%/%ids%/default_marker.mrk") BEGIN
+      ACTION_BASH_FOR "%scsroot%/%component_loc%/%ids%" ".*\.*" BEGIN
+              ACTION_IF "%BASH_FOR_EXT%" STRING_COMPARE_CASE "mrk" BEGIN
+                LAF install STR_VAR file="%BASH_FOR_FILE%" locbase="%component_loc%/%ids%" END
+              END
+      END
+   END
+   LAF "%ids%" STR_VAR resref END
+   ACTION_IF "%name%" STRING_COMPARE "*" BEGIN
+      OUTER_SPRINT editstring "say_name=>%name%"
+   END ELSE BEGIN
+      OUTER_SPRINT editstring ""
+   END
+   ACTION_IF "%desc2%" STRING_EQUAL "*" BEGIN
+      ACTION_IF "%desc%" STRING_COMPARE "*" BEGIN
+          OUTER_SPRINT editstring "%editstring% say_description=>%desc%"
+      END
+   END ELSE BEGIN
+      ACTION_IF "%desc%" STRING_EQUAL "*" BEGIN
+         COPY_EXISTING "%resref%.spl" override
+            READ_STRREF 0x50 dstr1
+         BUT_ONLY
+      END ELSE BEGIN
+         OUTER_SPRINT dstr1 (AT "%desc%")
+      END
+      OUTER_SPRINT spacer (AT 29)
+      OUTER_SPRINT dstr2 (AT "%desc2%")
+      OUTER_SPRINT dstr "%dstr1%%spacer%%spacer%%dstr2%"
+      OUTER_SET strref=RESOLVE_STR_REF ("%dstr%")
+      OUTER_SPRINT editstring "%editstring% description1_string=>%strref%"
+   END
+   ACTION_IF "%editstring%" STRING_COMPARE "" BEGIN
+      LAF edit_spell STR_VAR spell="%resref%" editstring END
+   END
+   APPEND_OUTER "%data_loc_root%/dw_shared/dw#hla_feat.2da" "%ids% %resref% %type%"
+ END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION check_hla_resources
+BEGIN
+   LAF read_in_list INT_VAR col=1 STR_VAR file=hla_list.2da RET list END
+   OUTER_SPRINT to_check ""
+   OUTER_WHILE "%list%" STRING_COMPARE "" BEGIN
+      LAF return_first_entry STR_VAR list RET entry list END
+      OUTER_SPRINT to_check "%to_check% %entry%.spl"
+   END
+   LAF iter_resource STR_VAR to_check func=iterfunc_missing_file RET output END
+   PRINT "%output%"
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+///   Spell-by-spell resources
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION WIZARD_MALAVONS_FURY BEGIN END
+DEFINE_ACTION_FUNCTION WIZARD_RUNE_OF_IMMUNITY BEGIN END
+DEFINE_ACTION_FUNCTION WIZARD_WILDSTRIKE BEGIN END
+DEFINE_ACTION_FUNCTION WIZARD_SPELL_WORM BEGIN END
+DEFINE_ACTION_FUNCTION MONK_DRAGON_FIST BEGIN END
+DEFINE_ACTION_FUNCTION MONK_INNER_TIME BEGIN END
+DEFINE_ACTION_FUNCTION MONK_TIGER_STRIKE BEGIN END
+DEFINE_ACTION_FUNCTION MONK_DIAMOND_SOUL BEGIN END
+DEFINE_ACTION_FUNCTION MONK_REGENERATION BEGIN END
+DEFINE_ACTION_FUNCTION PALADIN_RIGHTEOUS_MAGIC BEGIN END
+DEFINE_ACTION_FUNCTION UNDEAD_HUNTER_SMITE_UNDEAD BEGIN END
+DEFINE_ACTION_FUNCTION WIZARD_SLAYER_SPELL_IMMUNITY BEGIN END
+DEFINE_ACTION_FUNCTION MONK_FASTER_THAN_THE_EYE BEGIN END
+DEFINE_ACTION_FUNCTION PALADIN_HOLY_AURA BEGIN END
+DEFINE_ACTION_FUNCTION ALCHEMY_WARRIOR BEGIN LAF run STR_VAR file=item_crafting_use locbase=lib END END
+DEFINE_ACTION_FUNCTION ALCHEMY_PROTECTIVE BEGIN LAF run STR_VAR file=item_crafting_use locbase=lib END END
+DEFINE_ACTION_FUNCTION ALCHEMY_CLERICAL BEGIN LAF run STR_VAR file=item_crafting_use locbase=lib END END
+DEFINE_ACTION_FUNCTION ALCHEMY_UTILITY BEGIN LAF run STR_VAR file=item_crafting_use locbase=lib END END
+DEFINE_ACTION_FUNCTION ALCHEMY_ROGUE BEGIN LAF run STR_VAR file=item_crafting_use locbase=lib END END
+DEFINE_ACTION_FUNCTION ALCHEMY_WARRIOR_LOW BEGIN LAF run STR_VAR file=item_crafting_use locbase=lib END END
+DEFINE_ACTION_FUNCTION ALCHEMY_PROTECTIVE_LOW BEGIN LAF run STR_VAR file=item_crafting_use locbase=lib END END
+DEFINE_ACTION_FUNCTION ALCHEMY_CLERICAL_LOW BEGIN LAF run STR_VAR file=item_crafting_use locbase=lib END END
+DEFINE_ACTION_FUNCTION ALCHEMY_UTILITY_LOW BEGIN LAF run STR_VAR file=item_crafting_use locbase=lib END END
+DEFINE_ACTION_FUNCTION ALCHEMY_ROGUE_LOW BEGIN LAF run STR_VAR file=item_crafting_use locbase=lib END END
+DEFINE_ACTION_FUNCTION ROGUE_USE_ANY_ITEM BEGIN END
+DEFINE_ACTION_FUNCTION ROGUE_SET_ACID_TRAP BEGIN END
+DEFINE_ACTION_FUNCTION TRACKING BEGIN END
+DEFINE_ACTION_FUNCTION SWASHBUCKLER_ACROBATIC BEGIN END
+DEFINE_ACTION_FUNCTION SKALD_BLADED_WEAPON_SPECIALIZATION BEGIN END
+DEFINE_ACTION_FUNCTION SKALD_BLUNT_WEAPON_SPECIALIZATION BEGIN END
+DEFINE_ACTION_FUNCTION CLERIC_ENLIGHTENMENT BEGIN END
+DEFINE_ACTION_FUNCTION TALOS_CHAOS_HAMMER BEGIN END
+DEFINE_ACTION_FUNCTION AVENGER_COMET BEGIN END
+DEFINE_ACTION_FUNCTION AVENGER_NATURES_WRATH BEGIN END
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION PALADIN_HOLY_AURA
+   STR_VAR resref=""
+BEGIN
+   OUTER_SET string=RESOLVE_STR_REF (@3112)
+   LAF add_to_statdesc INT_VAR string STR_VAR bam=tg#holab RET stat_num END
+   MAKE_PATCH
+      patch_ability_inline=>"projectile=>%tg#hola%"
+      delete_effect=>"opcode is_in [50 215]" // constant graphics are too annoying
+      patch_effect_inline=>"match=>~opcode=142~ parameter2=>%stat_num%"
+      add_effect_inline=>"opcode=>321 resource=>%resref% target=>2"
+
+   END
+   LAF edit_spell STR_VAR spell=tg#hol1 edits=patch_data END
+   MAKE_PATCH
+      patch_effect_inline=>"match=>~opcode=272~ parameter1=>3"
+   END
+END
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION WIZARD_CREATE_GREATER_BONEGUARD STR_VAR resref="" BEGIN
+
+   LAF edit_creature STR_VAR creature=bonefsu editstring="say_name=>3037" END
+   LAF edit_creature STR_VAR creature=bonesu2 editstring="say_name=>3038" END
+   LAF edit_item STR_VAR item="bonegol1 bonegol2" editstring="name1_string=>10966 name1_string=>10966" END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION WIZARD_AEGIS STR_VAR resref="" BEGIN
+
+   MAKE_PATCH
+      patch_effect_inline=>"match=>parameter1=85 parameter1=>100"
+      patch_ability_inline=>"casting_time=>1"
+   END
+   LAF edit_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION WIZARD_ADAMANTITE_BODY STR_VAR resref="" BEGIN
+
+   MAKE_PATCH
+      delete_opcodes=>"40 45 93 12"
+   END
+   LAF edit_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION WIZARD_DEATH_FIELD STR_VAR resref="" BEGIN
+
+   MAKE_PATCH
+      delete_effect=>"opcode=215 and target=1"
+      delete_opcodes=>"45 142"
+      patch_effect_inline=>"match=>~opcode=146~ timing=>1 duration=>0"
+      patch_ability_inline=>"projectile=>%li#bard2% casting_time=>9"
+   END
+   LAF edit_spell STR_VAR spell="%resref%" edits=patch_data END
+   LAF edit_spell STR_VAR spell="LI#DTH2" editstring="patch_ability_inline=>~projectile=>%li#bard2%~" END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION WIZARD_FORESIGHT STR_VAR resref="" BEGIN
+
+   MAKE_PATCH
+      patch_ability_inline=>"casting_time=>1"
+   END
+   LAF edit_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION WIZARD_CREATE_FLESH_GOLEM STR_VAR resref="" BEGIN
+
+   LAF clone_spell STR_VAR spell="%resref%=>dw#hlfgl" editstring="patch_effect_inline=>~save_vs_polymorph=>0~" END
+   LAF clone_spell STR_VAR spell="%resref%=>dw#hlfgh" END
+
+   LAF resolve_splprot_entry INT_VAR stat=34 value="-1" STR_VAR relation=equal RET splprot_num=value END
+   MAKE_PATCH
+       delete_effect=>1
+       add_effect_inline=>"opcode=>146 parameter2=>1 target=>2 resource=>dw#hlfgh" // version with saving throw
+       add_effect_inline'=>"opcode=>324 parameter1=>12 parameter2=>splprot_num resource=>dw#hlfgh"
+       add_effect_inline''=>"opcode=>326 parameter1=>12 parameter2=>splprot_num resource=>dw#hlfgl"  // version without saving throws
+   END
+   LAF edit_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION WIZARD_MIRRORED_CLONES STR_VAR resref="" BEGIN
+
+    OUTER_SET strref=RESOLVE_STR_REF ((AT 3048))
+    MAKE_PATCH
+       match=>"opcode=206"
+       parameter1=>"%strref%"
+    END
+    LAF edit_spell STR_VAR spell="li#micl" editstring="patch_effect=>patch_data" END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION WIZARD_REVEAL STR_VAR resref="" BEGIN
+
+    LAF edit_spell STR_VAR spell="li#rev2" editstring="say_name=>3019" END
+    LAF edit_spell STR_VAR spell="li#rev3" editstring="say_name=>3039" END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION WIZARD_COMET STR_VAR resref="" BEGIN
+
+    LAF install STR_VAR location=shared file="tg#com1.spl" END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION WIZARD_MASS_DOMINATION STR_VAR resref="" BEGIN
+    MAKE_PATCH
+       icon=>sppr405c
+       patch_effect_inline=>~power=>"if power=5 then 10 else no_change"~
+       patch_ability_inline=>"ability_icon=>sppr405b projectile=>159"
+    END
+    LAF clone_spell STR_VAR spell="%WIZARD_DOMINATION%=>%resref%" edits=patch_data END
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION WIZARD_TRUE_DOMINION STR_VAR resref="" BEGIN
+    MAKE_PATCH
+       patch_effect_inline=>~power=>"if power=5 then 10 else no_change" resist_dispel=>3 savebonus=>"-10"~
+    END
+    LAF clone_spell STR_VAR spell="%WIZARD_DOMINATION%=>%resref%" edits=patch_data END
+
+END
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION WIZARD_DARK_PACT STR_VAR resref="" BEGIN
+
+    MAKE_PATCH
+       clone_ability_inline=>"number_to_add=>12 ability_min_level=>~19 + entry_index~"
+       delete_effect=>"opcode is_in [101 177]"
+       patch_ability_inline=>"opcode=>50"
+       add_effect_inline'7=>"opcode=>321 target=>2 resource=>%resref%"
+       add_effect_inline'8=>"opcode=>321 target=>2 resource=>WIZARD_HASTE"
+       add_effect_inline'9=>"opcode=>321 target=>2 resource=>WIZARD_IMPROVED_HASTE"
+       add_effect_inline=>"at_end=>1 opcode=>324 parameter2=>43 parameter1=>0 resource=>~%resref%~ duration=>1 target=>2 power=>10" //if caster, no further effect
+       add_effect_inline'=>"at_end=>1 opcode=>324 parameter2=>113 parameter1=>4 resource=>~%resref%~ duration=>1 target=>2 power=>10" //if not undead, no further effect
+       add_effect_inline''=>"at_end=>1 opcode=>50 target=>2 power=>10 parameter1=>5650432 parameter2b=>25 duration=>5" // color pulse
+       add_effect_inline'0=>"at_end=>1 opcode=>177 parameter1=>4 parameter2=>3 target=>2 power=>10 duration=>3 resource=>tg#dar2"
+       add_effect_inline'1=>"at_end=>1 opcode=>54 target=>2 power=>10 duration=>ability_min_level*6 resist_dispel=>3 parameter1=>2"
+       add_effect_inline'2=>"at_end=>1 opcode=>73 target=>2 power=>10 duration=>ability_min_level*6 resist_dispel=>3 parameter1=>2"
+       add_effect_inline'3=>"at_end=>1 opcode=>0 target=>2 power=>10 duration=>ability_min_level*6 resist_dispel=>3 parameter1=>2"
+       add_effect_inline'4=>"at_end=>1 opcode=>297 target=>2 power=>10 duration=>ability_min_level*6 resist_dispel=>3 parameter2=>2"
+       add_effect_inline'5=>"at_end=>1 opcode=>18 target=>2 power=>10 duration=>ability_min_level*6 resist_dispel=>3 parameter2=>2 parameter1=>200"
+       add_effect_inline'6=>"at_end=>1 opcode=>16 target=>2 power=>10 duration=>ability_min_level*6 resist_dispel=>3 parameter2=>1"
+       add_effect_inline'10=>"at_end=>1 opcode=>166 target=>2 power=>10 duration=>ability_min_level*6 resist_dispel=>3 parameter1=>50"
+       add_effect_inline'11=>"at_end=>1 opcode=>31 target=>2 power=>10 duration=>ability_min_level*6 resist_dispel=>3 parameter1=>50"
+       patch_effect_inline=>"duration=>~if duration=6 then 108 else no_change~"
+   END
+   LAF edit_spell STR_VAR spell="%resref%" edits=patch_data END
+
+END
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION MONK_FINGER_OF_DESTRUCTION
+   STR_VAR resref=""
+BEGIN
+   LAF edit_item STR_VAR item=tg#finp editstring="say_name=>3071" END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION MONK_CHANT
+   STR_VAR resref=""
+BEGIN
+   LAF 206_to_321 STR_VAR resref END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION MONK_ETHEREAL
+   STR_VAR resref=""
+BEGIN
+   LAF 206_to_321 STR_VAR resref END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION MONK_DISPLACEMENT
+   STR_VAR resref=""
+BEGIN
+   OUTER_SET strref=RESOLVE_STR_REF ((AT 3083))
+   MAKE_PATCH
+        patch_effect_inline=>"match=>~opcode=139~ parameter1=>%strref%"
+        delete_effect=>"opcode=206"
+        add_effect_inline'=>"opcode=>321 target=>2 power=>1 resource=>%resref%"
+        add_effect_inline''=>"opcode=>146 target=>2 timing=>4 duration=>2400 resource=>%resref%"
+   END
+   LAF edit_spell STR_VAR spell="tg#dis2" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION MONK_SHADOWLESS_KICK
+   STR_VAR resref=""
+BEGIN
+   OUTER_SET strref=RESOLVE_STR_REF ((AT 3089))
+   MAKE_PATCH
+        patch_effect_inline=>"match=>~opcode=206~ parameter1=>%strref%"
+   END
+   LAF edit_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION MONK_SECOND_WIND
+   STR_VAR resref=""
+BEGIN
+   MAKE_PATCH
+      delete_effect=>"opcode=221"
+      add_effect_inline=>"opcode=>321 target=>2 power=>1 resource=>%resref%"
+      add_effect_inline'=>"opcode=>146 target=>2 timing=>4 duration=>2400 resource=>%resref%"
+   END
+   LAF edit_spell STR_VAR spell="tg#sec2" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION DARK_MOON_SOUL_OF_ICE
+   STR_VAR resref=""
+BEGIN
+   MAKE_PATCH
+      patch_effect_inline=>"match=>~opcode=248~ duration=>0 timing=>9 resource=>dw#mnch2"
+      add_effect_inline=>"opcode=>206 target=>1 timing=>1 parameter1=>~-1~ resource=>%DARK_MOON_FROZEN_FIST%"
+      add_effect_inline'=>"opcode=>321 target=>1 resource=>%DARK_MOON_FROZEN_FIST%"
+   END
+   LAF clone_spell STR_VAR spell="%DARK_MOON_FROZEN_FIST%=>%resref%" edits=patch_data END
+
+   LAF clone_effect STR_VAR effect="monkchil=>dw#mnch2" editstring="parameter1=>4" END
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+DEFINE_ACTION_FUNCTION SUN_SOUL_SEARING_FISTS
+   STR_VAR resref=""
+BEGIN
+   LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=DW_POWER_UPGRADE RET stat_ind END
+   MAKE_PATCH
+      match=>"opcode=248"
+      resource=>"dw#mnfl2"
+   END
+   LAF clone_spell STR_VAR spell="%SUN_SOUL_FLAMING_FISTS%=>dw#ssfs2" editstring="patch_effect=>patch_data" END
+   LAF clone_effect STR_VAR effect="monkflam=>dw#mnfl2" editstring="dicenum=>3" END
+   MAKE_PATCH
+      add_effect_inline'=>"opcode=>318 target=>1 power=>1 parameter1=>%stat_ind% parameter2=>110 resource=>%SUN_SOUL_FLAMING_FISTS%"
+      add_effect_inline=>"opcode=>326 target=>1 power=>1 parameter1=>%stat_ind% parameter2=>110 resource=>dw#ssfs2"
+   END
+   LAF edit_spell STR_VAR spell=SUN_SOUL_FLAMING_FISTS edits=patch_data END
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>328 mode=>1 timing=>9 target=>1 power=>1 parameter2=>%stat_ind%"
+      icon=>spcl238c
+      patch_ability_inline=>~ability_icon=>spcl238b~
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION BLACKGUARD_INFERNAL_CONTRACT
+   STR_VAR resref=""
+BEGIN
+
+   LAF install STR_VAR location=bam file=dw#3905c.bam END
+   // template is wizard domination spell
+   MAKE_PATCH
+      icon=>dw#3905c
+      spell_type=>innate
+      patch_ability_inline=>"projectile=>1 ability_icon=>dw#3905c ability_icon_loc=>4"
+      delete_effect=>1 
+      add_effect_inline=>"target=>2 duration=>70 opcode=>241 parameter2=>1003" // payload
+      add_effect_inline'0=>"target=>2 duration=>60 timing=>4 opcode=>146 parameter2=>1 resource=>dwtelbye" //disappear after time is up
+      add_effect_inline'1=>"target=>2 opcode=>324 parameter2=>115 parameter1=>179 resource=>%resref%"  // must be race: imp
+   END
+   LAF clone_spell STR_VAR spell="%WIZARD_DOMINATION%=>%resref%" edits=patch_data END
+   
+   // go through and mark immune devils
+
+   // mark pit fiends/baalors/demon lords, and any fiend with dialogue, as immune (the latter to avoid breaking things)
+   // we'll hardcode this for speed
+
+   // start by correcting a few abishai, who are flagged as tanar'ri rather than baatezu
+   
+   LAF edit_creature STR_VAR creature="abisred1 demabi01" editstring="race=>IMP" END
+
+   // main patch
+
+   OUTER_SPRINT dev_exclude ""
+   COPY_EXISTING_REGEXP GLOB ".*\.cre" override
+        READ_BYTE 0x273 race
+        PATCH_IF ( race = 179 ) BEGIN // imp
+           SET proceed=0
+           READ_LONG 0x8 name_string
+           READ_ASCII 0x2cc dialog
+           PATCH_IF (("%dialog%" STRING_COMPARE "" && "%dialog%" STRING_COMPARE_CASE "none")|| name_string=39382 || name_string=39383) BEGIN
+              SET proceed=1
+           END
+           PATCH_IF !proceed BEGIN
+              PATCH_MATCH "%SOURCE_RES%" WITH
+                 null // I don't know any special devils that aren't already protected via their dialog file
+                 BEGIN
+                    SET proceed=1
+                 END
+                 DEFAULT
+                 END
+           END
+           PATCH_IF proceed BEGIN
+                 SPRINT dev_exclude "%dev_exclude% %SOURCE_RES%"
+           END
+        END
+   BUT_ONLY
+
+   // process
+   OUTER_SET strref=RESOLVE_STR_REF ((AT 3104))
+   MAKE_PATCH
+      add_effect_inline=>"opcode=>206 timing=>1 resource=>%resref% parameter1=>%strref%"
+   END
+   LAF edit_creature STR_VAR creature="%dev_exclude%" edits=patch_data END
+
+   // departure spell
+   
+   ACTION_IF !FILE_EXISTS_IN_GAME "dwtelbye.spl" BEGIN
+      LAF clone_spell STR_VAR spell="%DRYAD_TELEPORT%=>dwtelbye" editstring="name1_string=>23357" END
+   END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION BLACKGUARD_ABYSSAL_PACT
+   STR_VAR resref=""
+BEGIN
+
+   LAF install STR_VAR location=bam file=dw#3807c.bam END
+   // template is wizard domination spell
+   MAKE_PATCH
+      icon=>dw#3807c
+      spell_type=>innate
+      patch_ability_inline=>"projectile=>1 ability_icon=>dw#3807c ability_icon_loc=>4"
+      delete_effect=>1 
+      add_effect_inline=>"target=>2 duration=>70 opcode=>241 parameter2=>1003" // payload
+      add_effect_inline'0=>"target=>2 duration=>60 timing=>4 opcode=>146 parameter2=>1 resource=>dwtelbye" //disappear after time is up
+      add_effect_inline'1=>"target=>2 opcode=>324 parameter2=>115 parameter1=>160 resource=>%resref%"  // must be race: tanarri
+   END
+   LAF clone_spell STR_VAR spell="%WIZARD_DOMINATION%=>%resref%" edits=patch_data END
+   
+   // go through and mark immune demons
+
+   // mark pit fiends/baalors/demon lords, and any fiend with dialogue, as immune (the latter to avoid breaking things)
+   // we'll hardcode this for speed
+   
+   // main patch
+
+   OUTER_SPRINT dem_exclude ""
+   COPY_EXISTING_REGEXP GLOB ".*\.cre" override
+        READ_BYTE 0x273 race
+        PATCH_IF ( race = 160 ) BEGIN // tanarri
+           SET proceed=0
+           READ_LONG 0x8 name_string
+           READ_ASCII 0x2cc dialog
+           PATCH_IF (("%dialog%" STRING_COMPARE "" && "%dialog%" STRING_COMPARE_CASE "none") || name_string=8449 || name_string=8450 ) BEGIN
+              SET proceed=1
+           END
+           PATCH_IF !proceed BEGIN
+              PATCH_MATCH "%SOURCE_RES%" WITH
+                    demlord demogor1 demogor2 fangel01 finsol01 gorcamb gorchr gortan1 pmaster uddemon
+                 BEGIN
+                    SET proceed=1
+                 END
+                 DEFAULT
+                 END
+           END
+           PATCH_IF proceed BEGIN
+                 SPRINT dem_exclude "%dem_exclude% %SOURCE_RES%"
+           END
+        END
+   BUT_ONLY
+   
+   // process
+   OUTER_SET strref=RESOLVE_STR_REF ((AT 3105))
+   MAKE_PATCH
+      add_effect_inline=>"opcode=>206 timing=>1 resource=>%resref% parameter1=>%strref%"
+   END
+   LAF edit_creature STR_VAR creature="%dem_exclude%" edits=patch_data END
+
+      // departure spell
+   
+   ACTION_IF !FILE_EXISTS_IN_GAME "dwtelbye.spl" BEGIN
+      LAF clone_spell STR_VAR spell="%DRYAD_TELEPORT%=>dwtelbye" editstring="name1_string=>23357" END
+   END
+END
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+DEFINE_ACTION_FUNCTION BLACKGUARD_SUMMON_PIT_FIEND
+   STR_VAR resref=""
+BEGIN
+   // the main spell
+   MAKE_PATCH
+       level=>1
+       spell_type=>innate
+       patch_ability_inline=>"ability_icon_loc=>4"
+       patch_effect_inline=>"match=>~opcode=177~ resource=>dw#hlpf"
+   END
+   LAF clone_spell STR_VAR spell="%CLERIC_GATE%=>%resref%" edits=patch_data END
+   // the EFF file
+   LAF clone_effect STR_VAR effect="spgate=>dw#hlpf" editstring="resource=>dw#hlpit parameter2=>0" END
+   // the fiend's spells
+   LAF fiend_spells END
+   // the CRE file
+   MAKE_PATCH
+      allegiance=>CONTROLLED
+      general=>MONSTER
+      remove_spells=>all
+      add_spells=>"INNATE_FIEND_FIREBALL INNATE_FIEND_SYMBOL_FEAR WIZARD_DISPEL_MAGIC DEMON_FEAR"
+      make_casting_innate=>1
+      strip_script=>all
+      script_default=>dw#hlpit
+   END
+   LAF clone_creature STR_VAR creature="dempitsu=>dw#hlpit" edits=patch_data END
+   // the script  
+   CLEAR_IDS_MAP
+   LAF ssl_to_bcs STR_VAR locbase="hla/script" script=dw#hlpit END
+
+END
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+DEFINE_ACTION_FUNCTION BLACKGUARD_SUMMON_BALOR
+   STR_VAR resref=""
+BEGIN
+   // the main spell
+   MAKE_PATCH
+       level=>1
+       spell_type=>innate
+       patch_ability_inline=>"ability_icon_loc=>4"
+       patch_effect_inline=>"match=>~opcode=177~ resource=>dw#hlbl"
+   END
+   LAF clone_spell STR_VAR spell="%CLERIC_GATE%=>%resref%" edits=patch_data END
+   // the EFF file
+   LAF clone_effect STR_VAR effect="spgate=>dw#hlbl" editstring="resource=>dw#basum parameter2=>0" END
+   // the fiend's spells
+   LAF fiend_spells END
+   // the CRE file
+   MAKE_PATCH
+      allegiance=>CONTROLLED
+      general=>MONSTER
+      remove_spells=>all
+      add_spells=>"TANARI_PARALYZE WIZARD_CONFUSION WIZARD_NPC_SYMBOL_STUN WIZARD_DISPEL_MAGIC"
+      make_casting_innate=>1
+      strip_script=>all
+      script_default=>dw#hlbal
+      xp_value=>0
+   END
+   LAF clone_creature STR_VAR creature="dembal01=>dw#basum" edits=patch_data END
+   // the script  
+   CLEAR_IDS_MAP
+   LAF ssl_to_bcs STR_VAR locbase="hla/script" script=dw#hlbal END
+END
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION WARRIOR_HARDINESS
+   STR_VAR resref=""
+BEGIN
+     // add lines to SPLPROT
+     LAF resolve_splprot_entry INT_VAR stat=21 value="-1" STR_VAR relation=greater_equal  RET splprot_num_86=value END
+     OUTER_SET maximum = 75
+     OUTER_SET threshold = maximum - 40
+     // make spells that set each of the damage resistance types to the maximum; apply those spells to the main spell
+     ACTION_FOR_EACH code IN 86 87 88 89 BEGIN
+        // stat is code - 65, i.e. 21 for 86, etc
+        OUTER_SET code_stat=code - 65
+        LAF resolve_splprot_entry INT_VAR stat="%code_stat%" value="-1" STR_VAR relation=greater_equal RET splprot_num=value END
+        MAKE_PATCH
+           delete_effect=>"not opcode=%code%"
+           patch_effect_inline=>"parameter1=>%maximum% parameter2=>1"
+        END
+        LAF make_spell STR_VAR spell="dw#hlh%code%" edits=patch_data END
+        MAKE_PATCH
+           match=>"opcode=%code%"
+           opcode=>326
+           timing=>1
+           duration=>0
+           resource=>"dw#hlh%code%"
+           parameter1=>"%threshold%"
+           parameter2=>splprot_num
+        END
+        LAF edit_spell STR_VAR spell="%resref% spwish19" editstring="clone_effect=>patch_data" END
+     END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION BARBARIAN_TIRELESS_RAGE
+   STR_VAR resref=""
+BEGIN
+    LAF barbarian_rage_setup END
+    LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=DW_POWER_UPGRADE RET stat_ind END
+    MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>328 mode=>1 timing=>9 target=>1 power=>1 parameter2=>%stat_ind%"
+      icon=>spcl152
+      patch_ability_inline=>~ability_icon=>spcl152~
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION BARBARIAN_GREATER_RAGE
+   STR_VAR resref=""
+BEGIN
+    LAF barbarian_rage_setup END
+    LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=DW_POWER_UPGRADE2 RET stat_ind END
+    MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>328 mode=>1 timing=>9 target=>1 power=>1 parameter2=>%stat_ind%"
+      icon=>spcl152
+      patch_ability_inline=>~ability_icon=>spcl152~
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION BARBARIAN_SUPERNATURAL_FURY
+   STR_VAR resref=""
+BEGIN
+    LAF barbarian_rage_setup END
+    LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=DW_POWER_UPGRADE3 RET stat_ind END
+    MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>328 mode=>1 timing=>9 target=>1 power=>1 parameter2=>%stat_ind%"
+      icon=>spcl152
+      patch_ability_inline=>~ability_icon=>spcl152~
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION BARBARIAN_FIERY_RAGE
+   STR_VAR resref=""
+BEGIN
+    LAF barbarian_rage_setup END
+    LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=DW_POWER_UPGRADE4 RET stat_ind END
+    MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>328 mode=>1 timing=>9 target=>1 power=>1 parameter2=>%stat_ind%"
+      icon=>spcl152
+      patch_ability_inline=>~ability_icon=>spcl152~
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION BARBARIAN_THUNDEROUS_RAGE
+   STR_VAR resref=""
+BEGIN
+    LAF barbarian_rage_setup END
+    LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=DW_POWER_UPGRADE5 RET stat_ind END
+    MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>328 mode=>1 timing=>9 target=>1 power=>1 parameter2=>%stat_ind%"
+      icon=>spcl152
+      patch_ability_inline=>~ability_icon=>spcl152~
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION BARBARIAN_VOLCANIC_RAGE
+   STR_VAR resref=""
+BEGIN
+    LAF barbarian_rage_setup END
+    LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=DW_POWER_UPGRADE6 RET stat_ind END
+    MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>328 mode=>1 timing=>9 target=>1 power=>1 parameter2=>%stat_ind%"
+      icon=>spcl152
+      patch_ability_inline=>~ability_icon=>spcl152~
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION BARBARIAN_TEMPESTUOUS_RAGE
+   STR_VAR resref=""
+BEGIN
+    LAF barbarian_rage_setup END
+    LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=DW_POWER_UPGRADE6 RET stat_ind END
+    MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>328 mode=>1 timing=>9 target=>1 power=>1 parameter2=>%stat_ind%"
+      icon=>spcl152
+      patch_ability_inline=>~ability_icon=>spcl152~
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+
+END
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION RANGER_ENDURANCE
+   STR_VAR resref=""
+BEGIN
+   MAKE_PATCH
+      delete_effect=>"opcode is_in [98 174 215 142]"
+      patch_effect_inline=>"timing=>9 duration=>0"
+   END
+   LAF edit_spell STR_VAR spell="%resref%" edits=patch_data END
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION EMPOWERED_ANIMAL_SUMMONING
+   STR_VAR resref=""
+BEGIN
+    // setup
+    LAF empowered_creature_setup STR_VAR script=dw#anemp splstate=DW_POWER_UPGRADE4 END
+   // make the marker spell
+    LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=DW_POWER_UPGRADE4 RET stat_ind END
+    MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>328 mode=>1 timing=>9 target=>1 power=>1 parameter2=>%stat_ind%"
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+   // apply to all the animals
+   OUTER_SPRINT SFO_empowered_script_name dw#anemp
+   LAF iter_resource STR_VAR to_check="%CLERIC_ANIMAL_SUMMONING_1%.spl %CLERIC_ANIMAL_SUMMONING_2%.spl %CLERIC_ANIMAL_SUMMONING_3%.spl %CLERIC_CONJURE_ANIMALS%.spl spra304.spl spra305.spl spra306.spl" func=iterfunc_empower END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION EMPOWERED_MONSTER_SUMMONING
+   STR_VAR resref=""
+BEGIN
+    // setup
+    LAF empowered_creature_setup STR_VAR script=dw#msemp splstate=DW_POWER_UPGRADE6 END
+   // make the marker spell
+    LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=DW_POWER_UPGRADE6 RET stat_ind END
+    MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>328 mode=>1 timing=>9 target=>1 power=>1 parameter2=>%stat_ind%"
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+   // apply to all the monsters
+   OUTER_SPRINT to_check "%WIZARD_SPIDER_SPAWN%.spl %WIZARD_WYVERN_CALL%.spl %WIZARD_CARRION%.spl"
+   OUTER_FOR (i=1;i<=7;i+=1) BEGIN
+      ACTION_IF VARIABLE_IS_SET "WIZARD_MONSTER_SUMMONING_%i%" BEGIN
+         OUTER_SPRINT to_check EVAL "%to_check% %WIZARD_MONSTER_SUMMONING_%i%%.spl"
+      END
+   END
+   OUTER_SPRINT SFO_empowered_script_name dw#msemp
+   LAF iter_resource STR_VAR to_check func=iterfunc_empower END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION EMPOWERED_UNDEAD_SUMMONING
+   STR_VAR resref=""
+BEGIN
+    // setup
+    LAF empowered_creature_setup STR_VAR script=dw#unemp splstate=DW_POWER_UPGRADE3 END
+   // make the marker spell
+    LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=DW_POWER_UPGRADE3 RET stat_ind END
+    MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>328 mode=>1 timing=>9 target=>1 power=>1 parameter2=>%stat_ind%"
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+   // apply to all the monsters
+   OUTER_SPRINT to_check "%WIZARD_SUMMON_SHADOW%.spl %WIZARD_ANIMATE_DEAD%.spl %WIZARD_CREATE_BONEGUARD%.spl tg#bone.spl %WIZARD_SUMMON_DEATH_KNIGHT%.spl"
+   OUTER_SPRINT SFO_empowered_script_name dw#unemp
+   LAF iter_resource STR_VAR to_check func=iterfunc_empower END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION ARCHER_PRECISION
+   STR_VAR resref=""
+BEGIN
+   MAKE_PATCH
+      delete_effect=>"opcode=206" // we handle whirlwind/Precision incompatibility differently
+      add_effect_inline=>"opcode=>321 resource=>%resref% target=>1" // remove previous versions
+   END
+   LAF edit_spell STR_VAR spell="%resref%" edits=patch_data END
+
+   LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=DW_POWER_UPGRADE4 RET stat_ind_low=stat_ind END
+   LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=DW_POWER_UPGRADE5 RET stat_ind_high=stat_ind END
+
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION WIZARD_DEMON_BINDING
+   STR_VAR resref=""
+BEGIN
+   // general resources
+   LAF friendly_fiends STR_VAR script_loc="hla/script" END
+   // resolve the stats needed
+   LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=DW_POWER_UPGRADE4 RET stat_ind_low=stat_ind END
+   LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=DW_POWER_UPGRADE5 RET stat_ind_high=stat_ind END
+   // make the main spell
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>328 mode=>1 timing=>9 target=>1 power=>1 parameter2=>%stat_ind_low%" // grant initial power
+      add_effect_inline''=>"opcode=>324 target=>1 power=>1 resource=>%resref% parameter1=>%stat_ind_low% parameter2=>110" // if initial power already possessed, block spell
+      add_effect_inline''=>"opcode=>326 target=>1 power=>1 resource=>dw#hldbg parameter1=>%stat_ind_low% parameter2=>110" // if initial power already possessed, grant advanced power
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+   // make the helper spell
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>328 mode=>1 timing=>9 target=>1 power=>1 parameter2=>%stat_ind_high%" // grant advanced power
+   END
+   LAF make_spell STR_VAR spell="dw#hldbg" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION DRAGON_DISCIPLE_EMPOWERED_BREATH
+   STR_VAR resref=""
+BEGIN
+   // shared effects
+   LAF run STR_VAR file=dragon_disciple_effects locbase=lib END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION DRAGON_DISCIPLE_LINGERING_BREATH
+   STR_VAR resref=""
+BEGIN
+   // shared effects
+   LAF run STR_VAR file=dragon_disciple_effects locbase=lib END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION DRAGON_DISCIPLE_RECURRENT_BREATH
+   STR_VAR resref=""
+BEGIN
+   // shared effects
+   LAF run STR_VAR file=dragon_disciple_effects locbase=lib END
+   // resolve the stats needed
+   LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=DW_POWER_UPGRADE6 RET stat_ind END
+   // make the main spell
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>328 mode=>1 timing=>9 target=>1 power=>1 parameter2=>%stat_ind%" //
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION SORCEROUS_HERITAGE_ABYSSAL
+   STR_VAR resref=""
+BEGIN
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline'0=>"opcode=>166 target=>1 timing=>9 parameter1=>10" // MR
+      add_effect_inline'1=>"opcode=>28 target=>1 timing=>9 parameter1=>10" // cold
+      add_effect_inline'2=>"opcode=>30 target=>1 timing=>9 parameter1=>10" // fire
+      add_effect_inline'3=>"opcode=>29 target=>1 timing=>9 parameter1=>30" // electricity
+      add_effect_inline'4=>"opcode=>173 target=>1 timing=>9 parameter1=>30" // poison
+      add_effect_inline'5=>"opcode=>313 timing=>9 resource=>dw#hlak2 target=>1" // AK:Alt
+      add_effect_inline'6=>"opcode=>313 timing=>9 resource=>dw#hlak3 target=>1" // AK:Con
+      add_effect_inline'7=>"opcode=>313 timing=>9 resource=>dw#hlak7 target=>1" // AK:Inv
+      add_effect_inline'8=>"opcode=>313 timing=>9 resource=>DRBREATH target=>1" // Dragon's Breath
+      add_effect_inline'9=>"opcode=>313 timing=>9 resource=>PLANETAR target=>1" // Summon Planetar
+      add_effect_inline'10=>"opcode=>313 timing=>9 resource=>HERITAGE target=>1" // block multiple heritages
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION SORCEROUS_HERITAGE_CELESTIAL
+   STR_VAR resref=""
+BEGIN
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline'0=>"opcode=>166 target=>1 timing=>9 parameter1=>10" // MR
+      add_effect_inline'1=>"opcode=>28 target=>1 timing=>9 parameter1=>30" // cold
+      add_effect_inline'2=>"opcode=>30 target=>1 timing=>9 parameter1=>10" // fire
+      add_effect_inline'3=>"opcode=>29 target=>1 timing=>9 parameter1=>30" // electricity
+      add_effect_inline'4=>"opcode=>27 target=>1 timing=>9 parameter1=>10" // acid
+      add_effect_inline'5=>"opcode=>313 timing=>9 resource=>dw#hlak1 target=>1" // AK:Abj
+      add_effect_inline'6=>"opcode=>313 timing=>9 resource=>dw#hlak4 target=>1" // AK:Div
+      add_effect_inline'7=>"opcode=>313 timing=>9 resource=>dw#hlak7 target=>1" // AK:Inv
+      add_effect_inline'8=>"opcode=>313 timing=>9 resource=>PLANETAR target=>1" // Summon Planetar
+      add_effect_inline'10=>"opcode=>313 timing=>9 resource=>HERITAGE target=>1" // block multiple heritages
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION SORCEROUS_HERITAGE_INFERNAL
+   STR_VAR resref=""
+BEGIN
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline'0=>"opcode=>166 target=>1 timing=>9 parameter1=>10" // MR
+      add_effect_inline'1=>"opcode=>28 target=>1 timing=>9 parameter1=>30" // cold
+      add_effect_inline'2=>"opcode=>30 target=>1 timing=>9 parameter1=>30" // fire
+      add_effect_inline'3=>"opcode=>29 target=>1 timing=>9 parameter1=>10" // electricity
+      add_effect_inline'4=>"opcode=>27 target=>1 timing=>9 parameter1=>10" // acid
+      add_effect_inline'5=>"opcode=>313 timing=>9 resource=>dw#hlak3 target=>1" // AK:Con
+      add_effect_inline'6=>"opcode=>313 timing=>9 resource=>dw#hlak6 target=>1" // AK:Ill
+      add_effect_inline'7=>"opcode=>313 timing=>9 resource=>dw#hlak8 target=>1" // AK:Nec
+      add_effect_inline'8=>"opcode=>313 timing=>9 resource=>PLANETAR target=>1" // Summon Planetar
+      add_effect_inline'10=>"opcode=>313 timing=>9 resource=>HERITAGE target=>1" // block multiple heritages
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION SORCEROUS_HERITAGE_FEY
+   STR_VAR resref=""
+BEGIN
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>189 target=>1 timing=>9 parameter1=>1" // casting time
+      add_effect_inline'4=>"opcode=>173 target=>1 timing=>9 parameter1=>100" // poison
+      add_effect_inline'5=>"opcode=>313 timing=>9 resource=>dw#hlak2 target=>1" // AK:Alt
+      add_effect_inline'6=>"opcode=>313 timing=>9 resource=>dw#hlak6 target=>1" // AK:Ill
+      add_effect_inline'7=>"opcode=>313 timing=>9 resource=>dw#hlak5 target=>1" // AK:Ench
+      add_effect_inline'10=>"opcode=>313 timing=>9 resource=>HERITAGE target=>1" // block multiple heritages
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION SORCEROUS_HERITAGE_DRACONIC
+   STR_VAR resref=""
+BEGIN
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline'0=>"opcode=>166 target=>1 timing=>9 parameter1=>20" // MR
+      add_effect_inline'1=>"opcode=>101 target=>1 timing=>9 parameter2=>217" // PW:Sleep
+      add_effect_inline'2=>"opcode=>101 target=>1 timing=>9 parameter2=>5" // charm
+      add_effect_inline'3=>"opcode=>101 target=>1 timing=>9 parameter2=>39" // sleep
+      add_effect_inline'4=>"opcode=>267 target=>1 timing=>9 parameter1=>14780" // string: dire charm
+      add_effect_inline'40=>"opcode=>267 target=>1 timing=>9 parameter1=>14672" // string: charm
+      add_effect_inline'41=>"opcode=>267 target=>1 timing=>9 parameter1=>14001" // string: sleep
+      add_effect_inline'42=>"opcode=>267 target=>1 timing=>9 parameter1=>8364" // string: dominated
+      add_effect_inline'5=>"opcode=>313 timing=>9 resource=>dw#hlak2 target=>1" // AK:Alt
+      add_effect_inline'6=>"opcode=>313 timing=>9 resource=>dw#hlak4 target=>1" // AK:Div
+      add_effect_inline'7=>"opcode=>313 timing=>9 resource=>dw#hlak5 target=>1" // AK:Ench
+      add_effect_inline'8=>"opcode=>313 timing=>9 resource=>DRBREATH target=>1" // Dragon's Breath
+      add_effect_inline'10=>"opcode=>313 timing=>9 resource=>HERITAGE target=>1" // block multiple heritages
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION SORCEROUS_HERITAGE_ELEMENTAL
+   STR_VAR resref=""
+BEGIN
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline'1=>"opcode=>28 target=>1 timing=>9 parameter1=>30" // cold
+      add_effect_inline'2=>"opcode=>30 target=>1 timing=>9 parameter1=>30" // fire
+      add_effect_inline'3=>"opcode=>29 target=>1 timing=>9 parameter1=>30" // electricity
+      add_effect_inline'4=>"opcode=>332 target=>1 timing=>9 parameter1=>20 parameter2=>1" // extra fire
+      add_effect_inline'40=>"opcode=>332 target=>1 timing=>9 parameter1=>20 parameter2=>2" // extra cold
+      add_effect_inline'41=>"opcode=>332 target=>1 timing=>9 parameter1=>20 parameter2=>3" // extra lightning
+      add_effect_inline'5=>"opcode=>313 timing=>9 resource=>dw#hlak1 target=>1" // AK:Abj
+      add_effect_inline'6=>"opcode=>313 timing=>9 resource=>dw#hlak3 target=>1" // AK:Con
+      add_effect_inline'7=>"opcode=>313 timing=>9 resource=>dw#hlak7 target=>1" // AK:Inv
+      add_effect_inline'8=>"opcode=>313 timing=>9 resource=>DRBREATH target=>1" // Dragon's Breath
+      add_effect_inline'9=>"opcode=>313 timing=>9 resource=>PLANETAR target=>1" // Summon Planetar
+      add_effect_inline'10=>"opcode=>313 timing=>9 resource=>HERITAGE target=>1" // block multiple heritages
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION SORCEROUS_HERITAGE_UNDEAD
+   STR_VAR resref=""
+BEGIN
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline'1=>"opcode=>267 target=>1 timing=>9 parameter1=>14102" // string: held
+      add_effect_inline'2=>"opcode=>101 target=>1 timing=>9 parameter2=>238"
+      add_effect_inline'3=>"opcode=>101 target=>1 timing=>9 parameter2=>55"
+      add_effect_inline'30=>"opcode=>101 target=>1 timing=>9 parameter2=>109"
+      add_effect_inline'31=>"opcode=>101 target=>1 timing=>9 parameter2=>175"
+      add_effect_inline'4=>"opcode=>28 target=>1 timing=>9 parameter1=>20" // cold
+      add_effect_inline'5=>"opcode=>313 timing=>9 resource=>dw#hlak2 target=>1" // AK:Alt
+      add_effect_inline'6=>"opcode=>313 timing=>9 resource=>dw#hlak4 target=>1" // AK:Div
+      add_effect_inline'7=>"opcode=>313 timing=>9 resource=>dw#hlak8 target=>1" // AK:Nec
+      add_effect_inline'10=>"opcode=>313 timing=>9 resource=>HERITAGE target=>1" // block multiple heritages
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION SORCEROUS_HERITAGE_RAKSHASA
+   STR_VAR resref=""
+BEGIN
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline'1=>"opcode=>102 target=>1 timing=>9 parameter1=>1" // 1st-level spells
+      add_effect_inline'2=>"opcode=>102 target=>1 timing=>9 parameter1=>2" // 2nd-level spells
+      add_effect_inline'3=>"opcode=>206 target=>1 timing=>9 parameter1=>~-1~ resource=>%CLERIC_SILENCE_15_FOOT%"
+      add_effect_inline'30=>"opcode=>206 target=>1 timing=>9 parameter1=>~-1~ resource=>%CLERIC_ENTANGLE%"
+      add_effect_inline'31=>"opcode=>206 target=>1 timing=>9 parameter1=>~-1~ resource=>%WIZARD_WEB%"
+      add_effect_inline'32=>"opcode=>206 target=>1 timing=>9 parameter1=>~-1~ resource=>%WIZARD_STINKING_CLOUD%"
+      add_effect_inline'5=>"opcode=>313 timing=>9 resource=>dw#hlak5 target=>1" // AK:Ench
+      add_effect_inline'6=>"opcode=>313 timing=>9 resource=>dw#hlak7 target=>1" // AK:Inv
+      add_effect_inline'7=>"opcode=>313 timing=>9 resource=>dw#hlak8 target=>1" // AK:Nec
+      add_effect_inline'8=>"opcode=>313 timing=>9 resource=>DRBREATH target=>1" // Dragon's Breath
+      add_effect_inline'10=>"opcode=>313 timing=>9 resource=>HERITAGE target=>1" // block multiple heritages
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION WIZARD_DIVINERS_FOCUS
+   STR_VAR resref=""
+BEGIN
+   // get the variable
+   LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=DW_POWER_UPGRADE2 RET stat_ind END
+   // modify the spells affected
+   
+   MAKE_PATCH
+      add_effect_inline=>"at_end=>1 target=>1 opcode=>318 duration=>1 resource=>filename parameter1=>%stat_ind% parameter2=>111" // close down if don't have the variable
+      add_effect_inline'=>"at_end=>1 target=>1 opcode=>193 duration=>60 parameter2=>1" // apply effect
+   END
+   LAF edit_spell STR_VAR spell="WIZARD_ORACLE WIZARD_DETECT_INVISIBILITY WIZARD_TRUE_SIGHT" edits=patch_data END
+
+   // create the actual effect
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>328 mode=>1 timing=>9 target=>1 power=>1 parameter2=>%stat_ind%" //
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION WIZARD_PIERCE_THE_VEIL
+   STR_VAR resref=""
+BEGIN
+   // the at-will detect invisible
+   
+   MAKE_PATCH
+       level=>1
+       spell_type=>innate
+       patch_ability_inline=>"ability_icon_loc=>4"
+       add_effect_inline=>"at_end=>1 opcode=>172 resource=>dw#dtcti target=>1"
+       add_effect_inline'=>"at_end=>1 opcode=>171 resource=>dw#dtcti target=>1"
+   END
+   LAF clone_spell STR_VAR spell="%WIZARD_DETECT_INVISIBILITY%=>dw#dtcti" edits=patch_data END
+
+   // the actual effect
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>193 timing=>9 target=>1 power=>1 parameter2=>1" // detect invisibility by script
+      add_effect_inline'=>"at_end=>1 opcode=>171 resource=>dw#dtcti target=>1"
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION WIZARD_SHADOWCLOAK
+   STR_VAR resref=""
+BEGIN
+
+   // modified clone of II - initial pass
+   MAKE_PATCH
+        level=>9
+        icon=>spcl938c // borrow BAM from Shadow Form
+        delete_ability=>"ability_min_level>1"
+        patch_ability_inline=>"ability_icon=>spcl938b ability_target=>5 casting_time=>1"
+        patch_effect_inline=>"target=>1 power=>10 duration=>~if duration=0 then no_change else 30~"
+        add_effect_inline=>"power=>10 opcode=>69 target=>1 duration=>30" // nondetection
+   END
+   LAF clone_spell STR_VAR spell="%WIZARD_IMPROVED_INVISIBILITY%=>%resref%" edits=patch_data END
+
+   // stripped down re-cast versions
+   
+   ACTION_FOR_EACH del_dur IN 6 12 18 24 BEGIN
+      MAKE_PATCH
+         delete_effect=>"opcode is_in [139 141 174]"
+         patch_effect_inline=>"duration=>~if duration=0 then no_change else %del_dur%~"
+      END
+      LAF clone_spell STR_VAR spell="%resref%=>dw#shd%del_dur%" edits=patch_data END
+   END
+   
+   // back through original spell
+   
+   MAKE_PATCH
+      add_effect_inline=>"opcode=>146 target=>1 timing=>4 duration=>6 parameter2=>1 resource=>dw#shd24"
+      add_effect_inline'=>"opcode=>146 target=>1 timing=>4 duration=>12 parameter2=>1 resource=>dw#shd18"
+      add_effect_inline''=>"opcode=>146 target=>1 timing=>4 duration=>18 parameter2=>1 resource=>dw#shd12"
+      add_effect_inline'''=>"opcode=>146 target=>1 timing=>4 duration=>24 parameter2=>1 resource=>dw#shd6"
+   END
+   LAF edit_spell STR_VAR spell="%resref%" edits=patch_data END
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION DRAGON_DISCIPLE_DRAGON_SCALES
+   STR_VAR resref=""
+BEGIN
+   //  resolve needed stats
+   
+   LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=DW_POWER_UPGRADE RET stat_ind_1=stat_ind END
+   LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=DW_POWER_UPGRADE2 RET stat_ind_2=stat_ind END
+   LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=DW_POWER_UPGRADE3 RET stat_ind_3=stat_ind END
+
+   // make the color-changing spells
+
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"at_end=>1 opcode=>326 target=>1 parameter1=>%stat_ind_1% parameter2=>111 resource=>dwddclb" // if DW_POWER_UPGRADE=0, run the secondary helper
+      add_effect_inline'0=>"at_end=>1 opcode=>318 duration=>1 target=>1 parameter1=>%stat_ind_1% parameter2=>111 resource=>dwddcla" // if DW_POWER_UPGRADE=0, block rest of spell
+      add_effect_inline'1=>"at_end=>1 opcode=>7 target=>1 timing=>9 parameter1=>83 parameter2=>3" // black dragon coloration
+   END
+   LAF make_spell STR_VAR spell=dwddcla edits=patch_data END
+
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline'1=>"at_end=>1 opcode=>326 target=>1 parameter1=>%stat_ind_2% parameter2=>110 resource=>dwddclc" // if DW_POWER_UPGRADE2=1, run the tertiary helper
+      add_effect_inline'2=>"at_end=>1 opcode=>326 target=>1 parameter1=>%stat_ind_2% parameter2=>111 resource=>dwddcld" // if DW_POWER_UPGRADE2=0, run the quaternary helper
+   END
+   LAF make_spell STR_VAR spell=dwddclb edits=patch_data END
+
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline'0=>"at_end=>1 opcode=>7 target=>1 timing=>9 parameter1=>20 parameter2=>3" // green dragon coloration
+      add_effect_inline'1=>"at_end=>1 opcode=>318 duration=>1 target=>1 parameter1=>%stat_ind_3% parameter2=>110 resource=>dwddclc" // if DW_POWER_UPGRADE3=1 [green] block the rest of the effect
+      add_effect_inline'2=>"at_end=>1 opcode=>7 target=>1 timing=>9 parameter1=>18 parameter2=>3" // blue dragon coloration
+   END
+   LAF make_spell STR_VAR spell=dwddclc edits=patch_data END
+
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline'0=>"at_end=>1 opcode=>7 target=>1 timing=>9 parameter1=>14 parameter2=>3" // white dragon coloration
+      add_effect_inline'1=>"at_end=>1 opcode=>318 duration=>1 target=>1 parameter1=>%stat_ind_3% parameter2=>110 resource=>dwddcld" // if DW_POWER_UPGRADE3=1 [white] block the rest of the effect
+      add_effect_inline'2=>"at_end=>1 opcode=>7 target=>1 timing=>9 parameter1=>127 parameter2=>3" // red dragon coloration
+   END
+   LAF make_spell STR_VAR spell=dwddcld edits=patch_data END
+
+   // main spell
+   
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline'0=>"opcode=>0 target=>1 timing=>9 parameter1=>4"
+      add_effect_inline'1=>"opcode=>86 target=>1 timing=>9 parameter1=>15"
+      add_effect_inline'2=>"opcode=>87 target=>1 timing=>9 parameter1=>15"
+      add_effect_inline'3=>"opcode=>88 target=>1 timing=>9 parameter1=>15"
+      add_effect_inline'4=>"opcode=>89 target=>1 timing=>9 parameter1=>15"
+      add_effect_inline'5=>"opcode=>44 target=>1 timing=>9 parameter1=>4"
+   END
+   LAF check_ini STR_VAR ini=No_Cosmetic_Dragon_Scales RET value END
+   ACTION_IF !value BEGIN
+      OUTER_SPRINT $patch_data("add_effect_inline") "opcode=>146 target=>1 parameter2=>1 parameter1=>0 resource=>dwddcla"
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION FORM_OF_THE_DRAGON
+   STR_VAR resref=""
+BEGIN
+
+   //  resolve needed stats
+   
+   LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=DW_POWER_UPGRADE RET stat_ind_1=stat_ind END
+   LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=DW_POWER_UPGRADE2 RET stat_ind_2=stat_ind END
+   LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=DW_POWER_UPGRADE3 RET stat_ind_3=stat_ind END
+
+
+    // minor tweaks to Wing Buffet
+    
+    MAKE_PATCH
+      level=>1
+      patch_ability_inline=>"ability_target=>5 ability_icon=>spcl901b ability_icon_loc=>4 projectile=>94"
+      add_effect_inline=>"at_end=>1 opcode=>171 resource=>dw#wing target=>1"
+      add_effect_inline'=>"at_end=>1 opcode=>172 timing=>4 duration=>6 resource=>dw#wing target=>1"
+    END
+    LAF clone_spell STR_VAR spell="%DRAGON_WING_BUFFET%=>dw#wing" edits=patch_data END
+
+    // the shapeshift spell - template is mind flayer
+    MAKE_PATCH
+      say_name=>3199
+      patch_ability_inline=>"ability_icon=>dwddcb"
+       delete_effect=>"resource=%SHAPECHANGE_MIND_FLAYER%"
+       add_effect_inline=>"opcode=>146 target=>1 power=>9 parameter1=>20 timing=>4 resist_dispel=>2 duration=>30 resource=>%SHAPESHIFT_NATURAL_FORM_1%"
+    END
+    LAF clone_spell STR_VAR spell="%SHAPECHANGE_MIND_FLAYER%=>dwddfrf" edits=patch_data END
+    // may as well do the next bit by straight substitution
+    LAF swap_text STR_VAR files="dwddfrf.spl" swaps="cdmindfl=>dwddfrf spin974=>dw#wing" END
+
+    // remove wing buffet via shapeshift: natural form
+
+    LAF edit_spell STR_VAR spell=SHAPESHIFT_NATURAL_FORM_1 editstring="add_effect_inline=>~opcode=>172 target=>1 timing=>1 resource=>dw#wing~" END
+
+    // the animation-controlling weapon - template is dragring
+
+    MAKE_PATCH
+       name1_string=>38698
+       name2_string=>38698
+       magical=>1
+       silver=>1
+       icon=>iswospdr
+       enchantment=>4
+       description1_string=>10348
+       add_ability_inline=>"projectile=>1 ability_icon=>iswospdr ability_type=>1 ability_target=>1 ability_range=>5 ability_icon_loc=>1 speed=>3 ability_numdice=>1 ability_numdice=>1 ability_dicesize=>10 damage_bonus=>12 strength_bonus=>1 damage_type=>3 overhand=>0 backhand=>0 thrust=>100"
+       add_effect_global_inline'0=>"opcode=>0 target=>1 timing=>2 parameter1=>~-1~ parameter2=>16" // AC  - NB, this is net of the 9 points from Dragon Scales and the character's DD abilities
+       add_effect_global_inline'1=>"opcode=>15 target=>1 timing=>2 parameter1=>15 parameter2=>1" //DEX
+       add_effect_global_inline'2=>"opcode=>44 target=>1 timing=>2 parameter1=>24 parameter2=>1" //STR
+       add_effect_global_inline'3=>"opcode=>86 target=>1 timing=>2 parameter1=>15 parameter2=>1" // resist physical damage
+       add_effect_global_inline'4=>"opcode=>87 target=>1 timing=>2 parameter1=>15 parameter2=>1"
+       add_effect_global_inline'5=>"opcode=>88 target=>1 timing=>2 parameter1=>15 parameter2=>1"
+       add_effect_global_inline'6=>"opcode=>89 target=>1 timing=>2 parameter1=>15 parameter2=>1"
+       add_effect_global_inline'7=>"opcode=>166 target=>1 timing=>2 parameter1=>60 parameter2=>1" // MR
+       add_effect_global_inline'8=>"opcode=>54 target=>1 timing=>2 parameter1=>1 parameter2=>1" // THAC0
+       add_effect_global_inline'9=>"opcode=>1 target=>1 timing=>2 parameter1=>4 parameter2=>3" // APR
+       add_effect_global_inline'10=>"opcode=>292 target=>1 timing=>2 parameter2=>1" // backstab immunity
+       add_effect_global_inline'11=>"opcode=>193 target=>1 timing=>2 parameter2=>1" // Detect invisible
+       add_effect_global_inline'12=>"opcode=>135 target=>1 timing=>2 parameter2=>1 resource=>FIRKRA02" // Actual form
+       add_effect_global_inline'13=>"opcode=>72 target=>1 timing=>2 parameter1=>255 parameter2=>1" // general=monster
+       add_effect_global_inline'14=>"opcode=>72 target=>1 timing=>2 parameter1=>146 parameter2=>2" // race = dragon
+    END
+    LAF clone_item STR_VAR item="dragring=>dwddfrf" edits=patch_data END
+
+    // install white dragon animation
+    
+    MAKE_BIFF dw#iwddrag BEGIN "%scsroot%/resource" "mwdr.*\.bam" END
+    COPY_EXISTING "firkra02.cre" "override/dw#wdrag.cre"
+       WRITE_LONG 0x28 4353
+
+   // make other colors
+
+    MAKE_PATCH
+       dwddfrc=>dw#wdrag
+       dwddfra=>dragblac
+       dwddfrl=>dragblue
+       dwddfrp=>fsdragon
+    END
+    ACTION_PHP_EACH patch_data AS item_new=>template BEGIN
+       LAF clone_item STR_VAR item="dwddfrf=>%item_new%" END
+       LAF swap_text STR_VAR files="%item_new%.itm" swaps="firkra02=>%template%" END
+       LAF clone_spell STR_VAR spell="dwddfrf=>%item_new%" END
+       LAF swap_text STR_VAR files="%item_new%.spl" swaps="dwddfrf=>%item_new%" END
+    END
+
+   // make the power-grant spells
+
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"at_end=>1 opcode=>326 target=>1 parameter1=>%stat_ind_1% parameter2=>111 resource=>dwddgfb" // if DW_POWER_UPGRADE=0, run the secondary helper
+      add_effect_inline'0=>"at_end=>1 opcode=>318 duration=>1 target=>1 parameter1=>%stat_ind_1% parameter2=>111 resource=>%resref%" // if DW_POWER_UPGRADE=0, block rest of spell
+      add_effect_inline'1=>"at_end=>1 opcode=>171 target=>1 resource=>dwddfra" // black dragon form
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline'1=>"at_end=>1 opcode=>326 target=>1 parameter1=>%stat_ind_2% parameter2=>110 resource=>dwddgfc" // if DW_POWER_UPGRADE2=1, run the tertiary helper
+      add_effect_inline'2=>"at_end=>1 opcode=>326 target=>1 parameter1=>%stat_ind_2% parameter2=>111 resource=>dwddgfd" // if DW_POWER_UPGRADE2=0, run the quaternary helper
+   END
+   LAF make_spell STR_VAR spell=dwddgfb edits=patch_data END
+
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline'0=>"at_end=>1 opcode=>171 target=>1 resource=>dwddfrp" // green dragon form
+      add_effect_inline'1=>"at_end=>1 opcode=>318 duration=>1 target=>1 parameter1=>%stat_ind_3% parameter2=>110 resource=>dwddgfc" // if DW_POWER_UPGRADE3=1 [green] block the rest of the effect
+      add_effect_inline'2=>"at_end=>1 opcode=>172 target=>1 resource=>dwddfrp" // remove green dragon form
+      add_effect_inline'3=>"at_end=>1 opcode=>171 target=>1 resource=>dwddfrl" //  blue dragon form
+
+   END
+   LAF make_spell STR_VAR spell=dwddgfc edits=patch_data END
+
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline'0=>"at_end=>1 opcode=>171 target=>1 resource=>dwddfrc" // white dragon form
+      add_effect_inline'1=>"at_end=>1 opcode=>318 duration=>1 target=>1 parameter1=>%stat_ind_3% parameter2=>110 resource=>dwddgfd" // if DW_POWER_UPGRADE3=1 [white] block the rest of the effect
+      add_effect_inline'2=>"at_end=>1 opcode=>172 target=>1 resource=>dwddfrc" // remove white dragon form
+      add_effect_inline'3=>"at_end=>1 opcode=>171 target=>1 resource=>dwddfrf" //  red dragon form
+   END
+   LAF make_spell STR_VAR spell=dwddgfd edits=patch_data END
+
+END
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION WIZARD_WISHCRAFT
+   STR_VAR resref=""
+BEGIN
+
+// resolve stat
+
+   LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=DW_POWER_UPGRADE2 RET stat_ind END
+
+
+// the dialog files
+
+<<<<<<<<   .../stratagems-inline/25wishadd.d
+APPEND WISH25
+  IF WEIGHT #-999 ~CheckSpellState(LastTalkedToBy,%stat_ind%)~ THEN BEGIN step1 SAY @3201
+      IF ~~ THEN DO ~SetupWish(4,1)~ GOTO step2 END
+  
+  IF ~~ THEN BEGIN step2 SAY @3202
+      IF ~~ THEN GOTO 12 END
+END
+>>>>>>>>
+LAF install STR_VAR file=25wishadd.d inline=yes END
+
+COPY_EXISTING wish.dlg override
+   DECOMPILE_AND_PATCH BEGIN
+      REPLACE_TEXTUALLY "CheckStatGT(LastTalkedToBy,\([0-9]+\),WIS)"  "OR(2)CheckStatGT(LastTalkedToBy,\1,WIS)CheckSpellState(LastTalkedToBy,%stat_ind%)"
+      REPLACE_TEXTUALLY "CheckStatLT(LastTalkedToBy,\([0-9]+\),WIS)"  "CheckStatLT(LastTalkedToBy,\1,WIS)!CheckSpellState(LastTalkedToBy,%stat_ind%)"
+   END
+BUT_ONLY
+
+// the actual spell
+
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>328 mode=>1 timing=>9 target=>1 power=>1 parameter2=>%stat_ind%" //
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION ROGUE_EVASION
+   STR_VAR resref=""
+BEGIN
+
+   LAF evasion_setup END
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>328 mode=>1 timing=>9 target=>1 power=>1 parameter2=>252"
+      add_effect_inline'=>"opcode=>142 target=>1 parameter2=>157 timing=>1"
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION ROGUE_SLIPPERY_MIND
+   STR_VAR resref=""
+BEGIN
+   LAF slippery_mind_setup END
+   LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=SLIPPERY_MIND RET stat_ind END
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>328 mode=>1 timing=>9 target=>1 power=>1 parameter2=>%stat_ind%"
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION ROGUE_USE_SCROLLS
+   STR_VAR resref=""
+BEGIN
+   LAF run STR_VAR file=item_crafting_use locbase=lib END
+   LAF get_or_add_to_IDS INT_VAR minimum=150 STR_VAR to_add=CANNOT_USE_WAND idsfile=SPECIFIC RET idsnum END
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>72 timing=>9 parameter1=>%idsnum% parameter2=>4 target=>1"
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION ROGUE_USE_WANDS
+   STR_VAR resref=""
+BEGIN
+
+     LAF run STR_VAR file=item_crafting_use locbase=lib END
+   // just a direct copy of the resource we use to give mages the ability to use scrolls/wands even if they're dual-classed or multi-classed
+   COPY_EXISTING "dw#scrll.spl" "override/%resref%.spl"
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION ROGUE_AVOID_DANGER
+   STR_VAR resref=""
+BEGIN
+   LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=DW_POWER_UPGRADE9 RET stat_ind END
+   // patch in the advanced version
+   MAKE_PATCH
+       add_effect_inline'=>"opcode=>318 target=>1 duration=>1 parameter2=>110 parameter1=>%stat_ind% resource=>%resref%"
+       add_effect_inline=>"opcode=>326 target=>1 parameter2=>110 parameter1=>%stat_ind% resource=>dw#hlaad"
+   END
+   LAF edit_spell STR_VAR spell="%resref%" edits=patch_data END
+   // make copy of advanced version with descriptive text stripped
+   MAKE_PATCH
+      name1_string=>"-1"
+      name2_string=>"-1"
+   END
+   LAF clone_spell STR_VAR spell="%ROGUE_GREATER_EVASION%=>dw#hlaad" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION ROGUE_ADVANCED_AVOID_DANGER
+   STR_VAR resref=""
+BEGIN
+   LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=DW_POWER_UPGRADE9 RET stat_ind END
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>328 mode=>1 timing=>9 target=>1 power=>1 parameter2=>%stat_ind%"
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION WARRIOR_DEATHBLOW
+   STR_VAR resref=""
+BEGIN
+   LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=DW_POWER_UPGRADE8 RET stat_ind END
+   // patch in the advanced version
+   MAKE_PATCH
+       add_effect_inline'=>"opcode=>318 target=>1 duration=>1 parameter2=>110 parameter1=>%stat_ind% resource=>%resref%"
+       add_effect_inline=>"opcode=>326 target=>1 parameter2=>110 parameter1=>%stat_ind% resource=>dw#hlgdb"
+   END
+   LAF edit_spell STR_VAR spell="%resref%" edits=patch_data END
+   // make copy of advanced version with descriptive text stripped
+   MAKE_PATCH
+      name1_string=>"-1"
+      name2_string=>"-1"
+   END
+   LAF clone_spell STR_VAR spell="%WARRIOR_GREATER_DEATHBLOW%=>dw#hlgdb" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION WARRIOR_GREATER_DEATHBLOW
+   STR_VAR resref=""
+BEGIN
+   LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=DW_POWER_UPGRADE8 RET stat_ind END
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>328 mode=>1 timing=>9 target=>1 power=>1 parameter2=>%stat_ind%"
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION SCRIBE_SCROLL
+   STR_VAR resref=""
+BEGIN
+
+   LAF run STR_VAR file=item_crafting_use locbase=lib END
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>171 resource=>dwcrsc1 target=>1"
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION ROGUE_SET_EXPLODING_TRAP
+   STR_VAR resref=""
+BEGIN
+   LAF edit_spell STR_VAR spell="rr#thl06" editstring="patch_ability_inline=>~projectile=>%rr#trpex%~" END
+   MAKE_PATCH
+      resource=>"if resource=SPCL911B then rr#thl06 else (if resource=SPSETSCD then rr#trpex else no_change)"
+   END
+   LAF edit_spell STR_VAR spell=spcl911b editstring="patch_effect=>patch_data" END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION ROGUE_SET_SPIKE_TRAP
+   STR_VAR resref=""
+BEGIN
+   MAKE_PATCH
+      match=>"opcode=12"
+      parameter2b=>16
+
+   END
+   LAF edit_spell STR_VAR spell=spcl910b edits=patch_data END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION ROGUE_AVOID_DEATH
+   STR_VAR resref=""
+BEGIN
+   LAF avoid_death_setup END
+   MAKE_PATCH
+        add_basic_ability=>null
+        add_effect_inline=>"opcode=>146 target=>1 resource=>dw#avoid"
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION ROGUE_IMPROVED_AVOID_DEATH
+   STR_VAR resref=""
+BEGIN
+   LAF improved_avoid_death_setup END
+   MAKE_PATCH
+        add_basic_ability=>null
+        add_effect_inline=>"opcode=>146 target=>1 resource=>dw#avoi3"
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION ROGUE_CRIPPLING_STRIKE
+   STR_VAR resref=""
+BEGIN
+   LAF 206_to_321 STR_VAR resref END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION SWASHBUCKLER_INSIGHTFUL_STRIKE
+   STR_VAR resref=""
+BEGIN
+   LAF 206_to_321 STR_VAR resref END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION ASSASSIN_POISON_APTITUDE
+   STR_VAR resref=""
+BEGIN
+   LAF poison_setup END
+   LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=DW_POWER_UPGRADE11 RET stat_ind END
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>328 mode=>1 timing=>9 target=>1 power=>1 parameter2=>%stat_ind%"
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION ASSASSIN_POISON_EXPERTISE
+   STR_VAR resref=""
+BEGIN
+   LAF poison_setup END
+   LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=DW_POWER_UPGRADE4 RET stat_ind END
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>328 mode=>1 timing=>9 target=>1 power=>1 parameter2=>%stat_ind%"
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION ASSASSIN_POISON_MASTERY
+   STR_VAR resref=""
+BEGIN
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>332 timing=>9 target=>1 power=>1 parameter2=>6 parameter1=>100"
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION ASSASSIN_BLUE_WHINNIS
+   STR_VAR resref=""
+BEGIN
+   LAF poison_setup END
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>171 resource=>dwpss1 target=>1"
+      add_effect_inline'=>"opcode=>171 resource=>dwpss0 target=>1"
+      add_effect_inline''=>"opcode=>172 resource=>dwpss0 target=>1"
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION ASSASSIN_CARRION_POISON
+   STR_VAR resref=""
+BEGIN
+   LAF poison_setup END
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>171 resource=>dwpss2 target=>1"
+      add_effect_inline'=>"opcode=>171 resource=>dwpss0 target=>1"
+      add_effect_inline''=>"opcode=>172 resource=>dwpss0 target=>1"
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION ASSASSIN_NIGHTMARE_PASTE
+   STR_VAR resref=""
+BEGIN
+   LAF poison_setup END
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>171 resource=>dwpss3 target=>1"
+      add_effect_inline'=>"opcode=>171 resource=>dwpss0 target=>1"
+      add_effect_inline''=>"opcode=>172 resource=>dwpss0 target=>1"
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION ASSASSIN_DEATHKISS_POISON
+   STR_VAR resref=""
+BEGIN
+   LAF poison_setup END
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>171 resource=>dwpss4 target=>1"
+      add_effect_inline'=>"opcode=>171 resource=>dwpss0 target=>1"
+      add_effect_inline''=>"opcode=>172 resource=>dwpss0 target=>1"
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION ASSASSIN_NERVE_VENOM
+   STR_VAR resref=""
+BEGIN
+   LAF poison_setup END
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>171 resource=>dwpss5 target=>1"
+      add_effect_inline'=>"opcode=>171 resource=>dwpss0 target=>1"
+      add_effect_inline''=>"opcode=>172 resource=>dwpss0 target=>1"
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION BOUNTY_HUNTER_TOXIC_TRAP
+   STR_VAR resref=""
+BEGIN
+   MAKE_PATCH
+        patch_ability_inline=>"projectile=>%tgtoxt%"
+   END
+   LAF make_spell STR_VAR spell="tgtoxb" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION BARD_MASS_CHARM
+   STR_VAR resref=""
+BEGIN
+   MAKE_PATCH
+       delete_effect=>"opcode=177"
+       patch_ability_inline=>"projectile=>%rr#vrnp%"
+       add_effect_inline'0=>"opcode=>324 target=>2 duration=>1 parameter1=>115 parameter2=>104 resource=>%resref%"
+       add_effect_inline'1=>"opcode=>324 target=>2 duration=>1 parameter1=>119 parameter2=>104 resource=>%resref%"
+       add_effect_inline'2=>"opcode=>324 target=>2 duration=>1 parameter1=>144 parameter2=>104 resource=>%resref%"
+       add_effect_inline'3=>"opcode=>324 target=>2 duration=>1 parameter1=>148 parameter2=>104 resource=>%resref%"
+       add_effect_inline'4=>"opcode=>324 target=>2 duration=>1 parameter1=>144 parameter2=>104 resource=>%resref%"
+       add_effect_inline'5=>"opcode=>324 target=>2 duration=>1 parameter1=>2 parameter2=>104 resource=>%resref% probability1=>90"
+       add_effect_inline'6=>"opcode=>324 target=>2 duration=>1 parameter1=>3 parameter2=>104 resource=>%resref% probability1=>30"
+   END
+   LAF edit_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION BARD_ENTHRALLING_MELODY
+   STR_VAR resref=""
+BEGIN
+   MAKE_PATCH
+       delete_effect=>"opcode=177"
+       patch_ability_inline=>"projectile=>%rr#vrnp%"
+       add_effect_inline'0=>"opcode=>324 target=>2 duration=>1 parameter1=>115 parameter2=>104 resource=>%resref%"
+       add_effect_inline'1=>"opcode=>324 target=>2 duration=>1 parameter1=>119 parameter2=>104 resource=>%resref%"
+       add_effect_inline'2=>"opcode=>324 target=>2 duration=>1 parameter1=>144 parameter2=>104 resource=>%resref%"
+       add_effect_inline'3=>"opcode=>324 target=>2 duration=>1 parameter1=>148 parameter2=>104 resource=>%resref%"
+       add_effect_inline'4=>"opcode=>324 target=>2 duration=>1 parameter1=>144 parameter2=>104 resource=>%resref%"
+   END
+   LAF edit_spell STR_VAR spell="%resref%" edits=patch_data END
+   LAF unfascinate END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION BARD_SOUND_BURST
+   STR_VAR resref=""
+BEGIN
+   MAKE_PATCH
+       patch_ability_inline=>"projectile=>%rr#vrnp%"
+   END
+   LAF edit_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION BARD_MAGIC_FLUTE
+   STR_VAR resref=""
+BEGIN
+     // make a list of all L1-6 arcane enchantments
+     COPY_EXISTING "hidespl.2da" "override"
+<<<<<<<< .../stratagems-inline/rr#bfen.2da
+2DA V1.0
+****
+                           ResRef      Type
+>>>>>>>>
+      COPY ".../stratagems-inline/rr#bfen.2da" override
+      OUTER_SET counter=1
+      OUTER_FOR (spl_ctr=101;spl_ctr<700;spl_ctr+=1) BEGIN
+         OUTER_SPRINT spell "SPWI%spl_ctr%"
+         ACTION_IF !FILE_CONTAINS_EVALUATED ("hidespl.2da" "spell%") BEGIN
+            ACTION_IF FILE_EXISTS_IN_GAME "%spell%.spl" BEGIN
+              COPY_EXISTING "%spell%.spl" override
+                  READ_BYTE 0x25 school
+              BUT_ONLY
+              ACTION_IF school=4 BEGIN
+                ACTION_IF !(FILE_CONTAINS "override/hidespl.2da" "%spell%") BEGIN
+                 APPEND "rr#bfen.2da" "%counter% %spell% 3"
+                 OUTER_SET counter +=1
+                END
+              END
+            END
+         END
+      END
+
+    // add to tooltip
+    
+    OUTER_SET tt1=RESOLVE_STR_REF (@3576)
+    OUTER_SET tt2=RESOLVE_STR_REF (@3577)
+    OUTER_SET tt3=RESOLVE_STR_REF (@3578)
+    APPEND  TOOLTIP.2DA ~RR#FLUTE    %tt1% %tt2% %tt3%~
+
+    // name for Aura of Courage
+    
+    LAF edit_spell STR_VAR spell="rr#wsic" editstring="say_name=>3570" END
+
+    // allow flute to recharge
+    
+    MAKE_PATCH
+       say_description=>3579 
+       patch_ability_inline=>~recharges_on_rest=>1~
+       patch_ability_inline'=>~match=>"ability_icon=rr#bf02" number_charges=>2~
+    END
+    LAF edit_item STR_VAR item=rr#flute edits=patch_data END
+
+    // spirit warrior is immune to cure/cause wounds
+    OUTER_SPRINT cure_list ""
+    ACTION_FOR_EACH spell IN 
+    CLERIC_CURE_LIGHT_WOUNDS CLERIC_CURE_MEDIUM_WOUNDS CLERIC_CURE_SERIOUS_WOUNDS CLERIC_CURE_CRITICAL_WOUNDS CLERIC_NEUTRALIZE_POISON
+    CLERIC_MASS_CURE CLERIC_HEAL RR#DCSW INNATE_CURE_LIGHT_WOUNDS HIVE_MOTHER_CAUSE_SERIOUS_WOUNDS BEHOLDER_CAUSE_SERIOUS_WOUNDS
+    BEGIN
+       LAF get_spellcode STR_VAR input="%spell%" RET spell_res=value END
+       ACTION_IF FILE_EXISTS_IN_GAME "%spell_res%" BEGIN
+          OUTER_SPRINT cure_list "%cure_list% %spell_res%"
+       END
+    END
+    LAF edit_creature STR_VAR creature="rr#wspi" editstring="immunity_to_spell=>~%cure_list%~" END
+
+    // add Enchantment school to various spells, to allow dispelling
+
+    LAF edit_spell
+    STR_VAR spell="TRAP_DIRE_CHARM TRAP_CONFUSION TRAP_HOLD_PERSON SUCCUBUS_CHARM_FEMALE SUCCUBUS_CHARM_MALE SIRINE_DIRE_CHARM ERINYES_CHARM NALMISSRA_CHARM MIST_CHAOS HULK_CONFUSION"
+            editstring="school=>enchantment"
+    END
+    
+    // flute-creating spell
+    
+    MAKE_PATCH
+       delete_effect=>"opcode=177"
+       add_effect_inline=>"opcode=>122 target=>1 timing=>1 parameter1=>1 resource=>rr#flute"
+    END
+    LAF edit_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION BARD_RESONATING_WEAPON
+   STR_VAR resref=""
+BEGIN
+   LAF 206_to_321 STR_VAR resref END
+   LAF edit_spell STR_VAR spell="%resref%" editstring="patch_effect_inline=>~duration=>2*duration~" END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION BARD_SOUND_BARRIER
+   STR_VAR resref=""
+BEGIN
+   LAF 206_to_321 STR_VAR resref END
+   OUTER_SPRINT editstring "add_effect_inline=>~target=>1 duration=>30 parameter1=>4742 opcode=>206 resource=>FL#SHOUT~"
+   ACTION_FOR_EACH spell IN WIZARD_SHOUT WIZARD_GREAT_SHOUT BEGIN
+       LAF get_spellcode STR_VAR input="%spell%" RET spell_res=value END
+       ACTION_IF FILE_EXISTS_IN_GAME "%spell_res%" BEGIN
+          OUTER_SPRINT editstring "%editstring% add_effect_inline=>~target=>1 duration=>30 parameter1=>4742 opcode=>206 resource=>%spell_res%~"
+       END
+   END
+   LAF edit_spell STR_VAR spell="%resref%" editstring END
+
+   // we need to allow for any sound-based spells in SR, and for
+   LAF warning STR_VAR warning="Remember to allow for any sound-based SR spells in BARD_SOUND_BARRIER" END
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION BARD_ENHANCED_SONG
+   STR_VAR resref=""
+BEGIN
+   LAF remove_bard_song_effects STR_VAR resref=rr#bdf04 END
+   MAKE_PATCH
+      patch_ability_inline=>"projectile=>%rr#vrpo%"
+   END
+   LAF edit_spell STR_VAR spell=rr#bdf04 edits=patch_data END
+   MAKE_PATCH
+       patch_effect_inline=>"match=>~opcode=251 ~resource=>rr#bdf04"
+   END
+   LAF edit_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION SKALD_ENHANCED_SONG
+   STR_VAR resref=""
+BEGIN
+   MAKE_PATCH
+       patch_effect_inline=>"match=>~opcode=251 ~resource=>rr#bsk02"
+   END
+   LAF clone_spell STR_VAR spell="spcl920=>%resref%" edits=patch_data END
+   MAKE_PATCH
+      patch_ability_inline=>"projectile=>%rr#vrpo%"
+   END
+   LAF edit_spell STR_VAR spell=rr#bsk02 edits=patch_data END
+
+   LAF remove_bard_song_effects STR_VAR resref=rr#bsk02 END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION JESTER_ENHANCED_SONG
+   STR_VAR resref=""
+BEGIN
+   MAKE_PATCH
+       patch_effect_inline=>"match=>~opcode=251 ~resource=>rr#bjs02"
+   END
+   LAF clone_spell STR_VAR spell="spcl920=>%resref%" edits=patch_data END
+   LAF remove_bard_song_effects STR_VAR resref END
+   OUTER_SET string=RESOLVE_STR_REF (@3302)
+   MAKE_PATCH
+       patch_ability_inline=>"projectile=>%rr#vrnp%"
+       delete_effect=>"opcode=177"
+       patch_effect_inline=>"parameter1=>~if parameter1=17424 then %string% else no_change~"
+       add_effect_inline'0=>"opcode=>324 target=>2 duration=>1 parameter1=>115 parameter2=>104 resource=>%resref%"
+       add_effect_inline'1=>"opcode=>324 target=>2 duration=>1 parameter1=>119 parameter2=>104 resource=>%resref%"
+       add_effect_inline'2=>"opcode=>324 target=>2 duration=>1 parameter1=>144 parameter2=>104 resource=>%resref%"
+       add_effect_inline'3=>"opcode=>324 target=>2 duration=>1 parameter1=>148 parameter2=>104 resource=>%resref%"
+       add_effect_inline'4=>"opcode=>324 target=>2 duration=>1 parameter1=>144 parameter2=>104 resource=>%resref%"
+
+   END
+   LAF edit_spell STR_VAR spell=rr#bjs02 edits=patch_data END
+   LAF unfascinate END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION BARD_LINGERING_SONG
+   STR_VAR resref=""
+BEGIN
+ MAKE_PATCH
+        add_effect_inline=>"opcode=>99 timing=>9 target=>1 parameter1=>300 parameter2=>2"
+ END
+ LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION BLADE_FINESSE
+   STR_VAR resref=""
+BEGIN
+  // get variable
+  LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=DW_POWER_UPGRADE11 RET stat_ind END
+  // modify Offensive Spin
+  MAKE_PATCH
+     add_effect_inline=>"opcode=>318 target=>1 duration=>1 resource=>%BLADE_OFFENSIVE_SPIN% parameter1=>%stat_ind% parameter2=>111 at_end=>1"
+     add_effect_inline'=>"opcode=>301 target=>1 duration=>24 parameter1=>1 at_end=>1"
+  END
+  LAF edit_spell STR_VAR spell="%BLADE_OFFENSIVE_SPIN%" edits=patch_data END
+  // modify Defensive Spin
+  MAKE_PATCH
+     delete_effect=>"opcode=176"
+     add_effect_inline=>"opcode=>318 target=>1 duration=>1 resource=>%BLADE_DEFENSIVE_SPIN% parameter1=>%stat_ind% parameter2=>110 at_end=>1"
+     add_effect_inline'=>"opcode=>176 target=>1 duration=>24 parameter2=>1 at_end=>1"
+  END
+  LAF edit_spell STR_VAR spell="%BLADE_DEFENSIVE_SPIN%" edits=patch_data END
+
+  // make the actual HLA
+  MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>328 mode=>1 timing=>9 target=>1 power=>1 parameter2=>%stat_ind%"
+  END
+  LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION RANGER_AMBIDEXTERITY
+   STR_VAR resref=""
+BEGIN
+ MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>305 timing=>9 target=>1 parameter1=>2 parameter2=>0"
+ END
+ LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION BLADE_AMBIDEXTERITY
+   STR_VAR resref=""
+BEGIN
+ MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>305 timing=>9 target=>1 parameter1=>2 parameter2=>0"
+ END
+ LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION CLERIC_MASS_HEAL
+   STR_VAR resref=""
+BEGIN
+ MAKE_PATCH
+      level=>7
+      patch_ability_inline=>"ability_target=>5 projectile=>160"
+ END
+ LAF clone_spell STR_VAR spell="%CLERIC_HEAL%=>%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION CLERIC_EXTENDED_SPELLS
+   STR_VAR resref=""
+BEGIN
+ MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>99 timing=>9 target=>1 parameter1=>150 parameter2=>1"
+ END
+ LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION CLERIC_EMPOWERED_HEALING
+   STR_VAR resref=""
+BEGIN
+
+   LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=DW_POWER_UPGRADE12 RET stat_ind_low=stat_ind END
+   LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=DW_POWER_UPGRADE11 RET stat_ind_high=stat_ind END
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>328 mode=>1 timing=>9 target=>1 power=>1 parameter2=>%stat_ind_low%"
+      add_effect_inline'=>"opcode=>328 mode=>1 timing=>9 target=>1 power=>1 parameter2=>%stat_ind_high%"
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION CLERIC_DIVINE_SHELL
+   STR_VAR resref=""
+BEGIN
+    MAKE_PATCH
+       patch_ability_inline=>"casting_time=>2"
+       clone_effect_inline=>"match=>~opcode=30~ number_to_add=>4 opcode=>~entry_index from [86 87 88 89]~ parameter1=>80"
+    END
+    LAF edit_spell STR_VAR spell="%resref%" edits=patch_data END
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION CLERIC_DIVINE_PROTECTION
+   STR_VAR resref=""
+BEGIN
+    // make the protective spell itself
+    
+    MAKE_PATCH
+       add_basic_ability=>null
+       say_name=>3320
+       add_effect_inline=>"target=>1 opcode=>146 parameter2=>1 resource=>%CLERIC_SHIELD_OF_THE_ARCHONS%"
+       add_effect_inline'=>"target=>1 opcode=>146 parameter2=>1 resource=>%CLERIC_SANCTUARY%"
+       add_effect_inline''=>"target=>1 opcode=>146 parameter2=>1 resource=>%CLERIC_PHYSICAL_MIRROR%"
+       add_effect_inline'''=>"opcode=>146 target=>1 timing=>4 duration=>2400 resource=>%resref%"
+       add_effect_inline'4=>"opcode=>321 target=>1 resource=>%resref%"
+    END
+    LAF make_spell STR_VAR spell=dw#divp edits=patch_data END
+
+    // make the applicator spell
+
+    MAKE_PATCH
+       add_basic_ability=>null
+       add_effect_inline=>"opcode=>232 target=>1 timing=>9 parameter2=>2 resource=>dw#divp"
+    END
+    LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION HELM_IMPROVED_SEEKING_SWORD
+   STR_VAR resref=""
+BEGIN
+
+   // resolve splstate
+   
+   LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=DW_POWER_UPGRADE3 RET stat_ind END
+
+
+   // make the new sword
+   
+   MAKE_PATCH
+      delete_effect_global=>"opcode=145" // no longer disables spellcasting
+      add_effect_inline=>"opcode=>12 target=>2 dicenum=>1 dicesize=>6 parameter2b=>8 timing=>1 resist_dispel=>2" // 1d6 fire damage
+      enchantment=>5
+      patch_ability_inline=>"to_hit=>5 damage_bonus=>5"
+   END
+   LAF clone_item STR_VAR item="sw1hseek=>sw1hsek2" edits=patch_data END
+
+   // clone the original spell to summon one or other sword
+
+   MAKE_PATCH
+      name1_string=>"-1"
+   END
+   LAF clone_spell STR_VAR spell="%HELM_SEEKING_SWORD%=>%HELM_SEEKING_SWORD%B" edits=patch_data END
+   MAKE_PATCH
+      name1_string=>"-1"
+      patch_effect_inline=>"match=>~opcode=111~ resource=>SW1HSEK2"
+   END
+   LAF clone_spell STR_VAR spell="%HELM_SEEKING_SWORD%=>%HELM_SEEKING_SWORD%C" edits=patch_data END
+
+   // make the core selector spell
+   
+   MAKE_PATCH
+        delete_effect=>1
+        delete_ability=>"ability_min_level>1"
+        add_effect_inline=>"opcode=>326 target=>1 parameter1=>%stat_ind% parameter2=>110 resource=>%HELM_SEEKING_SWORD%C"
+        add_effect_inline'=>"opcode=>326 target=>1 parameter1=>%stat_ind% parameter2=>111 resource=>%HELM_SEEKING_SWORD%B"
+   END
+   LAF edit_spell STR_VAR spell="%HELM_SEEKING_SWORD%" edits=patch_data END
+
+   // make the HLA itself
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>328 mode=>1 timing=>9 target=>1 power=>1 parameter2=>%stat_ind%"
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION LATHANDER_ENHANCED_BOON
+   STR_VAR resref=""
+BEGIN
+
+   // resolve splstate
+   
+   LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=DW_POWER_UPGRADE3 RET stat_ind END
+
+   // clone the original spell to include the power upgrade
+
+   MAKE_PATCH
+      name1_string=>"-1"
+   END
+   LAF clone_spell STR_VAR spell="%LATHANDER_BOON%=>%LATHANDER_BOON%B" edits=patch_data END
+   MAKE_PATCH
+      name1_string=>"-1"
+      patch_effect_inline=>"match=>~opcode is_in [33 34 35 36 37 54 73]~ parameter1=>3"
+      add_effect_inline=>"opcode=>224 target=>1 timing=>1"
+   END
+   LAF clone_spell STR_VAR spell="%LATHANDER_BOON%=>%LATHANDER_BOON%C" edits=patch_data END
+
+   // make the core selector spell
+   
+   MAKE_PATCH
+        delete_effect=>1
+        delete_ability=>"ability_min_level>1"
+        add_effect_inline=>"opcode=>326 target=>1 parameter1=>%stat_ind% parameter2=>110 resource=>%LATHANDER_BOON%C"
+        add_effect_inline'=>"opcode=>326 target=>1 parameter1=>%stat_ind% parameter2=>111 resource=>%LATHANDER_BOON%B"
+   END
+   LAF edit_spell STR_VAR spell="%LATHANDER_BOON%" edits=patch_data END
+
+   // make the HLA itself
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>328 mode=>1 timing=>9 target=>1 power=>1 parameter2=>%stat_ind%"
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+
+END
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION SWIFT_SHAPESHIFT
+   STR_VAR resref=""
+BEGIN
+   LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=DW_POWER_UPGRADE14 RET stat_ind END
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>328 mode=>1 timing=>9 target=>1 power=>1 parameter2=>%stat_ind%"
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION CLERIC_THUNDERSTORM
+   STR_VAR resref=""
+BEGIN
+   // make the payload spell
+   MAKE_PATCH
+      delete_ability=>"ability_min_level>1"
+      patch_ability_inline=>"projectile=>23"
+      patch_effect_inline=>"dicenum=>8"
+      add_effect_inline=>"opcode=>80 target=>2 timing=>0 duration=>18 save_vs_spells=>1"
+      outdoors_only=>0
+   END
+   LAF clone_spell STR_VAR spell="%CLERIC_CALL_LIGHTNING%=>dw#thun2" edits=patch_data END
+
+   // make the main spell
+   MAKE_PATCH
+      delete_effect=>1
+      patch_ability_inline=>"projectile=>159"
+      add_effect_inline=>"opcode=>146 target=>2 timing=>1 parameter2=>1 resource=>dw#thun2"
+   END
+   LAF clone_spell STR_VAR spell="%CLERIC_STORM_OF_VENGEANCE%=>%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION TALOS_STORMLORD
+   STR_VAR resref=""
+BEGIN
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>28 timing=>9 target=>1 power=>1 parameter1=>25"
+      add_effect_inline'=>"opcode=>29 timing=>9 target=>1 power=>1 parameter1=>25"
+      add_effect_inline''=>"opcode=>30 timing=>9 target=>1 power=>1 parameter1=>25"
+   END
+   LAF make_spell STR_VAR spell=dw#hltsl edits=patch_data END
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION TYR_MASS_ACCLAMATION
+   STR_VAR resref=""
+BEGIN
+   MAKE_PATCH
+        patch_ability_inline=>"projectile=>158 ability_range=>50"
+   END
+   LAF clone_spell STR_VAR spell="ohtyr1=>%resref%" edits=patch_data END
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION HELM_PIERCE_THE_VEIL
+   STR_VAR resref=""
+BEGIN
+   LAF clone_spell STR_VAR spell="dw#hlprc=>%resref%" END
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION TYR_BANE_OF_CHAOS
+   STR_VAR resref=""
+BEGIN
+   LAF clone_spell STR_VAR spell="tg#virt=>%resref%" END
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION LATHANDER_BLESSING
+   STR_VAR resref=""
+BEGIN
+   MAKE_PATCH
+        patch_ability_inline=>"projectile=>158"
+   END
+
+   LAF clone_spell STR_VAR spell="%LATHANDER_BOON%=>%resref%" edits=patch_data END
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION LATHANDER_ENHANCED_HOLD_UNDEAD
+   STR_VAR resref=""
+BEGIN
+
+   LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=DW_POWER_UPGRADE14 RET stat_ind END
+
+   // the setup
+   LAF enhanced_hold_undead_setup END
+
+   // the HLA itself
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>328 mode=>1 timing=>9 target=>1 power=>1 parameter2=>%stat_ind%"
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION DRUID_VOLCANO
+   STR_VAR resref=""
+BEGIN
+   LAF edit_spell STR_VAR spell="%resref%" editstring="delete_effect=>~resource=li#difa~" END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION SHAPESHIFTER_SLASHING_CLAWS
+   STR_VAR resref=""
+BEGIN
+   LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=DW_POWER_UPGRADE13 RET stat_ind END
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>328 mode=>1 timing=>9 target=>1 power=>1 parameter2=>%stat_ind%"
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION SHAPESHIFTER_FERAL_STRENGTH
+   STR_VAR resref=""
+BEGIN
+   LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=DW_POWER_UPGRADE3 RET stat_ind END
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>328 mode=>1 timing=>9 target=>1 power=>1 parameter2=>%stat_ind%"
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION SHAPESHIFTER_FERAL_REGENERATION
+   STR_VAR resref=""
+BEGIN
+   LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=DW_POWER_UPGRADE5 RET stat_ind END
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>328 mode=>1 timing=>9 target=>1 power=>1 parameter2=>%stat_ind%"
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION SHAPESHIFTER_TRUE_SHAPESHIFTER
+   STR_VAR resref=""
+BEGIN
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>172 target=>1 resource=>%SHAPESHIFTER_SHAPESHIFT_WEREWOLF%"
+      add_effect_inline'=>"opcode=>172 target=>1 resource=>%SHAPESHIFTER_SHAPESHIFT_GREATERWEREWOLF%"
+      add_effect_inline''=>"opcode=>321 target=>1 resource=>dw#hlssh"
+      add_effect_inline'''=>"opcode=>171 target=>1 timing=>1 resource=>dw#wernt"
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION EMPOWERED_TOTEMIC_SUMMONING
+   STR_VAR resref=""
+BEGIN
+    // setup
+    LAF empowered_creature_setup STR_VAR script=dw#toemp splstate=DW_POWER_UPGRADE13 END
+   // make the marker spell
+    LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=DW_POWER_UPGRADE13 RET stat_ind END
+    MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>328 mode=>1 timing=>9 target=>1 power=>1 parameter2=>%stat_ind%"
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+   // apply to all the animals
+   OUTER_SPRINT SFO_empowered_script_name dw#toemp
+   LAF iter_resource STR_VAR to_check="spcl622.spl spcl623.spl spcl624.spl spcl625.spl" func=iterfunc_empower END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION TOTEMIC_SPIRIT_WOLF
+   STR_VAR resref=""
+BEGIN
+   MAKE_PATCH
+       level=>1
+       spell_type=>innate
+       add_basic_ability=>null
+       patch_ability_inline=>"ability_icon=>spiritw  ability_icon_loc=>4"
+       add_effect_inline=>"opcode=>142 target=>1 parameter2=>157 timing=>1 resist_dispel=>3"
+       add_effect_inline'=>"opcode=>328 mode=>1 timing=>1 target=>1 power=>1 parameter2=>252 resist_dispel=>3"
+       add_effect_inline''=>"opcode=>15 timing=>1 target=>1 parameter1=>3"
+       add_effect_inline'''=>"opcode=>49 timing=>1 target=>1 parameter1=>3"
+       add_effect_inline''0=>"opcode=>321 target=>1 resource=>dw#hlt4"
+       add_effect_inline''1=>"opcode=>321 target=>1 resource=>dw#hlt3"
+       add_effect_inline''2=>"opcode=>321 target=>1 resource=>dw#hlt2"
+       add_effect_inline''3=>"opcode=>321 target=>1 resource=>dw#hlt1"
+       add_effect_inline''4=>"opcode=>171 target=>1 timing=>9 resource=>%resref%"
+       add_effect_inline''5=>"opcode=>172 target=>1 timing=>9 resource=>%resref%"
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION TOTEMIC_SPIRIT_BEAR
+   STR_VAR resref=""
+BEGIN
+   MAKE_PATCH
+       level=>1
+       spell_type=>innate
+       add_basic_ability=>null
+       patch_ability_inline=>"ability_icon=>spiritb  ability_icon_loc=>4"
+       add_effect_inline'0=>"opcode=>44 timing=>1 target=>1 parameter1=>3 resist_dispel=>3"
+       add_effect_inline'1=>"opcode=>10 timing=>1 target=>1 parameter1=>3 resist_dispel=>3"
+       add_effect_inline'2=>"opcode=>101 target=>1 parameter1=>45 timing=>1 resist_dispel=>3" // stun
+       add_effect_inline'3=>"opcode=>101 target=>1 parameter1=>210 timing=>1 resist_dispel=>3" // PW:stun
+       add_effect_inline'4=>"opcode=>101 target=>1 parameter1=>39 timing=>1 resist_dispel=>3" // sleep
+       add_effect_inline'5=>"opcode=>101 target=>1 timing=>1 parameter1=>217 resist_dispel=>3" // PW:sleep
+       add_effect_inline'6=>"opcode=>296 target=>1 timing=>1 resource=>spflayer resist_dispel=>3" // MF stun anim
+       add_effect_inline'7=>"opcode=>267 target=>1 timing=>1 parameter1=>14043 resist_dispel=>3"
+       add_effect_inline'8=>"opcode=>267 target=>1 timing=>1 parameter1=>1280 resist_dispel=>3"
+       add_effect_inline'9=>"opcode=>267 target=>1 timing=>1 parameter1=>14001 resist_dispel=>3"
+       add_effect_inline'10=>"opcode=>142 target=>1 parameter2=>142 timing=>1 resist_dispel=>3"
+       add_effect_inline'11=>"opcode=>169 target=>1 timing=>1 parameter2=>14 resist_dispel=>3"
+       add_effect_inline'12=>"opcode=>169 target=>1 timing=>1 parameter2=>55 resist_dispel=>3"
+       add_effect_inline''0=>"opcode=>321 target=>1 resource=>dw#hlt4"
+       add_effect_inline''1=>"opcode=>321 target=>1 resource=>dw#hlt3"
+       add_effect_inline''2=>"opcode=>321 target=>1 resource=>dw#hlt2"
+       add_effect_inline''3=>"opcode=>321 target=>1 resource=>dw#hlt1"
+       add_effect_inline''4=>"opcode=>171 target=>1 timing=>9 resource=>%resref%"
+       add_effect_inline''5=>"opcode=>172 target=>1 timing=>9 resource=>%resref%"
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION TOTEMIC_SPIRIT_LION
+   STR_VAR resref=""
+BEGIN
+   MAKE_PATCH
+       level=>1
+       spell_type=>innate
+       add_basic_ability=>null
+       patch_ability_inline=>"ability_icon=>spiritl  ability_icon_loc=>4"
+       add_effect_inline'0=>"opcode=>44 timing=>1 target=>1 parameter1=>3 resist_dispel=>3"
+       add_effect_inline'1=>"opcode=>6 timing=>1 target=>1 parameter1=>3 resist_dispel=>3"
+       add_effect_inline'2=>"opcode=>101 target=>1 parameter1=>23 timing=>1 resist_dispel=>3"
+       add_effect_inline'3=>"opcode=>101 target=>1 parameter1=>24 timing=>1 resist_dispel=>3"
+       add_effect_inline'4=>"opcode=>101 target=>1 parameter1=>106 timing=>1 resist_dispel=>3"
+       add_effect_inline'5=>"opcode=>106 target=>1 parameter1=>1 parameter2=>1 timing=>1 resist_dispel=>3"
+       add_effect_inline'6=>"opcode=>296 target=>1 timing=>1 resource=>cdhorror resist_dispel=>3"
+       add_effect_inline'7=>"opcode=>267 target=>1 timing=>1 parameter1=>14007 resist_dispel=>3"
+       add_effect_inline'8=>"opcode=>267 target=>1 timing=>1 parameter1=>17427 resist_dispel=>3"
+       add_effect_inline'9=>"opcode=>161 target=>1 timing=>1 resist_dispel=>3"
+       add_effect_inline'10=>"opcode=>142 target=>1 parameter2=>37 timing=>1 resist_dispel=>3"
+       add_effect_inline'11=>"opcode=>169 target=>1 timing=>1 parameter2=>36 resist_dispel=>3"
+       add_effect_inline'12=>"opcode=>23 target=>1 timing=>1 resist_dispel=>3"
+       add_effect_inline'14=>"opcode=>101 target=>1 parameter1=>13 timing=>1 resist_dispel=>3"
+       add_effect_inline'15=>"opcode=>101 target=>1 parameter1=>209 timing=>1 resist_dispel=>3"
+       add_effect_inline'16=>"opcode=>101 target=>1 parameter1=>55 timing=>1 resist_dispel=>3"
+       add_effect_inline'17=>"opcode=>142 target=>1 parameter2=>99 timing=>1 resist_dispel=>3"
+       add_effect_inline'18=>"opcode=>169 target=>1 timing=>1 parameter2=>51 resist_dispel=>3"
+       add_effect_inline''0=>"opcode=>321 target=>1 resource=>dw#hlt4"
+       add_effect_inline''1=>"opcode=>321 target=>1 resource=>dw#hlt3"
+       add_effect_inline''2=>"opcode=>321 target=>1 resource=>dw#hlt2"
+       add_effect_inline''3=>"opcode=>321 target=>1 resource=>dw#hlt1"
+       add_effect_inline''4=>"opcode=>171 target=>1 timing=>9 resource=>%resref%"
+       add_effect_inline''5=>"opcode=>172 target=>1 timing=>9 resource=>%resref%"
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION TOTEMIC_SPIRIT_SNAKE
+   STR_VAR resref=""
+BEGIN
+   MAKE_PATCH
+       level=>1
+       spell_type=>innate
+       add_basic_ability=>null
+       patch_ability_inline=>"ability_icon=>spirits  ability_icon_loc=>4"
+       add_effect_inline'0=>"opcode=>49 timing=>1 target=>1 parameter1=>3 resist_dispel=>3"
+       add_effect_inline'1=>"opcode=>19 timing=>1 target=>1 parameter1=>5 resist_dispel=>3"
+       add_effect_inline'2=>"opcode=>101 target=>1 parameter1=>23 timing=>1 resist_dispel=>3"
+       add_effect_inline'3=>"opcode=>267 target=>1 timing=>1 parameter1=>14780 resist_dispel=>3"
+       add_effect_inline'4=>"opcode=>267 target=>1 timing=>1 parameter1=>14672 resist_dispel=>3"
+       add_effect_inline'5=>"opcode=>267 target=>1 timing=>1 parameter1=>8364 resist_dispel=>3"
+       add_effect_inline'6=>"opcode=>169 target=>1 timing=>1 parameter2=>0 resist_dispel=>3"
+       add_effect_inline'7=>"opcode=>169 target=>1 timing=>1 parameter2=>1 resist_dispel=>3"
+       add_effect_inline'8=>"opcode=>169 target=>1 timing=>1 parameter2=>43 resist_dispel=>3"
+       add_effect_inline'9=>"opcode=>296 target=>1 timing=>1 resource=>spflayer resist_dispel=>3"
+       add_effect_inline'10=>"opcode=>296 target=>1 timing=>1 resource=>spnwchrm resist_dispel=>3"
+       add_effect_inline'11=>"opcode=>101 target=>1 parameter1=>25 timing=>1 resist_dispel=>3"
+       add_effect_inline'12=>"opcode=>267 target=>1 parameter1=>14017 timing=>1 resist_dispel=>3"
+       add_effect_inline'13=>"opcode=>267 target=>1 parameter1=>14662 timing=>1 resist_dispel=>3"
+       add_effect_inline'14=>"opcode=>169 target=>1 timing=>1 parameter2=>6 resist_dispel=>3"
+       add_effect_inline'15=>"opcode=>142 target=>1 parameter2=>30 timing=>1 resist_dispel=>3"
+       add_effect_inline'16=>"opcode=>142 target=>1 parameter2=>52 timing=>1 resist_dispel=>3"
+       add_effect_inline'17=>"opcode=>173 target=>1 parameter1=>100 timing=>1 resist_dispel=>3"
+       add_effect_inline''0=>"opcode=>321 target=>1 resource=>dw#hlt4"
+       add_effect_inline''1=>"opcode=>321 target=>1 resource=>dw#hlt3"
+       add_effect_inline''2=>"opcode=>321 target=>1 resource=>dw#hlt2"
+       add_effect_inline''3=>"opcode=>321 target=>1 resource=>dw#hlt1"
+       add_effect_inline''4=>"opcode=>171 target=>1 timing=>9 resource=>%resref%"
+       add_effect_inline''5=>"opcode=>172 target=>1 timing=>9 resource=>%resref%"
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION DRUID_TRANQUILITY
+   STR_VAR resref=""
+BEGIN
+
+   LAF edit_spell STR_VAR spell="%resref%" editstring="delete_effect=>~opcode=40 or opcode=142~" END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION DRUID_BLESSING_OF_THE_FEY
+   STR_VAR resref=""
+BEGIN
+    // make the protective spell itself
+
+    MAKE_PATCH
+       add_basic_ability=>null
+       say_name=>3373
+       add_effect_inline=>"target=>1 opcode=>146 parameter2=>1 resource=>%CLERIC_IRONSKIN%"
+       add_effect_inline'=>"target=>1 opcode=>146 parameter2=>1 resource=>%WIZARD_IMPROVED_INVISIBILITY%"
+       add_effect_inline''=>"target=>1 opcode=>146 parameter2=>1 resource=>%CLERIC_PHYSICAL_MIRROR%"
+       add_effect_inline'''=>"opcode=>146 target=>1 timing=>4 duration=>2400 resource=>%resref%"
+       add_effect_inline'4=>"opcode=>321 target=>1 resource=>%resref%"
+    END
+    LAF make_spell STR_VAR spell=dw#bfey edits=patch_data END
+
+    // make the applicator spell
+
+    MAKE_PATCH
+       add_basic_ability=>null
+       add_effect_inline=>"opcode=>232 target=>1 timing=>9 parameter2=>2 resource=>dw#bfey"
+    END
+    LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION DWARVEN_DEFENDER_IMPROVED_STANCE
+   STR_VAR resref=""
+BEGIN
+
+   // the SPLSTATE stats
+   LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=DW_POWER_UPGRADE11 RET stat_ind_1=stat_ind END
+   LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=DW_POWER_UPGRADE12 RET stat_ind_2=stat_ind END
+   LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=DW_POWER_UPGRADE13 RET stat_ind_3=stat_ind END
+   LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=DW_POWER_UPGRADE14 RET stat_ind_4=stat_ind END
+
+   // the modifications to the spell
+   
+   MAKE_PATCH
+      add_effect_inline'0=>"at_end=>1 opcode=>318 target=>1 parameter1=>%stat_ind_1% parameter2=>111 resource=>filename duration=>1"
+      add_effect_inline'1=>"at_end=>1 opcode=>173 target=>1 parameter1=>40 duration=>60"  // poison + 40
+      add_effect_inline'2=>"at_end=>1 opcode=>318 target=>1 parameter1=>%stat_ind_2% parameter2=>111 resource=>filename duration=>1"
+      add_effect_inline'3=>"at_end=>1 opcode=>173 target=>1 parameter1=>35 duration=>60"  // poison + 35
+      add_effect_inline'4=>"at_end=>1 opcode=>27 target=>1 parameter1=>20 duration=>60"  // elemental + 20
+      add_effect_inline'5=>"at_end=>1 opcode=>28 target=>1 parameter1=>20 duration=>60"
+      add_effect_inline'6=>"at_end=>1 opcode=>29 target=>1 parameter1=>20 duration=>60"
+      add_effect_inline'7=>"at_end=>1 opcode=>30 target=>1 parameter1=>20 duration=>60"
+      add_effect_inline'8=>"at_end=>1 opcode=>318 target=>1 parameter1=>%stat_ind_3% parameter2=>111 resource=>filename duration=>1"
+      add_effect_inline'9=>"at_end=>1 opcode=>27 target=>1 parameter1=>20 duration=>60"  // elemental + 20
+      add_effect_inline'10=>"at_end=>1 opcode=>28 target=>1 parameter1=>20 duration=>60"
+      add_effect_inline'11=>"at_end=>1 opcode=>29 target=>1 parameter1=>20 duration=>60"
+      add_effect_inline'12=>"at_end=>1 opcode=>30 target=>1 parameter1=>20 duration=>60"
+      add_effect_inline'13=>"at_end=>1 opcode=>166 target=>1 parameter1=>20 duration=>60" // MR + 20
+      add_effect_inline'14=>"at_end=>1 opcode=>318 target=>1 parameter1=>%stat_ind_4% parameter2=>111 resource=>filename duration=>1"
+      add_effect_inline'15=>"at_end=>1 opcode=>31 target=>1 parameter1=>30 duration=>60"   // MDR + 30
+      add_effect_inline'16=>"at_end=>1 opcode=>166 target=>1 parameter1=>20 duration=>60" // MR + 20
+   END
+   LAF edit_spell STR_VAR spell=SPDWD02 edits=patch_data END
+
+   // the helper spells for the HLA
+   
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>328 mode=>1 timing=>9 target=>1 power=>1 parameter2=>%stat_ind_2%"
+   END
+   LAF make_spell STR_VAR spell=dwhlddh2 edits=patch_data END
+   LAF clone_spell STR_VAR spell="dwhlddh2=>dwhlddh3" editstring="patch_effect_inline=>~parameter2=>%stat_ind_3%~" END
+   LAF clone_spell STR_VAR spell="dwhlddh2=>dwhlddh4" editstring="patch_effect_inline=>~parameter2=>%stat_ind_4%~" END
+
+   // the HLA itself
+   
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline'0=>"at_end=>1 opcode=>326 timing=>9 target=>1 parameter1=>%stat_ind_3% parameter2=>110 resource=>dwhlddh4" // if parameter 3 set, apply parameter 4
+      add_effect_inline'1=>"at_end=>1 opcode=>318 duration=>1 target=>1 parameter1=>%stat_ind_3% parameter2=>110 resource=>filename" // if parameter 3 set, block rest of spell
+      add_effect_inline'2=>"at_end=>1 opcode=>326 timing=>9 target=>1 parameter1=>%stat_ind_2% parameter2=>110 resource=>dwhlddh3" // if parameter 2 set, apply parameter 3
+      add_effect_inline'3=>"at_end=>1 opcode=>318 duration=>1 target=>1 parameter1=>%stat_ind_2% parameter2=>110 resource=>filename" // if parameter 2 set, block rest of spell
+      add_effect_inline'4=>"at_end=>1 opcode=>326 timing=>9 target=>1 parameter1=>%stat_ind_1% parameter2=>110 resource=>dwhlddh2" // if parameter 1 set, apply parameter 2
+      add_effect_inline'5=>"at_end=>1 opcode=>318 duration=>1 target=>1 parameter1=>%stat_ind_1% parameter2=>110 resource=>filename" // if parameter 1 set, block rest of spell
+      add_effect_inline'6=>"at_end=>1 opcode=>328 mode=>1 timing=>9 target=>1 power=>1 parameter2=>%stat_ind_1%"  // set parameter 1
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION DRAGON_DISCIPLE_EXTRA_BREATH
+   STR_VAR resref=""
+BEGIN
+   // get stats
+   LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=DW_POWER_UPGRADE4 RET stat_ind_low=stat_ind END
+   LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id=DW_POWER_UPGRADE5 RET stat_ind_high=stat_ind END
+   
+   // helper spell
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"opcode=>328 mode=>1 timing=>9 target=>1 power=>1 parameter2=>%stat_ind_high%"
+   END
+   LAF make_spell STR_VAR spell=dwhlexb2 edits=patch_data END
+
+   // main effect
+   
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline'4=>"at_end=>1 opcode=>326 timing=>9 target=>1 parameter1=>%stat_ind_low% parameter2=>110 resource=>dwhlexb2" // if parameter 1 set, apply parameter 2
+      add_effect_inline'5=>"at_end=>1 opcode=>318 duration=>1 target=>1 parameter1=>%stat_ind_low% parameter2=>110 resource=>filename" // if parameter 1 set, block rest of spell
+      add_effect_inline'6=>"at_end=>1 opcode=>328 mode=>1 timing=>9 target=>1 power=>1 parameter2=>%stat_ind_low%"  // set parameter 1
+   END
+   LAF make_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+DEFINE_ACTION_FUNCTION ARCANE_KNOWLEDGE_ABJURATION
+   STR_VAR resref=""
+BEGIN
+   OUTER_SPRINT school @3040
+   LAF arcane_knowledge_maker STR_VAR school resref END
+END
+
+DEFINE_ACTION_FUNCTION ARCANE_KNOWLEDGE_ALTERATION
+   STR_VAR resref=""
+BEGIN
+   OUTER_SPRINT school @3041
+   LAF arcane_knowledge_maker STR_VAR school resref END
+END
+
+DEFINE_ACTION_FUNCTION ARCANE_KNOWLEDGE_CONJURATION
+   STR_VAR resref=""
+BEGIN
+   OUTER_SPRINT school @3042
+   LAF arcane_knowledge_maker STR_VAR school resref END
+END
+
+DEFINE_ACTION_FUNCTION ARCANE_KNOWLEDGE_DIVINATION
+   STR_VAR resref=""
+BEGIN
+   OUTER_SPRINT school @3043
+   LAF arcane_knowledge_maker STR_VAR school resref END
+END
+
+DEFINE_ACTION_FUNCTION ARCANE_KNOWLEDGE_ENCHANTMENT
+   STR_VAR resref=""
+BEGIN
+   OUTER_SPRINT school @3044
+   LAF arcane_knowledge_maker STR_VAR school resref END
+END
+
+DEFINE_ACTION_FUNCTION ARCANE_KNOWLEDGE_ILLUSION
+   STR_VAR resref=""
+BEGIN
+   OUTER_SPRINT school @3045
+   LAF arcane_knowledge_maker STR_VAR school resref END
+END
+
+DEFINE_ACTION_FUNCTION ARCANE_KNOWLEDGE_INVOCATION
+   STR_VAR resref=""
+BEGIN
+   OUTER_SPRINT school @3046
+   LAF arcane_knowledge_maker STR_VAR school resref END
+END
+
+DEFINE_ACTION_FUNCTION ARCANE_KNOWLEDGE_NECROMANCY
+   STR_VAR resref=""
+BEGIN
+   OUTER_SPRINT school @3047
+   LAF arcane_knowledge_maker STR_VAR school resref END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+DEFINE_ACTION_FUNCTION arcane_knowledge_maker
+    STR_VAR resref="" school=""
+BEGIN
+    OUTER_SPRINT name @3009
+    OUTER_SPRINT desc @3010
+    OUTER_PATCH_SAVE name "%name%" BEGIN
+            REPLACE_TEXTUALLY PLACEHOLDER "%school%"
+    END
+    OUTER_PATCH_SAVE desc "%desc%" BEGIN
+            REPLACE_TEXTUALLY PLACEHOLDER "%school%"
+    END
+    ACTION_MATCH "%school%" WITH
+    abjuration BEGIN
+          OUTER_SET school_num=1
+    END
+    alteration BEGIN
+          OUTER_SET school_num=8
+    END
+    conjuration BEGIN
+          OUTER_SET school_num=2
+    END
+    divination BEGIN
+          OUTER_SET school_num=3
+    END
+    enchantment BEGIN
+          OUTER_SET school_num=4
+    END
+    illusion BEGIN
+          OUTER_SET school_num=5
+    END
+    invocation evocation BEGIN
+          OUTER_SET school_num=6
+    END
+    necromancy BEGIN
+          OUTER_SET school_num=7
+    END
+    DEFAULT
+       OUTER_SET school_num=0
+       LAF warning STR_VAR warning="unrecognised school %school% in arcane_knowledge_maker" END
+    END
+    MAKE_PATCH
+       set_name=>"%name%"
+       set_description=>"%desc%"
+       patch_effect_inline=>"match=>~opcode=19~ timing=>9" // Refinements uses wrong timing mode for Int bonus
+       add_effect_inline=>"opcode=>346 target=>1 timing=>9 parameter1=>1 parameter2=>0 mode=>%school_num%"
+    END
+    LAF install_spell STR_VAR spell="tg#clea=>%resref%" location=shared edits=patch_data END
+    ACTION_IF !FILE_EXISTS_IN_GAME "tg#cleab.bam" BEGIN
+       LAF install STR_VAR file=tg#cleab.bam location=shared END
+    END
+END
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+DEFINE_ACTION_FUNCTION 206_to_321 
+   STR_VAR resref=""
+BEGIN
+   MAKE_PATCH
+      delete_effect=>"opcode=206"
+      add_effect_inline=>"opcode=>321 target=>1 power=>1 resource=>%resref%"
+   END
+   LAF edit_spell STR_VAR spell="%resref%" edits=patch_data END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION empowered_creature_setup 
+           STR_VAR splstate=""
+                   script=""
+BEGIN
+
+   ACTION_IF !FILE_EXISTS_IN_GAME dw#empow.spl BEGIN
+      // the spell
+      OUTER_SET empowerstring=RESOLVE_STR_REF ((AT 3148))
+      MAKE_PATCH
+         add_basic_ability=>null
+         add_effect_inline=>"target=>1 opcode=>139 timing=>1 parameter1=>%empowerstring%"
+         add_effect_inline'0=>"target=>1 timing=>1 opcode=>54 parameter1=>2"   // thac0
+         add_effect_inline'1=>"target=>1 timing=>1 opcode=>73 parameter1=>2"   // damage
+         add_effect_inline'2=>"target=>1 timing=>1 opcode=>345 parameter1=>2 mode=>3"   // enchantment
+         add_effect_inline'3=>"target=>1 timing=>1 opcode=>325 parameter1=>2"   // saving throws
+         add_effect_inline'4=>"target=>1 timing=>1 opcode=>0 parameter1=>4"   // AC
+      END
+      LAF make_spell STR_VAR spell=dw#empow edits=patch_data END
+   END
+   
+   ACTION_IF !FILE_EXISTS_IN_GAME "%script%.bcs" BEGIN
+      // the script
+
+      LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id="%splstate%" RET stat_ind END
+
+      <<<<<<<< .../stratagems-inline/%script%.baf
+      IF
+        OnCreation()
+        CheckSpellState(LastSummonerOf(Myself),%splstate%)
+        !Global("empowered","LOCALS",1)
+      THEN
+         RESPONSE #100
+            SetGlobal("empowered","LOCALS",1)
+            ApplySpellRES("dw#empow",Myself)
+            Continue()
+      END
+      >>>>>>>>
+
+      LAF install STR_VAR file="%script%.baf" inline=yes END
+   END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION iterfunc_empower   // violates encapsulation via SFO_empowered_script_name variable
+   STR_VAR resref=""
+           ext=""
+   RET output
+BEGIN
+   OUTER_SPRINT output ""
+   ACTION_MATCH "%ext%" WITH
+   cre BEGIN
+       LAF edit_creature STR_VAR creature="%resref%" editstring="insert_script_high=>%SFO_empowered_script_name%" END
+   END
+   DEFAULT END
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION friendly_fiends
+        STR_VAR script_loc=""     // carries the locbase for the scripts
+BEGIN
+
+    // define variables
+
+    OUTER_SPRINT splstate_low DW_POWER_UPGRADE4
+    OUTER_SPRINT splstate_high DW_POWER_UPGRADE5
+
+    LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id="%splstate_low%" RET stat_ind_low=stat_ind END
+    LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id="%splstate_high%" RET stat_ind_high=stat_ind END
+
+    // make needed spells
+
+    // vanilla is:
+    // - nabassu (demnabsu): silence once; Vampiric Touch and paralysis at will; death gaze overlaid
+    // - glabrezu (demglasu): Remove Magic once; PW:Stun at will (but maybe make 7 x)
+    // - pit fiend (dempitsu): Fear once; Remove Magic once; Symbol: Fear and Deathknight Fireball at will
+
+    // make SPL files
+
+    LAF fiend_spells END
+
+    // edit CRE files
+    
+    MAKE_PATCH
+       remove_spells=>all
+       add_spells=>"TANARI_PARALYZE TANARI_VAMPIRIC_TOUCH TANARI_SILENCE TANARI_DEATH_GAZE"
+       make_casting_innate=>1
+    END
+    LAF edit_creature STR_VAR creature=demnabsu edits=patch_data END
+
+    MAKE_PATCH
+       remove_spells=>all
+       add_spells=>"WIZARD_POWER_WORD_STUN(7) WIZARD_DISPEL_MAGIC"
+       make_casting_innate=>1
+    END
+    LAF edit_creature STR_VAR creature=demglasu edits=patch_data END
+
+    MAKE_PATCH
+       remove_spells=>all
+       add_spells=>"INNATE_FIEND_FIREBALL INNATE_FIEND_SYMBOL_FEAR WIZARD_DISPEL_MAGIC DEMON_FEAR"
+       make_casting_innate=>1
+    END
+    LAF edit_creature STR_VAR creature=dempitsu edits=patch_data END
+
+    // make scripts
+    CLEAR_IDS_MAP
+    LAF ssl_to_bcs STR_VAR locbase="%script_loc%" script="dw#hlgla dw#hlnab dw#hlpit" END
+
+    // amend existing scripts
+    
+    MAKE_PATCH
+       dempitsu=>dw#hlpit
+       demglasu=>dw#hlgla
+       demnabsu=>dw#hlnab
+    END
+    ACTION_PHP_EACH patch_data AS script=>newscript BEGIN
+       ACTION_MATCH "%script%" WITH
+          dempitsu BEGIN 
+              OUTER_SPRINT splstate "%splstate_low%"
+          END
+       DEFAULT
+              OUTER_SPRINT splstate "%splstate_high%"
+       END
+       <<<<<<<< .../stratagems-inline/demontop.baf
+       IF
+             OnCreation()
+             CheckSpellState(LastSummonerOf(Myself),%splstate%)
+             Allegiance(LastSummonerOf(Myself),GOODCUTOFF)
+       THEN
+           RESPONSE #100
+             ChangeGeneral(Myself,MONSTER)
+             ChangeAIScript("%newscript%",OVERRIDE)
+             ChangeAIScript("",DEFAULT)
+             Ally()
+       END
+
+       IF
+             OnCreation()
+             CheckSpellState(LastSummonerOf(Myself),%splstate%)
+             Allegiance(LastSummonerOf(Myself),EVILCUTOFF)
+       THEN
+           RESPONSE #100
+             ChangeGeneral(Myself,MONSTER)
+             ChangeAIScript("%newscript%",OVERRIDE)
+             ChangeAIScript("",DEFAULT)
+             Enemy()
+       END
+       >>>>>>>>
+       LAF extend STR_VAR script top=demontop inline=yes END
+    END
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION damnation INT_VAR damned=40011 no_resurrection=40010 more_evil=40012 BEGIN
+ ACTION_IF !FILE_EXISTS_IN_GAME dw#damn.spl BEGIN // only do all this once
+ 
+    OUTER_SPRINT splstate_low DW_POWER_UPGRADE4
+    OUTER_SPRINT splstate_high DW_POWER_UPGRADE5
+
+    LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id="%splstate_low%" RET stat_ind_low=stat_ind END
+    LAF ds_resolve_stat INT_VAR ids=1 STR_VAR id="%splstate_high%" RET stat_ind_high=stat_ind END
+
+
+   // create a specific-alignment-check SPLPROT entry
+   LAF resolve_splprot_entry INT_VAR stat=0x110 value="-1" STR_VAR relation=equal  RET splprot_align=value END
+   
+   // get some strings from the dialog file
+   OUTER_SET damned=RESOLVE_STR_REF ((AT damned))
+   OUTER_SET no_resurrection=RESOLVE_STR_REF ((AT no_resurrection))  // aren't we theological today?
+   OUTER_SET more_evil=RESOLVE_STR_REF ((AT more_evil))
+   
+   // create the spell that marks you as damned
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline'1=>"opcode=>232 target=>1 timing=>1 parameter2=>16 resource=>dw#dampl"
+   END
+   LAF make_spell STR_VAR spell=dw#damn edits=patch_data END
+
+   // create the actual payload, that deletes you if you die
+   MAKE_PATCH
+      add_effect_inline=>"opcode=>330 target=>2 parameter1=>%no_resurrection%"
+      name1_string=>"-1"
+      name2_string=>"-1"
+      delete_effect=>"opcode=12"
+      patch_effect_inline=>"match=>~opcode=55~ opcode=>168 parameter1=>0 parameter2=>0"
+   END
+   LAF clone_spell STR_VAR spell="spin864=>dw#dampl" edits=patch_data END // clone of Rapture of the Father
+
+   // create the "become more evil" spell
+   MAKE_PATCH
+      add_basic_ability=>null
+      add_effect_inline=>"target=>2 opcode=>326 parameter1=>17 parameter2=>%splprot_align% resource=>dw#amkln"
+      add_effect_inline'=>"target=>2 opcode=>326 parameter1=>18 parameter2=>%splprot_align% resource=>dw#amkle"
+      add_effect_inline'0=>"target=>2 opcode=>326 parameter1=>33 parameter2=>%splprot_align% resource=>dw#amknn"
+      add_effect_inline'1=>"target=>2 opcode=>326 parameter1=>34 parameter2=>%splprot_align% resource=>dw#amkne"
+      add_effect_inline'2=>"target=>2 opcode=>326 parameter1=>49 parameter2=>%splprot_align% resource=>dw#amkcn"
+      add_effect_inline'3=>"target=>2 opcode=>326 parameter1=>50 parameter2=>%splprot_align% resource=>dw#amkce"
+      add_effect_inline'4=>"target=>2 opcode=>139 parameter1=>%more_evil%"
+  END
+  LAF make_spell STR_VAR spell=dw#evil edits=patch_data END
+  
+  // create its needed subspells
+  ACTION_DEFINE_ASSOCIATIVE_ARRAY align_map BEGIN
+     ln=>18
+     le=>19
+     nn=>34
+     ne=>35
+     cn=>50
+     ce=>51
+  END
+  ACTION_PHP_EACH align_map AS code=>val BEGIN
+     MAKE_PATCH
+        add_basic_ability=>null
+        add_effect_inline=>"target=>2 timing=>9 opcode=>57 parameter2=>%val%"
+     END
+     LAF make_spell STR_VAR spell="dw#amk%code%" edits=patch_data END
+  END
+  // edit the various fiend-summoning spells
+  ACTION_FOR_EACH spell IN WIZARD_CACOFIEND WIZARD_SUMMON_FIEND WIZARD_GATE DW#HLBA DW#HLPF DW#HLIC DW#HLAP BEGIN
+       // set parameters
+       ACTION_MATCH "%spell%" WITH 
+       WIZARD_GATE DW#HLBA DW#HLPF BEGIN
+          OUTER_SET stat_ind=stat_ind_high
+          OUTER_SET damnation_chance=100
+       END 
+       DEFAULT
+          OUTER_SET stat_ind=stat_ind_low
+          OUTER_SET damnation_chance=100
+       END
+
+       // edit the baseline spell
+
+       MAKE_PATCH
+            add_effect_inline=>"at_end=>1 opcode=>318 target=>1 power=>0 parameter1=>%stat_ind% parameter2=>111 resource=>%spell%" // block rest of spell if variable is not set
+            add_effect_inline'0=>"at_end=>1 opcode=>326 target=>1 probability1=>%damnation_chance% resource=>dw#evil parameter2=>38" // make evil (skip if already evil)
+            add_effect_inline'1=>"at_end=>1 opcode=>318 target=>1 resource=>filename parameter2=>38" // if you're nonevil, skip the rest
+            add_effect_inline'2=>"at_end=>1 opcode=>146 target=>1 resource=>dw#damn parameter2=>1"
+            add_effect_inline'3=>"at_end=>1 opcode=>206 target=>1 parameter1=>~-1~ timing=>4 duration=>6 probability1=>%damnation_chance% resource=>dw#damn" // only apply damnation effect once (but delay this a few seconds so as to give dw#damn a chance to kick in)
+       END
+       LAF edit_spell INT_VAR allow_missing=1 STR_VAR spell edits=patch_data END
+  END
+ END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION fiend_spells BEGIN
+
+   LAF check_label STR_VAR label="dw#fiend_spells_made" RET value END
+   ACTION_IF !value BEGIN
+
+       LAF make_label STR_VAR label="dw#fiend_spells_made" END
+
+       LAF make_innate_repeating_spell INT_VAR overwrite=1 STR_VAR arguments="TANARI_PARALYZE TANARI_VAMPIRIC_TOUCH TANARI_DEATH_GAZE" END
+       LAF make_innate_repeating_spell STR_VAR arguments="DEATHKNIGHT_FIREBALL=>INNATE_FIEND_FIREBALL WIZARD_NPC_SYMBOL_FEAR=>INNATE_FIEND_SYMBOL_FEAR" END
+
+       MAKE_PATCH
+          icon=>spwi605c
+          patch_ability_inline=>"ability_icon=>spwi605b"
+       END
+       LAF edit_spell STR_VAR spell=TANARI_DEATH_GAZE edits=patch_data END
+
+   END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION blackguard_alignment_markers BEGIN
+
+  // create a specific-alignment-check SPLPROT entry
+   LAF resolve_splprot_entry INT_VAR stat=0x110 value="-1" STR_VAR relation=equal  RET splprot_align=value END
+    // markers
+   ACTION_IF !FILE_EXISTS_IN_GAME dw#chao.spl BEGIN
+      LAF make_spell STR_VAR spell=dw#chao editstring="add_basic_ability=>null add_effect_inline=>~opcode=>313 timing=>9 resource=>dw#chao target=>1~" END
+   END
+   ACTION_IF !FILE_EXISTS_IN_GAME dw#lawf.spl BEGIN
+      LAF make_spell STR_VAR spell=dw#lawf editstring="add_basic_ability=>null add_effect_inline=>~opcode=>313 timing=>9 resource=>dw#lawf target=>1~" END
+   END
+   ACTION_IF !FILE_EXISTS_IN_GAME dw#lcn.spl BEGIN
+      LAF make_spell STR_VAR spell=dw#lcn editstring="add_basic_ability=>null add_effect_inline=>~opcode=>313 timing=>9 resource=>dw#lcn target=>1~" END
+   END
+   // marker-application file
+   ACTION_IF !FILE_EXISTS_IN_GAME dw#ftlcn.spl BEGIN
+      MAKE_PATCH
+         add_basic_ability=>null
+         add_effect_inline'0=>"at_end=>1 target=>1 opcode=>326 parameter2=>~%splprot_align%~ parameter1=>33 resource=>dw#lcn"
+         add_effect_inline'1=>"at_end=>1 target=>1 opcode=>326 parameter2=>~%splprot_align%~ parameter1=>34 resource=>dw#lcn" 
+         add_effect_inline'2=>"at_end=>1 target=>1 opcode=>326 parameter2=>~%splprot_align%~ parameter1=>35 resource=>dw#lcn" 
+         add_effect_inline'3=>"at_end=>1 target=>1 opcode=>326 parameter2=>~%splprot_align%~ parameter1=>17 resource=>dw#lawf" 
+         add_effect_inline'4=>"at_end=>1 target=>1 opcode=>326 parameter2=>~%splprot_align%~ parameter1=>18 resource=>dw#lawf" 
+         add_effect_inline'5=>"at_end=>1 target=>1 opcode=>326 parameter2=>~%splprot_align%~ parameter1=>19 resource=>dw#lawf" 
+         add_effect_inline'6=>"at_end=>1 target=>1 opcode=>326 parameter2=>~%splprot_align%~ parameter1=>49 resource=>dw#chao" 
+         add_effect_inline'7=>"at_end=>1 target=>1 opcode=>326 parameter2=>~%splprot_align%~ parameter1=>50 resource=>dw#chao" 
+         add_effect_inline'8=>"at_end=>1 target=>1 opcode=>326 parameter2=>~%splprot_align%~ parameter1=>51 resource=>dw#chao"
+      END
+      LAF make_spell STR_VAR spell=dw#ftlcn edits=patch_data END
+   END
+   // put into blackguard CLAB
+   LAF edit_kit STR_VAR kit=BLACKGUARD editstring="apply_power=>~dw#ftlcn 1~" END
+
+END
+
+DEFINE_ACTION_FUNCTION unfascinate BEGIN
+
+   MAKE_PATCH
+      opcode=>321
+      resource=>"%resref%"
+      parameter1=>0
+      parameter2=>0
+   END
+   LAF install_spell STR_VAR spell="rr#unfsc" locbase="hla/shared" editstring="patch_effect=>patch_data" END
+
+END
+

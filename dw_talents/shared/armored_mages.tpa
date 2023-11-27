@@ -1,0 +1,228 @@
+DEFINE_ACTION_FUNCTION armored_mages BEGIN
+
+  ACTION_IF !FILE_EXISTS_IN_GAME "%spl_leather_armor_usable%.spl" BEGIN
+
+	// resolve needed stats
+
+	LAF ds_resolve_stat STR_VAR id=MAGE_CAST_IN_LEATHER RET leather_splstate=stat_ind END
+	LAF ds_resolve_stat STR_VAR id=MAGE_CAST_IN_CHAIN RET chain_splstate=stat_ind END
+	LAF ds_resolve_stat STR_VAR id=MAGE_CAST_IN_PLATE RET plate_splstate=stat_ind END
+
+	// build applicator spells
+
+	spl.make[%spl_leather_armor_usable%]
+	[
+		m.ab.add{}
+		m.ab_fx.add{s_opcode=328 s_target=2 s_timing=9 s_parameter2=leather_splstate s_special=1}
+	]
+	spl.make[%spl_chain_armor_usable%]
+	[
+		m.ab.add{}
+		m.ab_fx.add{s_opcode=328 s_target=2 s_timing=9 s_parameter2=chain_splstate s_special=1}
+	]
+	spl.make[%spl_plate_armor_usable%]
+	[
+		m.ab.add{}
+		m.ab_fx.add{s_opcode=328 s_target=2 s_timing=9 s_parameter2=plate_splstate s_special=1}
+	]
+
+	// make spells to change avatar animations to display armor
+	LAF make_anim_change_spells END
+
+	// pass through items
+
+	COPY_EXISTING_REGEXP ".*\.itm" override
+		SPRINT resource "%SOURCE_RES%"
+		LPF identify_armor RET is_armor armor_type END
+		PATCH_IF is_armor BEGIN
+			splstate=EVAL "%armor_type%_splstate"
+			// place block
+			LPF ADD_ITEM_EQEFFECT INT_VAR insert_point=999 opcode=318 target=2 timing=0 duration=1 parameter1=splstate parameter2=110 STR_VAR resource END
+			// clone 60 and 145 entries to the end, changing opcode to identify them 
+			LPF CLONE_EFFECT INT_VAR silent=1 check_headers=0 match_opcode=60 opcode=660 STR_VAR insert=last END
+			LPF CLONE_EFFECT INT_VAR silent=1 check_headers=0 match_opcode=145 opcode=745 STR_VAR insert=last END
+			// delete original entries
+			LPF DELETE_EFFECT INT_VAR match_opcode=60 END
+			LPF DELETE_EFFECT INT_VAR match_opcode=145 END
+			// correct opcodes
+			LPF ALTER_EFFECT INT_VAR silent=1 match_opcode=660 opcode=60 END
+			LPF ALTER_EFFECT INT_VAR silent=1 match_opcode=745 opcode=145 END	
+		END
+	BUT_ONLY
+  END
+  
+END
+
+DEFINE_PATCH_FUNCTION identify_armor 
+RET is_armor armor_type
+BEGIN
+	is_armor=0
+	SPRINT armor_type not_armor
+	READ_SHORT 0x1c item_cat
+	PATCH_IF item_cat=2 BEGIN
+		READ_LONG 0x8 name
+		PATCH_MATCH "%name%" WITH
+		2890 // leather armor
+		6664 // studded leather
+		22714 // hide
+		BEGIN
+			SPRINT armor_type leather
+			is_armor=1
+		END
+		21606 // scale mail (IWD)
+		214 // chain mail
+		BEGIN
+			SPRINT armor_type chain
+			is_armor=1
+		END
+		6677 // splint mail
+		267 // plate mail
+		6669 // also plate mail
+		BEGIN
+			SPRINT armor_type plate
+			is_armor=1
+		END
+		26879 // field plate (IWD)
+		6642 // full plate
+		BEGIN
+			SPRINT armor_type full_plate
+			// not returned
+		END
+		DEFAULT
+			// if string lookup fails, check the display category
+			READ_SHORT 0x22 appearance
+			PATCH_MATCH "%appearance%" WITH 
+			2A BEGIN
+				SPRINT armor_type leather
+				is_armor=1
+			END
+			3A BEGIN
+				SPRINT armor_type chain
+				is_armor=1
+			END
+			4A BEGIN
+				SPRINT armor_type plate
+				is_armor=1
+			END
+			DEFAULT
+				SPRINT armor_type unidentified
+			// give up
+			END
+		END
+		// if we've found armor, do a sanity check to make sure it actually blocks casting
+		PATCH_IF is_armor BEGIN
+			is_armor=0
+			GET_OFFSET_ARRAY fx_arr ITM_V10_GEN_EFFECTS
+			PHP_EACH fx_arr AS fx_ind=>fx_off BEGIN
+				READ_SHORT fx_off opcode
+				PATCH_IF opcode=60 || opcode=145 BEGIN
+					is_armor=1
+				END
+			END
+		END
+		
+		
+		
+	END
+
+
+
+
+
+
+END
+
+DEFINE_ACTION_FUNCTION make_anim_change_spells BEGIN
+
+
+
+	ACTION_DEFINE_ASSOCIATIVE_ARRAY male_armor_anims BEGIN
+		human=>mc1
+		elf=>mc2
+		dwarf=>mc4
+		halfling=>mc5
+		gnome=>mc6
+		halforc=>mc7
+	END
+
+	ACTION_DEFINE_ASSOCIATIVE_ARRAY female_armor_anims BEGIN
+		human=>fc1
+		elf=>fc2
+		dwarf=>fc4
+		halfling=>fc5
+		gnome=>fc6
+		halforc=>fc7
+	END
+
+
+	ACTION_PHP_EACH male_armor_anims AS race=>id BEGIN
+		OUTER_SPRINT filename "dwarm%id%"
+		OUTER_SET anim=IDS_OF_SYMBOL ("animate" "cleric_male_%race%")
+		COPY_EXISTING "demhit3.eff" "override/dwarm%id%.eff"
+			WRITE_LONG 0x10 53
+			WRITE_LONG 0x1c anim
+			WRITE_LONG 0x20 0
+	END
+
+	ACTION_PHP_EACH female_armor_anims AS race=>id BEGIN
+		OUTER_SPRINT filename "dwarm%id%"
+		OUTER_SET anim=IDS_OF_SYMBOL ("animate" "cleric_female_%race%")
+		COPY_EXISTING "demhit3.eff" "override/dwarm%id%.eff"
+			WRITE_LONG 0x10 53
+			WRITE_LONG 0x1c anim
+			WRITE_LONG 0x20 0
+	END
+
+
+	ACTION_DEFINE_ASSOCIATIVE_ARRAY race_anim_map BEGIN
+		human=>human
+		elf=>elf
+		half_elf=>elf
+		dwarf=>dwarf
+		halfling=>halfling
+		gnome=>gnome
+		halforc=>halforc
+		duergar=>dwarf
+		svirfneblin=>gnome
+		tiefling=>elf
+	END
+
+	ACTION_PHP_EACH race_anim_map AS race=>null BEGIN
+		OUTER_SET id=IDS_OF_SYMBOL ("race" "%race%")
+		ACTION_IF id>0 BEGIN
+			OUTER_SET $race_id_map("%race%")=id
+		END
+
+	END
+
+	CREATE spl "%spl_animation_armored_mage%"
+		SPRINT SOURCE_RES "%spl_animation_armored_mage%"
+		LPF add_basic_spell_ability END
+		LPF ADD_SPELL_EFFECT INT_VAR insert_point="-1" opcode=318 target=2 timing=0 duration=1 parameter1=1 parameter2=115 STR_VAR resource="%SOURCE_RES%" END // block if not mage	(guards against multiclass issues)
+		PHP_EACH race_id_map AS race=>id BEGIN
+			SPRINT anim $race_anim_map("%race%")
+			SPRINT resource $female_armor_anims("%anim%")
+			SPRINT resource "dwarm%resource%"
+			LPF ADD_SPELL_EFFECT INT_VAR insert_point="-1" opcode=177 target=2 timing=1 parameter1=id parameter2=4 STR_VAR resource END 
+		END
+		LPF ADD_SPELL_EFFECT INT_VAR insert_point="-1" opcode=318 target=2 timing=0 duration=1 parameter1=2 parameter2=107 STR_VAR resource="%SOURCE_RES%" END // block if female
+		PHP_EACH race_id_map AS race=>id BEGIN
+			SPRINT anim $race_anim_map("%race%")
+			SPRINT resource $male_armor_anims("%anim%")
+			SPRINT resource "dwarm%resource%"
+			LPF ADD_SPELL_EFFECT INT_VAR insert_point="-1" opcode=177 target=2 timing=1 parameter1=id parameter2=4 STR_VAR resource END 
+		END
+
+	COPY_EXISTING "%spl_animation_armored_mage%.spl" "override/%spl_animation_armored_sorcerer%.spl"
+		LPF DELETE_EFFECT INT_VAR match_opcode=318 match_parameter2=115 END // no filter needed for sorcerers, who can't dual-class
+		REPLACE_TEXTUALLY "%spl_animation_armored_mage%" "%spl_animation_armored_sorcerer%"
+	BUT_ONLY
+
+
+
+
+
+
+
+
+END

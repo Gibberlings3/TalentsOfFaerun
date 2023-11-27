@@ -1,0 +1,186 @@
+DEFINE_ACTION_FUNCTION tymora_cleric BEGIN
+
+
+	OUTER_SPRINT kit DW_TYMORA_CLERIC
+	LAF splconv_get_name STR_VAR spell="%WIZARD_LOWER_RESISTANCE%" new_type=innate RET spl_tymora_lower_resistance=new_resref END
+	LAF tymora_shared END
+
+	kit.copy[CLERIC=>%kit%]
+	[
+		k_name:=@51
+		k_desc:=@52
+		k.kit_apply_powers{%spl_tymora_innate% 1}
+		k.kit_grant_powers{%spl_tymora_luck% 7 5,%spl_tymora_lower_resistance% 9 5}
+		k_color_metal=25
+		k_color_minor_cloth=42
+		k_color_main_cloth=125
+		k_color_leather=2
+		k_color_armor=24	
+		k.kit_set_alignment{ng cg nn cn}
+		IF {is_iwd} {{k_bio:=@1014}}
+	]
+	
+	LAF cleric_kit_substitutions STR_VAR kit god=tymora END
+	LAF assign_spheres STR_VAR kit default=cleric subtract="combat necromantic evil" END
+	LAF assign_bonus_spells STR_VAR kit spells="LUCK MISLEAD LIMITED_WISH" END
+
+	LAF holy_symbol INT_VAR name=2013 follower=2014 STR_VAR kit desc_bam=dwtymphl inv_bam=dwtymihl bam_path=resource END
+	LAF adjust_cleric_stronghold STR_VAR lathander=all kit END
+
+
+
+
+END
+
+DEFINE_ACTION_FUNCTION thief_of_tymora BEGIN
+
+
+	OUTER_SPRINT kit DW_TYMORA_THIEF
+	LAF splconv_get_name STR_VAR spell="%WIZARD_LOWER_RESISTANCE%" new_type=innate RET spl_tymora_lower_resistance=new_resref END
+	LAF tymora_shared END
+
+	kit.copy[CLERIC_THIEF=>%kit%]
+	[
+		k_name:=@171
+		k_desc:=@172
+		k.kit_apply_powers{%spl_tymora_innate% 1|class=cleric}
+		k.kit_grant_powers{%spl_tymora_luck% 7 5,%spl_tymora_lower_resistance% 9 5|class=cleric}
+		k_color_metal=25
+		k_color_minor_cloth=42
+		k_color_main_cloth=125
+		k_color_leather=2
+		k_color_armor=24
+		k.kit_set_alignment{ng cg nn cn}
+		IF {is_iwd} {{k_bio:=@1014}}
+	]
+	
+	LAF cleric_kit_substitutions STR_VAR kit god=tymora END
+	LAF assign_spheres STR_VAR kit default=cleric subtract="combat necromantic evil" END
+	LAF assign_bonus_spells STR_VAR kit spells="LUCK MISLEAD LIMITED_WISH" END
+
+	LAF holy_symbol INT_VAR name=2013 follower=2014 STR_VAR kit desc_bam=dwtymphl inv_bam=dwtymihl bam_path=resource END
+	LAF adjust_cleric_stronghold STR_VAR lathander=all kit END
+	LAF set_multiclass_components STR_VAR kit components="dw_tymora_cleric"  END
+
+END
+
+DEFINE_ACTION_FUNCTION adventurer_of_tymora BEGIN
+
+	OUTER_SPRINT kit DW_TYMORA_ADVENTURER
+	LAF splconv_get_name STR_VAR spell="%WIZARD_LOWER_RESISTANCE%" new_type=innate RET spl_tymora_lower_resistance=new_resref END
+	LAF tymora_shared END
+
+	ACTION_TIME at_main BEGIN
+	kit.copy[FIGHTER_MAGE_CLERIC=>%kit%]
+	[
+		k_name:=@228
+		k_desc:=@229
+		k.kit_apply_powers{%spl_tymora_innate% 1|class=cleric}
+		k.kit_grant_powers{%spl_tymora_luck% 7 5,%spl_tymora_lower_resistance% 9 5|class=cleric}
+		k_color_metal=25
+		k_color_minor_cloth=42
+		k_color_main_cloth=125
+		k_color_leather=2
+		k_color_armor=24	
+		k.kit_set_alignment{ng cg nn cn}
+		IF {is_iwd} {{k_bio:=@1014}}	
+	]
+	END
+	
+	ACTION_TIME at_sub BEGIN
+	LAF cleric_kit_substitutions STR_VAR kit god=tymora END
+	END
+	ACTION_TIME at_sphere BEGIN
+	LAF assign_spheres STR_VAR kit default=cleric subtract="combat necromantic evil" END
+	END
+	
+	ACTION_TIME at_bonus BEGIN
+	LAF assign_bonus_spells STR_VAR kit spells="LUCK MISLEAD LIMITED_WISH" class=cleric END
+	END
+
+	ACTION_TIME at_sym_strong BEGIN
+	LAF holy_symbol INT_VAR name=2013 follower=2014 STR_VAR kit desc_bam=dwtymphl inv_bam=dwtymihl bam_path=resource END
+	LAF adjust_cleric_stronghold STR_VAR lathander=all kit END
+	END
+ 
+	ACTION_TIME at_mc_spec BEGIN
+ 	LAF make_multiclass_specialist STR_VAR kit school=enchantment END
+	END
+	
+	ACTION_TIME at_mc_comp BEGIN
+	LAF set_multiclass_components STR_VAR kit components="dw_tymora_cleric enchanter"  END
+	END
+
+
+
+
+END
+
+DEFINE_ACTION_FUNCTION tymora_favored_soul BEGIN
+
+	LAF tymora_shared END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_LOWER_RESISTANCE%" new_type=innate RET spl_tymora_lower_resistance=new_resref END
+	OUTER_SPRINT kit DW_TYMORA_FAVORED
+	LAF build_favored_soul_kit INT_VAR name=4026 desc=4027 god=4028 god_gender=4029 god_temple=4030 STR_VAR kit copy_from=DW_TYMORA_CLERIC END
+	LAF cleric_kit_substitutions STR_VAR kit god=tymora END
+
+	kit.edit[%kit%|edit_strrefs_in_place:i=1]
+	[
+		k.kit_apply_powers{%spl_tymora_innate% 1}
+		k.kit_grant_powers{%spl_tymora_luck% 7 5,%spl_tymora_lower_resistance% 9 5}
+	]
+
+	LAF assign_bonus_spells STR_VAR kit spells="CLERIC_BLESS WIZARD_LUCK CLERIC_REMOVE_CURSE CLERIC_FREE_ACTION CLERIC_CHAOTIC_COMMANDS WIZARD_MISLEAD WIZARD_LIMITED_WISH" END
+
+END	
+
+
+DEFINE_ACTION_FUNCTION tymora_shared BEGIN
+
+	LAF include STR_VAR file=log_favored_weapon.tph locbase=shared END
+	LAF log_favored_weapon STR_VAR god=TYMORA weapon=dagger END
+
+
+	LAF check_label STR_VAR label=dw#tymora_shared RET value END
+	ACTION_IF !value BEGIN
+	LAF make_label STR_VAR label=dw#tymora_shared END
+		// Luck of Tymora
+		spl.copy[%WIZARD_LUCK%=>%spl_tymora_luck%]
+		[
+			m_name:=@1013
+			m_description:=@1012
+			m_type:=innate
+			m.ab_fx.alter{s_duration=(s_duration>0?60:0)}
+			m.ab_fx.add{s_duration=60 s_target=2 s_opcode=201 s_parameter1=1 s_parameter2=entry_index+1 |number:i=5 }
+			m.ab.alter{s_casting_time=1 s_projectile=158 s_target=5 s_location=4 s_icon:=dw#tym1}
+		]	
+
+		LAF install STR_VAR file=dw#tym1.bam location=resource END
+		// innate luck bonus
+
+		spl.copy[%WIZARD_LUCK%=>%spl_tymora_innate%]
+		[
+			m.ab_fx.delete{
+				PATCH_MATCH "%s_opcode%" WITH
+				141 61 321 277 276 90 91 92 59 275 139 174 215 BEGIN
+					value=1
+				END
+				DEFAULT
+					value=0
+				END			
+			}
+			m.ab_fx.alter{s_duration=0 s_timing=9}
+			m_name="-1"
+			m.ab.alter{s_projectile=0}
+			m_casting_animation=0
+			m_completion_sound:=""
+		]
+
+		// innate Lower Resistance
+		
+		LAF splconv STR_VAR spell="%WIZARD_LOWER_RESISTANCE%" new_type=innate RET_ARRAY splconv_array END
+
+
+	END
+
+END

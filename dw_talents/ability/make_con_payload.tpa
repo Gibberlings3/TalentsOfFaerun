@@ -1,0 +1,46 @@
+DEFINE_ACTION_FUNCTION make_con_payload BEGIN
+
+
+	// get splprot entry
+	LAF resolve_splprot_entry INT_VAR stat=41 value="-1" STR_VAR relation=equal RET splprot_value=value END
+
+	// master spell
+	
+	
+	CREATE spl "dw3econ"
+		LPF add_basic_spell_ability END
+		FOR (value=0;value<=25;value+=1) BEGIN
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 STR_VAR resource="dw3ec%value%" END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 parameter1=value parameter2=splprot_value STR_VAR resource="dw3ec%value%" END
+			INNER_ACTION BEGIN
+				LAF make_con_secondary_spell INT_VAR con=value END
+			END
+		END
+
+	// hpconbon.2da
+	
+	COPY_EXISTING hpconbon.2da override
+		LPF 2da_read RET_ARRAY rows array END
+		PHP_EACH rows AS con=>discard BEGIN
+			PATCH_IF IS_AN_INT con BEGIN
+				LPF 3e_abil_standard INT_VAR ability=con RET modifier END
+				SET $array("%con%" "OTHER")=modifier
+				SET $array("%con%" "WARRIOR")=modifier
+			END
+		END
+		LPF 2da_write STR_VAR array default="0" END
+	BUT_ONLY
+
+END
+
+DEFINE_ACTION_FUNCTION make_con_secondary_spell
+	INT_VAR con=0
+BEGIN
+	CREATE spl "dw3ec%con%"
+		LPF add_basic_spell_ability END
+		LPF 3e_abil_standard INT_VAR ability=con RET modifier END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=33 target=2 timing=9 parameter1=modifier END // death/poison
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=35 target=2 timing=9 parameter1=modifier END // petrify/polymorph
+
+
+END

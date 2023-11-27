@@ -1,0 +1,34 @@
+DEFINE_ACTION_FUNCTION adjust_vanilla_priests BEGIN
+
+	LAF include STR_VAR file=cleric_dialog_adjusts.tph END
+	LAF include STR_VAR file=symbol_stronghold.tph locbase=shared END
+
+	LAF ui_spell_system_spheres END
+	LAM data_spells_by_level
+
+
+	ACTION_FOR_EACH god IN tempus talos tyr helm lathander BEGIN
+		LAF check_ini STR_VAR ini="adjust_%god%" RET value END
+		ACTION_IF value BEGIN
+			LAF include STR_VAR file="%god%.tph" location=kits END
+			LAF "%god%_cleric" END
+		
+		END
+	
+	
+	END
+
+
+	// update the kit-identification LUA
+	LAF ui_detect_class_kit END
+
+
+	// re-externalize proficiencies if appropriate
+	ACTION_IF FILE_EXISTS "%data_loc_shared%/weapprof.2da" BEGIN
+		LAF externalize_weapprof END
+	END
+
+	// process scroll usability
+	LAF process_scroll_usability_now END
+
+END

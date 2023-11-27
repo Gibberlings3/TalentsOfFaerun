@@ -1,0 +1,46 @@
+DEFINE_ACTION_FUNCTION item_exclude BEGIN
+
+	// collect armor
+	COPY_EXISTING_REGEXP ".*\.itm" override
+		SPRINT item_name "%SOURCE_RES%"
+		TO_UPPER item_name
+	  PATCH_IF (BYTE_AT 0x18) BAND BIT2 BEGIN	
+		GET_OFFSET_ARRAY fx_arr ITM_V10_GEN_EFFECTS
+		PHP_EACH fx_arr AS fx_ind=>fx_off BEGIN
+			READ_SHORT fx_off opcode
+			  PATCH_IF opcode=0 BEGIN
+				READ_LONG (0x8+fx_off) param2
+				PATCH_IF param2=16 BEGIN
+					armor_item=1
+					SPRINT $armor_list("%item_name%") ""
+				END
+			END
+		END	
+	  END
+	BUT_ONLY
+	
+	// edit itemexcl
+
+	COPY_EXISTING "itemexcl.2da" override
+			LPF check_ini STR_VAR ini=declutter_itemexcl RET value END
+			PATCH_IF value BEGIN
+				REPLACE_EVALUATE "\([%WNL%%LNL%%MNL%]\)\([^ %TAB%%WNL%%MNL%%LNL%]*\)[ %TAB%]+1" BEGIN
+					PATCH_IF FILE_EXISTS_IN_GAME "%MATCH2%.itm" BEGIN
+						SPRINT output "%MATCH1%%MATCH2% 1"
+					END ELSE BEGIN
+						SPRINT output ""
+					END
+				END
+				"%output%"
+			END
+			PHP_EACH armor_list AS item=>discard BEGIN
+				REPLACE_TEXTUALLY "[%WNL%%LNL%%MNL%]%item%.*" ""
+			END
+	BUT_ONLY
+	
+	// update the description string
+	
+	LAF 2daq_extract STR_VAR resref=enginest row=STRREF_GUI_MIXED_EXCLUSIVEITEMS column=StrRef RET strref=value END
+	STRING_SET_EVALUATE strref @21
+
+END

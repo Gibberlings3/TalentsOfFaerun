@@ -1,0 +1,367 @@
+@1="The berserk state has ended. The character now loses the extra Hit Points previously gained. If the character would be reduced below 1 hit point by this, he or she will be knocked unconscious."
+
+@2="Enrage
+
+RAGE_PLACEHOLDER
+
+After the effects end, the character becomes winded, suffering a -2 penalty to Armor Class, to-hit rolls, and damage rolls."
+
+@3="BERSERKER: This is a warrior who is in tune with <PRO_HISHER> animalistic side and, during combat, can achieve an ecstatic state of mind that will enable <PRO_HIMHER> to fight longer, harder, and more savagely than any person has a right to. Berserkers tend to be barbarian-like in nature, but not always. Sometimes it is a conscious choice that a warrior in training makes. Regardless, opponents on the battlefield will be unsettled when they see the savage and inhuman elements of the Berserker's personality. This class is common amongst dwarves, known to them as the Battlerager.
+
+Advantages:
+- May use Rage ability once per day. Gains one use at level 1 and an additional use every 4 levels thereafter.
+
+RAGE: RAGE_PLACEHOLDER
+
+Disadvantages:
+- Becomes winded after berserking: -2 penalty to Armor Class, to-hit rolls, and damage rolls.
+- May not Specialize in ranged weapons."
+
+@4="Detect Invisibility
+(Divination)
+
+Range: Visual range of the caster
+Duration: Instant
+Casting Time: 1
+Area of Effect: 15-ft. radius
+Saving Throw: None
+
+The inquisitor dispels enemy invisibility and reveals any hidden foes in the area of effect (i.e. Thieves using Stealth).
+
+Note: If an invisible enemy enters the area of effect after the spell has already been cast, the creature will remain invisible."
+
+@5="The character becomes enraged for 1 turn. While enraged, the character gains a bonus of +2 to <PRO_HISHER> attack and damage rolls as well as to <PRO_HISHER> Armor Class, and also gains (5+1/level) temporary Hit Points, which are taken away at the end of the berserk spree (possibly knocking the character unconscious).
+
+Depending on the character's level, the Enrage power also grants immunities to various conditions (all are cumulative):
+
+1st level: fear
+2nd level: sleep
+4th level: hold
+6th level: charm
+8th level: confusion and feeblemind
+10th level: stun
+12th level: level drain
+14th level: maze and imprisonment"
+
+@6="INQUISITOR: The Inquisitor has dedicated <PRO_HISHER> life to finding and eliminating practitioners of evil magic and defeating the forces of darkness, and <PRO_HISHER> god has provided <PRO_HIMHER> with special abilities toward that end.
+
+Advantages:
+- May cast Detect Invisibility once per day, as the second level wizard spell. An additional use is gained at 5th level.
+- 3rd level: May cast Dispel Magic once per day. The spell is cast at Speed Factor 1 and acts at twice the Inquisitor's character level. An additional use is gained at 7th level and every 4 levels thereafter.
+- 5th level: Gains immunity to paralysis.
+- 7th level: Gains immunity to charm effects.
+- 9th level: May cast True Sight once per day, as the fifth level cleric spell. An additional use is gained at 13th level and every 4 levels thereafter. 
+
+Disadvantages:
+- May not Turn Undead.
+- May not use Lay On Hands ability. 
+- May not cast priest spells."
+@7="Gains immunity to charm effects"
+@8="Gains immunity to hold effects"
+
+@9="The character is enraged for 5 rounds, which grants the character a +4 bonus to Strength and Constitution, a -2 penalty to Armor Class, and a +2 bonus to Saving Throws vs. Spell.
+
+Depending on the character's level, the Rage power also grants immunities to various conditions (all are cumulative):
+
+1st level: fear
+2nd level: sleep
+4th level: hold
+6th level: charm
+8th level: confusion and feeblemind
+10th level: stun
+12th level: level drain
+14th level: maze and imprisonment"
+@10="BARBARIAN: A Barbarian can be an excellent warrior. While not as disciplined or as skilled as a Fighter, the Barbarian can willingly throw <PRO_HIMHER>self into a berserker rage, becoming a tougher and stronger opponent.
+
+CLASS FEATURES:
+
+- May not wear armor heavier than splint mail.
+- May not exceed Specialization (two slots) with any weapon class.
+- May achieve Specialization (two slots) in any fighting style and allocate three slots in Two-Weapon Style.
+- Moves 2 points faster than other characters.
+- Immune to backstab.
+- May use the Rage ability once per day every 4 levels (starts at 1st level with one use). 
+
+RAGE: RAGE_PLACEHOLDER
+
+- 7th level: Gains 5% resistance to crushing, slashing, piercing, and missile damage. An additional 5% is gained at levels 11, 15 and 19.
+- Hit Die: d12"
+@11="Rage
+
+RAGE_PLACEHOLDER"
+
+
+
+@12="WIZARD SLAYER: This warrior has been specially trained by <PRO_HISHER> sect to excel in hunting and combating spellcasters of all kinds.
+
+Advantages:
+- Each successful hit bestows a 10% cumulative chance of spell failure on the target.
+- Magic Resistance of BASE_PLACEHOLDER% at first level, increasing by INCREMENT_PLACEHOLDER% per level.
+
+Disadvantages:
+- May not use any magic items apart from weapons and armor."
+@13="Gains immunity to poison"
+@14="Elemental damage resistance increased"
+@15=~CAVALIER: This class represents the most common picture of the knight: the chivalrous warrior who epitomizes honor, courage, and loyalty. The cavalier is specialized in battling "classical" evil monsters such as demons and dragons.
+
+Advantages:
+- +3 bonus to hit and damage rolls against most evil draconic and extra-planar creatures (such as wyverns, evil dragons, fiends, efreeti, and salamanders).
+- Immune to fear and morale failure.
+- 10% resistance to fire, cold, electricity and acid. This increases by 5% at levels 6, 11, 16, and 21.
+- 3rd level: May cast Remove Fear at will.
+- 5th level: Gains immunity to poison.
+- 7th level: Gains immunity to charm effects.
+- 12th level: May evade the effects of a dragon's breath weapon entirely on a successful saving throw.
+
+Disadvantages:
+- May not use missile weapons.~
+
+@16=~UNDEAD HUNTER: This holy avenger has honed <PRO_HISHER> abilities toward the destruction of the undead and other unnatural creatures and can learn to be immune to many of their most devastating abilities.
+
+Advantages:
+- +1 bonus to hit and damage rolls against undead creatures, increasing to +2 at 5th level and to a maximum of +3 at 9th level.
+- 3rd level: Gains immunity to paralysis.
+- 7th level: Gains immunity to level drain.
+
+Disadvantages:
+- May not use Lay On Hands ability.~
+@17="Gains immunity to energy drain"
+@18="JESTER: This Bard is well versed in the arts of ridicule and hilarity, and uses <PRO_HISHER> abilities to distract and confuse <PRO_HISHER> enemies, cavorting madly during combat. Do not mistake <PRO_HIMHER> for a true fool, however, as <PRO_HESHE> can also be quite deadly.
+
+Advantages:
+- The Jester's song does not help allies. Instead, every opponent within 30 feet must save once per round to avoid falling under its effects:
+  1st level: Save vs. Spell at +2 or be distracted, and slowed (10%) or confused (10%). Distracted opponents suffer -2 to attack rolls, damage rolls, and AC.
+  5th level: Save vs. Spell at +2 or be distracted, and slowed (20%) or confused (20%).
+  10th level: Save vs. Spell or be distracted, and (slowed (30%), or confused (30%).
+  15th level: Save vs. Spell at -2 or be distracted, and slowed (40%), confused (40%), or knocked unconscious (20%).
+  20th level: Save vs. Spell at -2 or be distracted, and confused and slowed (50%) or knocked unconscious (50%).
+
+Disadvantages:
+- BARD_SONG_PLACEHOLDER."
+@19="None."
+@20="Does not know the songs available to regular Bards."
+@21="Distracted"
+@22="SKALD: This nordic Bard is also a warrior of great strength, skill, and virtue; <PRO_HISHER> songs are inspiring sagas of battle and valor, and the Skald devotes <PRO_HISHER> life to those pursuits.
+
+Advantages:
+- +1 bonus to hit and damage rolls.
+- The Skald's song is different from the typical Bard's and has the following effects:
+ 1st level: Grants allies a +1 bonus to hit and damage rolls, and a +1 bonus to AC.
+ 5th level: Grants allies a +1 bonus to hit, and a +2 bonus to damage rolls and AC.
+ 10th level: Grants allies a +2 bonus to hit and damage rolls, and a +2 bonus to AC.
+ 15th level: Grants allies a +4 bonus to hit and damage rolls, a +4 bonus to AC, and immunity to fear.
+ 20th level: Grants allies a +4 bonus to hit and damage rolls, a +4 bonus to AC, and immunity to fear, stun, and confusion. 
+
+Disadvantages:
+- BARD_SONG_PLACEHOLDEROnly has one quarter the normal Pick Pockets score."
+
+@23="BLADE: The Blade is an expert fighter and adventurer whose bardic acting abilities make <PRO_HIMHER> appear more intimidating and fearsome. This Bard's fighting style is flashy and entertaining, but is also lethally dangerous.
+
+Advantages:
+- May place 3 slots in Two-Weapon Style.
+- 3rd level: May use the Defensive Spin ability, as detailed below. An additional use is gained at 7th level and every 4 levels thereafter.
+
+DEFENSIVE SPIN: During the next 4 rounds, the Blade is rooted to the spot and gains a +1 bonus to Armor Class per level, up to a maximum of +10.
+
+- 5th level: May use the Offensive Spin ability, as detailed below. An additional use is gained at 9th level and every 4 levels thereafter.
+
+OFFENSIVE SPIN: During the next 4 rounds, the Blade's movement rate doubles and <PRO_HESHE> gains a +2 bonus to hit and damage rolls as well as an extra attack per round. All attacks deal maximum damage for the duration. Offensive Spin may not be used in conjunction with the Haste or Improved Haste spells.
+
+
+
+Disadvantages:
+- Only has one half the normal Lore value.
+- BARD_SONG_PLACEHOLDEROnly has one half the normal Pick Pockets score."
+
+@24="Does not know the songs available to regular Bards, other than the Ballad of Three Heroes."
+@25="Set a trap in the chosen location when no hostile creatures are in sight. Traps grow more powerful with the character's level and can only be triggered by enemies. An enemy can only trigger one trap at a time.
+  1st level: Deals 1d8+5 missile damage.
+  6th Level: Deals 2d8+5 missile damage.
+  11th Level: 2d8+5 missile damage and additionally deals 2d6 poison damage per round for the next 3 rounds.
+  16th Level: Deals 3d8+5 missile damage and 4d8+2 fire damage.
+  21st Level: Deals 3d8+5 missile damage and 20 poison damage with no save; slays target if a Save vs. Death with a +4 bonus is failed."
+@26="SET SNARE: Set a trap in the chosen location when no hostile creatures are in sight. Traps grow more powerful with the Thief's level and can only be triggered by enemies." 
+@27="An enemy can only trigger one trap at a time."
+@28="Set Snare
+
+SET_SNARE_PLACEHOLDER" 
+@29="1st level"
+@30="1st level: Deals 1d8+5 missile damage."
+@31="6th level: Deals 2d8+5 missile damage."
+
+
+@32="SHAPESHIFTER: This Druid is not called Shapeshifter because <PRO_HESHE> has access to a great variety of forms, but rather because of <PRO_HISHER> complete dedication to a single alternate form. This Druid has willingly allowed <PRO_HIMHER>self to become infected with lycanthropy, but due to intense study and training <PRO_HESHE> has the ability to control <PRO_HISHER> affliction. The creature <PRO_HESHE> becomes is that of the werewolf, the most famous of the lycanthrope shape changers.
+
+Advantages:
+SHAPESHIFTER_PLACEHOLDER
+
+Disadvantages:
+- May not wear any armor.
+- No other shapeshifting abilities due to the effort required in maintaining balance in <PRO_HISHER> primary forms."
+
+@33="Shapeshift: Lesser Werewolf"
+@34="Shapeshift: Lesser Werewolf
+
+Strength: 18/76
+Dexterity: 15
+
+Base Armor Class: 4
+Number of Attacks: 1
+Attack Damage: 1d6 (slashing)"
+@35="Shapeshift: Werewolf Lord"
+@36="Shapeshift: Werewolf Lord
+
+Strength: 23
+Dexterity: 20
+
+Base Armor Class: -8
+Number of Attacks: 3
+Attack Damage: 1d12 (slashing)
+
+Special Abilities:
+- Fire Resistance: 50%
+- Cold Resistance: 50%
+- Electricity Resistance: 50%
+- Acid Resistance: 50%
+- Magic Resistance: 50%"
+
+@37="Shapeshift: Greater Werewolf
+
+Strength: 21
+Dexterity: 20
+
+Base Armor Class: -4
+Number of Attacks: 3
+Attack Damage: 1d10 (slashing)
+
+Special Abilities:
+- Fire Resistance: 50%
+- Cold Resistance: 50%
+- Electricity Resistance: 50%
+- Acid Resistance: 50%
+- Magic Resistance: 40%"
+
+
+@38="8th level" // must match, verbatim, the appropriate string in the Dragon Disciple description
+@39="15th level" // ditto
+
+@40="7th level: Gains immunity to paralysis."
+@41="13th level: Gains immunity to charm."
+@42="Set a trap in the chosen location when no hostile creatures are in sight. Traps grow more powerful with the character's level and can only be triggered by enemies. An enemy can only trigger one trap at a time.
+  1st Level: Deals 2d8+5 missile damage and slows target for 5 rounds if a Save vs. Spell is failed.
+  6th Level: Deals 3d8+5 missile damage and slows target for 5 rounds if a Save vs. Spell with a -4 penalty is failed.
+  11th Level: Deals 4d8+5 missile damage and holds target for 5 rounds if a Save vs. Spell with a -1 penalty is failed.
+  16th Level: Erects an Otiluke's Resilient Sphere around the target for 7 rounds if a Save vs. Spell is failed.
+  21st Level: Mazes the target."
+  
+@43="Set Special Snare
+
+SET_SNARE_PLACEHOLDER"
+
+@44="1st level"
+@45="1st level: Deals 2d8+5 missile damage and slows target for 5 rounds if a Save vs. Spell is failed."
+@46="6th level: Deals 3d8+5 missile damage and slows target for 5 rounds if a Save vs. Spell with a -4 penalty is failed."
+@47="SET SPECIAL SNARE: Set a trap in the chosen location when no hostile creatures are in sight. Traps grow more powerful with the Bounty Hunter's level and can only be triggered by enemies."
+
+//@48 is the unmodded version of Set Special Snare
+
+@48="Set a trap in the chosen location when no hostile creatures are in sight. Traps grow more powerful with the character's level and can only be triggered by enemies. An enemy can only trigger one trap at a time.
+  1st level: Deals 3d8+5 missile damage and slows target for 5 rounds if a Save vs. Spell with a -4 penalty is failed.
+  11th level: Deals 4d8+5 missile damage and holds target for 5 rounds if a Save vs. Spell with a -1 penalty is failed.
+  16th level: Erects an Otiluke's Resilient Sphere around the target for 7 rounds if a Save vs. Spell is failed.
+  21st level: Mazes the target."
+
+@50="Backstab ability reaches x7 multiplier instead of capping at x5." // must be, verbatim, from the Assassin descriptor
+@51="Backstab ability advances more quickly and can reach x7 instead of capping at x5.
+  Level 1-3: x2
+  Level 4-6: x3
+  Level 7-10: x4
+  Level 11-14: x5
+  Level 15-18: x6
+  Level 19+: x7"
+ 
+@52=": x6"
+@53=": x7"
+@54="POISON WEAPON:" // must match the string from the unmodded description of Assassin
+// @55/@56 is the description of assassin 'poison weapon' within BG2/BG
+@55="Each successful hit within the next 5 rounds will inject poison into the target. Each target can only be affected once per round. The amount of poison damage depends on the character's level:
+
+1st - Target suffers 1 poison damage per second for 6 seconds (Save vs. Death at +1 negates)
+5th - Target suffers 1 poison damage per second for 12 seconds (Save vs. Death negates), and also immediately suffers 2 poison damage (no save)
+9th - Target suffers 1 poison damage per second for 18 seconds (Save vs. Death at -1 negates), and also immediately suffers 4 poison damage (no save)
+13th - Target suffers 1 poison damage per second for 24 seconds (Save vs. Death at -2 negates), and also immediately suffers 6 poison damage (no save)"
+
+@56="Poison Weapon
+Each successful hit within the next 5 rounds will inject poison into the target. Each target can only be affected once per round. The amount of poison damage depends on the character's level:
+
+1st - Target suffers 1 poison damage per second for 6 seconds (Save vs. Death at +1 negates)
+5th - Target suffers 1 poison damage per second for 12 seconds (Save vs. Death negates), and also immediately suffers 2 poison damage (no save)
+9th - Target suffers 1 poison damage per second for 18 seconds (Save vs. Death at -1 negates), and also immediately suffers 4 poison damage (no save)
+13th - Target suffers 1 poison damage per second for 24 seconds (Save vs. Death at -2 negates), and also immediately suffers 6 poison damage (no save)"
+
+// @57 is the IWD poison weapon
+
+@57="Each successful hit within the next 5 rounds will inject poison into the target, dealing an extra 2 points of damage per second with no Saving Throw (up to a maximum of 12 points of damage per hit). Moreover, if the target fails a Saving Throw vs. Poison, <PRO_HESHE> will suffer 1 additional point of damage per round for 4 rounds."
+
+@58="- May shapeshift into the form of a lesser werewolf once per day. Gains one use at level 1 and an additional use every 3 levels thereafter. 
+
+LESSER WEREWOLF: AC 4, Strength 18/76, Dexterity 15, 1 attack per round for 1d6 slashing damage (counts as a +1 weapon for the purposes of harming creatures resistant to non-magical weapons).
+
+- 7th level: Now assumes the form of a full werewolf when shapeshifting.
+
+WEREWOLF: AC 1, Strength 19, Dexterity 16, 2 attacks per round for 1d6 slashing damage (as +2 weapon), 20% magic resistance.
+
+- 13th level : Now assumes the form of a greater werewolf when shapeshifting.
+
+GREATER WEREWOLF: AC -4, Strength 21, Dexterity 20, 3 attacks per round for 1d10 slashing damage (as +3 weapon), 40% magic resistance, 50% elemental resistance.
+
+- 19th level: Now assumes the form of a werewolf lord when shapeshifting.
+
+WEREWOLF LORD: AC -8, Strength 23, Dexterity 20, 3 attacks per round for 1d12 slashing damage (as +4 weapon), 50% magic resistance, 50% elemental resistance."
+
+@59="Breath Weapon damage increases to 4d8." // these must exactly match the strings in the unmodded Dragon Disciple description
+@60="Breath Weapon damage increases to 6d8."
+@61="Breath Weapon damage increases to 8d8."
+@62="Breath Weapon may now be used twice per day."
+@63="Breath Weapon may now be used three times per day."
+@64="Breath Weapon may now be used four times per day."
+
+// @100 and @101 are, respectively, the unmodded versions of Berserker Rage and Barbarian Rage (Except that 'character' replaces 'berserker' or 'barbarian')
+@100="The enraged state lasts for 1 turn. While enraged, the character gains a bonus of +2 to <PRO_HISHER> attack and damage rolls as well as to <PRO_HISHER> Armor Class, and becomes immune to charm, confusion, fear, feeblemind, hold, imprisonment, level drain, maze, stun, and sleep. The character also gains 15 temporary Hit Points which are taken away at the end of <PRO_HISHER> berserk spree, possibly knocking <PRO_HIMHER> unconscious."
+@101="The character is enraged for 5 rounds, which grants <PRO_HIMHER> a +4 bonus to Strength and Constitution, a -2 penalty to Armor Class, and a +2 bonus to Saving Throws vs. Spell, as well as immunity to all charm, hold, fear, maze, stun, sleep, confusion, and level drain spells."
+// @102 is the unmodded Shapeshifter description (except that 'druid level' replaces 'level')
+@102="- May Shapeshift into the form of a werewolf once per day every 2 levels (starts at 1st druid level with one use).
+- 13th level: May Shapeshift into a greater werewolf once per day."
+// @104 is the unmodded Wizard Slayer description (except that 'fighter level' replaces 'level')
+@104= "+1% Magic Resistance per fighter level."
+@105="Magic Resistance of BASE_PLACEHOLDER% at first level, increasing by INCREMENT_PLACEHOLDER% per fighter level."
+// @106 is the unmodded string describing Avenger shapeshift
+@106="- 7th level: May Shapeshift into the form of a sword spider, baby wyvern, and fire salamander, in addition to the normal shapeshifting abilities."
+@107="- 3rd level: May shapeshift more frequently: One use at 3rd level and an addtional use every 2 levels thereafter.
+- 4th level: May shapeshift into a hunting spider.
+- 6th level: May shapeshift into a baby wyvern.
+- 7th level: Shapeshifts into a winter wolf in place of a dire wolf.
+- 8th level: Hunting spider form is replaced by sword spider.
+- 10th level: Baby wyvern form is replaced by wyvern."
+
+@108="Spirit Snake
+The caster summons a special spirit snake. The spirit snake has 1 HD at level 1, 3 HD at level 3, 5 HD at level 5, 7 HD at level 7, 10 HD at level 10, 13 HD at level 13, and 16 HD at level 16."
+
+@109="Spirit Bear
+The caster summons a special spirit bear. The spirit bear has 1 HD at level 1, 3 HD at level 3, 5 HD at level 5, 7 HD at level 7, 10 HD at level 10, 13 HD at level 13, and 16 HD at level 16."
+
+@110="Spirit Lion
+The caster summons a special spirit lion. The spirit lion has 1 HD at level 1, 3 HD at level 3, 5 HD at level 5, 7 HD at level 7, 10 HD at level 10, 13 HD at level 13, and 16 HD at level 16."
+
+@111="Spirit Wolf
+The caster summons a special spirit wolf. The spirit wolf has 1 HD at level 1, 3 HD at level 3, 5 HD at level 5, 7 HD at level 7, 10 HD at level 10, 13 HD at level 13, and 16 HD at level 16."
+
+@112="TOTEMIC DRUID: This Druid closely identifies with a particular animal, an animal that <PRO_HESHE> feels represents <PRO_HISHER> spirit. This grants <PRO_HIMHER> a special connection to the animal kingdom, and <PRO_HESHE> is able to call upon their spirits to aid <PRO_HIMHER>.
+
+Advantages:
+- May use the Summon Spirit Animal ability once per day. Gains one use at level 1 and an additional use every 5 levels thereafter.
+
+SUMMON SPIRIT ANIMAL: The Totemic Druid summons a special spirit animal (spirit bear, spirit wolf, spirit lion, or spirit snake) to aid <PRO_HIMHER> for 6 turns. The spirit animal has 1 HD at level 1, 3 HD at level 3, 5 HD at level 5, 7 HD at level 7, 10 HD at level 10, 13 HD at level 13, and 16 HD at level 16.
+
+Disadvantages:
+- Cannot use shapeshift."

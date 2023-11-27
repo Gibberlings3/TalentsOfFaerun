@@ -1,0 +1,49 @@
+// If type=innate, location=wizard/priest spells are not in the SPCL namespace, they get removed when you export your character.
+
+DEFINE_ACTION_FUNCTION move_hlas_into_spcl BEGIN
+
+	// the actual spells
+	COPY "%data_loc_shared%/dw_feat_data.2da" "%data_loc_shared%"
+		LPF 2da_read RET_ARRAY feat_array=array feat_rows=rows END
+		PHP_EACH feat_rows AS feat=>discard BEGIN
+			PATCH_IF $feat_array("%feat%" TYPE) STR_EQ "GRANT" BEGIN
+				SPRINT resref $feat_array("%feat%" RESREF)
+				INNER_ACTION BEGIN
+					COPY_EXISTING - "%resref%.spl" nowhere // check if it's wizard/priest
+						READ_SHORT (2+LONG_AT 0x64) type
+					ACTION_IF type=2 BEGIN
+						LAF spl_make_hla_class_ability INT_VAR force_innate=0 STR_VAR resref RET new_resref END
+						OUTER_SPRINT $feat_array("%feat%" RESREF) "%new_resref%"	
+						OUTER_SPRINT $ga_map("GA_%resref%") "GA_%new_resref%"
+					END			
+				END
+			END
+		END
+		LPF 2da_write STR_VAR array=feat_array END
+	BUT_ONLY
+	// the LUA files
+	LAF 2da_read STR_VAR file=luabbr.2da RET_ARRAY luabbr_array=array END
+	ACTION_PHP_EACH luabbr_array AS k=>abbr BEGIN
+		OUTER_SPRINT file "lu%abbr%"
+		ACTION_IF !VARIABLE_IS_SET $lu_done("%file%") BEGIN
+			OUTER_SET $lu_done("%file%")=1
+			COPY_EXISTING "%file%.2da" override
+				LPF 2da_read RET_ARRAY lu_array=array lu_rows=rows END
+				PHP_EACH lu_rows AS row=>discard BEGIN
+					PATCH_FOR_EACH col IN ABILITY PREREQUISITE EXCLUDED_BY BEGIN
+						SPRINT ga_here $lu_array("%row%" "%col%")
+						TO_UPPER ga_here
+						PATCH_IF VARIABLE_IS_SET $ga_map("%ga_here%") BEGIN
+							SPRINT $lu_array("%row%" "%col%") $ga_map("%ga_here%")
+						END
+					END
+				END
+				LPF 2da_write STR_VAR array=lu_array END
+			BUT_ONLY
+			IF_EXISTS
+		END
+	END
+	
+	
+
+END

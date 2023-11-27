@@ -1,0 +1,51 @@
+DEFINE_ACTION_FUNCTION specialist_mages BEGIN
+
+
+	LAF include STR_VAR file=ui_spell_system.tph locbase=lua END
+	LAF include STR_VAR file=ui_spell_system_schools.tph locbase=lua END
+	LAF make_label STR_VAR label=dw#enforce_specialists END
+
+	LAF include STR_VAR file=mageschools_shared.tph locbase=shared END
+	LAF ui_spell_system_schools STR_VAR tra=mageschool END
+
+	LAF check_ini STR_VAR ini=number_of_required_specialist_spells RET number_required=value END
+	LAF check_ini STR_VAR ini=list_specialist_spells RET list_spells=value END
+	
+	LAF run STR_VAR file=remove_gnome_note END
+
+	
+	ACTION_CLEAR_ARRAY spec_map
+	ACTION_DEFINE_ASSOCIATIVE_ARRAY spec_map BEGIN
+		ABJURER=>"abjuration abjuration_alteration"
+		CONJURER=>"conjuration conjuration_invocation conjuration_necromancy"
+		DIVINER=>"divination divination_alteration"
+		ENCHANTER=>"enchantment"
+		ILLUSIONIST=>"illusion"
+		INVOKER=>"invocation conjuration_invocation invocation_alteration"
+		NECROMANCER=>"necromancy conjuration_necromancy"
+		TRANSMUTER=>"alteration abjuration_alteration divination_alteration invocation_alteration"	
+	END
+	ACTION_DEFINE_ASSOCIATIVE_ARRAY spec_strref_map BEGIN
+		ABJURER=>1
+		CONJURER=>2
+		DIVINER=>3
+		ENCHANTER=>4
+		ILLUSIONIST=>5
+		INVOKER=>6
+		NECROMANCER=>7
+		TRANSMUTER=>8	
+	END
+	
+	ACTION_PHP_EACH spec_map AS kit=>spell_list BEGIN
+		PRINT "%kit%"
+		LAF set_specialist_spells INT_VAR number_required list_spells update_description=1 STR_VAR kit spell_list END
+	END
+
+END
+
+
+
+
+
+	
+

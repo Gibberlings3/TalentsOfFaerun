@@ -1,0 +1,51 @@
+/// super-basic, vanilla-level, script for player-controlled fiend
+
+IF
+	ActionListEmpty()
+	See(NearestEnemyOf(Myself))
+	!StateCheck(LastSeenBy(Myself),STATE_PANIC)
+	Range(LastSeenBy(Myself),10)
+	!GlobalTimerNotExpired("DemFear","LOCALS")
+THEN
+	RESPONSE #100
+		SetGlobalTimer("DemFear","LOCALS",15)
+		ForceSpell(NearestEnemyOf(Myself),DEMON_FEAR)  // SPIN890.SPL (Demon Fear)
+END
+
+IF
+	ActionListEmpty()
+	See(NearestEnemyOf(Myself))
+	OR(3)
+		StateCheck(LastSeenBy(Myself),STATE_HELPLESS)
+		StateCheck(LastSeenBy(Myself),STATE_CONFUSED)
+		StateCheck(LastSeenBy(Myself),STATE_STUNNED)
+THEN
+	RESPONSE #100
+		AttackOneRound(NearestEnemyOf(Myself))
+		AttackOneRound(NearestEnemyOf(Myself))
+END
+
+IF
+	ActionListEmpty()
+	See(NearestEnemyOf(Myself))
+	RandomNum(2,1)
+	!CheckStatGT(LastSeenBy(Myself),75,RESISTMAGIC)
+	!HasBounceEffects(LastSeenBy(Myself))
+	!GlobalTimerNotExpired("SpellAttack","LOCALS")
+	HaveSpell(WIZARD_LIGHTNING_BOLT)
+THEN
+	RESPONSE #100
+		SetGlobalTimer("SpellAttack","LOCALS",12)
+		Spell(NearestEnemyOf(Myself),WIZARD_LIGHTNING_BOLT)  // SPWI308.SPL (Lightning Bolt)
+	RESPONSE #100
+		Continue()
+END
+
+IF
+	ActionListEmpty()
+	See(NearestEnemyOf(Myself))
+THEN
+	RESPONSE #100
+		AttackReevaluate(NearestEnemyOf(Myself),30)
+END
+

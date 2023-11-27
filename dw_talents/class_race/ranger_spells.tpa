@@ -1,0 +1,6 @@
+DEFINE_ACTION_FUNCTION ranger_spells BEGIN
+
+	COPY "%MOD_FOLDER%/%component_loc%/resource/mxsplpal.2da" "override/mxsplran.2da"
+		PRETTY_PRINT_2DA
+
+END

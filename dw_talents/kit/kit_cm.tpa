@@ -1,0 +1,100 @@
+DEFINE_ACTION_FUNCTION kit_cm BEGIN
+
+	LAF include STR_VAR file=symbol_stronghold.tph locbase=shared END
+	LAF include STR_VAR file=cleric_dialog_adjusts.tph END
+	LAF include STR_VAR file=multiclass.tph locbase=shared END
+	LAF include STR_VAR file=mageschools_shared.tph locbase=shared END
+	LAF virtualise_specialist_blocks STR_VAR tra=mageschool END
+	LAF include STR_VAR file=elementalist_shared.tph END
+
+	
+	ACTION_DEFINE_ASSOCIATIVE_ARRAY cm_list BEGIN
+		force_mage_of_mystra=>""
+		wild_mage_of_mystra=>""
+		illusionist_of_baervan=>""
+		abjurer_of_ilmater=>""
+		abjurer_of_mystra=>""
+		conjurer_of_azuth=>""
+		conjurer_of_bane_xvim=>""
+		diviner_of_oghma=>""
+		diviner_of_selune=>""
+		enchanter_of_sune=>""
+		enchanter_of_bhaal_cyric=>""
+		illusionist_of_azuth=>""
+		illusionist_of_shar=>""
+		invoker_of_lathander=>""
+		invoker_of_talos=>""
+		necromancer_of_talona=>""
+		necromancer_of_myrkul_velsharoon=>""
+		transmuter_of_selune=>""
+		transmuter_of_mystra=>""
+	END
+	
+	LAF check_label STR_VAR label=dw-elementalist RET elemental_kits=value END
+	ACTION_IF elemental_kits BEGIN
+		LAF make_elemental_spell_lists RET earth_names air_names water_names fire_names all_names END
+		ACTION_DEFINE_ASSOCIATIVE_ARRAY cm_list BEGIN
+			water_elementalist_of_auril=>""
+			fire_elementalist_of_sune=>""
+			water_elementalist_of_umberlee=>""
+			air_elementalist_of_baervan=>""
+			fire_elementalist_of_kossuth=>""
+			air_elementalist_of_talos=>""
+			earth_elementalist_of_moradin=>""
+		END
+	END
+
+	LAF check_label STR_VAR label=dw-force_mage RET force_mage=value END
+	ACTION_IF force_mage BEGIN
+		ACTION_DEFINE_ASSOCIATIVE_ARRAY cm_list BEGIN
+			force_mage_of_mystra=>""
+		END
+	END
+
+	ACTION_PHP_EACH cm_list AS cm=>discard BEGIN
+		LAF check_ini STR_VAR ini="%cm%" RET value END
+		ACTION_IF is_iwd BEGIN
+			LAF check_ini INT_VAR silent=1 STR_VAR ini="iwd_story_block_%cm%" RET story_block=value END
+		END ELSE BEGIN
+			LAF check_ini INT_VAR silent=1 STR_VAR ini="bg_story_block_%cm%" RET story_block=value END		
+		END
+		ACTION_IF value && !story_block BEGIN
+			OUTER_PATCH "%cm%" BEGIN
+				REPLACE_EVALUATE "of_\(.*\)" BEGIN
+					SPRINT god "%MATCH1%"
+				END
+				""
+			END
+			LAF include STR_VAR file="%god%.tph" location=kits END
+			ACTION_TIME "%cm%" BEGIN
+				LAF "%cm%" END
+			END
+		END
+	END
+
+	// update the kit-identification LUA
+	LAF ui_detect_class_kit END
+
+
+	// externalize weapprof
+	
+	LAF externalize_weapprof END
+
+
+	// process scroll usability
+	LAF process_scroll_usability_now END
+
+	// if appropriate, rebuild dual-class grid
+	
+	ACTION_IF FILE_EXISTS_IN_GAME "m_dw_dud.lua" BEGIN
+		LAF collect_dual_class_kit_data END
+	END
+	
+		
+	// NPCs
+	
+	LAF run STR_VAR file=npc_kits END
+
+END
+
+

@@ -1,0 +1,13 @@
+DEFINE_ACTION_FUNCTION test_setup2 STR_VAR version=0 BEGIN
+
+
+	component_loc:==hla_feat
+	LAF include STR_VAR file=make_feats.tph END
+	WITH_TRA "%scs_tra_loc%/english/hla_feat.tra" "%scs_tra_loc%/%LANGUAGE%/hla_feat.tra" BEGIN
+		ACTION_FOR_EACH setup IN hla_elemental_transformations missing_items poison empowered_healing item_crafting paladin_touch wand_scroll_use slippery_mind_avoid_death hla_elemental_summons hla_elemental_princes arcane_knowledge BEGIN
+			LAF hla_feat_setup STR_VAR setup END
+		END
+	END
+
+
+END

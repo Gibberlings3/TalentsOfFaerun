@@ -1,0 +1,149 @@
+@1="Red Dragon Disciple"
+@2="Blue Dragon Disciple"
+@3="Green Dragon Disciple"
+@4="Black Dragon Disciple"
+@5="White Dragon Disciple"
+
+@7="BLUE DRAGON DISCIPLE: Dragon Disciples are powerful Sorcerers with dragons' blood somewhere in their lineage. Their natural magical talents bring out their draconic heritage, allowing them to cast powerful magical spells and exhibit dragon-like abilities.
+
+Advantages:
+- 1st level: +1 bonus to AC. This increases to +2 at 5th level, to +3 at 10th level, to +4 at 15th level, and to a maximum of +5 at 20th level.
+- 3rd level: May use Breath Weapon once per day.
+
+BREATH WEAPON: The Dragon Disciple breathes a bolt of lightning up to 60 ft. long, inflicting 3d8 points of electricity damage on all creatures caught within the bolt. The damage increases by 1d8 every three levels after 3rd level, to a maximum of 8d8 at 18th level.
+
+- 4th level: Gains 25% innate Electricity Resistance. This increases to 50% at 8th level, to 75% at 12th level, and to a maximum of 100% at 16th level.
+- 5th level: +1 bonus to Constitution. This increases to +2 at 15th level.
+- 6th level: May use breath weapon twice per day.
+- 7th level: Gains immunity to hold.
+- 12th level: May use breath weapon three times per day.
+- 13th level: Gains immunity to charm.
+- 18th level: May use breath weapon four times per day.
+- Hit Die: d6
+
+Disadvantages:
+- May cast one fewer spell per level per day."
+
+@8="GREEN DRAGON DISCIPLE: Dragon Disciples are powerful Sorcerers with dragons' blood somewhere in their lineage. Their natural magical talents bring out their draconic heritage, allowing them to cast powerful magical spells and exhibit dragon-like abilities.
+
+Advantages:
+- 1st level: +1 bonus to AC. This increases to +2 at 5th level, to +3 at 10th level, to +4 at 15th level, and to a maximum of +5 at 20th level.
+- 3rd level: May use Breath Weapon once per day.
+
+BREATH WEAPON: The Dragon Disciple breathes a cone of caustic and poisonous gas, inflicting 3d8 points of poison damage on all creatures caught within it. The damage increases by 1d8 every three levels after 3rd level, to a maximum of 8d8 at 18th level.
+
+- 4th level: Gains 25% innate Poison Resistance. This increases to 50% at 8th level, to 75% at 12th level, and to a maximum of 100% at 16th level.
+- 5th level: +1 bonus to Constitution. This increases to +2 at 15th level.
+- 6th level: May use breath weapon twice per day.
+- 7th level: Gains immunity to hold.
+- 12th level: May use breath weapon three times per day.
+- 13th level: Gains immunity to charm.
+- 18th level: May use breath weapon four times per day.
+- Hit Die: d6
+
+Disadvantages:
+- May cast one fewer spell per level per day."
+
+@9="BLACK DRAGON DISCIPLE: Dragon Disciples are powerful Sorcerers with dragons' blood somewhere in their lineage. Their natural magical talents bring out their draconic heritage, allowing them to cast powerful magical spells and exhibit dragon-like abilities.
+
+Advantages:
+- 1st level: +1 bonus to AC. This increases to +2 at 5th level, to +3 at 10th level, to +4 at 15th level, and to a maximum of +5 at 20th level.
+- 3rd level: May use Breath Weapon once per day.
+
+BREATH WEAPON: The Dragon Disciple breathes a narrow cone of acid up to 60 ft. long, inflicting 3d8 points of acid damage on all creatures caught within the stream. The damage increases by 1d8 every three levels after 3rd level, to a maximum of 8d8 at 18th level.
+
+- 4th level: Gains 25% innate Acid Resistance. This increases to 50% at 8th level, to 75% at 12th level, and to a maximum of 100% at 16th level.
+- 5th level: +1 bonus to Constitution. This increases to +2 at 15th level.
+- 6th level: May use breath weapon twice per day.
+- 7th level: Gains immunity to hold.
+- 12th level: May use breath weapon three times per day.
+- 13th level: Gains immunity to charm.
+- 18th level: May use breath weapon four times per day.
+- Hit Die: d6
+
+Disadvantages:
+- May cast one fewer spell per level per day."
+
+@10="WHITE DRAGON DISCIPLE: Dragon Disciples are powerful Sorcerers with dragons' blood somewhere in their lineage. Their natural magical talents bring out their draconic heritage, allowing them to cast powerful magical spells and exhibit dragon-like abilities.
+
+Advantages:
+- 1st level: +1 bonus to AC. This increases to +2 at 5th level, to +3 at 10th level, to +4 at 15th level, and to a maximum of +5 at 20th level.
+- 3rd level: May use Breath Weapon once per day.
+
+BREATH WEAPON: The Dragon Disciple breathes a cone of ice up to 30 ft. long, inflicting 3d8 points of cold damage on all creatures caught within the 140-degree cone. The damage increases by 1d8 every three levels after 3rd level, to a maximum of 8d8 at 18th level.
+
+- 4th level: Gains 25% innate Cold Resistance. This increases to 50% at 8th level, to 75% at 12th level, and to a maximum of 100% at 16th level.
+- 5th level: +1 bonus to Constitution. This increases to +2 at 15th level.
+- 6th level: May use breath weapon twice per day.
+- 7th level: Gains immunity to hold.
+- 12th level: May use breath weapon three times per day.
+- 13th level: Gains immunity to charm.
+- 18th level: May use breath weapon four times per day.
+- Hit Die: d6
+
+Disadvantages:
+- May cast one fewer spell per level per day."
+
+@11="RED DRAGON DISCIPLE: Dragon Disciples are powerful Sorcerers with dragons' blood somewhere in their lineage. Their natural magical talents bring out their draconic heritage, allowing them to cast powerful magical spells and exhibit dragon-like abilities.
+
+Advantages:
+- 1st level: +1 bonus to AC. This increases to +2 at 5th level, to +3 at 10th level, to +4 at 15th level, and to a maximum of +5 at 20th level.
+- 3rd level: May use Breath Weapon once per day.
+
+BREATH WEAPON: The Dragon Disciple breathes a gout of flame up to 30 ft. long, inflicting 3d8 points of fire damage on all creatures caught within the 140-degree cone. The damage increases by 1d8 every three levels after 3rd level, to a maximum of 8d8 at 18th level.
+
+- 4th level: Gains 25% innate Fire Resistance. This increases to 50% at 8th level, to 75% at 12th level, and to a maximum of 100% at 16th level.
+- 5th level: +1 bonus to Constitution. This increases to +2 at 15th level.
+- 6th level: May use breath weapon twice per day.
+- 7th level: Gains immunity to hold.
+- 12th level: May use breath weapon three times per day.
+- 13th level: Gains immunity to charm.
+- 18th level: May use breath weapon four times per day.
+- Hit Die: d6
+
+Disadvantages:
+- May cast one fewer spell per level per day."
+
+@12="Breath Weapon
+The character breathes a bolt of lighting, inflicting 3d8 points of electricity damage on all creatures caught within the bot. The ability deals an additional 1d8 points of electricity damage for every three levels beyond 3rd level the character has attained (4d8 at 6th level, 5d8 at 9th level, and so on, up to a maximum of 8d8 at 18th level)."
+@13="Breath Weapon
+The character breathes a cloud of caustic and poisonous gas, inflicting 3d8 points of poison damage on all creatures caught within the cloud. The ability deals an additional 1d8 points of poison damage for every three levels beyond 3rd level the character has attained (4d8 at 6th level, 5d8 at 9th level, and so on, up to a maximum of 8d8 at 18th level)."
+@14="Breath Weapon
+The character breathes a stream of acid, inflicting 3d8 points of acid damage on all creatures caught within the stream. The ability deals an additional 1d8 points of acid damage for every three levels beyond 3rd level the character has attained (4d8 at 6th level, 5d8 at 9th level, and so on, up to a maximum of 8d8 at 18th level)."
+@15="Breath Weapon
+The character breathes a cone of ice and snow, inflicting 3d8 points of cold damage on all creatures caught within the 140-degree cone. The ability deals an additional 1d8 points of cold damage for every three levels beyond 3rd level the character has attained (4d8 at 6th level, 5d8 at 9th level, and so on, up to a maximum of 8d8 at 18th level)."
+@16="Gains immunity to charm" // must exactly match substring in @6-@10
+@17="Gains immunity to hold" // must exactly match substring in @6-@10
+@18="DRAGON DISCIPLE" // must match exactly the string in the class description"
+@19="RED DRAGON DISCIPLE"
+@20="Breath Weapon
+The character breathes a gout of flame, inflicting 3d8 points of fire damage on all creatures caught within the 140-degree cone. The ability deals an additional 1d8 points of fire damage for every three levels beyond 3rd level the character has attained (4d8 at 6th level, 5d8 at 9th level, and so on, up to a maximum of 8d8 at 18th level)."
+
+@21="Dragon Disciple"
+@22="DRAGON DISCIPLE: Dragon Disciples are powerful Sorcerers with dragons' blood somewhere in their lineage. Their natural magical talents bring out their draconic heritage, allowing them to cast powerful magical spells and exhibit dragon-like abilities. Each Dragon Disciple has the blood of a specific dragon species: red, blue, green, black, or white.
+
+Advantages:
+- 1st level: +1 bonus to AC. This increases to +2 at 5th level, to +3 at 10th level, to +4 at 15th level, and to a maximum of +5 at 20th level.
+- 3rd level: May use Breath Weapon once per day.
+
+BREATH WEAPON: The Dragon Disciple has a breath weapon that inflicts 3d8 damage, with an area and a damage type dependent on the disciple's dragon species. The damage increases by 1d8 every three levels after 3rd level, to a maximum of 8d8 at 18th level.
+
+- 4th level: Gains 25% innate resistance to an element dependent on the disciple's dragon species. This increases to 50% at 8th level, to 75% at 12th level, and to a maximum of 100% at 16th level.
+- 5th level: +1 bonus to Constitution. This increases to +2 at 15th level.
+- 7th level: Gains immunity to hold.
+- 13th level: Gains immunity to charm.
+- Hit Die: d6
+
+Disadvantages:
+- May cast one fewer spell per level per day."
+@23="Choose Dragon"
+@24="May use breath weapon twice per day." // these must exactly match strings in @6-@10
+@25="May use breath weapon three times per day."
+@26="May use breath weapon four times per day."
+
+
+@51="Red Dragon"
+@52="Blue Dragon"
+@53="Green Dragon"
+@54="Black Dragon"
+@55="White Dragon"

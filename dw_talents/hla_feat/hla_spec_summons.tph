@@ -1,0 +1,108 @@
+/////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION EMPOWERED_ANIMAL_SUMMONING BEGIN
+
+	LPF empowered_creature_setup STR_VAR script="%baf_empowered_animal_summons%" splstate=DW_POWER_UPGRADE_C4 spell_list="%CLERIC_ANIMAL_SUMMONING_1% %CLERIC_ANIMAL_SUMMONING_2% %CLERIC_ANIMAL_SUMMONING_3% %CLERIC_CONJURE_ANIMALS% spra304 spra305 spra306 %CLERIC_GIANT_INSECT%" RET stat_ind END
+	LPF add_feat_effect INT_VAR parameter2=stat_ind opcode=328 special=1 END
+
+END
+
+/////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION EMPOWERED_MONSTER_SUMMONING BEGIN
+
+	LPF empowered_creature_setup STR_VAR script="%baf_empowered_monster_summons%" splstate=DW_POWER_UPGRADE_C5 spell_list="%WIZARD_MONSTER_SUMMONING_1% %WIZARD_MONSTER_SUMMONING_1% %WIZARD_MONSTER_SUMMONING_2% %WIZARD_MONSTER_SUMMONING_3% %WIZARD_MONSTER_SUMMONING_4% %WIZARD_MONSTER_SUMMONING_5% %WIZARD_MONSTER_SUMMONING_6% %WIZARD_MONSTER_SUMMONING_7% %WIZARD_CARRION% %WIZARD_WYVERN_CALL% %WIZARD_SPIDER_SPAWN%" RET stat_ind END
+	LPF add_feat_effect INT_VAR parameter2=stat_ind opcode=328 special=1 END
+
+END
+
+/////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION EMPOWERED_UNDEAD_SUMMONING BEGIN
+
+	LPF empowered_creature_setup STR_VAR script="%baf_empowered_undead_summons%" splstate=DW_POWER_UPGRADE_C6 spell_list="%WIZARD_ANIMATE_DEAD% %WIZARD_SUMMON_SHADOW% %WIZARD_CREATE_BONEGUARD% tg#bone" RET stat_ind END
+	LPF add_feat_effect INT_VAR parameter2=stat_ind opcode=328 special=1 END
+
+END
+
+/////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION EMPOWERED_TOTEMIC_SUMMONING BEGIN
+
+	LPF empowered_creature_setup STR_VAR script="%baf_empowered_totemic_summons%" splstate=DW_POWER_UPGRADE_C3 spell_list="SPCL622 SPCL623 SPCL624 SPCL625" RET stat_ind END
+	LPF add_feat_effect INT_VAR parameter2=stat_ind opcode=328 special=1 END
+
+END
+
+/////////////////////////////////////////////////////////////////////////
+
+DEFINE_DIMORPHIC_FUNCTION empowered_creature_setup 
+		STR_VAR script=""
+				splstate=""
+				spell_list=""
+		RET stat_ind 
+BEGIN
+
+    ACTION_IF !FILE_EXISTS_IN_GAME dw#empow.spl BEGIN
+		// the spell
+		spl.make[dw#empow]
+		[
+			m.ab.add{}
+			m.ab_fx.add{s_target=1 s_opcode=139 s_timing=1 s_parameter1=RESOLVE_STR_REF (@3066)}
+			m.ab_fx.add{s_target=1 s_timing=1 s_opcode=54 s_parameter1=4} //attack
+			m.ab_fx.add{s_target=1 s_timing=1 s_opcode=73 s_parameter1=4} //damage
+			m.ab_fx.add{s_target=1 s_timing=1 s_opcode=345 s_parameter1=2 s_parameter2=0 s_special=3} // enchantment
+			m.ab_fx.add{s_target=1 s_timing=1 s_opcode=325 s_parameter1=2} // saving throws
+			m.ab_fx.add{s_target=1 s_timing=1 s_opcode=0 s_parameter1=4} // AC
+		] 
+   END
+ 
+     // the script
+ 
+   ACTION_IF !FILE_EXISTS_IN_GAME "%script%.bcs" BEGIN
+ 
+      LAF ds_resolve_stat STR_VAR id="%splstate%" RET stat_ind END
+
+      <<<<<<<< .../stratagems-inline/%script%.baf
+      IF
+        OnCreation()
+        CheckSpellState(LastSummonerOf(Myself),%splstate%)
+        !Global("empowered","LOCALS",1)
+      THEN
+         RESPONSE #100
+            SetGlobal("empowered","LOCALS",1)
+            ApplySpellRES("dw#empow",Myself)
+            Continue()
+      END
+      >>>>>>>>
+
+      LAF install INT_VAR inline=1 STR_VAR file="%script%.baf" END
+   END
+   
+   // the creatures
+   ACTION_CLEAR_ARRAY array_cre 
+   OUTER_WHILE "%spell_list%" STR_CMP "" BEGIN
+		LAF return_first_entry STR_VAR list="%spell_list%" RET spell_list=list spell=entry END
+		ACTION_IF FILE_EXISTS_IN_GAME "%spell%.spl" BEGIN
+			LAF iter_resource STR_VAR start="%spell%.spl" RET_ARRAY array_here=array END
+			ACTION_PHP_EACH array_here AS file=>discard BEGIN
+				OUTER_PATCH "%file%" BEGIN
+					REPLACE_EVALUATE "\(.*\)\.cre" BEGIN
+						SPRINT $array_cre("%MATCH1%") ""
+					END
+					""
+				END
+			END
+		END
+   END
+   ACTION_PHP_EACH array_cre AS cre=>discard BEGIN
+		ACTION_IF FILE_EXISTS_IN_GAME "%cre%.cre" && !RESOURCE_CONTAINS "%cre%.cre" "%script%" BEGIN
+			cre.edit[%cre%]
+			[
+				m.cre_insert_script{%script%|loc=high}
+			]
+		END
+   END
+   
+   
+END

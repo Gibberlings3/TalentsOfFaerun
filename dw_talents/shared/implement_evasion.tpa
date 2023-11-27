@@ -1,0 +1,93 @@
+DEFINE_ACTION_FUNCTION implement_evasion BEGIN
+
+	// load resources
+
+	LAF include STR_VAR file=evasion_shared.tph locbase=shared END
+	LAF include STR_VAR file=3e_save.tpa locbase=3e_save END // we borrow the 'diagnose saves' function
+	
+	// create the CLAB flag if necessary
+	
+	ACTION_IF !FILE_EXISTS_IN_GAME "#evasion.spl" BEGIN
+	
+		WITH_TRA "%scs_tra_loc%/english/evasion.tra" "%scs_tra_loc%/%LANGUAGE%/evasion.tra" BEGIN
+			OUTER_SET evasion_string= RESOLVE_STR_REF ( @2 )
+			
+		END
+
+		spl.make[#evasion]
+		[
+			m.ab.add{}
+			m.ab_fx.add{s_target=1 s_timing=9 s_opcode=328 s_parameter1=252}
+			m.ab_fx.add{s_target=1 s_opcode=139 s_timing=1 s_parameter1=evasion_string}	
+		]
+	END
+	
+	kit.edit_all[THIEF]
+	[
+		k.kit_remove_powers{#evasion}
+		k.kit_apply_powers{#evasion 7}
+	]
+	
+	// the core evasion content
+	
+	LAF check_label STR_VAR label="dw#evasion_setup" RET evasion_done=value END 
+	ACTION_IF !evasion_done BEGIN
+
+	  LAF check_ini STR_VAR ini=document_evasion RET document_evasion=value END
+	  LAF get_hardcoded_saves STR_VAR locbase=3e_save RET_ARRAY hardcoded_saves END
+	
+	  LAF make_label STR_VAR label="dw#evasion_setup" END
+	
+	  COPY_EXISTING_REGEXP ".*\.spl" override
+		SPRINT resref "%SOURCE_RES%"
+		TO_UPPER resref
+		PATCH_IF !VARIABLE_IS_SET $special_case("%resref%") BEGIN  
+				LPF diagnose_saves STR_VAR resref RET savetype save_for_half END
+				PATCH_IF "%savetype%" STRING_EQUAL_CASE REFLEX && save_for_half && !evasion_done BEGIN
+					LPF enable_evasion INT_VAR enforce_breath=0 STR_VAR resref END
+					PATCH_IF document_evasion BEGIN
+					 PATCH_MATCH "%resref%" WITH 
+					 "SPPR[1-7].*" "SPWI[1-9].*" BEGIN
+						INNER_PATCH_SAVE resref_name "%resref%" BEGIN
+							REPLACE_TEXTUALLY "\([0-9]\)[A-Z]+$" "\1"
+						END
+						INNER_ACTION BEGIN
+							COPY_EXISTING "%resref_name%.spl" "%workspace%"
+								READ_STRREF 0x8 name
+							BUT_ONLY
+						END
+						SPRINT $evasion_documentation("%name%") ""
+					 END
+					 DEFAULT
+					 END
+					END
+				END
+		END
+	  BUT_ONLY
+	
+	  COPY_EXISTING_REGEXP ".*\.itm" override	
+		SPRINT resref "%SOURCE_RES%"
+		TO_UPPER resref
+		LPF diagnose_saves INT_VAR is_item=1 STR_VAR resref RET savetype save_for_half END
+		PATCH_IF "%savetype%" STRING_EQUAL_CASE REFLEX && save_for_half && !evasion_done BEGIN
+			LPF enable_evasion INT_VAR is_item=1 enforce_breath=0 STR_VAR resref END
+		END
+	  BUT_ONLY
+	  
+	END
+	
+	ACTION_IF document_evasion BEGIN
+	 ACTION_SORT_ARRAY_INDICES evasion_documentation LEXICOGRAPHICALLY
+	 ACTION_PHP_EACH evasion_documentation AS name=>discard BEGIN
+		LAF log_this STR_VAR file=evasion_documentation.txt input="<li>%name%</li>" END
+	 END
+	END
+
+
+
+
+
+
+
+
+END

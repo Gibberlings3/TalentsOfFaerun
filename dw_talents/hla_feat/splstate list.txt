@@ -1,0 +1,34 @@
+General principle:
+
+- cleric/druid, mage, fighter/ranger, thief upgrades get separate lists, since they can all multiclass
+- kits of the same base type can share
+- monks, paladins, sorcerers, bards can't multiclass, so they can just ride on existing ones
+- we have no shapeshifter/mage dual-classes, so shapeshifters can share with mage blocks
+
+
+DW_POWER_UPGRADE_C1: empowered healing, sun soul searing fist (Monks can't multiclass)
+DW_POWER_UPGRADE_C2: greater empowered healing
+DW_POWER_UPGRADE_C3: improved seeking sword, enhanced boon of lathander, empowered totemic summoning
+DW_POWER_UPGRADE_C4: empowered animal summoning
+
+DW_POWER_UPGRADE_F1: greater whirlwind
+DW_POWER_UPGRADE_F2: greater war cry
+DW_POWER_UPGRADE_F3: scorn injury [berserker], Dwarven Defender 1 [DD], tireless rage [barbarian]
+DW_POWER_UPGRADE_F4: DD2, greater rage [barbarian]
+DW_POWER_UPGRADE_F5: DD3, supernatural fury [barbarian]
+DW_POWER_UPGRADE_F6: DD4, fiery rage [barbarian]
+DW_POWER_UPGRADE_F7: greater deathblow
+DW_POWER_UPGRADE_F8: thunderous rage [barbarian]
+DW_POWER_UPGRADE_F9: tempestuous/volcanic rage [barbarian]
+
+DW_POWER_UPGRADE_M1: demon binding, shapeshifter feral strength
+DW_POWER_UPGRADE_M2: greater demon binding, shapeshifter feral resilience
+DW_POWER_UPGRADE_M3: wishcraft, shapeshifter true shapeshifter
+DW_POWER_UPGRADE_M4: diviner's focus
+DW_POWER_UPGRADE_M5: empowered monster summoning
+DW_POWER_UPGRADE_M6: empowered undead summoning
+
+
+DW_POWER_UPGRADE_T1: Advanced avoid danger, 
+DW_POWER_UPGRADE_T2: Poison aptitude[Assassin] (was 11), Blade Finesse [Blade], dragon disciple recurrent breath [DD]
+DW_POWER_UPGRADE_T3: Poison expertise[Assassin] (was 4)

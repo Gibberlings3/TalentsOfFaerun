@@ -1,0 +1,116 @@
+DEFINE_ACTION_FUNCTION lathander_cleric BEGIN
+
+	LAF lathander_shared END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_FALSE_DAWN%" type=innate RET spl_lathander_false_dawn=new_resref END
+
+
+	OUTER_SPRINT kit LATHANDER
+	LAF cleric_kit_substitutions STR_VAR kit=GODLATHANDER god=lathander END
+	kit.edit[%kit%|edit_strrefs_in_place:i=1]
+	[
+		k_name:=@54
+		k_desc:=@55
+		k.kit_remove_powers{%LATHANDER_BOON% %LATHANDER_HOLD_UNDEAD%}
+		k.kit_grant_powers{%LATHANDER_HOLD_UNDEAD% 3 5,%LATHANDER_BOON% 7 4,%spl_lathander_false_dawn% 9}
+	]
+	LAF assign_spheres STR_VAR kit kit_clastext="GODLATHANDER" default=cleric add="sun" subtract="evil necromantic" END
+
+END
+
+DEFINE_ACTION_FUNCTION templar_of_lathander BEGIN
+
+	LAF lathander_shared END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_FALSE_DAWN%" type=innate RET spl_lathander_false_dawn=new_resref END
+
+	OUTER_SPRINT kit DW_LATHANDER_TEMPLAR
+	kit.copy[FIGHTER_CLERIC=>%kit%]
+	[
+		k_name:=@17
+		k_desc:=@18
+		k.kit_grant_powers{%LATHANDER_HOLD_UNDEAD% 3 5,%LATHANDER_BOON% 7 4,%spl_lathander_false_dawn% 9|class=cleric}
+		k.kit_set_alignment{lg ng cg nn}
+		k_color_minor_cloth=25
+		k_color_main_cloth=79
+	]
+	LAF cleric_kit_substitutions STR_VAR kit god=lathander END
+	LAF assign_spheres STR_VAR kit default=cleric add="sun" subtract="evil necromantic" END
+	LAF holy_symbol INT_VAR name=2052 follower=2053 STR_VAR kit desc_bam=pbelt12 inv_bam=ibelt12 kit END
+ 	LAF adjust_cleric_stronghold STR_VAR lathander=all kit END
+	LAF set_multiclass_components STR_VAR kit components="lathander"  END
+
+END
+
+DEFINE_ACTION_FUNCTION invoker_of_lathander BEGIN
+
+    LAF lathander_shared END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_FALSE_DAWN%" type=innate RET spl_lathander_false_dawn=new_resref END
+
+	OUTER_SPRINT kit DW_LATHANDER_INVOKER
+	kit.copy[CLERIC_MAGE=>%kit%]
+	[
+		k_name:=@114
+		k_desc:=@115
+		k.kit_grant_powers{%LATHANDER_HOLD_UNDEAD% 3 5,%LATHANDER_BOON% 7 4,%spl_lathander_false_dawn% 9|class=cleric}
+		k.kit_set_alignment{lg ng cg nn}
+		k_color_minor_cloth=25
+		k_color_main_cloth=79
+		PATCH_IF is_iwd BEGIN
+			k_bio=40279
+		END
+	]
+	
+	LAF cleric_kit_substitutions STR_VAR kit god=lathander END
+	LAF assign_spheres INT_VAR update_scroll_usability=0 STR_VAR kit default=cleric add="sun" subtract="evil necromantic" END
+ 	LAF adjust_cleric_stronghold STR_VAR lathander=all kit END
+	LAF holy_symbol INT_VAR name=2052 follower=2053 STR_VAR kit desc_bam=pbelt12 inv_bam=ibelt12 kit END
+ 
+ 	LAF make_multiclass_specialist STR_VAR kit school=invocation END
+	LAF set_multiclass_components STR_VAR kit components="LATHANDER INVOKER"  END
+ 
+ 
+END
+
+
+
+DEFINE_ACTION_FUNCTION lathander_favored_soul BEGIN
+
+	LAF lathander_shared END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_FALSE_DAWN%" type=innate RET spl_lathander_false_dawn=new_resref END
+
+	// make the main kit
+	
+	OUTER_SPRINT kit "DW_LATHANDER_FAVORED"
+	
+	LAF build_favored_soul_kit INT_VAR name=4002 desc=4003 god=4004 god_gender=4005 god_temple=4006 STR_VAR kit copy_from=LATHANDER END
+	LAF cleric_kit_substitutions STR_VAR kit god=lathander END
+	kit.edit[%kit%|edit_strrefs_in_place:i=1]
+	[
+		k.kit_grant_powers{%LATHANDER_HOLD_UNDEAD% 3 5,%LATHANDER_BOON% 7 4,%spl_lathander_false_dawn% 9}
+	]
+
+	// spell choices
+
+	LAF assign_bonus_spells STR_VAR kit spells="CLERIC_SUNSCORCH CLERIC_FLAME_BLADE CLERIC_HOLY_SMITE CLERIC_RAISE_DEAD CLERIC_UNDEAD_WARD CLERIC_BOLT_OF_GLORY CLERIC_SUNRAY" END
+
+
+
+END
+
+DEFINE_ACTION_FUNCTION lathander_shared BEGIN
+
+	LAF include STR_VAR file=log_favored_weapon.tph locbase=shared END
+	LAF log_favored_weapon STR_VAR god=LATHANDER weapon=mace END
+
+
+	LAF check_label STR_VAR label=dw#lathander_shared RET value END
+	ACTION_IF !value BEGIN
+	
+		LAF make_label STR_VAR label=dw#lathander_shared END
+		
+		// innate False Dawn
+		
+		LAF splconv STR_VAR spell="%CLERIC_FALSE_DAWN%" new_type=innate RET_ARRAY splconv_array END
+		
+	
+	END
+END

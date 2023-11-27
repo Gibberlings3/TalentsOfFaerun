@@ -1,0 +1,23 @@
+DEFINE_ACTION_FUNCTION entropy_shield_abjuration BEGIN
+
+	LAF log_this INT_VAR repeat=0 STR_VAR file="scs_modified_spells_iwd.2da" input=CLERIC_ENTROPY_SHIELD  END
+
+
+	// we're no longer going to debug, since IWDification is now built on SCS data
+
+
+	spl.edit["%CLERIC_ENTROPY_SHIELD%"|edit_strrefs_in_place:i=1]
+	[
+		m_sectype=1 // SPELLPROTECTIONS, not COMBATPROTECTIONS
+		m.ab_fx.clone{s_opcode=204;;s_parameter1=0;;s_parameter2=1|match="s_opcode=142"} // SI abjuration
+		m.ab_fx.clone{s_opcode=282;;s_parameter1=1;;s_parameter2=6|match="s_opcode=142" multi_match:i=1} //spellstate:SI abjuration
+		desc_add:=@40700
+		m_description:="%m_description%%desc_add%"	
+	]
+
+	// ds
+	ACTION_FOR_EACH id IN SI_ABJURATION BUFF_PRO_SPELLS BEGIN
+		LAF ds_make_detectable STR_VAR id resource=CLERIC_ENTROPY_SHIELD END
+	END
+
+END

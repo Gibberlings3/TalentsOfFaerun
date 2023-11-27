@@ -1,0 +1,69 @@
+DEFINE_ACTION_FUNCTION spellstrike_vs_pm_scroll BEGIN
+
+     LAF log_this INT_VAR repeat=0 STR_VAR file="scs_modified_spells.2da" input=WIZARD_SPELL_STRIKE END
+
+
+
+
+
+	// copy effects of scroll to spell 
+
+	LAF copy_item_to_spell STR_VAR item=scrl07 spell=dw#pmscr END
+
+	// make spell sectype 1; remove the 'delete-sectype-1 effect' from it (otherwise it removes its own effects)
+
+	COPY_EXISTING "dw#pmscr.spl" override
+		WRITE_BYTE 0x27 1
+		LPF DELETE_EFFECT INT_VAR match_opcode=221 match_parameter2=1 END
+		
+	// move the removal of sectype 1 into the primary item
+
+	COPY_EXISTING "dw#pmscr.spl" override
+		WRITE_BYTE 0x27 1
+
+	// make scroll cast spell; move removal of sectype 1 into the scroll
+
+	itm.edit[scrl07]
+	[
+		m.ab_fx.delete{}
+		m.ab_fx.add{s_opcode=221 s_target=2 s_parameter1=10 s_parameter2=1 s_timing=1}
+		m.ab_fx.add{s_opcode=146 s_target=2 s_parameter1=10 s_parameter2=1 s_timing=1 s_resource:=dw#pmscr}
+	]
+	
+
+	// set sectype of Antimagic Shell if it's present
+
+	COPY_EXISTING "%WIZARD_ANTIMAGIC_SHELL%.spl" override
+		WRITE_BYTE 0x27 1
+		BUT_ONLY
+		IF_EXISTS
+
+	// make level of appropriate spells ten
+
+	spl.edit[spwi903 spwi903b spwi903c spin550 spin550b spin550c|allow_missing:i=1]
+	[
+		m.ab_fx.alter{s_power=10}
+	]
+
+	// edit description string
+
+	ACTION_IF VARIABLE_IS_SET WIZARD_ANTIMAGIC_SHELL BEGIN
+	   OUTER_SPRINT addendum @40014
+	END ELSE BEGIN
+	   OUTER_SPRINT addendum @211
+	END
+	spl.edit[%WIZARD_SPELL_STRIKE%|edit_strrefs_in_place:i=1]
+	[
+		m_description:="%m_description%%addendum%"
+	]
+	itm.edit[scrl07|edit_strrefs_in_place:i=1]
+	[
+		INNER_PATCH_SAVE m_identified_description "%m_identified_description%" BEGIN
+			old:=@212
+			new:=@213
+			REPLACE_TEXTUALLY "%old%" "%new%"
+		END
+	]
+
+END
+

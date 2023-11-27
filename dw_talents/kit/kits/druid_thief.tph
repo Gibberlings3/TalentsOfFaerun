@@ -1,0 +1,87 @@
+DEFINE_ACTION_FUNCTION druid_thief BEGIN
+
+	// make the core kit
+	OUTER_SPRINT kit DW_DRUID_THIEF
+	kit.copy[CLERIC_THIEF=>%kit%]
+	[
+		k_name:=@5
+		k_description:=@6
+		k.kit_apply_powers{%c_to_d_apply_string%|class=cleric}
+		k.kit_grant_powers{%c_to_d_grant_string%|class=cleric}
+		IF {is_iwd} 
+		{{k_bio:=19421}}
+		ELSE
+		{{ k_bio:=15885}}
+	]
+	
+	LAF 2da_read STR_VAR file=clsrcreq.2da case=lower RET_ARRAY array END
+	ACTION_FOR_EACH column IN human elf dwarf gnome halfling half_elf halforc BEGIN
+		OUTER_SET "%column%"=$array("cleric_mage" "%column%")
+	END	
+	LAF add_virtual_class INT_VAR name=5 desc=6 multiclass=1 STR_VAR ident="druid_thief" human elf dwarf gnome halfling half_elf halforc all_races="false" parent=CLERIC_THIEF END
+	LAF assign_kit_to_virtual_class STR_VAR kit class=druid_thief END
+
+	
+	// impose class restrictions
+	
+	LAF impose_druid_class_features STR_VAR kit END
+
+	// log the kit 
+
+	LAF set_multiclass_components STR_VAR kit components="DRUID" END
+	
+	// log for prof component
+	
+	LAF prof_redirect_kit_parent STR_VAR kit parent=DRUID_THIEF END
+
+
+END
+
+DEFINE_ACTION_FUNCTION silent_avenger RET kit BEGIN
+
+
+	// make the core kit
+	OUTER_SPRINT kit DW_SILENT_AVENGER
+	
+	kit.copy[CLERIC_THIEF=>%kit%]
+	[
+		k_name:=@224
+		LPF adjust_avenger_descriptions INT_VAR tra_ref=225 RET desc END
+		LPF adjust_assassin_descriptions STR_VAR desc RET k_desc=desc END
+		k.kit_apply_powers{SPCL421 1|class=thief} // +1 hit/damage
+		k.kit_grant_powers{%ASSASSIN_POISON% 1 4|class=thief}
+		k.kit_apply_powers{%avenger_c_to_d_apply_string%|class=cleric}
+		k.kit_grant_powers{%avenger_c_to_d_grant_string%|class=cleric}
+		k.kit_copy_from{thiefskl|source=ASSASIN}
+		k_mod_str="-2"
+		k_mod_con="-2"
+		IF {is_iwd} 
+		{{k_bio:=19421}}
+		ELSE
+		{{k_bio:=15885}}
+	]
+	
+	LAF copy_backstab STR_VAR kit copy_from=ASSASIN class=thief END
+	
+	// impose class restrictions
+	
+	LAF impose_druid_class_features STR_VAR kit parent_class=DRUID_THIEF END
+
+	// add as a virtual kit on the chargen screen
+	
+	LAF assign_kit_to_virtual_class STR_VAR kit class=druid_thief END
+	
+	// override cleric/ranger description on character sheet
+
+	LAF set_multiclass_components STR_VAR kit components="avenger assasin"  END
+
+	// log for prof component
+	
+	LAF include STR_VAR file=prof_tools.tph locbase=prof END
+	LAF prof_redirect_kit_parent STR_VAR kit parent=DRUID_THIEF END
+
+
+
+
+
+END

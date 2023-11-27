@@ -1,0 +1,147 @@
+@1="Sorcerer (Arcane Bloodline)"
+@2="Sorcerer (Shadowed Bloodline)"
+@3="Sorcerer (Fey Bloodline)"
+@4="Sorcerer (Celestial Bloodline)"
+@5="Sorcerer (Fiendish Bloodline)"
+@6="Sorcerer (Gravetouched Bloodline)"
+@7="Sorcerer (Stormborn Bloodline)"
+@8="Sorcerer (Efreeti Bloodline)"
+@9="Sorcerer (Rimefrost Bloodline)"
+@10="Sorcerer (Deepearth Bloodline)"
+
+@51="Arcane"
+@52="Shadowed"
+@53="Fey"
+@54="Celestial"
+@55="Fiendish"
+@56="Gravetouched"
+@57="Stormborn"
+@58="Efreeti"
+@59="Rimefrost"
+@60="Deepearth"
+
+@71="May not use spells from the school of Abjuration."
+@72="May not use spells from the school of Conjuration."
+@73="May not use spells from the school of Divination."
+@74="May not use spells from the school of Enchantment."
+@75="May not use spells from the school of Illusion."
+@76="May not use spells from the school of Invocation."
+@77="May not use spells from the school of Necromancy."
+@78="May not use spells from the school of Alteration."
+@79="May not use spells from the school of Conjuration, with the exception of those which summon fiends."
+@80="May not use spells that involve earth, stone, acid, or metal."
+@81="May not use spells that involve water, ice, or cold."
+@82="May not use spells that involve fire."
+@83="May not use spells that involve air, wind, or lightning."
+
+@91="Has access to Abjuration High-Level Abilities."
+@92="Has access to Conjuration High-Level Abilities."
+@93="Has access to Divination High-Level Abilities."
+@94="Has access to Enchantment High-Level Abilities."
+@95="Has access to Illusion High-Level Abilities."
+@96="Has access to Invocation High-Level Abilities."
+@97="Has access to Necromancy High-Level Abilities."
+@98="Has access to Alteration High-Level Abilities."
+
+@101="ARCANE BLOODLINE: Sorcerers with the arcane bloodline have a natural gift for magic; the origin of the gift is unknown.
+
+Advantages: 
+None.
+
+Disadvantages:
+None."
+
+@102="SHADOWED BLOODLINE: Sorcerers with the shadowed bloodline have been touched by the Plane of Shadow. 
+
+Advantages:
+BONUS_SPELL_PLACEHOLDER
+HLA_ACCESS_PLACEHOLDER
+
+Disadvantages:
+DISADVANTAGE_PLACEHOLDER"
+
+@103="FEY BLOODLINE: Sorcerers with the fey bloodline have been touched by the capricious nature of the fey.
+
+Advantages:
+BONUS_SPELL_PLACEHOLDER
+HLA_ACCESS_PLACEHOLDER
+
+Disadvantages:
+DISADVANTAGE_PLACEHOLDER"
+
+@104="CELESTIAL BLOODLINE: Sorcerers with the celestial bloodline have been blessed by a celestial power, perhaps through a celestial ancestor, perhpas through divine intervention. 
+
+Advantages:
+BONUS_SPELL_PLACEHOLDER
+HLA_ACCESS_PLACEHOLDER
+
+Disadvantages:
+DISADVANTAGE_PLACEHOLDER"
+
+@105="FIENDISH BLOODLINE: Sorcerers with the fiendish bloodline have been influenced by the dark touch of the Lower Planes.
+
+Advantages:
+BONUS_SPELL_PLACEHOLDER
+HLA_ACCESS_PLACEHOLDER
+
+Disadvantages:
+DISADVANTAGE_PLACEHOLDER"
+
+@106="GRAVETOUCHED BLOODLINE: Sorcerers with the gravetouched bloodline have the taint of the grave within them - perhaps through an ancestor who became a lich or vampire, perhaps through being born dead and returning to life.
+
+Advantages:
+BONUS_SPELL_PLACEHOLDER
+HLA_ACCESS_PLACEHOLDER
+
+Disadvantages:
+DISADVANTAGE_PLACEHOLDER"
+
+@107="STORMBORN BLOODLINE: Sorcerers with the stormborn bloodline might have been born in the heart of a supernaturally furious storm, or might have a djinni of the Plane of Air among their ancestors. Whatever the origin of their powers, they have gained a gift for air and lighting magic.
+
+Advantages:
+BONUS_SPELL_PLACEHOLDER
+HLA_ACCESS_PLACEHOLDER
+
+Disadvantages:
+DISADVANTAGE_PLACEHOLDER"
+
+@108="EFREETI BLOODLINE: Sorcerers with the efreeti bloodline have an efreeti of the Plane of Fire among their ancestors, and have a talent for fire magic and an affinity to genies.
+
+Advantages:
+BONUS_SPELL_PLACEHOLDER
+HLA_ACCESS_PLACEHOLDER
+
+Disadvantages:
+DISADVANTAGE_PLACEHOLDER."
+
+@109="RIMEFROST BLOODLINE: Ice runs in the veins of sorcerers with the rimefrost bloodline; they have an affinity for cold magic, though the source is mysterious.
+
+Advantages:
+BONUS_SPELL_PLACEHOLDER
+HLA_ACCESS_PLACEHOLDER
+
+Disadvantages:
+DISADVANTAGE_PLACEHOLDER"
+
+@110="DEEPEARTH BLOODLINE: Sorcerers with the deepearth bloodline feel the echoing of cave-songs and the rumble and creak of primal spirits deep below thrumming in their souls. Perhaps a dao genie was among their ancestors, or perhaps they were born where hidden ley lines cross; in any case, they have a powerful affinity with earth magic.
+
+Advantages:
+BONUS_SPELL_PLACEHOLDER
+HLA_ACCESS_PLACEHOLDER
+
+Disadvantages:
+DISADVANTAGE_PLACEHOLDER"
+
+@200="Choose Bloodline"
+@201="SORCERER: Sorcerers are practitioners of magic who were born with the innate ability to cast spells. It is thought that the blood of some powerful creature flows through their veins; perhaps they are the spawn of the gods themselves, or even dragons walking in humanoid form. Regardless, the Sorcerer's magic is intuitive rather than logical. They know fewer spells than Mages, and acquire spells more slowly, but they can cast spells more often and have no need to select and prepare spells ahead of time. Sorcerers cannot specialize in magic the way Mages do; instead, each sorcerer has a 'bloodline', a source of their magic. A sorcerer's bloodline can grant them additional spells, including some not normally available to mages, but can also restrict their spell choices.
+
+CLASS FEATURES:
+
+- May not wear any armor.
+- May only use the following weapons: dagger, quarterstaff, dart, sling.
+- May only become Proficient (one slot) in any weapon class.
+- May not place any slots in any fighting style.
+- May cast arcane spells.
+- May not scribe spells into their spellbooks as Mages do. Instead, Sorcerers learn a small number of spells at each level, which they can cast daily without memorization.
+- Selects a bloodline at first level. All bloodlines except 'Arcane' grant a specific additional learned spell at each spell level , but also prevent the sorcerer from learning certain other spells.
+- Hit Die: d4"

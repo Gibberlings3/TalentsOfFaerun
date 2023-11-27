@@ -1,0 +1,351 @@
+DEFINE_ACTION_FUNCTION auril_cleric BEGIN
+
+    LAF auril_shared END
+	OUTER_SPRINT kit DW_AURIL_CLERIC
+	LAF splconv_get_name STR_VAR new_type=innate resref="%WIZARD_ICE_STORM%" RET spl_auril_ice_storm=new_resref END
+	
+	kit.copy[CLERIC=>%kit%]
+	[
+		k_name:=@102
+		k_desc:=@103
+		k.kit_apply_powers{%spl_auril_resist_cold_1% 1,%spl_auril_resist_cold_2% 4,%spl_auril_resist_cold_3% 8}
+		k.kit_grant_powers{%spl_auril_ice_storm% 5 6,%spl_auril_cone_of_cold% 7 6,%spl_auril_conjure_elemental% 9}
+		k_color_metal=35
+		k_color_minor_cloth=141
+		k_color_main_cloth=79
+		k_color_leather=25
+		k_color_armor=80	
+		k.kit_set_alignment{le ne ce}
+	]
+	
+	LAF cleric_kit_substitutions STR_VAR kit god=auril END
+	LAF assign_spheres STR_VAR kit default=cleric subtract="charm good combat" add="earth air water" END
+	LAF holy_symbol INT_VAR name=2044 follower=2045 STR_VAR kit desc_bam=camul10 inv_bam=iamul13 END
+	LAF adjust_cleric_stronghold STR_VAR talos="all" kit END
+	LAF assign_bonus_spells STR_VAR kit spells="ICE_KNIFE ICELANCE" END
+
+ 
+END
+
+DEFINE_ACTION_FUNCTION water_elementalist_of_auril BEGIN
+
+    LAF auril_shared END
+
+	OUTER_SPRINT kit DW_AURIL_WATER_ELEMENTALIST
+	LAF splconv_get_name STR_VAR new_type=innate resref="%WIZARD_ICE_STORM%" RET spl_auril_ice_storm=new_resref END
+	
+	kit.copy[CLERIC_MAGE=>%kit%]
+	[
+		k_name:=@138
+		LPF resolve_elem_desc INT_VAR tra_ref=139 STR_VAR swap="%fire_names%" RET k_desc=strref END
+		k.kit_apply_powers{%spl_auril_resist_cold_1% 1,%spl_auril_resist_cold_2% 4,%spl_auril_resist_cold_3% 8|class=cleric}
+		k.kit_grant_powers{%spl_auril_ice_storm% 5 6,%spl_auril_cone_of_cold% 7 6,%spl_auril_conjure_elemental% 9|class=cleric}
+		k.kit_apply_powers{%spl_elementalist_water_innate% 1|class=mage}
+		k_color_minor_cloth=141
+		k_color_main_cloth=79
+		k.kit_set_alignment{le ne ce}
+	]												
+	
+	LAF cleric_kit_substitutions STR_VAR kit god=auril END
+
+	LAF assign_spheres STR_VAR kit default=cleric subtract="charm good combat" add="earth air water" END
+
+ 	LAF assign_bonus_spells STR_VAR kit spells="ICE_KNIFE ICELANCE" class=cleric END
+	LAF set_elem_spells INT_VAR school_tra=11 school_tra2=12 STR_VAR kit elem_spec=water elem_block=fire tra=elementalist END
+	LAF set_spell_learn_modifiers STR_VAR kit modifiers="mage_water=25, mage_water_shared=25, mage_air=15, mage_earth=15, default=-15" END
+	LAF bonus_spells_from_list STR_VAR kit path="%MOD_FOLDER%/class_race/bonus_spell_lists/water.txt" class=mage END
+
+	LAF holy_symbol INT_VAR name=2044 follower=2045 STR_VAR kit desc_bam=camul10 inv_bam=iamul13 END
+	LAF adjust_cleric_stronghold STR_VAR talos="all" kit END
+
+	LAF set_multiclass_components STR_VAR kit components="DW_ELEMENTALIST_WATER DW_AURIL_CLERIC" END
+
+ 
+ 
+END
+
+
+DEFINE_ACTION_FUNCTION auril_favored_soul BEGIN
+
+	LAF auril_shared END
+
+	// make the main kit
+	
+	OUTER_SPRINT kit "DW_AURIL_FAVORED"
+	
+	LAF build_favored_soul_kit INT_VAR name=4115 desc=4116 god=4118 god_gender=4029 god_temple=4117 STR_VAR kit copy_from=DW_AURIL_CLERIC END
+	LAF cleric_kit_substitutions STR_VAR kit god=auril END
+	LAF splconv_get_name STR_VAR new_type=innate resref="%WIZARD_ICE_STORM%" RET spl_auril_ice_storm=new_resref END
+
+	// spell choices
+
+	
+	kit.edit[%kit%|edit_strrefs_in_place:i=1]
+	[
+		k.kit_apply_powers{%spl_auril_resist_cold_1% 1,%spl_auril_resist_cold_2% 4,%spl_auril_resist_cold_3% 8}
+		k.kit_grant_powers{%spl_auril_ice_storm% 5 6,%spl_auril_cone_of_cold% 7 6,%spl_auril_conjure_elemental% 9}
+		k.kit_remove_powers{%spl_favored_soul_resistance_cold%}
+	]
+
+	LAF assign_bonus_spells STR_VAR kit spells="WIZARD_ICE_KNIFE WIZARD_SNILLOCS_SNOWBALL_SWARM WIZARD_ICELANCE WIZARD_ICE_STORM WIZARD_CONE_OF_COLD WIZARD_OTILUKES_FREEZING_SPHERE CLERIC_SYMBOL_HOPELESSNESS" END
+
+
+END
+
+
+
+
+DEFINE_ACTION_FUNCTION auril_shared BEGIN
+
+	LAF include STR_VAR file=log_favored_weapon.tph locbase=shared END
+	LAF log_favored_weapon STR_VAR god=AURIL weapon=axe END
+
+	
+    LAF check_label STR_VAR label=dw#auril_shared RET value END
+    ACTION_IF !value BEGIN
+   
+		LAF make_label STR_VAR label=dw#auril_shared END
+		
+		// build ice paraelementals 
+		
+		LAF make_ice_paraelementals END
+		
+		LAF spl_resolve_smtables_entry STR_VAR name=DW_AURIL_ELEMENTAL_8HD 2da="%2da_ice_elemental_auril_1%" RET table_auril_1=value END
+		LAF spl_resolve_smtables_entry STR_VAR name=DW_AURIL_ELEMENTAL_12HD 2da="%2da_ice_elemental_auril_2%" RET table_auril_2=value END
+		LAF spl_resolve_smtables_entry STR_VAR name=DW_AURIL_ELEMENTAL_16HD 2da="%2da_ice_elemental_auril_3%" RET table_auril_3=value END
+		LAF spl_resolve_smtables_entry STR_VAR name=DW_AURIL_ELEMENTAL_24HD 2da="%2da_ice_elemental_auril_4%" RET table_auril_4=value END
+
+		LAF spl_generate_smtable STR_VAR 2da="%2da_ice_elemental_auril_1%" contents="%cre_ice_elemental_8hd%" hit_animation="MSumm1H" area_hit_animation="CWElemX" END
+		LAF spl_generate_smtable STR_VAR 2da="%2da_ice_elemental_auril_2%" contents="%cre_ice_elemental_12hd%" hit_animation="MSumm1H" area_hit_animation="CWElemX" END
+		LAF spl_generate_smtable STR_VAR 2da="%2da_ice_elemental_auril_3%" contents="%cre_ice_elemental_16hd%" hit_animation="MSumm1H" area_hit_animation="CWElemX" END
+		LAF spl_generate_smtable STR_VAR 2da="%2da_ice_elemental_auril_4%" contents="%cre_ice_elemental_24hd%" hit_animation="MSumm1H" area_hit_animation="CWElemX" END
+
+		spl.copy[%CLERIC_CONJURE_EARTH_ELEMENTAL%=>%spl_auril_conjure_elemental%]
+		[
+			m_type:=Innate
+			m_unusable_cleric=0
+			m_unusable_druid=0
+			m.ab.alter{type:=3}
+			m_description:=@1070
+			m_name:=@1069
+			m.ab_fx.delete{}
+			m.ab.delete{s_level>1}
+			m.ab.alter{s_location:=Innate}
+			m.ab.clone{s_level=2+entry_index|number:i=(is_iwd?29:19)}
+			m.ab_fx.add{
+							s_opcode=331
+							s_target=1
+							s_parameter1=1
+							s_dispel_resist=3
+							s_duration=60*p_level
+							s_parameter2=(p_level<13?table_auril_1 : (p_level<17?table_auril_2 : (p_level<21?table_auril_3 : table_auril_4)))			
+						}
+		]
+
+		
+		// cold resistance
+		
+		spl.make[%spl_auril_resist_cold_1%]
+		[
+			m.ab.add{}
+			m.ab_fx.add{s_opcode=28 s_target=2 s_timing=9 s_parameter1=50 s_parameter2=1}
+			m.ab_fx.add{s_opcode=142 s_target=2 s_timing=9 s_parameter2=25}
+		]
+
+		spl.make[%spl_auril_resist_cold_2%]
+		[
+			m_name:=@1058
+			m.ab.add{}
+			m.ab_fx.add{s_opcode=321 s_target=2 s_timing=1 s_resource:="%spl_auril_resist_cold_1%"}
+			m.ab_fx.add{s_opcode=28 s_target=2 s_timing=9 s_parameter1=75 s_parameter2=1}
+			m.ab_fx.add{s_opcode=142 s_target=2 s_timing=9 s_parameter2=25}
+		]
+
+		spl.make[%spl_auril_resist_cold_3%]
+		[
+			m_name:=@1059
+			m.ab.add{}
+			m.ab_fx.add{s_opcode=321 s_target=2 s_timing=1 s_resource:="%spl_auril_resist_cold_2%"}
+			m.ab_fx.add{s_opcode=28 s_target=2 s_timing=9 s_parameter1=100 s_parameter2=1}
+			m.ab_fx.add{s_opcode=142 s_target=2 s_timing=9 s_parameter2=25}
+		]
+
+		
+		// ice storm
+
+		LAF splconv STR_VAR spell="%WIZARD_ICE_STORM%" new_type=innate RET_ARRAY splconv_array END	
+
+		// cone of cold (needs to extend down to level 7)
+		
+		LAF splconv STR_VAR spell="%WIZARD_CONE_OF_COLD%" new_type=innate new_resref="%spl_auril_cone_of_cold%" END
+
+		spl.edit[%spl_auril_cone_of_cold%]
+		[
+			m.ab_fx.alter{s_dicenumber=7|match="s_opcode=12 AND p_level=1"}
+			m.ab.clone{s_level=entry_index+8|match="s_level=1" number:i=2}
+			m.ab_fx.alter{s_dicenumber=p_level| match="s_opcode=12 AND (p_level=8 OR p_level=9)"}
+		]
+
+		// make granted extra spells, in case kit not installed
+		
+		ACTION_FOR_EACH spell IN ICE_KNIFE ICELANCE BEGIN
+			LAF splconv STR_VAR spell new_type=priest RET_ARRAY splconv_array END
+		END
+
+	END	
+
+END
+
+DEFINE_ACTION_FUNCTION make_ice_paraelementals BEGIN
+
+
+	// Ice PE take Earth Elementals as a starting point (thus picking up the tweaks to EE from elemental_cre if it's installed)
+	// but have a cold aura and cold-damage attack modelled on fire elementals
+
+	// animations
+	
+	ACTION_BASH_FOR "%MOD_FOLDER%/%component_loc%/resource/E0F0" ".*\.*" BEGIN
+		ACTION_IF !FILE_EXISTS_IN_GAME "%BASH_FOR_FILE%" BEGIN
+			COPY "%BASH_FOR_FILESPEC%" override
+		END
+	END
+
+	
+
+
+// get aura projectile (copy of IWDEE SALAURA)
+
+	ACTION_IF !FILE_EXISTS_IN_GAME "dw-aura.pro" BEGIN
+	  ADD_PROJECTILE "%MOD_FOLDER%/elemental_cre/resource/dw-aura.pro"	
+	  COPY_EXISTING "dw-aura.pro" override
+		LPF check_ini STR_VAR ini=auras_are_party_friendly RET value END
+		PATCH_IF value BEGIN
+			WRITE_BYTE 0x200 BIT6 // party-friendly - too annoying otherwise
+		END
+	END
+	OUTER_SET aura_pro = IDS_OF_SYMBOL (projectl dw-aura)	
+	
+	OUTER_SET stat=IDS_OF_SYMBOL (stats "RESISTCOLD")
+	LAF resolve_splprot_entry INT_VAR stat val=100 STR_VAR relation=less_than RET entry1=value END
+	LAF resolve_splprot_entry INT_VAR stat val=128 STR_VAR relation=greater_equal RET entry2=value END
+	LAF resolve_splprot_entry INT_VAR stat=0x104 val=entry1 relation_number=entry2 RET cold_immunity=value END
+
+	LAF install_script STR_VAR script=baf_ice_elemental location=resource END		
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Ice para-elemental weapons
+// L8: 2d8 crushing + 2d6 cold + slow
+// L12-16: 3d8 +3d6 cold + slow
+// L20+: 4d8 +4d6 cold + slow
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	itm.copy[fireelem=>%itm_ice_elemental_weapon_8hd%]
+	[
+		m.ab.alter{s_dicenumber=2 s_dicesize=8 s_range=3}
+		m_enchantment=3
+		m.ab_fx.alter{s_parameter2b=2 s_dicenumber=2 s_dicesize=6| match="s_opcode=12"}
+		m.ab_fx.add{s_opcode=326 s_target=2 s_timing=1 s_resource:="%spl_ice_elemental_freeze%" s_save_vs_breath=1 s_savebonus=2}
+	]
+
+	itm.copy[%itm_ice_elemental_weapon_8hd%=>%itm_ice_elemental_weapon_12hd%]
+	[
+		m.ab.alter{s_dicenumber=3}
+		m_enchantment=4
+		m.ab_fx.alter{ s_dicenumber=3| match="s_opcode=12"}
+		m.ab_fx.alter{ s_savebonus=0| match="s_opcode=326"}
+	]
+
+	itm.copy[%itm_ice_elemental_weapon_8hd%=>%itm_ice_elemental_weapon_16hd%]
+	[
+		m.ab.alter{s_dicenumber=3}
+		m_enchantment=4
+		m.ab_fx.alter{s_dicenumber=4| match="s_opcode=12"}
+		m.ab_fx.alter{s_savebonus="-2"| match="s_opcode=326"}
+	]
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Freezing aura - damage, 2d6 for lesser, 3d6 for medium, 4d6 for greater. Save vs breath for 1/2; immune if 100% resistant to cold
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	spl.make[%spl_ice_elemental_aura_payload_lesser%]
+	[
+		m.ab.add{}
+		m.ab.alter{s_projectile:=dw-aura}
+		m.ab_fx.add{s_opcode=12 s_target=2 s_timing=1 s_parameter2b=2 s_dicenumber=1 s_dicesize=6 s_save_vs_breath=1 s_save_for_half=1 s_savebonus=2}
+		m.ab_fx.add{s_opcode=318 s_target=2 s_timing=0 s_duration=1 s_parameter2=cold_immunity s_resource:=%sfo_filename%}
+		m.ab_fx.add{s_opcode=318 s_target=2 s_timing=0 s_duration=6 s_resource:=%sfo_filename%} // block for 1 rd
+	]
+
+	spl.copy[%spl_ice_elemental_aura_payload_lesser%=>%spl_ice_elemental_aura_payload%]
+	[
+		m.ab_fx.alter{s_dicenumber=3 s_savebonus=0| match="s_opcode=12"}
+		m.ab_fx.alter{s_resource:=%sfo_filename%| match="s_opcode=318"}
+	]
+
+	spl.copy[%spl_ice_elemental_aura_payload_lesser%=>%spl_ice_elemental_aura_payload_greater%]
+	[
+		m.ab_fx.alter{s_dicenumber=4 s_savebonus="-2"| match="s_opcode=12"}
+		m.ab_fx.alter{s_resource:=%sfo_filename%| match="s_opcode=318"}
+	]
+
+	// auras
+	LAF spl_make_aura STR_VAR spell="%spl_ice_elemental_aura_lesser%" payload="%spl_ice_elemental_aura_payload_lesser%" END
+	LAF spl_make_aura STR_VAR spell="%spl_ice_elemental_aura%" payload="%spl_ice_elemental_aura_payload%" END
+	LAF spl_make_aura STR_VAR spell="%spl_ice_elemental_aura_greater%" payload="%spl_ice_elemental_aura_payload_greater%" END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Slowing effect
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	spl.copy[%WIZARD_SLOW%=>%spl_ice_elemental_freeze%]
+	[
+		m_name="-1"
+		m.ab.delete{s_level>1}
+		m.ab_fx.delete{s_opcode=321 OR s_opcode=174 OR s_opcode=215}
+		m.ab_fx.alter{s_save_vs_spell=0 s_savebonus=0 s_dispel_resist=0 s_duration=(s_duration>0)?6:0}	
+		m.ab.alter{s_projectile=1}
+	]
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Actual elementals
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	cre.copy[es8erth=>%cre_ice_elemental_8hd% elearpr=>%cre_ice_elemental_12hd% elearpr2=>%cre_ice_elemental_16hd% elearpr3=>%cre_ice_elemental_24hd%]
+	[
+		m_animation:=GOLEM_ICE
+		m_resist_cold=100
+		m_resist_fire="-50"
+		m.cre_strip_scripts{%baf_earth_elemental%}
+		m.cre_insert_script{%baf_ice_elemental%|loc=high}
+	]
+	
+	cre.edit[%cre_ice_elemental_8hd%]
+	[
+		m_both_names:=@1065
+		m.cre_add_items{%itm_ice_elemental_weapon_8hd%(weapon1)|replace:i=1}
+		m_dv:="dw-ice_paraelemental_8hd"
+	]
+
+	cre.edit[%cre_ice_elemental_12hd%]
+	[
+		m_both_names:=@1066
+		m.cre_add_items{%itm_ice_elemental_weapon_12hd%(weapon1)|replace:i=1}
+		m_dv:="dw-ice_paraelemental_12hd"
+	]
+	
+	cre.edit[%cre_ice_elemental_16hd%]
+	[
+		m_both_names:=@1067
+		m.cre_add_items{%itm_ice_elemental_weapon_16hd%(weapon1)|replace:i=1}
+		m_dv:="dw-ice_paraelemental_16hd"
+	]
+
+	cre.edit[%cre_ice_elemental_24hd%]
+	[
+		m_both_names:=@1068
+		m.cre_add_items{%itm_ice_elemental_weapon_16hd%(weapon1)|replace:i=1}
+		m_dv:="dw-ice_paraelemental_24hd"
+	]
+
+END

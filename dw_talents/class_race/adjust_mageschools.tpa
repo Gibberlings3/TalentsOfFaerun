@@ -1,0 +1,8 @@
+DEFINE_ACTION_FUNCTION adjust_mageschools STR_VAR version="" BEGIN
+
+	COPY "%MOD_FOLDER%/shared/mageschool/%version%.2da" "%data_loc%/mageschools.2da"
+	LAF include STR_VAR file=mageschools_shared.tph locbase=shared END
+	LAF bar_schools END
+
+
+END

@@ -1,0 +1,259 @@
+DEFINE_ACTION_FUNCTION cleric_dialog_adjusts_setup BEGIN
+
+	LAF check_label STR_VAR label=dw#cleric_dialog_adjusts RET value END
+	ACTION_IF !value BEGIN
+		
+		LAF run STR_VAR file= amalgamate_class_checks locbase=shared END
+		LAF make_label STR_VAR label=dw#cleric_dialog_adjusts END
+		
+
+		ACTION_IF is_bg1 BEGIN
+			WITH_TRA "%scs_tra_loc%/english/clerics_bg1.tra" "%scs_tra_loc%/%LANGUAGE%/clerics_bg1.tra" BEGIN
+				OUTER_SPRINT yeslick_reply @45
+				ACTION_CLEAR_ARRAY sonner_journal
+				ACTION_DEFINE_ASSOCIATIVE_ARRAY sonner_journal BEGIN
+					1=>27440
+					2=>27439
+					3=>27441
+					4=>27442
+					5=>27443
+					6=>27444
+					7=>27445
+					8=>27446
+					9=>27063
+				END
+				ACTION_IF is_eet BEGIN
+					ACTION_PHP_EACH sonner_journal AS k=>v BEGIN
+						OUTER_SET $sonner_journal("%k%")=v + 200000
+					END
+				END
+				LAF install STR_VAR file=clerics_bg1.d location=dialog END
+				LAF run STR_VAR file=clerics_bg1_scripting location=script END
+			END		
+		END
+		ACTION_IF is_bg2 BEGIN
+			LAF run STR_VAR file=cleric_strongholds location=stronghold END
+			WITH_TRA "%scs_tra_loc%/english/clerics_bg2.tra" "%scs_tra_loc%/%LANGUAGE%/clerics_bg2.tra" BEGIN
+				LAF install STR_VAR file=clerics_bg2.d location=dialog END
+				LAF run STR_VAR file=clerics_bg2_scripting location=script END
+			END		
+		END
+		ACTION_IF is_iwd BEGIN
+			WITH_TRA "%scs_tra_loc%/english/clerics_iwd.tra" "%scs_tra_loc%/%LANGUAGE%/clerics_iwd.tra" BEGIN
+				LAF install STR_VAR file=clerics_iwd.d location=dialog END
+			END		
+		END
+
+		// auto generate references to the core-5 kits
+		
+		LAF find_core_cleric_kit_references END
+
+	END
+END
+
+DEFINE_ACTION_FUNCTION cleric_kit_substitutions
+	STR_VAR kit=""
+	        god=""
+BEGIN
+	CLEAR_IDS_MAP
+	LAF cleric_dialog_adjusts_setup END
+	ACTION_MATCH "%god%" WITH
+		lathander talos helm BEGIN
+			OUTER_SPRINT kit_core "god%god%"
+			ACTION_TO_UPPER kit_core
+			OUTER_SPRINT match "Kit(\([^,]*\),%kit_core%)"
+			OUTER_SPRINT replace ~OR()Kit(\1,%kit_core%)|Kit(\1,%kit%)~
+		END
+		tempus tyr BEGIN
+			OUTER_SPRINT kit_core "oh%god%"
+			ACTION_TO_UPPER kit_core
+			OUTER_SPRINT match "Kit(\([^,]*\),%kit_core%)"
+			OUTER_SPRINT replace ~OR()Kit(\1,%kit_core%)|Kit(\1,%kit%)~
+		END
+		DEFAULT
+			OUTER_SPRINT match ~Global("dw-%god%-kit","GLOBAL",1)~
+			OUTER_SPRINT kit_core "NULL_NOT_USED"
+			ACTION_IF is_iwd BEGIN
+				OUTER_SPRINT replace ~OR()%match%|Kit(LastTalkedToBy,%kit%)~
+			END ELSE BEGIN
+				OUTER_SPRINT replace ~OR()%match%|Kit(Player1,%kit%)~			
+			END
+	END
+	// bg1 subs
+	ACTION_IF is_bg1 BEGIN
+		OUTER_SPRINT script ""
+		OUTER_SPRINT dialog ""
+		ACTION_MATCH "%god%" WITH
+		talos BEGIN
+			OUTER_SPRINT script ar0900
+			OUTER_SPRINT dialog sonner
+		END
+		helm BEGIN
+			OUTER_SPRINT script "ar4802 ar0002"
+			OUTER_SPRINT dialog "ajanti nalin prihel"
+		END
+		lathander BEGIN
+			OUTER_SPRINT dialog keldda
+			OUTER_SPRINT script ar3402
+		END
+		ilmater BEGIN
+			OUTER_SPRINT dialog "bentan priilmu"
+		END
+		mask BEGIN
+			OUTER_SPRINT dialog neira
+		END
+		oghma BEGIN
+			OUTER_SPRINT script ar2600
+			OUTER_SPRINT dialog poghm5
+		END
+		selune BEGIN
+			OUTER_SPRINT dialog dradee
+		END
+		shar BEGIN
+			OUTER_SPRINT dialog viconi
+		END
+		sune BEGIN
+			OUTER_SPRINT dialog priilmu
+		END
+		tymora BEGIN
+			OUTER_SPRINT dialog "chanth tremai"
+			OUTER_SPRINT script ar0132
+		END
+		tempus BEGIN
+			OUTER_SPRINT dialog branwe
+		END
+		cyric BEGIN
+			OUTER_SPRINT dialog tiax
+		END
+		clangeddin BEGIN
+			OUTER_SPRINT dialog yeslic
+		END
+		DEFAULT
+		END
+	END
+	// bg2 subs
+	ACTION_IF is_bg2 BEGIN
+		OUTER_SPRINT script ""
+		OUTER_SPRINT dialog ""
+		ACTION_MATCH "%god%" WITH
+			baervan BEGIN
+				OUTER_SPRINT dialog baerie
+			END
+			cyric BEGIN
+				OUTER_SPRINT dialog "finsol01 chalcy01"
+			END
+			ilmater BEGIN
+				OUTER_SPRINT dialog "slilmat wilmat"
+			END
+			oghma BEGIN
+				OUTER_SPRINT dialog doghma
+			END
+			shar BEGIN
+				OUTER_SPRINT dialog bviconi
+			END
+			sune BEGIN
+				OUTER_SPRINT dialog scsain
+			END
+			talona BEGIN
+				OUTER_SPRINT dialog barl
+			END
+			tempus BEGIN
+				OUTER_SPRINT dialog kpchap01
+			END
+			DEFAULT			
+		END
+		// now the stronghold content, which applies to all
+		OUTER_SPRINT script "%script% ar0900"
+		OUTER_SPRINT dialog "%dialog% bharval bhoisig bhnalla %dlg_priest_finale_lathander_questgiver% %dlg_priest_finale_helm_questgiver% %dlg_priest_finale_talos_questgiver%"
+
+	END
+	// iwd subs
+	ACTION_IF is_iwd BEGIN
+		OUTER_SPRINT script ""
+		OUTER_SPRINT dialog ""
+		ACTION_MATCH "%god%" WITH
+		bane_xvim BEGIN
+			OUTER_SPRINT dialog dcrieck
+		END
+		moradin BEGIN
+			OUTER_SPRINT dialog dnorlino
+		END
+		ilmater BEGIN
+			OUTER_SPRINT dialog "dgus dcallian degenia dpoqueli dferg"
+		END
+		DEFAULT END	
+	END
+	
+	// add any automatically-generated ones
+	
+	COPY - "%data_loc%/god_scripts.txt" nowhere
+		REPLACE_EVALUATE "^%god% \([^%WNL%%MNL%%LNL%]*\)" BEGIN
+			SPRINT script "%script% %MATCH1%"
+		END
+		""
+
+	COPY - "%data_loc%/god_dlgs.txt" nowhere
+		REPLACE_EVALUATE "^%god% \([^%WNL%%MNL%%LNL%]*\)" BEGIN
+			SPRINT dialog "%dialog% %MATCH1%"
+		END
+		""
+	
+	// execute substitutions
+	ACTION_IF "%kit%" STRING_COMPARE "%kit_core%" BEGIN
+		LAF disjunctive_substitution STR_VAR script dialog match replace END
+	END
+
+END
+
+DEFINE_ACTION_FUNCTION find_core_cleric_kit_references BEGIN
+
+	ACTION_CLEAR_ARRAY god_scripts
+	ACTION_CLEAR_ARRAY god_dlgs
+	ACTION_FOR_EACH god IN helm lathander talos tempus tyr BEGIN
+		OUTER_SPRINT $god_scripts("%god%") ""
+		OUTER_SPRINT $god_dlgs("%god%") ""
+	END
+	
+	COPY_EXISTING_REGEXP - ".*\.\(bcs\|dlg\)" "%workspace%\discard.baf"
+		PHP_EACH god_scripts AS god=>discard BEGIN
+			SET $god_here("%god%")=0
+		END
+		PATCH_IF "%SOURCE_EXT%" STRING_EQUAL_CASE "bcs" THEN BEGIN
+			DECOMPILE_BCS_TO_BAF
+		END ELSE BEGIN
+			DECOMPILE_DLG_TO_D
+		END
+		REPLACE_EVALUATE "Kit(\([^,]*\),\(GOD\|OH\)\(HELM\|LATHANDER\|TALOS\|TYR\|TEMPUS\)" BEGIN
+			SPRINT god "%MATCH3%"
+			TO_LOWER god
+			PATCH_IF $god_here("%god%")=0 BEGIN
+				SET $god_here("%god%")=1
+				PATCH_IF "%SOURCE_EXT%" STRING_EQUAL_CASE "bcs" BEGIN
+					SPRINT temp $god_scripts("%god%") 
+					SPRINT $god_scripts("%god%") "%temp% %SOURCE_RES%"
+				END ELSE BEGIN
+					SPRINT temp $god_dlgs("%god%") 
+					SPRINT $god_dlgs("%god%") "%temp% %SOURCE_RES%"				
+				END
+			END
+		END
+		""
+	BUT_ONLY
+	
+	COPY ".../stratagems-inline/blank" "%data_loc%\god_scripts.txt"
+	COPY ".../stratagems-inline/blank" "%data_loc%\god_dlgs.txt"
+	
+	ACTION_FOR_EACH god IN helm lathander talos tempus tyr BEGIN
+		OUTER_SPRINT scripts $god_scripts("%god%")
+		OUTER_SPRINT dlgs $god_dlgs("%god%")
+		ACTION_IF "%scripts%" STRING_COMPARE "" BEGIN
+			APPEND_OUTER "%data_loc%\god_scripts.txt" "%god% %scripts%"
+		END
+		ACTION_IF "%dlgs%" STRING_COMPARE "" BEGIN
+			APPEND_OUTER "%data_loc%\god_dlgs.txt" "%god% %dlgs%"		
+		END
+	END
+	
+
+
+END

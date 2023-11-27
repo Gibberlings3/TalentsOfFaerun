@@ -1,0 +1,8 @@
+ABJURER   		alteration,illusion
+CONJURER   		divination,invocation
+DIVINER   		conjuration
+ENCHANTER   	invocation,necromancy
+ILLUSIONIST   	invocation,necromancy
+INVOKER   		enchantment,conjuration
+NECROMANCER   	illusion,enchantment
+TRANSMUTER   	abjuration,necromancy

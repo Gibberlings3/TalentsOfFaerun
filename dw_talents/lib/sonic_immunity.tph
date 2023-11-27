@@ -1,0 +1,34 @@
+DEFINE_ACTION_FUNCTION sonic_immunity BEGIN
+
+	LAF ds_resolve_stat STR_VAR id=SONIC_IMMUNITY RET stat_ind END
+	
+	ACTION_FOR_EACH spell IN 
+		//silence effects
+		CLERIC_SILENCE_15_FOOT 
+		TRAP_SILENCE  
+		WIZARD_POWER_WORD_SILENCE 
+		// sonic effects
+		CLERIC_COMMAND 
+		CLERIC_GREATER_COMMAND 
+		WIZARD_SHOUT 
+		WIZARD_GREAT_SHOUT 
+		WIZARD_WAIL_OF_THE_BANSHEE
+		INNATE_MOURNFUL_WAIL 
+		INNATE_DEATH_KNELL 
+		INNATE_HARPY_WAIL 
+		INNATE_WAR_CRY 
+		INNATE_UNDYING_LAMENT 
+		INNATE_GREAT_ROAR
+		DEMILICH_DEATH
+		ohbdemi2
+	BEGIN
+		ACTION_IF VARIABLE_IS_SET "%spell%" BEGIN
+			OUTER_SPRINT spell "%%spell%%"
+		END
+		COPY_EXISTING "%spell%.spl" override
+			LPF DELETE_EFFECT INT_VAR match_opcode=324 match_parameter1=stat_ind match_parameter2=110 END
+			LPF ADD_SPELL_EFFECT INT_VAR insert_point=0 opcode=324 target=2 timing=0 duration=1 parameter1=stat_ind parameter2=110 STR_VAR resource="%SOURCE_RES%" END
+		IF_EXISTS
+	END
+
+END

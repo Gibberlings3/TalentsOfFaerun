@@ -1,0 +1,60 @@
+DEFINE_ACTION_FUNCTION multiclass_specialists BEGIN
+
+	LAF make_label STR_VAR label=dw#multiclass_specialists_permitted END
+
+  LAF run STR_VAR file=setup_menus locbase=shared END // also INCLUDEs the virtual_class tools
+
+	INCLUDE "%MOD_FOLDER%/%lua_loc%/ui_dual_class_kits.tph" 
+	LAF dual_class_kits END// doing this with the above label automatically allows dual-classing to specialists
+
+	// specialist menus for the various multiclasses
+  LAF add_kit_menu INT_VAR name=1 desc=2 title=3 STR_VAR id=fighter_specialist kits="ABJURER CONJURER DIVINER ENCHANTER ILLUSIONIST INVOKER NECROMANCER TRANSMUTER" class=FIGHTER_MAGE END
+  LAF add_kit_menu INT_VAR name=4 desc=5 title=3 STR_VAR id=cleric_specialist kits="ABJURER CONJURER DIVINER ENCHANTER ILLUSIONIST INVOKER NECROMANCER TRANSMUTER" class=CLERIC_MAGE END
+  LAF add_kit_menu INT_VAR name=6 desc=7 title=3 STR_VAR id=specialist_thief kits="ABJURER CONJURER DIVINER ENCHANTER ILLUSIONIST INVOKER NECROMANCER TRANSMUTER" class=MAGE_THIEF END
+  LAF add_kit_menu INT_VAR name=8 desc=9 title=3 STR_VAR id=fighter_specialist_thief kits="ABJURER CONJURER DIVINER ENCHANTER ILLUSIONIST INVOKER NECROMANCER TRANSMUTER" class=FIGHTER_MAGE_THIEF END
+  LAF add_kit_menu INT_VAR name=10 desc=11 title=3 STR_VAR id=fighter_specialist_cleric kits="ABJURER CONJURER DIVINER ENCHANTER ILLUSIONIST INVOKER NECROMANCER TRANSMUTER" class=FIGHTER_MAGE_CLERIC END
+
+	// virtual names for wildmage multiclass kits
+	
+  LAF override_chargen_kit_name INT_VAR override=12 STR_VAR kit=WILDMAGE class=FIGHTER_MAGE END
+  LAF override_chargen_kit_name INT_VAR override=14 STR_VAR kit=WILDMAGE class=CLERIC_MAGE END
+  LAF override_chargen_kit_name INT_VAR override=16 STR_VAR kit=WILDMAGE class=MAGE_THIEF END
+  LAF override_chargen_kit_name INT_VAR override=18 STR_VAR kit=WILDMAGE class=FIGHTER_MAGE_THIEF END
+  LAF override_chargen_kit_name INT_VAR override=20 STR_VAR kit=WILDMAGE class=FIGHTER_MAGE_CLERIC END
+
+	ACTION_CLEAR_ARRAY mc_to_do
+	ACTION_FOR_EACH this_class IN fighter_mage cleric_mage mage_thief fighter_mage_thief fighter_mage_cleric BEGIN
+		LAF check_ini STR_VAR ini="specialist_%this_class%" RET value END
+		ACTION_IF value BEGIN
+			ACTION_TO_UPPER this_class
+			OUTER_SPRINT $mc_to_do("%this_class%") ""
+		END
+	END
+
+  // parse the various mage k_x_y tables to get the current kit list (this is more stringent than clsrcreq) and apply changes
+	
+	LAF 2da_read STR_VAR file=kittable.2da RET_ARRAY kittable_array=array END
+	ACTION_FOR_EACH race IN human elf half_elf dwarf halfling gnome halforc BEGIN
+		ACTION_TO_UPPER race
+		OUTER_SPRINT k_x_y $kittable_array("MAGE" "%race%")
+		ACTION_IF FILE_EXISTS_IN_GAME "%k_x_y%.2da" BEGIN
+			ACTION_CLEAR_ARRAY kits_here
+			LAF 2da_read STR_VAR file="%k_x_y%.2da" RET_ARRAY kxy_array=array kxy_rows=rows END
+			ACTION_PHP_EACH kxy_rows AS row=>discard BEGIN
+				OUTER_SET kit_here=$kxy_array("%row%" "KIT")
+				ACTION_IF kit_here>=22 && kit_here<=30 BEGIN
+					OUTER_SET $kits_here("%kit_here%")=1
+				END
+			END
+			ACTION_PHP_EACH mc_to_do AS class=>discard BEGIN
+				OUTER_SPRINT table $kittable_array("%class%" "%race%")
+				ACTION_PHP_EACH kits_here AS kit_id=>discard2 BEGIN
+					LAF kit_set_table INT_VAR present=1 kit_id STR_VAR table END
+				END
+			END
+		END	
+	END
+
+
+
+END

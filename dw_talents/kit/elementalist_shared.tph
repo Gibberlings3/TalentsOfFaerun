@@ -1,0 +1,88 @@
+
+
+
+
+
+DEFINE_ACTION_FUNCTION set_elem_spells
+	INT_VAR school_tra=0
+			school_tra2=0
+			is_druid=0
+	STR_VAR kit=""
+			elem_spec=""
+			elem_block=""
+			tra=elementalist
+BEGIN
+
+	// get ini entry
+	
+	LAF check_ini STR_VAR ini=number_of_required_elementalist_spells RET number_required=value END
+	LAF check_ini STR_VAR ini=list_specialist_spells RET list_spells=value END
+
+  WITH_TRA "%scs_tra_loc%/english/%tra%.tra" "%scs_tra_loc%/%LANGUAGE%/%tra%.tra" BEGIN
+
+	OUTER_PATCH_SAVE elem_spec "%elem_spec%" BEGIN
+		REPLACE_TEXTUALLY "\(earth\|air\|fire\|water\)" "mage_\1"
+	END
+	OUTER_PATCH_SAVE elem_block_mage "%elem_block%" BEGIN
+		REPLACE_TEXTUALLY "\(earth\|air\|fire\|water\)" "mage_\1"
+	END
+	
+	ACTION_IF is_druid BEGIN
+		COPY - "%data_loc_shared%/dw_sphere_defaults.ini" nowhere
+		REPLACE_EVALUATE ~^\([^=%WNL%%LNL%%MNL%]+\) *= *"\([^"]*\)"~ BEGIN
+			SPRINT this_class "%MATCH1%"
+			TO_LOWER this_class
+			SPRINT $sphere_defaults("%this_class%") "%MATCH2%"
+		END
+		""
+		OUTER_SPRINT druid_spheres_default $sphere_defaults("druid")
+		OUTER_PATCH_SAVE druid_spheres_default "%druid_spheres_default%" BEGIN
+			REPLACE_TEXTUALLY "%elem_block%" ""
+		END
+		LAF set_spell_list INT_VAR update_scrolls_later=1 STR_VAR kit block_learn="%elem_block_mage%" allow_priest="%druid_spheres_default%" END
+	END ELSE BEGIN
+		LAF set_spell_list INT_VAR update_scrolls_later=1 STR_VAR kit block_learn="%elem_block_mage%" END	
+	END
+
+	
+	LAF set_specialist_spells INT_VAR number_required list_spells update_description=0 STR_VAR kit spell_list="%elem_spec% %elem_spec%_shared" END
+
+  END
+
+END
+
+DEFINE_ACTION_FUNCTION exclude_elemental_items
+	STR_VAR kit="" 
+			element=""
+BEGIN
+	ACTION_CLEAR_ARRAY elemental_exclude_array
+	OUTER_SET kit_id=IDS_OF_SYMBOL (kit "%kit%")
+	LAF array_read STR_VAR location=data file="elemental_items.2da" RET_ARRAY elemental_exclude_array=array END
+	ACTION_PHP_EACH elemental_exclude_array AS item=>element_here BEGIN
+		ACTION_IF FILE_EXISTS_IN_GAME "%item%.itm" BEGIN
+			ACTION_IF INDEX (CASE_INSENSITIVE "%element%" "%element_here%")>=0 || "%element%" STRING_EQUAL_CASE any BEGIN
+				COPY_EXISTING "%item%.itm" override
+					LPF ADD_ITEM_EQEFFECT INT_VAR opcode=319 target=2 timing=2 parameter1=kit_id parameter2=9 END
+				BUT_ONLY
+			END
+		END
+	END
+END
+
+
+DEFINE_DIMORPHIC_FUNCTION resolve_elem_desc
+	INT_VAR tra_ref=0 
+	STR_VAR desc=""
+			swap=""
+	RET desc strref
+BEGIN
+	ACTION_IF tra_ref>0 BEGIN
+		OUTER_SPRINT desc (AT tra_ref)
+	END
+	OUTER_PATCH_SAVE desc "%desc%" BEGIN
+		REPLACE_TEXTUALLY BLOCKED_SPELL_PLACEHOLDER "%swap%"
+	END
+	OUTER_SET strref=RESOLVE_STR_REF ("%desc%")
+END
+
+

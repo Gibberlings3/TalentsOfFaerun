@@ -1,0 +1,258 @@
+DEFINE_ACTION_FUNCTION paladin_smite_evil BEGIN
+
+	// add an icon
+	
+	OUTER_SPRINT string @719
+	LAF resolve_statdesc STR_VAR string bam="%PALADIN_SMITE_EVIL%C" RET stat_num END
+	LAF ds_resolve_stat STR_VAR id=PALADIN_SMITE_EVIL RET stat_ind END
+
+	// make the payload spell
+	
+	
+	spl.make[%spl_smite_evil_payload%]
+	[
+		m_name:=@705
+		m.ab.add{}
+		m.ab.alter{s_level=1 s_projectile=66}
+		m.ab.clone{s_level=entry_index*2+3|number:i=14 match="s_level=1"}
+		m.ab_fx.add{s_opcode=324 s_target=2 s_timing=0 s_duration=1 s_parameter2=38 s_resource:="%spl_smite_evil_payload%"}
+		m.ab_fx.add{s_opcode=12 s_target=1 s_dispel_resist=0 s_parameter2b=64 s_timing=1 s_dicenumber=(p_level+1)/2 s_dicesize=6}
+		m.ab_fx.add{s_opcode=174 s_target=2 s_timing=1 s_resource:="#eff_p15"}
+	]
+	
+	// make an extra-damage copy of the payload spell for undead hunters/cavaliers
+	
+	spl.copy[%spl_smite_evil_payload%=>%spl_smite_evil_extra_damage%]
+	[
+		m_name="-1"
+		m.ab.alter{s_projectile=0}
+		m.ab_fx.delete{!(s_opcode=12)}
+	]
+	
+	// make blackguard version
+	
+	spl.copy[%spl_smite_evil_payload%=>%spl_smite_good_payload%]
+	[
+		m_name:=@712
+		m.ab_fx.alter{ s_parameter2=32 s_resource:="%spl_smite_good_payload%"| match="s_opcode=324"}
+		m.ab.alter{s_projectile=195}
+	]
+	
+	// make undead-hunter and cavalier versions
+	
+	spl.copy[%spl_smite_evil_payload%=>%spl_smite_evil_undead_hunter_payload%]
+	[
+		m.ab_fx.add{s_opcode=326 s_target=2 s_timing=9 s_parameter1=0 s_parameter2=1 s_resource:="%spl_smite_evil_extra_damage%"}
+	]
+	
+	COPY_EXISTING "%spl_smite_evil_payload%.spl" "override/%spl_smite_evil_cavalier_payload%.spl"
+		PATCH_FOR_EACH race IN demonic darkplanatar antisolar salamander BEGIN
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 timing=1 parameter1=IDS_OF_SYMBOL (race "%race%") parameter2=104 STR_VAR resource="%spl_smite_evil_extra_damage%" END
+		END
+		PATCH_FOR_EACH class IN red_dragon shadow_dragon genie_dao genie_efreeti genie_noble_efreet BEGIN
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 timing=1 parameter1=IDS_OF_SYMBOL (class "%class%") parameter2=105 STR_VAR resource="%spl_smite_evil_extra_damage%" END		
+		END
+	
+	cre.edit[icasa|allow_missing:i=1]
+	[
+		m_class:=red_dragon
+	]
+
+	// make 
+	
+	// create the actual spells
+	
+	LAF make_smite_evil_spell INT_VAR color=115 name=705 description=708 STR_VAR payload="%spl_smite_evil_payload%" removal="%spl_smite_evil_removal%" root=dwsmt spell="%PALADIN_SMITE_EVIL%" END
+	LAF make_smite_evil_spell INT_VAR color=115 name=705 description=710 STR_VAR payload="%spl_smite_evil_cavalier_payload%" removal="%spl_smite_evil_removal_cavalier%" root=dwsmc spell="%spl_smite_evil_cavalier%" END
+	LAF make_smite_evil_spell INT_VAR color=115 name=705 description=711 STR_VAR payload="%spl_smite_evil_undead_hunter_payload%" removal="%spl_smite_evil_removal_undead_hunter%" root=dwsmu spell="%spl_smite_evil_undead_hunter%" END
+	LAF make_smite_evil_spell INT_VAR color=195 name=712 description=713 smite_good=1 STR_VAR payload="%spl_smite_good_payload%" removal="%spl_smite_good_removal%" root=dwsmg spell="%spl_smite_good%" END
+
+	// give the powers to the kits
+	
+	kit.edit[CAVALIER|edit_strrefs_in_place:i=1]
+	[		
+		k.kit_remove_powers{%PALADIN_SMITE_EVIL%}
+		k.kit_grant_powers{%spl_smite_evil_cavalier% 1}
+		new:=@716
+		adv:=@714
+		k_description=k_clastext_descstr.patch{REPLACE_TEXTUALLY "%adv%" "%adv%%WNL%%new%"}
+	]	
+	kit.edit[UNDEAD_HUNTER|edit_strrefs_in_place:i=1]
+	[		
+		k.kit_remove_powers{%PALADIN_SMITE_EVIL%}
+		k.kit_grant_powers{%spl_smite_evil_undead_hunter% 1}		
+		new:=@717
+		adv:=@714
+		k_description=k_description.patch{REPLACE_TEXTUALLY "^%adv%" "%adv%%WNL%%new%"}
+
+	]
+	kit.edit[BLACKGUARD|edit_strrefs_in_place:i=1]
+	[		
+		k.kit_grant_powers{%spl_smite_good% 1}
+		new:=@715
+		k_clastext_descstr:="%k_clastext_descstr%%WNL%%new%"
+	]
+
+	// append class/kit descriptions
+	
+	LAF 2daq_extract STR_VAR resref=clastext row=paladin column=descstr RET desc_strref=value END
+	strref.patch[desc_strref]
+	{
+		SPRINT ident @705
+		SPRINT new_text_string @718
+		REPLACE_TEXTUALLY "[A-Za-z].*%ident%.*" "%new_text_string%"
+	}
+	
+END	
+
+DEFINE_ACTION_FUNCTION make_smite_evil_spell
+	INT_VAR smite_good=0
+			color=0
+			name=0
+			description=0
+	STR_VAR payload=""
+			removal=""
+			root=""
+			spell=""
+			template="%PALADIN_SMITE_EVIL%"
+BEGIN
+
+	// if needed, make the hit-bonus effects
+
+	ACTION_IF !FILE_EXISTS_IN_GAME "%spl_smite_evil_hit_bonus%.spl" BEGIN
+		LAF make_smite_evil_cha_bonus END
+	END
+
+	// make the area-effect spell that strips the original spell
+	
+	spl.make[%removal%]
+	[
+		m.ab.add{}
+		m.ab.alter{s_projectile=205}
+		m.ab_fx.add{s_opcode=321 s_target=2 s_timing=1 s_resource:="%spell%"}
+	]
+
+	OUTER_FOR (level=1;level<30;level+=2) BEGIN
+		eff.make[%root%%level%]
+		[
+			m_opcode=146
+			m_target=2
+			m_parameter1=level
+			m_parameter2=2
+			m_resource:="%payload%"
+		]
+	END
+	
+	// edit the payload to cast the removal spell
+
+	spl.edit[%payload%]
+	[
+		m.ab_fx.add{s_opcode=146 s_target=2 s_timing=1 s_parameter2=1 s_resource:="%removal%"}
+	]
+
+	// edit the main spell itself
+	
+	spl.copy[%template%=>%spell%]
+	[
+		m_name:=(AT name)
+		m_description:=(AT description)
+		m.ab_fx.delete{}
+		m.ab.delete{s_level>1}
+		m.ab.alter{s_target=5 s_projectile=0 s_type=1}
+		m.ab.clone{s_level=entry_index*2+3|number:i=14}
+		m.ab_fx.add{s_target=1 s_opcode=248 s_timing=0 s_duration=1440 s_resource:="%root%%p_level%"}
+		m.ab_fx.add{s_opcode=7 s_target=1 s_timing=0 s_duration=1440 s_parameter1=color s_parameter2=255}
+		m.ab_fx.add{s_opcode=142 s_target=1 s_timing=0 s_duration=1440 s_parameter2=stat_num}
+		m.ab_fx.add{s_opcode=328 s_target=1 s_timing=0 s_duration=1440 s_parameter2=stat_ind s_special=1}
+
+	]
+	
+	/*
+	
+		m.ab_fx.add{s_opcode=7 s_target=1 s_timing=0 s_duration=1440 s_parameter1=color s_parameter2=255}
+		m.ab_fx.add{s_opcode=7 s_target=1 s_timing=0 s_duration=1440 s_parameter1=color s_parameter2=21}
+		m.ab_fx.add{s_opcode=7 s_target=1 s_timing=0 s_duration=1440 s_parameter1=color s_parameter2=20}
+		m.ab_fx.add{s_opcode=7 s_target=1 s_timing=0 s_duration=1440 s_parameter1=color s_parameter2=16}
+	*/
+	
+	// get splprot entry
+	LAF resolve_splprot_entry INT_VAR stat=42 value="-1" STR_VAR relation=equal RET splprot_value=value END
+
+	
+	// further edit to add cha effects
+	ACTION_DEFINE_ASSOCIATIVE_ARRAY smite_evil_cha_map BEGIN
+		12=>1
+		13=>1
+		14=>2
+		15=>2
+		16=>3
+		17=>3
+		18=>4
+		19=>4
+		20=>5
+		21=>5
+		22=>6
+		23=>6
+		24=>7
+		25=>7
+	END
+	COPY_EXISTING "%spell%.spl" override
+		PHP_EACH smite_evil_cha_map AS parameter1=>power BEGIN
+			PATCH_IF smite_good BEGIN
+				SPRINT resource EVAL "%spl_smite_good_hit_bonus_%power%%"			
+			END ELSE BEGIN
+				SPRINT resource EVAL "%spl_smite_evil_hit_bonus_%power%%"
+			END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=1 timing=1 parameter1 parameter2=splprot_value STR_VAR resource END
+		END
+	BUT_ONLY
+	
+	// further edit to remove cha effects
+	
+	COPY_EXISTING "%removal%.spl" override
+		FOR (power=1;power<=7;++power) BEGIN
+			PATCH_IF smite_good BEGIN
+				SPRINT resource EVAL "%spl_smite_good_hit_bonus_%power%%"			
+			END ELSE BEGIN
+				SPRINT resource EVAL "%spl_smite_evil_hit_bonus_%power%%"
+			END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 timing=1 STR_VAR resource END
+		END
+
+END
+
+DEFINE_ACTION_FUNCTION make_smite_evil_cha_bonus BEGIN
+
+	// make the Charisma-dependent effects and spells to boost attack rolls
+
+	OUTER_FOR (power=1;power<=7;++power) BEGIN
+		OUTER_SPRINT spell EVAL "%spl_smite_evil_hit_bonus_%power%%"
+		OUTER_SPRINT spell2 EVAL "%spl_smite_good_hit_bonus_%power%%"
+		eff.make[%spell%]
+		[
+			m_opcode=178
+			m_target=1
+			m_timing=0
+			m_duration=1440
+			m_parameter1=3
+			m_parameter2=8
+			m_parameter3=power
+		]
+		eff.copy[%spell%=>%spell2%][m_parameter1=1]
+		
+		spl.make[%spell%]
+		[
+			m.ab.add{}
+			m.ab_fx.add{s_opcode=177 s_target=1 s_timing=0 s_parameter2=2 s_duration=1440 s_resource:="%spell%"}
+		]
+		spl.copy[%spell%=>%spell2%]
+		[
+			m.ab_fx.alter{s_resource:="%spell2%"}
+		]
+	END
+
+
+
+END
+
+			

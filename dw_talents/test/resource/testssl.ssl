@@ -1,0 +1,7 @@
+IF TRIGGER
+	See(NearestEnemyOf(Myself))
+	blook
+THEN DO
+	Action(Literal)
+	Attack(NearestEnemyOf(Myself))
+END

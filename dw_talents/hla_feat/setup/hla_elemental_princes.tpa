@@ -1,0 +1,259 @@
+DEFINE_ACTION_FUNCTION hla_elemental_princes BEGIN
+
+	OUTER_SET prince_debug=0
+	OUTER_SET prince_duration=60
+	
+	// make a good prince of water (might as well even if IWD not installed, it's quick and harmless)
+	
+	cre.copy[elemhydr=>%cre_ben_hadar%]
+	[
+		m_both_names:=@3243
+		m_alignment:=neutral_good
+		m_allegiance:=controlled
+		xp_value=0
+		script_override:="%baf_ben_hadar%"
+		script_default:="bdsum00"
+		dv:="%cre_ben_hadar%"
+	]
+	
+	LAF install_script STR_VAR script=baf_ben_hadar location=resource END
+
+	// clone the good princes to make evil princes (safer than doing it via copies of the hostile ones)
+	
+	COPY_EXISTING "elemchan.cre" "override/%cre_yan_c_bin%.cre"
+		WRITE_LONG 0x8 72804 // name
+		WRITE_LONG 0xc 72805
+		WRITE_ASCII 0x248 "%baf_yan_c_bin%" (8)
+		WRITE_BYTE 0x27b 35 // alignment
+		WRITE_ASCII 0x280 "%DEST_RES%" (0x20) // dv
+	COPY_EXISTING "elemyanc.bcs" "override/%baf_yan_c_bin%.bcs" 
+		REPLACE_TEXTUALLY 72796 72790
+		
+	COPY_EXISTING "elemzaam.cre" "override/%cre_imix%.cre"
+		WRITE_LONG 0x8 72775 // name
+		WRITE_LONG 0xc 72776
+		WRITE_ASCII 0x248 "%baf_imix%" (8)
+		WRITE_BYTE 0x27b 35 // alignment
+		WRITE_ASCII 0x280 "%DEST_RES%" (0x20)// dv
+	COPY_EXISTING "elemzaam.bcs" "override/%baf_imix%.bcs" 
+		REPLACE_TEXTUALLY 72794 72786
+
+	COPY_EXISTING "elemsunn.cre" "override/%cre_ogremoch%.cre"
+		WRITE_LONG 0x8 72800 // name
+		WRITE_LONG 0xc 72801
+		WRITE_ASCII 0x248 "%baf_ogremoch%" (8)
+		WRITE_BYTE 0x27b 35 // alignment
+		WRITE_ASCII 0x280 "%DEST_RES%" (0x20)// dv
+	COPY_EXISTING "elemsunn.bcs" "override/%baf_ogremoch%.bcs" 
+		REPLACE_TEXTUALLY 72812 72788	
+
+	COPY_EXISTING "%cre_ben_hadar%.cre" "override/%cre_olhydra%.cre"
+		WRITE_LONG 0x8 73885 // name
+		WRITE_LONG 0xc 73886
+		WRITE_ASCII 0x248 "%baf_olhydra%" (8)
+		WRITE_BYTE 0x27b 35 // alignment
+		WRITE_ASCII 0x280 "%DEST_RES%" (0x20)// dv
+
+	LAF install_script STR_VAR script=baf_olhydra location=resource END
+
+	// summoning effects
+
+	ACTION_DEFINE_ASSOCIATIVE_ARRAY elemental_cre_resrefs BEGIN
+		air,good=>elemchan
+		air,evil=>"%cre_yan_c_bin%"
+		earth,good=>elemsunn
+		earth,evil=>"%cre_ogremoch%"
+		fire,good=>elemzaam
+		fire,evil=>"%cre_imix%"
+		water,good=>"%cre_ben_hadar%"
+		water,evil=>"%cre_olhydra%"
+	END
+
+	ACTION_DEFINE_ASSOCIATIVE_ARRAY elemental_eff_resrefs BEGIN
+		air,good=>summchan
+		air,evil=>"%eff_summon_yan_c_bin%"
+		earth,good=>sumsunn
+		earth,evil=>"%eff_summon_ogremoch%"
+		fire,good=>sumzaam
+		fire,evil=>"%eff_summon_imix%"
+		water,good=>"%eff_summon_ben_hadar%"
+		water,evil=>"%eff_summon_olhydra%"
+	END
+	
+	
+	ACTION_DEFINE_ASSOCIATIVE_ARRAY element_names BEGIN
+		air=>3233
+		earth=>3234
+		fire=>3235
+		water=>3236
+		air_lc=>3238
+		earth_lc=>3239
+		fire_lc=>3240 
+		water_lc=>3241
+		air_princes=>3249
+		earth_princes=>3250
+		fire_princes=>3251
+		water_princes=>3252
+	END
+	
+	ACTION_PHP_EACH elemental_eff_resrefs AS k=>effect BEGIN
+		ACTION_IF !FILE_EXISTS_IN_GAME "%effect%.eff" BEGIN
+			OUTER_SPRINT cre_res $elemental_cre_resrefs("%k_0%" "%k_1%")
+			COPY_EXISTING "sumzaam.eff" "override/%effect%.eff"
+				WRITE_ASCII 0x30 "%cre_res%" (8)
+		END
+	END	
+	
+	// main spells
+
+		ACTION_FOR_EACH element IN earth air fire water BEGIN
+	
+		OUTER_SPRINT parent_spell EVAL "%spl_hla_elemental_prince_%element%%"
+	
+		ACTION_FOR_EACH alignment IN good evil BEGIN
+		
+			OUTER_SPRINT block_spell EVAL "%spl_cannot_summon_elemental_prince_%element%_%alignment%%"
+			OUTER_SPRINT main_spell EVAL "%spl_elemental_prince_%element%_%alignment%%"
+			OUTER_SPRINT cre_resref $elemental_eff_resrefs("%element%" "%alignment%")
+			
+			// make spells that block the summoning of the princes
+			
+			CREATE spl "%block_spell%"
+				LPF add_basic_spell_ability END
+				LPF ADD_SPELL_EFFECT INT_VAR opcode=206 target=4 duration=prince_duration+1 STR_VAR resource="%main_spell%" END
+				
+			// make spell that summons the prince
+			
+			COPY_EXISTING "sppr724.spl" "override/%main_spell%.spl"
+				PATCH_IF prince_debug BEGIN
+					SAY 0x8 "%main_spell%"
+				END ELSE BEGIN
+					WRITE_LONG 0x8 "-1"
+				END
+				LPF DELETE_EFFECT END
+				LPF ALTER_SPELL_HEADER INT_VAR target=1 END
+				LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=4 duration=0 STR_VAR resource="%parent_spell%" END // removes 'does not answer your call'
+				LPF ADD_SPELL_EFFECT INT_VAR opcode=177 target=1 parameter2=2 duration=prince_duration STR_VAR resource="%cre_resref%" END	
+				LPF ADD_SPELL_EFFECT INT_VAR opcode=146 target=1 parameter2=1 STR_VAR resource="%block_spell%" END
+		END
+		
+		// make overall wrap
+		
+		OUTER_SPRINT name @3247
+		OUTER_SPRINT elem_name_tra_ref $element_names("%element%")
+		OUTER_SPRINT elem_name (AT elem_name_tra_ref)
+		OUTER_PATCH_SAVE name "%name%" BEGIN
+			REPLACE_TEXTUALLY PLACEHOLDER "%elem_name%"
+		END
+		OUTER_SPRINT desc @3248
+		OUTER_SPRINT elem_name_lc_tra_ref $element_names("%element%_lc")
+		OUTER_SPRINT elem_name_lc (AT elem_name_lc_tra_ref)
+		OUTER_SPRINT elem_princes_tra_ref $element_names("%element%_princes")
+		OUTER_SPRINT elem_princes (AT elem_princes_tra_ref)
+		OUTER_PATCH_SAVE desc "%desc%" BEGIN
+			REPLACE_TEXTUALLY PLACEHOLDER_UC "%elem_name%"
+			REPLACE_TEXTUALLY PLACEHOLDER_LC "%elem_name_lc%"
+			REPLACE_TEXTUALLY PLACEHOLDER_PRINCES "%elem_princes%"
+		END		
+		
+		OUTER_SPRINT good_spell EVAL "%spl_elemental_prince_%element%_good%"
+		OUTER_SPRINT evil_spell EVAL "%spl_elemental_prince_%element%_evil%"
+		COPY_EXISTING "sppr724.spl" "override/%parent_spell%.spl"
+			SAY 0x8 "%name%"
+			SAY 0x50 "%desc%"
+			LPF DELETE_EFFECT END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=1 timing=1 parameter2=37 STR_VAR resource="%evil_spell%" END //evil
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=1 timing=1 parameter2=35 STR_VAR resource="%good_spell%" END //good
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=139 target=1 timing=4 duration=0 parameter1=RESOLVE_STR_REF (@3246) END // timing=4 so that the 321 from the subspell has time to come in first
+
+	END
+
+
+
+	// try to prevent the present-in-game princes from being duplicated
+	
+	// ogremoch - add to cre script
+	
+<<<<<<<<.../stratagems-inline/ogremoch_add.baf
+IF
+	!GlobalTimerNotExpired("dw_ogremoch_duplicate_block","LOCALS")
+	HPPercentGT(Myself,0)
+THEN
+	RESPONSE #100
+		ReallyForceSpellRES("%spl_cannot_summon_elemental_prince_earth_evil%",Myself)
+		SetGlobalTimer("dw_ogremoch_duplicate_block","LOCALS",60)
+		Continue()
+END
+>>>>>>>>
+
+	LAF extend INT_VAR inline=1 STR_VAR script=elemogre top=ogremoch_add END
+
+	// imix - add to cre script
+
+<<<<<<<<.../stratagems-inline/imix_add.baf
+IF
+	!GlobalTimerNotExpired("dw_imix_duplicate_block","LOCALS")
+	HPPercentGT(Myself,0)
+THEN
+	RESPONSE #100
+		ReallyForceSpellRES("%spl_cannot_summon_elemental_prince_fire_evil%",Myself)
+		SetGlobalTimer("dw_imix_duplicate_block","LOCALS",60)
+		Continue()
+END
+>>>>>>>>
+
+	LAF extend INT_VAR inline=1 STR_VAR script=elemimix  top=imix_add END
+
+	// Olhydra - add to are script
+	
+<<<<<<<<.../stratagems-inline/olhydra_add.baf
+IF
+	!GlobalTimerNotExpired("dw_olhydra_duplicate_block","MYAREA")
+	!Dead("elemhydr")
+THEN
+	RESPONSE #100
+		ReallyForceSpellRES("%spl_cannot_summon_elemental_prince_water_evil%",Myself)
+		SetGlobalTimer("dw_olhydra_duplicate_block","LOCALS",60)
+		Continue()
+END		
+
+>>>>>>>>
+
+	LAF extend_area_script INT_VAR inline=1 STR_VAR area=ar6002 top=olhydra_add END
+
+	// Yan-C-Bin - add to are script, but only if Ascension is not installed
+	
+<<<<<<<<.../stratagems-inline/olhydra_add.baf
+IF
+	!GlobalTimerNotExpired("dw_olhydra_duplicate_block","MYAREA")
+	!Dead("elemhydr")
+THEN
+	RESPONSE #100
+		ReallyForceSpellRES("%spl_cannot_summon_elemental_prince_water_evil%",Player1)
+		SetGlobalTimer("dw_olhydra_duplicate_block","LOCALS",60)
+		Continue()
+END		
+>>>>>>>>
+
+	LAF extend_area_script INT_VAR inline=1 STR_VAR area=ar6002 top=olhydra_add END
+
+<<<<<<<<.../stratagems-inline/yancbin_add.baf
+IF
+	!GlobalTimerNotExpired("dw_yancbin_duplicate_block","MYAREA")
+	!Dead("elemyanc")
+THEN
+	RESPONSE #100
+		ReallyForceSpellRES("%spl_cannot_summon_elemental_prince_air_evil%",Player1)
+		SetGlobalTimer("dw_yancbin_duplicate_block","LOCALS",60)
+		Continue()
+END	
+>>>>>>>>
+
+
+	LAF check_label STR_VAR label=fin_ascension_main RET value END
+	ACTION_IF value BEGIN
+		LAF extend_area_script INT_VAR inline=1 STR_VAR area=ar6200 top=yancbin_add END
+	END
+	
+
+END

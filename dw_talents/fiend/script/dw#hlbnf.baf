@@ -1,0 +1,29 @@
+/// super-basic, vanilla-level, script for player-controlled fiend
+
+IF
+	ActionListEmpty()
+	See(NearestEnemyOf(Myself))
+	HaveSpell(WIZARD_IMPROVED_INVISIBILITY)
+	!StateCheck(Myself,STATE_IMPROVEDINVISIBILITY)
+THEN
+	RESPONSE #100
+		Spell(Myself,WIZARD_IMPROVED_INVISIBILITY)  
+END
+
+IF
+	ActionListEmpty()
+	See(NearestEnemyOf(Myself))
+	HaveSpell(WIZARD_CONE_OF_COLD)
+THEN
+	RESPONSE #100
+		Spell(LastSeenBy(Myself),WIZARD_CONE_OF_COLD)  
+END
+
+IF
+	ActionListEmpty()
+	See(NearestEnemyOf(Myself))
+THEN
+	RESPONSE #100
+		AttackReevaluate(LastSeenBy(Myself),30)
+END
+

@@ -1,0 +1,35 @@
+
+DEFINE_ACTION_FUNCTION missing_items BEGIN
+
+	LAF 2da_process_table INT_VAR inline=1 STR_VAR table=missing_data.2da function=missing_items_core END
+
+
+
+END
+
+DEFINE_ACTION_FUNCTION missing_items_core 
+	INT_VAR name=0 desc=0
+	STR_VAR file=""
+BEGIN
+	ACTION_IF !FILE_EXISTS_IN_GAME "%file%" BEGIN
+		PRINT "Copying %file%"
+		COPY "%MOD_FOLDER%/%component_loc%/resource/not_in_bg1/%file%" override
+			 SAY 0x8 (AT name)
+			SAY 0xc (AT name)
+			SAY 0x50 (AT desc)
+			SAY 0x54 (AT desc)
+	END
+
+END
+
+
+
+
+<<<<<<<<.../stratagems-inline/missing_data.2da
+file		name:i	desc:i
+spcl928.spl	2000	2001
+spcl929.spl	2002	2003
+spcl930.spl	2004	2005
+potn56.itm	2006	2007
+potn55.itm	2008	2009
+>>>>>>>>

@@ -1,0 +1,467 @@
+DEFINE_ACTION_FUNCTION 3e_abilities STR_VAR version=1 BEGIN   /// 1 hybrid, 2 e3
+
+	LAF make_label STR_VAR label=dw#3e_abilities END
+
+	// get install parameters
+	
+	LAF check_ini STR_VAR ini=hybrid_spell_table RET hybrid_table=value END
+	ACTION_IF hybrid_table<0 BEGIN
+		OUTER_SET hybrid_table = (version=1)
+	END
+	LAF check_ini STR_VAR ini=hybrid_bonuses RET hybrid_bonuses=value END
+	ACTION_IF hybrid_bonuses<0 BEGIN
+		OUTER_SET hybrid_bonuses = (version=1)
+	END
+	LAF check_ini STR_VAR ini=cha_affects_paladin_saves RET cha_affects_paladin_saves=value END
+	
+	// load data
+	
+	LAF ds_resolve_stat STR_VAR id=DW_FAVORED_SOUL RET favored_soul_stat=stat_ind END
+	LAF load_3e_abil_data INT_VAR hybrid_bonuses RET_ARRAY 3e_abil_modifiers END
+	
+	// make the spells that grant extra spells
+	LAF make_3e_bonus_spell_secspells INT_VAR hybrid_table RET minimum_bonus_spell_abil END
+	
+	// find the splprot entries we use
+	
+	LAF resolve_splprot_entry INT_VAR stat=0x10d value="-1" STR_VAR relation=equal RET splprot_value_class=value END
+	LAF resolve_splprot_entry INT_VAR stat=0x112 value="-1" STR_VAR relation=equal RET splprot_value_state=value END
+	LAF resolve_splprot_entry INT_VAR stat=0x112 value="-1" STR_VAR relation=not_equal RET splprot_value_nostate=value END
+
+	// setup Force of Personality splstate
+	
+	LAF ds_resolve_stat STR_VAR id=DW_FORCE_OF_PERSONALITY RET force_of_personality=stat_ind END
+
+	// make resources
+	
+	ACTION_FOR_EACH ability IN str dex con int wis cha BEGIN
+		LAF check_ini STR_VAR ini="leave_%ability%_alone" RET value END
+		OUTER_SET "leave_%ability%_alone"=value
+		ACTION_IF !"leave_%ability%_alone" BEGIN
+			LAF run STR_VAR file="make_%ability%_payload" END
+		END
+	END
+
+	
+	// build the master spell
+	
+	LAF run STR_VAR file=wrap_spell_setup locbase=shared END
+	
+	// add effects
+	COPY_EXISTING "dw3ewrp.spl" override
+		// dexterity affects Reflex-type saves
+		LPF check_ini STR_VAR ini=dex_affects_saving_throws RET value END
+		PATCH_IF value BEGIN
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 timing=0 STR_VAR resource=dw3edex END // apply to everyone
+		END
+		// constitution affects Fort-type saves
+		LPF check_ini STR_VAR ini=con_affects_saving_throws RET value END
+		PATCH_IF value BEGIN
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 timing=0 STR_VAR resource=dw3econ END // apply to everyone
+		END
+		// wisdom affects Will-type saves
+		LPF check_ini STR_VAR ini=wis_affects_saving_throws RET value END
+		PATCH_IF value BEGIN		
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 timing=0 parameter1=force_of_personality parameter2=splprot_value_nostate STR_VAR resource=dw3ewi2 END // apply to everyone who doesn't have Force of Personality
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 timing=0 parameter1=force_of_personality parameter2=splprot_value_state STR_VAR resource=dw3ech2 END // apply to everyone who does have force of personality
+		END
+		// wisdom affects Shaman/Favored Soul spell slots
+		LPF check_ini STR_VAR ini=wis_affects_shaman_spell_slots RET value END
+		PATCH_IF value BEGIN
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 timing=0 parameter1=IDS_OF_SYMBOL (class shaman) parameter2=splprot_value_class STR_VAR resource=dw3ewis END // shamans only		
+		END		
+		// wisdom affects monk AC
+		LPF check_ini STR_VAR ini=wis_affects_monk_ac RET value END
+		PATCH_IF value BEGIN
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 timing=0 parameter1=IDS_OF_SYMBOL (class monk) parameter2=splprot_value_class STR_VAR resource=dw3ewi3 END // monks only				
+		END
+		// intelligence affects mage spell slots
+		LPF check_ini STR_VAR ini=int_affects_spell_slots RET value END
+		PATCH_IF value BEGIN
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 timing=0 parameter1=IDS_OF_SYMBOL (class mage) parameter2=splprot_value_class STR_VAR resource=dw3eint END // mages only
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 timing=0 parameter1=IDS_OF_SYMBOL (class fighter_mage) parameter2=splprot_value_class STR_VAR resource=dw3eint END // mages only
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 timing=0 parameter1=IDS_OF_SYMBOL (class cleric_mage) parameter2=splprot_value_class STR_VAR resource=dw3eint END // mages only
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 timing=0 parameter1=IDS_OF_SYMBOL (class mage_thief) parameter2=splprot_value_class STR_VAR resource=dw3eint END // mages only
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 timing=0 parameter1=IDS_OF_SYMBOL (class fighter_mage_thief) parameter2=splprot_value_class STR_VAR resource=dw3eint END // mages only
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 timing=0 parameter1=IDS_OF_SYMBOL (class fighter_mage_cleric) parameter2=splprot_value_class STR_VAR resource=dw3eint END // mages only
+		END
+		LPF check_ini STR_VAR ini=cha_affects_spell_slots RET value END
+		PATCH_IF value BEGIN
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 timing=0 parameter1=IDS_OF_SYMBOL (class sorcerer) parameter2=splprot_value_class STR_VAR resource=dw3echa END // charisma effects - sorcerers
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 timing=0 parameter1=IDS_OF_SYMBOL (class bard) parameter2=splprot_value_class STR_VAR resource=dw3echa END // charisma effects - bards
+		END
+		LPF check_ini STR_VAR ini=cha_affects_turn_undead RET value END
+		PATCH_IF value BEGIN
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 timing=0 STR_VAR resource=dw3echu END 
+		END
+		LPF check_ini STR_VAR ini=cha_affects_paladin_saves RET value END
+		PATCH_IF value BEGIN
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 timing=0 parameter1=IDS_OF_SYMBOL (class paladin) parameter2=splprot_value_class STR_VAR resource=dw3echp END // charisma save effects - paladins
+		END
+	BUT_ONLY
+	
+	
+	// adjust baseline saving throws to compensate
+	
+	COPY "%MOD_FOLDER%/%component_loc%/data/baseline_save_adjust.2da" "%workspace%"
+		COUNT_2DA_COLS colcount
+		COUNT_2DA_ROWS colcount rowcount
+		FOR (col=1;col<colcount; col+=1) BEGIN
+			READ_2DA_ENTRY 0 (col - 1) (colcount - 1) col_name
+			FOR (row=0;row<5;row+=1) BEGIN
+				READ_2DA_ENTRY row col colcount entry
+				SET $adjust("%row%")=entry
+			END
+			INNER_ACTION BEGIN
+				PRINT "adjusting saves in save%col_name%..."
+				COPY_EXISTING "save%col_name%.2da" override
+					COUNT_2DA_COLS colcount2
+					FOR (row=0;row<5;row+=1) BEGIN
+					  FOR (col2=1;col2<colcount;col2+=1) BEGIN
+						READ_2DA_ENTRY row col2 colcount2 old
+						new = old + $adjust("%row%")
+						SET_2DA_ENTRY row col2 colcount2 new
+						
+					  END
+					END
+				BUT_ONLY
+				PRINT "...done"
+			END
+		END
+	BUT_ONLY
+	
+	// finish implementing paladin save /monk AC changes
+	
+	LAF check_ini STR_VAR ini=cha_affects_paladin_saves RET value END
+	ACTION_IF value BEGIN
+		LAF paladin_charisma_adjust END
+	END
+	LAF check_ini STR_VAR ini=wis_affects_monk_ac RET value END
+	ACTION_IF value BEGIN
+		LAF monk_wisdom_adjust END
+	END
+
+	// override existing dwarf/gnome/halfling save bonuses with a flat bonus (unless subrace mod is installed)
+	
+	ACTION_IF !MOD_IS_INSTALLED "dw_talents/dw_talents.tp2" 20000 BEGIN
+	
+		LAF check_ini STR_VAR ini=base_dwarf_halfling_save_bonus RET bonus_dh=value END
+		LAF check_ini STR_VAR ini=base_gnome_save_bonus RET bonus_g=value END
+		COPY_EXISTING "savecndh.2da" override
+			LPF 2da_read RET_ARRAY columns array END
+			PHP_EACH columns AS col=>discard BEGIN
+				SET $array("DEATH" "%col%")=bonus_dh
+				SET $array("WANDS" "%col%")=bonus_dh
+				SET $array("SPELL" "%col%")=bonus_dh
+			END
+			LPF 2da_write STR_VAR array default="0" END
+		BUT_ONLY
+		COPY_EXISTING "savecng.2da" override
+			LPF 2da_read RET_ARRAY columns array END
+			PHP_EACH columns AS col=>discard BEGIN
+				SET $array("WANDS" "%col%")=bonus_g
+				SET $array("SPELL" "%col%")=bonus_g
+			END
+			LPF 2da_write STR_VAR array default="0" END
+		BUT_ONLY
+	
+	END
+	
+	LAF update_race_description INT_VAR old=26 new=27 STR_VAR race=DWARF END
+	LAF update_race_description INT_VAR old=26 new=27 STR_VAR race=HALFLING END
+	LAF update_race_description INT_VAR old=28 new=29 STR_VAR race=GNOME END
+
+	
+	// update ability score descriptions
+	
+	STRING_SET 9582 @1
+	STRING_SET 9584 @2
+	STRING_SET 9583 @3
+	STRING_SET 9585 @4
+	STRING_SET 9586 @5
+	STRING_SET 9587 @6
+	
+	// remove ability restrictions
+	
+	LAF check_ini STR_VAR ini=remove_class_ability_score_requirements RET value END
+	ACTION_IF value BEGIN
+		LAF remove_ability_restrictions END
+	END
+
+	// install Force of Personality if appropriate
+	
+
+	LAF check_label STR_VAR label=dw-feats RET value END
+	ACTION_IF value BEGIN
+		
+		WITH_TRA "%scs_tra_loc%/english/hla_feat.tra" "%scs_tra_loc%/%LANGUAGE%/hla_feat.tra" BEGIN
+		
+			OUTER_SPRINT component_loc hla_feat
+			LAF include STR_VAR file=make_feats.tph END
+			LAF include STR_VAR file=feat_spec.tph END
+			LAF read_in_class_names RET_ARRAY class_names END
+			LAF read_in_kit_names RET_ARRAY kit_names END
+			LAF read_in_feats STR_VAR location=data table=feat_table_fop.2da RET_ARRAY feat_names END
+			LAF read_in_basic_requirements_map RET_ARRAY basic_requirements_map END
+			LAF 2da_process_table INT_VAR STR_VAR table=feat_table_fop.2da location=data function=make_feats_core END
+			LAF include STR_VAR file=install_feats.tph END
+			LAF install_feats STR_VAR feat_table=feat_table_fop.2da location=data END
+		
+			// clunky one-off removal of HLA from paladins/blackguards
+
+			ACTION_CLEAR_ARRAY luas_to_wipe
+			OUTER_SPRINT $luas_to_wipe("PA0") "" //trueclass
+			LAF 2daq_extract INT_VAR rowname_column=1 STR_VAR resref=kitlist column=CLASS RET_ARRAY kit_class_map=array END
+			LAF 2daq_extract STR_VAR resref=luabbr column=ABBREV RET_ARRAY lua_map=array END
+			ACTION_PHP_EACH kit_class_map AS kit=>class BEGIN
+				ACTION_IF IS_AN_INT class && class=IDS_OF_SYMBOL (class PALADIN) BEGIN
+					OUTER_SPRINT lua $lua_map("%kit%")
+					OUTER_SPRINT $luas_to_wipe("%lua%") ""
+				END
+			END
+			ACTION_PHP_EACH luas_to_wipe AS lua=>discard BEGIN
+				COPY_EXISTING "LU%lua%.2da" override
+					REPLACE_TEXTUALLY ".*AP_DW-FTFOP .*" ""
+					COUNT_2DA_COLS colcount
+					COUNT_2DA_ROWS colcount rowcount
+					FOR (row=0;row<rowcount;++row) BEGIN
+						SET_2DA_ENTRY row 0 colcount (row + 1)
+					END
+					PRETTY_PRINT_2DA	
+			END
+		
+		END
+
+	
+	END
+
+END
+
+
+
+
+//////////////////// Load in the data on modifiers, to be used later
+
+DEFINE_ACTION_FUNCTION load_3e_abil_data INT_VAR hybrid_bonuses=0 RET_ARRAY 3e_abil_modifiers BEGIN
+	ACTION_IF hybrid_bonuses BEGIN 
+		OUTER_SPRINT file "hybrid_ability_modifiers"
+	END ELSE BEGIN
+		OUTER_SPRINT file "3e_ability_modifiers"
+	END
+	COPY "%MOD_FOLDER%/%component_loc%/data/%file%.2da" "%workspace%"
+		COUNT_2DA_ROWS 2 rowcount
+		FOR (row=0;row<rowcount;row+=1) BEGIN
+			READ_2DA_ENTRY row 0 2 ability
+			PATCH_IF IS_AN_INT ability BEGIN
+				READ_2DA_ENTRY row 1 2 modifier
+				SET $3e_abil_modifiers("%ability%")=modifier
+			END
+		END	
+	BUT_ONLY
+END
+
+//////////////////// Make the secondary spells to grant bonus spells
+
+DEFINE_ACTION_FUNCTION make_3e_bonus_spell_secspells INT_VAR hybrid_table=0 RET minimum_bonus_spell_abil BEGIN
+
+	
+	ACTION_IF hybrid_table BEGIN 
+		OUTER_SPRINT file "hybrid_bonus_spells"
+	END ELSE BEGIN
+		OUTER_SPRINT file "3e_bonus_spells"
+	END
+	COPY "%MOD_FOLDER%/%component_loc%/data/%file%.2da" "%workspace%" 
+		COUNT_2DA_COLS colcount
+		SET level_max=colcount - 1
+		COUNT_2DA_ROWS colcount rowcount
+		READ_2DA_ENTRY 0 0 colcount minimum_bonus_spell_abil
+		FOR (row=0;row<rowcount;row+=1) BEGIN
+			READ_2DA_ENTRY row 0 colcount int
+			FOR (lvl=1;lvl<colcount;lvl+=1) BEGIN
+				READ_2DA_ENTRY row lvl colcount bonus_here
+				SET $bonus("%lvl%")=bonus_here
+			END
+			INNER_ACTION BEGIN
+				OUTER_SPRINT spell "dw3em%int%"
+				CREATE spl "%spell%" 
+					LPF add_basic_spell_ability END
+					done=0
+					number=1
+					WHILE !done BEGIN
+						binary=0
+						FOR (lvl=1;lvl<level_max;lvl+=1) BEGIN
+							PATCH_IF $bonus("%lvl%")=number BEGIN
+								binary += 2**(lvl - 1)
+							END
+						END
+						PATCH_IF !binary=0 BEGIN
+							LPF ADD_SPELL_EFFECT INT_VAR opcode=42 parameter1=number target=2 parameter2=binary timing=9 END
+							number +=1
+						END ELSE BEGIN
+							done=1
+						END
+					END	
+				COPY_EXISTING "%spell%.spl" "override/dw3ep%int%.spl"
+					LPF ALTER_EFFECT INT_VAR opcode=62 END
+					LPF DELETE_EFFECT INT_VAR match_parameter2=2**8 END
+					LPF DELETE_EFFECT INT_VAR match_parameter2=2**7 END
+				BUT_ONLY
+			END
+		END
+	BUT_ONLY
+
+
+
+
+END
+
+///////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION 3e_abil_standard
+	INT_VAR ability=0
+	RET modifier
+BEGIN
+	OUTER_SET modifier=$3e_abil_modifiers("%ability%")
+END
+
+DEFINE_PATCH_FUNCTION 3e_abil_standard
+	INT_VAR ability=0
+	RET modifier
+BEGIN
+	INNER_ACTION BEGIN
+		LAF 3e_abil_standard INT_VAR ability RET modifier END
+	END
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION lowest_abil_for_bonus_spells
+	STR_VAR file=""
+	RET min_abil
+BEGIN
+	COPY "%file%" "%workspace%"
+		COUNT_2DA_COLS colcount
+		READ_2DA_ENTRY 0 0 colcount min_abil
+	BUT_ONLY
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION paladin_charisma_adjust
+BEGIN
+	// paladin's +2 to saves is hardcoded, so we need to reverse it
+	
+	spl.make[%spl_paladin_lower_saves%]
+	[
+		m.ab.add{}
+		m.ab_fx.add{s_opcode=33+entry_index s_target=2 s_parameter1="-2" s_parameter2=0 s_timing=1|number:i=5}
+	]
+	
+	kit.edit_all[paladin]
+	[
+		k.kit_apply_powers{%spl_paladin_lower_saves% 1}
+	]
+	
+	// edit paladin description
+	
+	LAF 2daq_extract STR_VAR resref=clastext row=PALADIN column=DESCSTR RET desc_strref=value END
+	strref.patch[desc_strref]
+	[
+		old:=@20
+		new:=@21
+		REPLACE_TEXTUALLY "%old%.*" "%new%"
+	]
+	
+
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION monk_wisdom_adjust
+BEGIN
+	// we need to edit the baseline spell to remove the initial boost to AC
+	
+	spl.edit[spcl822][
+		m.ab_fx.alter{s_parameter1=s_parameter1+1}
+	]
+
+	// edit monk description
+	
+	LAF 2daq_extract STR_VAR resref=clastext row=MONK column=DESCSTR RET desc_strref=value END
+	strref.patch[desc_strref]
+	[
+		old:=@20
+		new:=@21
+		REPLACE_TEXTUALLY "%old%.*" "%new%"
+	]
+
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION remove_ability_restrictions BEGIN
+
+	// remove the actual restrictions
+	COPY_EXISTING abclasrq.2da override
+		LPF 2da_read RET_ARRAY rows columns array END
+		PHP_EACH rows AS kit=>discard BEGIN
+			PATCH_MATCH "%kit%" WITH
+			"dw_sune.*" BEGIN
+				// leave my Sune Cha restriction in place
+			END
+			DEFAULT
+				PHP_EACH columns AS col=>discard2 BEGIN
+					SPRINT current_val $array("%kit%" "%col%")
+					PATCH_IF IS_AN_INT current_val && current_val>0 BEGIN
+						SET $array("%kit%" "%col%")=10
+					END
+				END
+			END		
+		END
+		LPF 2da_write STR_VAR array default="0" END
+	BUT_ONLY
+	
+	// remove any description entries
+	
+	COPY_EXISTING - "kitlist.2da" nowhere
+		LPF 2da_read RET_ARRAY rows array END
+		PHP_EACH rows AS row=>discard BEGIN
+			SPRINT kit $array("%row%" "ROWNAME")
+			PATCH_MATCH "%kit%" WITH
+			"dw_sune.*" BEGIN
+			END
+			DEFAULT
+				SPRINT desc_strref $array("%row%" "HELP")
+				PATCH_IF IS_AN_INT desc_strref BEGIN
+					GET_STRREF desc_strref desc
+					INNER_PATCH_SAVE desc "%desc%" BEGIN
+						SPRINT old @25
+						REPLACE_TEXTUALLY "^%old%.*" ""
+					END
+					INNER_ACTION BEGIN
+						STRING_SET_EVALUATE desc_strref "%desc%"
+					END
+				END
+				
+			END
+		END
+	BUT_ONLY
+	
+
+
+
+END
+
+
+DEFINE_ACTION_FUNCTION update_race_description INT_VAR old=0 new=0 STR_VAR race="" BEGIN
+	ACTION_TO_UPPER race
+	LAF 2daq_extract STR_VAR resref=racetext row="%race%" column=DESCSTR RET desc_strref=value END
+	strref.patch[desc_strref]
+	[
+		old:=(AT old)
+		new:=(AT new)
+		REPLACE_TEXTUALLY "%old%.*" "%new%"
+	]
+END
+
+

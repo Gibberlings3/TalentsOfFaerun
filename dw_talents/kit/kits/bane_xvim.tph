@@ -1,0 +1,211 @@
+DEFINE_ACTION_FUNCTION bane_xvim_cleric BEGIN
+
+	LAF splconv_get_name STR_VAR spell="%CLERIC_CLOAK_OF_FEAR%" type=innate RET spl_bane_cloak_of_fear=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_SYMBOL_FEAR%" type=innate RET spl_bane_symbol_fear=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_GREATER_MALISON%" type=innate RET spl_bane_malison=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_CONTROL_UNDEAD%" type=innate RET spl_bane_control_undead=new_resref END
+
+
+    LAF bane_xvim_shared END
+	OUTER_SPRINT kit DW_BANE_XVIM_CLERIC
+	kit.copy[CLERIC=>%kit%]
+	[
+		k.kit_apply_powers{%spl_bane_innate% 1}
+		k.kit_grant_powers{%spl_bane_cloak_of_fear% 5 5,%spl_bane_malison% 7 5,%spl_bane_control_undead% 9 5,%spl_bane_symbol_fear% 12 5}
+		k_color_metal=35
+		k_color_main_cloth=66
+		k_color_leather=25
+		k_color_armor=80	
+		k.kit_set_alignment{le ne ce}
+		IF {is_iwd}
+		{{
+			k_bio:=@1025
+			k_name:=@66
+			k_description:=@67
+			k_color_minor_cloth=66
+		}}
+		ELSE
+		{{
+			k_name:=@68
+			k_description:=@69
+			k_color_minor_cloth=52		
+		}}
+	]
+	
+	LAF cleric_kit_substitutions STR_VAR kit god=bane_xvim END
+
+	LAF assign_spheres STR_VAR kit default=cleric subtract="good divination wards" END
+
+	LAF holy_symbol INT_VAR name=2019 follower=2020 category=6 STR_VAR kit desc_bam=cdpxvhly inv_bam=cdixvhly bam_path=dr kit END
+	LAF adjust_cleric_stronghold STR_VAR talos="n_e c_e" helm="l_e" kit END
+	LAF assign_bonus_spells STR_VAR kit spells="HORROR" END
+
+END
+
+DEFINE_ACTION_FUNCTION knight_of_bane_xvim BEGIN
+
+	LAF splconv_get_name STR_VAR spell="%CLERIC_CLOAK_OF_FEAR%" type=innate RET spl_bane_cloak_of_fear=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_SYMBOL_FEAR%" type=innate RET spl_bane_symbol_fear=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_GREATER_MALISON%" type=innate RET spl_bane_malison=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_CONTROL_UNDEAD%" type=innate RET spl_bane_control_undead=new_resref END
+
+
+    LAF bane_xvim_shared END
+	OUTER_SPRINT kit DW_BANE_XVIM_KNIGHT
+
+	kit.copy[FIGHTER_CLERIC=>%kit%]
+	[
+		k.kit_apply_powers{%spl_bane_innate% 1|class=cleric}
+		k.kit_grant_powers{%spl_bane_cloak_of_fear% 5 5,%spl_bane_malison% 7 5,%spl_bane_control_undead% 9 5,%spl_bane_symbol_fear% 12 5|class=cleric}
+		k_color_metal=35
+		k_color_main_cloth=66
+		k_color_leather=25
+		k_color_armor=80	
+		k.kit_set_alignment{le ne ce}
+		IF {is_iwd}
+		{{
+			k_bio:=@1025
+			k_name:=@13
+			k_description:=@14
+			k_color_minor_cloth=66
+		}}
+		ELSE
+		{{
+			k_name:=@15
+			k_description:=@16
+			k_color_minor_cloth=52		
+		}}	
+	]
+	
+	LAF cleric_kit_substitutions STR_VAR kit god=bane_xvim END
+
+	LAF assign_spheres STR_VAR kit default=cleric subtract="good divination wards" END
+
+	LAF holy_symbol INT_VAR name=2019 follower=2020 category=6 STR_VAR kit desc_bam=cdpxvhly inv_bam=cdixvhly bam_path=dr kit END
+	LAF adjust_cleric_stronghold STR_VAR talos="n_e c_e" helm="l_e" kit END
+	LAF assign_bonus_spells STR_VAR kit spells="HORROR" END
+	LAF set_multiclass_components STR_VAR kit components="dw_bane_xvim_cleric"  END
+
+
+END
+
+DEFINE_ACTION_FUNCTION conjurer_of_bane_xvim BEGIN
+
+	LAF splconv_get_name STR_VAR spell="%CLERIC_CLOAK_OF_FEAR%" type=innate RET spl_bane_cloak_of_fear=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_SYMBOL_FEAR%" type=innate RET spl_bane_symbol_fear=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_GREATER_MALISON%" type=innate RET spl_bane_malison=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_CONTROL_UNDEAD%" type=innate RET spl_bane_control_undead=new_resref END
+
+    LAF bane_xvim_shared END
+	OUTER_SPRINT kit DW_BANE_XVIM_CONJURER
+
+	kit.copy[CLERIC_MAGE=>%kit%]
+	[
+		k.kit_apply_powers{%spl_bane_innate% 1|class=cleric}
+		k.kit_grant_powers{%spl_bane_cloak_of_fear% 5 5,%spl_bane_malison% 7 5,%spl_bane_control_undead% 9 5,%spl_bane_symbol_fear% 12 5|class=cleric}
+		k_color_main_cloth=66
+		k.kit_set_alignment{le ne ce}	
+		IF {is_iwd}
+		{{
+			k_bio:=@1025
+			k_name:=@88
+			k_description:=@89
+			k_color_minor_cloth=66
+		}}
+		ELSE
+		{{
+			k_name:=@90
+			k_description:=@91
+			k_color_minor_cloth=52		
+		}}	
+
+	]
+	
+	LAF cleric_kit_substitutions STR_VAR kit god=bane_xvim END
+
+	LAF assign_spheres INT_VAR update_scroll_usability=0 STR_VAR kit default=cleric subtract="good divination wards" END
+
+	LAF holy_symbol INT_VAR name=2019 follower=2020 category=6 STR_VAR kit desc_bam=cdpxvhly inv_bam=cdixvhly bam_path=dr kit END
+	LAF adjust_cleric_stronghold STR_VAR talos="n_e c_e" helm="l_e" kit END
+	LAF assign_bonus_spells STR_VAR kit spells="HORROR" class=cleric END
+
+
+ 	LAF make_multiclass_specialist STR_VAR kit school=conjuration END
+	LAF set_multiclass_components STR_VAR kit components="DW_BANE_XVIM_CLERIC CONJURER"  END
+
+
+END
+
+DEFINE_ACTION_FUNCTION bane_xvim_favored_soul BEGIN
+
+	LAF splconv_get_name STR_VAR spell="%CLERIC_CLOAK_OF_FEAR%" type=innate RET spl_bane_cloak_of_fear=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_SYMBOL_FEAR%" type=innate RET spl_bane_symbol_fear=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_GREATER_MALISON%" type=innate RET spl_bane_malison=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_CONTROL_UNDEAD%" type=innate RET spl_bane_control_undead=new_resref END
+
+	LAF bane_xvim_shared END
+	
+	// make the main kit
+	
+	OUTER_SPRINT kit "DW_BANE_XVIM_FAVORED"
+	ACTION_IF is_iwd BEGIN
+		OUTER_SET name=4054
+		OUTER_SET desc=4055
+		OUTER_SET god=4057
+	END ELSE BEGIN
+		OUTER_SET name=4066
+		OUTER_SET desc=4067
+		OUTER_SET god=4069
+	END
+	
+	LAF build_favored_soul_kit INT_VAR name desc god god_gender=4005 god_temple=4056 STR_VAR kit copy_from=DW_BANE_XVIM_CLERIC END
+	LAF cleric_kit_substitutions STR_VAR kit god=bane_xvim END
+
+	kit.edit[%kit%|edit_strrefs_in_place:i=1]
+	[
+		k.kit_apply_powers{%spl_bane_innate% 1}
+		k.kit_grant_powers{%spl_bane_cloak_of_fear% 5 5,%spl_bane_malison% 7 5,%spl_bane_control_undead% 9 5,%spl_bane_symbol_fear% 12 5}
+	]
+
+	// spell choices
+
+	LAF assign_bonus_spells STR_VAR kit spells="CLERIC_COMMAND WIZARD_HORROR CLERIC_UNHOLY_BLIGHT CLERIC_MENTAL_DOMINATION CLERIC_GREATER_COMMAND CLERIC_HARM CLERIC_UNHOLY_WORD" END
+
+END
+
+DEFINE_ACTION_FUNCTION bane_xvim_shared BEGIN
+
+	LAF check_label STR_VAR label=dw#bane_xvim_shared RET value END
+	ACTION_IF !value BEGIN
+		LAF make_label STR_VAR label=dw#bane_xvim_shared END
+
+		LAF include STR_VAR file=log_favored_weapon.tph locbase=shared END
+		ACTION_IF is_iwd BEGIN
+			OUTER_SPRINT weapon mace
+		END ELSE BEGIN
+			OUTER_SPRINT weapon scimitarwakisashininjato	
+		END
+		LAF log_favored_weapon STR_VAR god=BANE_XVIM weapon END
+		
+		// immunity to fear
+		
+		spl.copy[%WIZARD_RESIST_FEAR%=>%spl_bane_innate%]
+		[
+			m.ab_fx.delete{s_opcode=174 OR s_opcode=215}
+			m.ab_fx.alter{s_timing=9 s_duration=0}
+			m_casting_animation=0
+			m_completion_sound:=""
+		]
+
+		// other innates
+	
+		LAF splconv STR_VAR spell="%CLERIC_CLOAK_OF_FEAR%" new_type=innate  RET_ARRAY splconv_array END
+		LAF splconv STR_VAR spell="%WIZARD_SYMBOL_FEAR%" new_type=innate  RET_ARRAY splconv_array END
+		LAF splconv STR_VAR spell="%WIZARD_GREATER_MALISON%" new_type=innate RET_ARRAY splconv_array END
+		LAF splconv STR_VAR spell="%WIZARD_CONTROL_UNDEAD%" new_type=innate RET_ARRAY splconv_array  END
+
+
+
+	END
+
+END

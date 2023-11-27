@@ -1,0 +1,37 @@
+DEFINE_ACTION_FUNCTION sanctity_of_mind BEGIN
+
+     LAF log_this INT_VAR repeat=0 STR_VAR file="scs_modified_spells_iwd.2da" input=CLERIC_IMPERVIOUS_SANCTITY_OF_MIND END
+
+       // copy of spell shield
+       
+	   spl.copy["%WIZARD_SPELL_SHIELD%"=>dw#isss]
+	   [
+			m_name-strref="-1"
+			m.ab.delete{s_level>1}
+			m.ab_fx.alter{s_duration=2880|match="s_duration>0"}
+			m_type:=Priest
+			m.ab_fx.alter{s_resource:=dw#isssb|match="s_opcode=226"}
+	   ]
+
+	   ACTION_IF enhanced_edition BEGIN
+	  	   
+		   spl.copy["%WIZARD_SPELL_SHIELD%B"=>dw#isssb]
+		   [
+				m.ab_fx.alter{s_resource:=dw#isss|match="s_opcode=321"}
+		   ]
+	   
+	   END
+
+       // edits to main spell
+       
+	   spl.edit["%CLERIC_IMPERVIOUS_SANCTITY_OF_MIND%"|edit_strrefs_in_place:i=1]
+	   [
+			m_description:=@40100
+			m.ab.delete{s_level>1}
+			m.ab_fx.alter{s_duration=2880}
+			m.ab_fx.add{s_target=1 s_duration=2880 s_dispel_resist=3 s_power=7 s_opcode=101 s_parameter2=60} // casting failure
+			m.ab_fx.add{s_target=1 s_duration=2880 s_dispel_resist=3 s_power=7 s_opcode=169 s_parameter2=105} // miscast magic icon
+			m.ab_fx.add{s_target=1 s_duration=0 s_timing=1 s_parameter2=1 s_power=7 s_opcode=146 s_resource:=dw#isss} // spell shield effect
+	   ]
+
+END

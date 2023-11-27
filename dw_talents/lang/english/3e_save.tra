@@ -1,0 +1,115 @@
+@1="Reflex"
+@2="Reflex save"
+@3="Fortitude"
+@4="Fortitude save"
+@5="Will"
+@6="Will save"
+@7="Failed Reflex save"
+@8="Failed Fortitude save"
+@9="Failed Will save"
+
+@10="Saving Throw" // must match string used in spell descriptions
+@11="Neg\."
+@12="Negates"
+
+@13="Will saves"
+@14="Fortitude saves"
+@15="Reflex saves"
+
+@100="Save vs. Spell"
+@101="Saving throw vs. Spell"
+@102="Saving throws vs. Spell"
+
+
+@110="Save vs. Breath"
+@111="Saving throw vs. Breath Weapon"
+@112="Saving throws vs. Breath Weapon"
+
+@120="Save vs. Poison"
+@121="Saving Throw vs. Poison"
+@122="Saving Throws vs. Poison"
+
+@125="Save vs. Paralysis"
+@126="Saving Throw vs. Paralysis"
+@127="Saving Throws vs. Paralysis"
+
+@130="Save vs. Death"
+@131="Saving Throw vs. Death"
+@132="Saving Throws vs. Death"
+
+@140="Save vs. Wand"
+@141="Saving Throw vs. Wand"
+@142="Saving Throws vs. Wand"
+
+@145="Save vs. Petrification/Polymorph"
+@146="Saving Throw vs. Petrification/Polymorph"
+@147="Saving Throws vs. Petrification/Polymorph"
+
+@150="Save vs. Polymorph"
+@151="Saving Throw vs. Polymorph"
+@152="Saving Throws vs. Polymorph"
+
+@160="Save vs. Petrification"
+@161="Saving Throw vs. Petrification"
+@162="Saving Throws vs. Petrification"
+
+
+@170="Save vs. Petrification/Polymorph"
+@171="Saving Throw vs. Petrification/Polymorph"
+
+@175="Reflex Save Reduced by"
+@176="Fortitude Save Reduced by"
+@177="Will Save Reduced by"
+
+@180="must save vs."
+@181="must make a save vs."
+@182="to save vs."
+@183="to make a save vs."
+@184="they save vs."
+@185="they make a save vs."
+
+@190="In addition, Fortitude saves gain a bonus of +1."
+
+
+@200="Hit target must save vs. Spell or be stunned for 7 rounds"
+@201="Hit target is stunned for 7 rounds (save vs. Spell negates)"
+@202="In addition, the recipient's Saving Throws vs. Breath Weapon, Death, Polymorph, and Wand gain a bonus of +1."
+
+@300="Target must save vs. Spell or be stunned for 7 rounds"
+@301="Target is stunned for 7 rounds (save vs. Spell negates)"
+@302="Target must save vs. Death or lose 30% of its maximum Hit Points within 20 seconds"
+@303="Target loses 30% of its maximum Hit Points within 20 seconds (save vs. Death negates)"
+@304="In addition, Saving Throws vs. all attack forms except magic gain a +1 bonus."
+
+
+
+@1000="Damage: 10d4\+10 cold (Save vs\. Spell for half)" // from BRACEIP.itm description in IWDEE
+@1001="Damage: 10d4+10 cold (Reflex save half)"
+@1002="Damage: 17d8 magic (Save vs\. Spell for half)" // from BRACEIP.itm description in IWDEE
+@1003="Damage: 17d8 magic (Fortitude save half)"
+
+
+@2000="+2 bonus to Saving Throws vs. Paralysis/Poison/Death, vs. Rod/Staff/Wand, and vs. Spell, with additional bonuses based on Constitution." // must exactly match the appropriate string in BGEE strref 9551
+@2001="+2 bonus to Saving Throws vs. Paralysis/Poison/Death, vs. Rod/Staff/Wand, and vs. Spell, with additional bonuses based on Constitution." // must exactly match the appropriate string in BG2EE strref 9551
+@2002="+2 bonus to Saving Throws vs. Paralysis/Poison/Death, vs. Rod/Staff/Wand, and vs. Spell, with additional bonuses based on Constitution." // must exactly match the appropriate string in IWDEE strref 37493
+@2003="+2 bonus to Fortitude and Will saves, with additional bonuses based on Constitution."
+
+@2010="+2 bonus to Saving Throws vs. Paralysis/Poison/Death, vs. Rod/Staff/Wand, and vs. Spell, with additional bonuses based on Constitution." // must exactly match the appropriate string in BGEE strref 9554
+@2011="+2 bonus to Saving Throws vs. Paralysis/Poison/Death, vs. Rod/Staff/Wand, and vs. Spell, with additional bonuses based on Constitution." // must exactly match the appropriate string in BG2EE strref 9554
+@2012="+2 bonus to Saving Throws vs. Paralysis/Poison/Death, vs. Rod/Staff/Wand, and vs. Spell, with additional bonuses based on Constitution." // must exactly match the appropriate string in IWDEE strref 37497
+
+@2020="+2 bonus to Saving Throws vs. Rod/Staff/Wand and vs. Spell, with additional bonuses based on Constitution." // must exactly match the appropriate string in BGEE strref 9553
+@2021="+2 bonus to Saving Throws vs. Rod/Staff/Wand and vs. Spell, with additional bonuses based on Constitution." // must exactly match the appropriate string in BG2EE strref 9553
+@2022="+2 bonus to Saving Throws vs. Rod/Staff/Wand and vs. Spell, with additional bonuses based on Constitution." // must exactly match the appropriate string in IWDEE strref 37501
+@2023="+2 bonus to Will saves, with additional bonuses based on Constitution."
+
+@2031="+2 bonus to Fortitude and Will saves."
+@2041="+2 bonus to Will saves."
+
+
+
+@3000="+2 saving throw bonus vs. Wands and Spells" // must match string in Deep/Rock gnome description in subrace.tra
+@3001="+2 to Will saves"
+
+@3010="+2 saving throw bonus vs Poison/Death, Wands, and Spells" // must match string in Shield Dwarf/Gold Dwarf/Gray Dwarf description in subrace.tra
+@3011="+2 to Fortitude and Will saves"

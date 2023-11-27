@@ -1,0 +1,696 @@
+
+DEFINE_ACTION_FUNCTION item_crafting BEGIN
+
+	LAF scroll_scribing END
+	LAF potion_setup END
+	LAF make_detect_gold_system END
+
+END
+
+
+
+
+
+
+DEFINE_ACTION_FUNCTION scroll_scribing BEGIN
+
+	// get the XP settings
+
+	LAF check_ini STR_VAR ini=no_crafting_xp_cost RET no_xp_cost=value END
+	LAF 2daq_extract STR_VAR resref=xpbonus row=LEARN_SPELL column="1" RET level_1_xp=value END
+	ACTION_IF level_1_xp=0 BEGIN
+		OUTER_SET no_xp_cost=1
+	END
+	
+	// get the pricing
+	
+	LAF 2da_read STR_VAR file="%MOD_FOLDER%/%sfo_library_path%/data/scroll_prices.2da" RET_ARRAY price_array=array END
+
+	
+	// get the splprot lines we need
+	
+	LAF check_ini STR_VAR ini=quasi_gold_stat RET quasi_gold_stat=value END
+	LAF resolve_splprot_entry INT_VAR stat="%quasi_gold_stat%" value="-1" STR_VAR relation=less RET splprot_num=value END
+	LAF resolve_splprot_entry INT_VAR stat=IDS_OF_SYMBOL (stats xp) value="-1" STR_VAR relation=less RET splprot_num_xp=value END
+
+
+   /////////////////// resources for scroll scribing
+  
+   // some messages
+
+   OUTER_SET no_gold_string = RESOLVE_STR_REF (@87)
+   OUTER_SET no_scroll_string = RESOLVE_STR_REF (@88)
+   OUTER_SET no_xp_string = RESOLVE_STR_REF (@91)
+
+   ACTION_IF no_xp_cost BEGIN
+        OUTER_SET on_string = RESOLVE_STR_REF (@89)
+		OUTER_SET desc_tra_ref=93
+   END ELSE BEGIN
+        OUTER_SET on_string = RESOLVE_STR_REF (@84)
+		OUTER_PATCH_SAVE on_string "%on_string%" BEGIN
+			REPLACE_TEXTUALLY XP_PLACEHOLDER "%level_1_xp%"
+		END
+		OUTER_SET desc_tra_ref=92
+   END
+   OUTER_SET off_string = RESOLVE_STR_REF (@88)
+
+	// build spells to display 'not enough gold' and 'not enough xp'
+
+    spl.make[%spl_no_gold_message%]
+    [
+      m.ab.add{}
+      m.ab_fx.add{s_opcode=330 s_parameter1=no_gold_string s_target=1}
+    ]
+ 
+
+   spl.make[%spl_no_xp_message%]
+	[
+		m.ab.add{}
+        m.ab_fx.add{s_opcode=330 s_parameter1=no_xp_string s_target=1}
+    ]
+
+	// build the primary HLA
+
+  spl.make[%spl_scribe_scroll%]
+   [
+       m_level=1
+       m_type:=innate
+       m_non_combat=1
+       m_name:=@85
+	   m_description:=(AT desc_tra_ref)
+       m.ab.add{}
+       m.ab.alter{s_target=5 s_icon:=spcl919b s_location:=Innate}
+       m.ab_fx.add{s_opcode=191 s_target=1 s_parameter1=100 s_parameter2=1 s_duration=60}                   			// caster level boost
+       m.ab_fx.add{s_opcode=191 s_target=1 s_parameter1=100 s_duration=60}                   							// caster level boost
+       m.ab_fx.add{s_opcode=172 s_resource:="%spl_scribe_scroll%" s_target=1}	 										// remove 'scribe scroll' prior to regranting
+       m.ab_fx.add{s_opcode=171 s_resource:="%spl_cancel_scribing%" s_target=1}											// grant 'cancel scribing'
+       m.ab_fx.add{s_opcode=139 s_parameter1=on_string s_target=1}														// display 'you're scribing' message
+       m.ab_fx.add{s_opcode=139 s_parameter1=off_string s_target=1 s_timing=4 s_duration=60}							// cancel after 60 seconds if not used
+       m.ab_fx.add{s_opcode=177 s_target=1 s_power=9 s_parameter2=3 s_duration=60 s_resource:="%eff_detect_gold_summons%"} 	// summon the gold-accounting creature
+       m.ab_fx.add{s_opcode=171 s_resource:="%spl_scribe_scroll%" s_timing=4 s_duration=60 s_target=1}					// restore ability after 60 seconds if not used
+   ]
+ 
+	// build the 'cancel scribing' spell
+
+   spl.make[%spl_cancel_scribing%]
+   [
+       m_level=1
+       m_type:=Innate
+       m_name:=@86
+       m.ab.add{}
+       m.ab.alter{s_target=5 s_icon:=spcl919b s_location:=Innate}
+       m.ab_fx.add{s_opcode=321 s_target=1 s_resource:="%spl_scribe_scroll%"}					// remove the 'scribe scroll' spell's effects
+       m.ab_fx.add{s_opcode=172 s_resource:="%spl_cancel_scribing%" s_target=1}				// remove the 'cancel scribing' spell
+       m.ab_fx.add{s_opcode=171 s_resource:="%spl_scribe_scroll%" s_target=1}					// regrant 'scribe scroll'
+   ]
+
+	// make sure there's a scroll for everything
+	
+	LAF spl_make_all_scrolls END
+	LAM data_scroll_resrefs // rerun in case new scrolls have been added
+
+	// get the editing template we need for an expedited spell/scroll edit
+
+   LAF make_scribing_template
+RET
+    ability_data
+    effect_data
+    effect_number
+    price_number_offset_1
+    price_number_offset_2
+    scroll_offset
+    price_offset
+    xp_cost_offset_1
+    xp_cost_offset_2
+    xp_cost_offset_3
+END
+
+	// main pass-through
+
+   COPY_EXISTING - spell.ids nowhere
+      READ_2DA_ENTRIES_NOW spell_ids_array 2	  
+      FOR (i=0;i<spell_ids_array;i+=1) BEGIN
+           READ_2DA_ENTRY_FORMER spell_ids_array i 1 spell
+           // is it a wizard spell?
+           TO_UPPER spell
+           PATCH_MATCH "%spell%" WITH
+           "\(WIZARD\|CLERIC\)_.*" BEGIN
+                READ_2DA_ENTRY_FORMER spell_ids_array i 0 idscode // since we're here anyway...
+                INNER_ACTION BEGIN
+                   OUTER_SET continue=1
+				   LAF RES_NAME_OF_SPELL_NUM INT_VAR spell_num=idscode RET resref=spell_res END
+                   // is its idscode in the right range?
+				   ACTION_IF (idscode MODULO 100) >50 BEGIN
+						OUTER_SET continue=0
+				   END
+				   ACTION_IF idscode<=2100 && idscode>1750 BEGIN
+					OUTER_SET continue=0
+				   END
+				   // is it in hidespl?
+                   ACTION_IF FILE_CONTAINS_EVALUATED (hidespl.2da "%resref%") BEGIN
+                         OUTER_SET continue=0
+                   END
+                   // does it exist?
+                   ACTION_IF !FILE_EXISTS_IN_GAME "%resref%.spl" BEGIN
+                      OUTER_SET continue=0
+                   END
+                   ACTION_IF continue BEGIN
+                          LAF process_spell_and_scroll INT_VAR level_1_xp no_scroll_string STR_VAR spell resref END
+                   END
+				END
+           END
+           DEFAULT END
+      END
+   BUT_ONLY
+   ACTION_IF FILE_EXISTS "%data_loc_shared%/dw_ext_spell.ids" BEGIN
+	COPY - "%data_loc_shared%/dw_ext_spell.ids" nowhere
+		READ_2DA_ENTRIES_NOW ext_ids_array 2
+		FOR (i=0;i<ext_ids_array;i+=1) BEGIN
+			READ_2DA_ENTRY_FORMER ext_ids_array i 0 resref
+			PATCH_IF !("%resref%" STRING_MATCHES_REGEXP "SPWI.*") && FILE_EXISTS_IN_GAME "%resref%.spl" BEGIN
+               LPF process_spell_and_scroll INT_VAR level_1_xp no_scroll_string STR_VAR spell="" resref END			
+			END
+		
+		END
+   
+   END
+
+END
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_DIMORPHIC_FUNCTION process_spell_and_scroll
+   INT_VAR level_1_xp=1000 suppress_warning=0 no_scroll_string=0
+   STR_VAR spell="" resref=""
+BEGIN
+ // work out XP table
+ OUTER_FOR (level=1;level<=9;++level) BEGIN
+	OUTER_SET $xp("%level%")=level_1_xp*level
+ END
+ // get data
+ ACTION_IF "%resref%" STR_EQ "" BEGIN
+	LAF RES_NUM_OF_SPELL_NAME STR_VAR spell_name="%spell%" RET resref=spell_res END
+ END
+ ACTION_TO_UPPER spell
+ ACTION_IF "%spell%" STRING_EQUAL_CASE WIZARD_REMOVE_MAGIC BEGIN
+	OUTER_SPRINT spell WIZARD_DISPEL_MAGIC
+ END
+ ACTION_IF INDEX ("SPPR" "%resref%")>=0 BEGIN
+	OUTER_SET is_cleric=1
+ END ELSE BEGIN
+	OUTER_SET is_cleric=0
+ END
+ //////////////// if there is a scroll, read it for its price (or, for a priest scroll, set it) and then edit the spell to create a level-100 block
+ //////////////// that creates it
+ 
+ ACTION_IF VARIABLE_IS_SET "%spell%_SCROLL" BEGIN
+   OUTER_SPRINT scroll EVAL "%%spell%_SCROLL%"
+   // handle scroll: read in cost, set usability
+   ACTION_IF !is_cleric BEGIN
+    COPY_EXISTING "%scroll%.itm" override
+		READ_LONG 0x34 price
+	BUT_ONLY
+   END
+   // edit the original spell
+   // this is all hardcoded on speed grounds, since we're making a complicated edit to maybe 200 spells
+
+   COPY_EXISTING "%resref%.spl" override
+      READ_LONG 0x34 level
+	  PATCH_IF is_cleric BEGIN
+		price=$price_array("PRIEST" "%level%")
+	  END
+	  price_number = price / 100
+      SET xp_cost = $xp("%level%")
+      READ_LONG 0x64 ab_off
+      READ_SHORT 0x68 ab_num
+      READ_LONG 0x6a fx_off
+      //READ_SHORT 0x6e fx_ind
+	  fx_ind=SHORT_AT 0x6e + SHORT_AT 0x70
+      READ_ASCII (ab_off+0x4) icon
+      FOR (i=0;i<ab_num;i+=1) BEGIN
+         READ_SHORT (0x1e+ab_off+0x28*i) fx_here
+         SET fx_ind += fx_here
+      END
+      SET ab_start=ab_off + 0x28*ab_num
+      SET fx_start=fx_off + 0x28 + fx_ind*0x30
+      INSERT_BYTES ab_start 0x28
+      WRITE_ASCIIE ab_start "%ability_data%"
+      WRITE_LONG 0x6a (fx_off+0x28)
+      WRITE_SHORT 0x68 (ab_num + 1)
+      INSERT_BYTES fx_start (0x30*effect_number)
+      WRITE_ASCIIE fx_start "%effect_data%"
+      WRITE_ASCIIE (ab_start + 0x4) "%icon%"
+      WRITE_SHORT (0x20 + ab_start) fx_ind
+      WRITE_SHORT (0x1e + ab_start) effect_number
+      WRITE_LONG (fx_start + price_number_offset_1) price_number
+      WRITE_LONG (fx_start + price_number_offset_2) price_number
+      WRITE_ASCIIE (fx_start + scroll_offset) "%scroll%" (8)
+      WRITE_LONG (fx_start + price_offset) price
+      WRITE_LONG (fx_start + xp_cost_offset_1) xp_cost
+      WRITE_LONG (fx_start + xp_cost_offset_2) xp_cost
+      WRITE_LONG (fx_start + xp_cost_offset_3) (0 - xp_cost)
+	  REPLACE_TEXTUALLY "dw-tmplt" "%resref%" (8)
+
+   BUT_ONLY
+   // edit the cleric scroll if needed
+   ACTION_IF is_cleric BEGIN
+	COPY_EXISTING "%scroll%.itm" override
+		WRITE_LONG 0x34 price
+   END
+
+  END // end of if-scroll-exists patch
+  
+ //////////////// if there isn't a scroll (e.g.Chaos Shield) just display a message saying you can't make a scroll of this spell, and
+ //////////////// then reset everything
+
+  ELSE BEGIN
+     COPY_EXISTING "%resref%.spl" override
+      SET max_level=0
+      GET_OFFSET_ARRAY ab_array SPL_V10_HEADERS
+      PHP_EACH ab_array AS num=>offset BEGIN
+         READ_SHORT (0x10+offset) this_level
+         SET max_level = (this_level > max_level)? this_level : max_level
+      END
+     BUT_ONLY
+     spl.edit[%resref%]
+     [
+       m.ab.clone{s_level=100 s_type=1 s_target=5 s_projectile=1|match="s_level=max_level"}
+       m.ab_fx.delete{p_level=100}
+	   m.ab_fx.add{s_opcode=171 s_target=1 s_resource:="%spl_scribe_scroll%"| match_parent="p_level=100"} // regrant the main spell
+	   m.ab_fx.add{s_opcode=172 s_target=1 s_resource:="%spl_cancel_scribing%"| match_parent="p_level=100"} // remove the 'cancel scribing' spell
+       m.ab_fx.add{s_opcode=321 s_target=1 s_resource:="%spl_scribe_scroll%"| match_parent="p_level=100"} // turn off main spell
+       m.ab_fx.add{s_opcode=139 s_target=1 s_parameter1=no_scroll_string|match_parent="p_level=100"} // "no scroll" message
+     ]
+  END
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION make_scribing_template
+RET
+    ability_data
+    effect_data
+    effect_number
+    price_number_offset_1
+    price_number_offset_2
+	xp_cost_offset_1
+	xp_cost_offset_2
+	xp_cost_offset_3
+    scroll_offset
+    price_offset
+BEGIN
+   OUTER_SET price_number=0
+   OUTER_SET price=0
+   OUTER_SET xp_cost=0
+   OUTER_SPRINT scroll null
+   spl.make[dw-tmplt]
+   [
+       m.ab.add{}
+       m.ab.alter{s_location=2 s_level=100 s_type=1 s_target=5 s_projectile=1}
+       m.ab_fx.add{s_opcode=321 s_target=1 s_resource:="%spl_scribe_scroll%"| match_parent="p_level=100"} // remove effects of the spell (turns off caster level boost)
+	   m.ab_fx.add{s_opcode=172 s_resource:="%spl_cancel_scribing%" s_timing=1 s_target=1} // remove the 'cancel' spell
+       m.ab_fx.add{s_opcode=171 s_resource:="%spl_scribe_scroll%" s_timing=1 s_target=1} // regrants main spell
+       m.ab_fx.add{s_opcode=326 s_target=1 s_parameter1=price_number s_parameter2=splprot_num s_resource:=dw-nogld| match_parent="p_level=100"} // "no gold" message
+       m.ab_fx.add{s_opcode=318 s_duration=1 s_target=1 s_parameter1=price_number s_parameter2=splprot_num s_resource:="%sfo_filename%"| match_parent="p_level=100"} // block if insufficient gold
+       m.ab_fx.add{s_opcode=326 s_target=1 s_parameter1=xp_cost s_parameter2=splprot_num_xp s_resource:=dw-noxp| match_parent="p_level=100"} // "no xp" message
+       m.ab_fx.add{s_opcode=318 s_duration=1 s_target=1 s_parameter1=xp_cost s_parameter2=splprot_num_xp s_resource:="%sfo_filename%"| match_parent="p_level=100"} // block if insufficient xp
+       m.ab_fx.add{s_opcode=122 s_target=1 s_parameter1=1 s_timing=9 s_resource:="%scroll%"| match_parent="p_level=100"}
+       m.ab_fx.add{s_opcode=215 s_target=1 s_parameter1=1 s_timing=1 s_resource:=spcontin| match_parent="p_level=100"}
+       m.ab_fx.add{s_opcode=105 s_target=1 s_parameter1=price| match_parent="p_level=100"} // remove cost
+       m.ab_fx.add{s_opcode=104 s_target=1 s_timing=1 s_parameter1=0 - xp_cost| match_parent="p_level=100"} // remove xp cost
+   ]
+   OUTER_SET effect_number=11
+   COPY_EXISTING "dw-tmplt.spl" "%workspace%"
+       READ_ASCII 0x72 ability_data (0x28)
+       READ_ASCII 0x9a effect_data (0x30 * effect_number)
+   BUT_ONLY
+   
+   OUTER_SET icon_offset=0x4
+   OUTER_SET price_number_offset_1 = 0x4+0x30*3
+   OUTER_SET price_number_offset_2 = 0x4+0x30*4
+   OUTER_SET scroll_offset=          0x14+0x30*7
+   OUTER_SET price_offset=           0x4+0x30*9
+   OUTER_SET xp_cost_offset_1=         0x4+0x30*5
+   OUTER_SET xp_cost_offset_2=         0x4+0x30*6
+   OUTER_SET xp_cost_offset_3=         0x4+0x30*10
+
+END
+
+///////////////////////////////////////////////////
+//// Summon a creature that determines the party's gold
+//// and stores it in a stat on its summoner
+////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION make_detect_gold_system BEGIN
+
+	LAF check_ini STR_VAR ini=quasi_gold_stat RET quasi_gold_stat=value END // by default, 119 (CHAOTIC_COMMANDS)
+
+   // the script for the invisible creature that counts your gold, and the associated spells
+   
+   <<<<<<<< .../stratagems-inline/gold_summons.baf
+   IF
+     Global("complete","LOCALS",1)
+   THEN
+       RESPONSE #100
+           DestroySelf()
+   END
+   >>>>>>>>
+   COPY ".../stratagems-inline/gold_summons.baf" "override/%baf_detect_gold_summons%.bcs"
+	COMPILE_BAF_TO_BCS
+
+   OUTER_SET low_number=1
+   ACTION_FOR_EACH high_number IN 2 3 4 5 6 7 8 9 10 20 30 40 50 60 70 80 90 100 "-1" BEGIN
+        LAF gold_counting_helper INT_VAR low_number high_number mult=100 quasi_gold_stat STR_VAR script="%baf_detect_gold_summons%" END
+        OUTER_SET low_number=high_number
+   END
+
+   // the creature itself
+   
+   COPY "%MOD_FOLDER%/%component_loc%/resource/dw#cloud.cre" "override/%cre_detect_gold_summons%.cre"
+      REPLACE_TEXTUALLY "dw#cldki" "%baf_detect_gold_summons%" (8)
+
+   // the effect that summons it
+
+	eff.make[%eff_detect_gold_summons%]
+	[
+		m_opcode=67
+		m_target=1
+		m_power=9
+		m_parameter1=0
+		m_timing=1
+		m_duration=6
+		m_resource2:=NONE
+		m_resource:="%cre_detect_gold_summons%"
+	]
+
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION gold_counting_helper
+   INT_VAR high_number=0
+           low_number=0
+           mult=100
+           quasi_gold_stat=0
+   STR_VAR script=""
+BEGIN
+   OUTER_SET high_gold=high_number*mult
+   OUTER_SET low_gold=low_number*mult
+   
+   <<<<<<<< .../stratagems-inline/scriptadd.baf
+   IF
+     Global("complete","LOCALS",0)
+     PartyGoldLT(%high_gold%)
+     !PartyGoldLT(%low_gold%)
+   THEN
+       RESPONSE #100
+           ApplySpellRES("dwgld%low_number%",LastSummonerOf(Myself))
+           SetGlobal("complete","LOCALS",1)
+   END
+   >>>>>>>>
+   <<<<<<<< .../stratagems-inline/scriptadd2.baf
+   IF
+     Global("complete","LOCALS",0)
+     !PartyGoldLT(%low_gold%)
+   THEN
+       RESPONSE #100
+           ApplySpellRES("dwgld%low_number%",LastSummonerOf(Myself))
+           SetGlobal("complete","LOCALS",1)
+   END
+   >>>>>>>>
+   ACTION_IF high_number>=0 BEGIN
+      LAF extend INT_VAR inline=1 STR_VAR script bottom=scriptadd END
+   END ELSE BEGIN
+      LAF extend INT_VAR inline=1 STR_VAR script bottom=scriptadd2  END
+   END
+   
+   spl.make[dwgld%low_number%]
+   [
+      m.ab.add{}
+      m.ab_fx.add{s_opcode=233 s_target=2 s_timing=0 s_duration=60 s_parameter1=low_number s_parameter2=quasi_gold_stat s_special=1}
+   ]
+
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION potion_setup BEGIN
+
+	// get the XP settings
+
+	LAF check_ini STR_VAR ini=no_crafting_xp_cost RET no_xp_cost=value END
+	
+	// get the splprot lines we need
+	
+	LAF check_ini STR_VAR ini=quasi_gold_stat RET quasi_gold_stat=value END
+	LAF resolve_splprot_entry INT_VAR stat="%quasi_gold_stat%" value="-1" STR_VAR relation=less RET splprot_num=value END
+	LAF resolve_splprot_entry INT_VAR stat=IDS_OF_SYMBOL (stats xp) value="-1" STR_VAR relation=less RET splprot_num_xp=value END
+
+
+
+   // template for brewing spells
+   LAF make_potion_spell_template INT_VAR splprot_num END
+
+   ACTION_IF no_xp_cost BEGIN
+      OUTER_SPRINT desc_cost @101
+   END ELSE BEGIN
+      OUTER_SPRINT desc_cost @100
+   END
+
+   // define caster-animation maps
+   ACTION_DEFINE_ASSOCIATIVE_ARRAY potion_casting BEGIN
+      warrior_buff=>alteration
+      clerical=>necromancy
+      defensive=>abjuration
+      utility=>alteration
+      rogue=>alteration
+   END
+   
+   // alphabetize main table by potion name
+ 
+
+   // alphabetize main table by potion name
+    COPY - "%MOD_FOLDER%/%component_loc%/data/potion_crafting.2da" nowhere
+        READ_2DA_ENTRIES_NOW potion_crafting_table_sort 4
+        FOR (i=1;i<potion_crafting_table_sort;i+=1) BEGIN
+           READ_2DA_ENTRY_FORMER potion_crafting_table_sort i 0 ids
+           READ_2DA_ENTRY_FORMER potion_crafting_table_sort i 1 resref
+           READ_2DA_ENTRY_FORMER potion_crafting_table_sort i 2 type
+           READ_2DA_ENTRY_FORMER potion_crafting_table_sort i 3 level
+			INNER_ACTION BEGIN
+				COPY_EXISTING - "%resref%.itm" nowhere
+					READ_STRREF 0xc name
+			END
+			SPRINT $potion_crafting_for_sort("%name%-%type%") "%ids%%TAB%%resref%%TAB%%type%%TAB%%level%"
+		END
+		SORT_ARRAY_INDICES potion_crafting_for_sort LEXICOGRAPHICALLY
+		SPRINT data "ids%TAB%resref%TAB%feat_1%TAB%level%WNL%"
+		PHP_EACH potion_crafting_for_sort AS k=>v BEGIN
+			SPRINT data "%data%%v%%WNL%"
+		END
+		LPF log_this INT_VAR new=1 STR_VAR path="%workspace%" file="potion_crafting.2da" input="%data%" END
+ 
+
+   // process main table
+   COPY - "%workspace%/potion_crafting.2da" nowhere
+        READ_2DA_ENTRIES_NOW potion_crafting_table 4
+        FOR (i=1;i<potion_crafting_table;i+=1) BEGIN
+           READ_2DA_ENTRY_FORMER potion_crafting_table i 1 resref
+           READ_2DA_ENTRY_FORMER potion_crafting_table i 2 type
+           READ_2DA_ENTRY_FORMER potion_crafting_table i 3 level
+		   INNER_ACTION BEGIN
+			  ACTION_IF !FILE_EXISTS_IN_GAME "dw%resref%.spl" BEGIN
+				 OUTER_SPRINT school $potion_casting("%type%")
+				 LAF make_potion_spell STR_VAR school potion="%resref%" END
+			  END
+		   END
+		   PATCH_IF VARIABLE_IS_SET $potion_crafting_map("%type%" "%level%") BEGIN
+			  SPRINT temp $potion_crafting_map("%type%" "%level%")
+			  SPRINT $potion_crafting_map("%type%" "%level%") "%temp% %resref%"
+		   END ELSE BEGIN
+			  SPRINT $potion_crafting_map("%type%" "%level%") "%resref%"
+		   END
+        END
+   BUT_ONLY
+   // make the spells
+   ACTION_DEFINE_ASSOCIATIVE_ARRAY potion_brewing BEGIN
+      warrior_buff => ~1 104 105~
+      clerical => ~2 108 109~
+      defensive => ~3 106 107~
+      utility => ~4 110 111~
+      rogue => ~5 112 113~
+   END
+   ACTION_PHP_EACH potion_brewing AS code=>list BEGIN
+      // get baseline
+      LAF return_first_entry STR_VAR list RET brewing_number=entry list END
+      OUTER_SPRINT basename "dwptn%brewing_number%"
+      OUTER_SPRINT basename_hla "dwhpt%brewing_number%"
+      LAF return_first_entry STR_VAR list RET name=entry descbase=list END
+      // make base spell
+      OUTER_SPRINT desc (AT "%descbase%")
+      OUTER_SPRINT desc "%desc% %desc_cost%"
+      OUTER_SPRINT desc_hla "%desc%"
+	  spl.copy[potion_template=>%basename%|source_path="%workspace%"]
+	 [
+         m_name:=(AT name)
+         m.ab.delete{}
+      ]
+	  COPY_EXISTING "%basename%.spl" "override/%basename_hla%.spl"
+	  
+      // go through levels
+	  ACTION_CLEAR_ARRAY hla_desc_lines
+      OUTER_SET previous_level=0
+      OUTER_SET highest_level=0
+      OUTER_FOR (i=1;i<25;i+=1) BEGIN
+            ACTION_IF VARIABLE_IS_SET $potion_crafting_map("%code%" "%i%") BEGIN
+               OUTER_SPRINT list $potion_crafting_map("%code%" "%i%")
+               // add ability to spell
+               OUTER_SET level = (previous_level=0)? 1 : i
+               spl.edit[%basename%]
+               [
+                  m.ab.add{s_type=1 s_icon:=spcl918b s_location=4 s_target=5 s_level=level s_projectile=1}
+                  m.ab_fx.add{s_opcode=214 s_timing=1 s_target=1 s_resource:="%basename%%level%"| match_parent="p_level=level"}
+               ]
+               // make 2da if doesn't already exist
+               ACTION_IF previous_level=0 BEGIN
+                     COPY ".../stratagems-inline/214_template.2da" "override/%basename%%level%.2da"
+                     OUTER_SET previous_level=1
+               END ELSE BEGIN
+                    COPY_EXISTING "%basename%%previous_level%.2da" "override/%basename%%level%.2da"
+                    OUTER_SET previous_level=level
+               END
+               ACTION_IF level=1 BEGIN
+                  OUTER_SPRINT desc_add "Level 5:"
+               END ELSE BEGIN
+                  OUTER_SPRINT desc_add "Level %level%:"
+               END
+               OUTER_SET first_desc=1
+
+               OUTER_WHILE "%list%" STRING_COMPARE_CASE "" BEGIN
+                   LAF return_first_entry STR_VAR list RET entry list END
+                   APPEND "%basename%%level%.2da" "%entry% DW%entry% 3"
+                   // update the description
+                   ACTION_IF !VARIABLE_IS_SET $name_of_potion("%entry%") BEGIN
+                      COPY_EXISTING "%entry%.itm" override
+                           READ_STRREF 0xc name_here
+                      BUT_ONLY
+                      OUTER_SPRINT $name_of_potion("%entry%") "%name_here%"
+                   END
+                   OUTER_SPRINT temp $name_of_potion("%entry%")
+                   ACTION_IF first_desc BEGIN
+                      OUTER_SPRINT desc_add "%desc_add% %temp%"
+                      OUTER_SET first_desc=0
+                   END ELSE BEGIN
+                      OUTER_SPRINT desc_add "%desc_add%, %temp%"
+                   END
+				   // log to add to the HLA description
+				   OUTER_SPRINT $hla_desc_lines("%temp%") ""
+               END
+               OUTER_SPRINT desc "%desc%%WNL%%desc_add%"
+            END
+      END
+	  // now do the HLA description
+	  ACTION_SORT_ARRAY_INDICES hla_desc_lines LEXICOGRAPHICALLY
+	  ACTION_PHP_EACH hla_desc_lines AS k=>v BEGIN
+		OUTER_SPRINT desc_hla "%desc_hla%%WNL%%k%"
+	  END
+	  
+      // add redo-spell requirement and gold-summoning; append description
+	  
+      spl.edit[%basename%]
+      [
+		  m_description:="%desc%"
+		  m.ab_fx.add{s_opcode=177 s_target=1 s_power=9 s_parameter2=3 s_duration=60 s_resource:="%eff_detect_gold_summons%"}
+		  m.ab_fx.add{s_opcode=172 s_resource:="%sfo_filename%" s_target=1}
+		  m.ab_fx.add{s_opcode=171 s_resource:="%sfo_filename%" s_target=1}
+      ]
+
+      // make HLA version
+
+      spl.edit[%basename_hla%]
+      [
+		  m_description:="%desc_hla%"
+		  m.ab.add{s_type=1 s_icon:=spcl918b s_location=4 s_target=5 s_level=1 s_projectile=1}
+		  m.ab_fx.add{s_opcode=214 s_timing=1 s_target=1 s_resource:="%basename%%highest_level%"}
+		  m.ab_fx.add{s_opcode=177 s_target=1 s_power=9 s_parameter2=3 s_duration=60 s_resource:="%eff_detect_gold_summons%"}
+		  m.ab_fx.add{s_opcode=172 s_resource:="%sfo_filename%" s_target=1}
+		  m.ab_fx.add{s_opcode=171 s_resource:="%sfo_filename%" s_target=1}
+      ]
+   END
+END
+
+
+
+
+DEFINE_ACTION_FUNCTION make_potion_spell
+   STR_VAR potion="" school=""
+BEGIN
+   // get data
+   COPY_EXISTING "%potion%.itm" override
+         READ_LONG 0x64 ab_off
+         READ_ASCII (ab_off+0x4) icon
+         READ_STRREF 0xc name
+         READ_LONG 0x34 price
+   BUT_ONLY
+   OUTER_SET price_number = price / 100
+   // put together spell name
+   ACTION_IF no_xp_cost BEGIN
+      OUTER_SPRINT spellname @103
+   END ELSE BEGIN
+      OUTER_SPRINT spellname @102
+   END
+   OUTER_PATCH_SAVE spellname "%spellname%" BEGIN
+      REPLACE_TEXTUALLY PLACEHOLDERNAME "%name%"
+      REPLACE_TEXTUALLY PLACEHOLDERVALUE "%price%"
+   END
+   ACTION_IF no_xp_cost BEGIN
+      OUTER_SET xp_cost=0
+   END ELSE BEGIN
+      OUTER_SET xp_cost = "-%price%"
+   END
+   spl.copy[potion_template=>dw%potion%|source_path="%workspace%"]
+   [
+      m_name:="%spellname%"
+      m.spl_enforce_school{%school%}
+      m.ab.alter{s_casting_time=3 s_icon:="%icon%"}
+      m.ab_fx.alter{s_parameter1=price_number| match="s_opcode=326 && s_parameter2=splprot_num"}
+      m.ab_fx.alter{s_parameter1=price_number  s_resource:="dw%potion%"| match="s_opcode=318 && s_parameter2=splprot_num"}
+      m.ab_fx.alter{s_parameter1=price| match="s_opcode=326 && s_parameter2=splprot_num_xp"}
+      m.ab_fx.alter{s_parameter1=price s_resource:="dw%potion%"| match="s_opcode=318 && s_parameter2=splprot_num_xp"}
+      m.ab_fx.alter{ s_resource:="%potion%"| match="s_opcode=122"}
+      m.ab_fx.alter{ s_parameter1=price| match="s_opcode=105"}
+      m.ab_fx.alter{ s_parameter1=xp_cost| match="s_opcode=104"}
+   ]
+
+END
+
+DEFINE_ACTION_FUNCTION make_potion_spell_template
+      INT_VAR splprot_num=0
+BEGIN
+   // template is based on virgin copy of spcl918
+
+	spl.copy[spcl918=>potion_template|is_ids:i=0 source_location=resource path="%workspace%"]
+	[
+		m.ab_fx.delete{s_probability2>0}
+		m.ab_fx.alter{s_probability1=100}
+		m.ab_fx.alter{s_resource:=POTION| match="s_opcode=122"}
+		m.ab_fx.add{s_opcode=318 s_duration=1 s_target=1 s_parameter2=splprot_num s_resource:="%sfo_filename%"|insert_point:i=0} // block if insufficient gold
+		m.ab_fx.add{s_opcode=326 s_target=1 s_parameter2=splprot_num s_resource:="%spl_no_gold_message%"|insert_point:i=0} // "no gold" message
+		m.ab_fx.add{s_opcode=318 s_duration=1 s_target=1 s_parameter2=splprot_num_xp s_resource:="%sfo_filename%"|insert_point:i=0} // block if insufficient xp
+		m.ab_fx.add{s_opcode=326 s_target=1 s_parameter2=splprot_num_xp s_resource:="%spl_no_xp_message%"|insert_point:i=0} // "no xp" message
+		m.ab_fx.add{s_opcode=105 s_target=1} // cost
+		m.ab_fx.add{s_opcode=104 s_target=1 s_timing=1} // xp cost
+    ]
+
+END
+
+
+<<<<<<<< .../stratagems-inline/214_template.2da
+2DA V1.0
+****
+            	ResRef	Type
+>>>>>>>>
+
+
+
+

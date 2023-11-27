@@ -1,0 +1,42 @@
+DEFINE_ACTION_FUNCTION elemental_summoning BEGIN
+
+	// remove summoning script from elementals
+		
+	ACTION_FOR_EACH creature IN elairsu2 elairsu3 elairsu4 elearsu1 elearsu2 elearsu3 elearsu4 elfirsu1 elfirsu2 elfirsu3 elfirsu4 BEGIN
+		COPY_EXISTING "%creature%.cre" override
+            REPLACE_TEXTUALLY "wizelsu[m2]" "" (8)
+        BUT_ONLY
+        IF_EXISTS
+    END	
+	
+	// allegiance of summoned elementals matches summoner
+   
+	ACTION_FOR_EACH effect IN speart1 speart2 speart3 splesear spfir1 spfir2 spfir3 splesfir spair1 spair2 spair3 splesair BEGIN
+		COPY_EXISTING "%effect%.eff" override
+            WRITE_LONG 0x20 0
+        BUT_ONLY
+        IF_EXISTS
+    END
+
+	// edit the actual spells
+	
+	array.new[elem_desc_array]
+	[
+		AIR=>32001
+		EARTH=>32000
+		FIRE=>32002
+		LESSER_AIR=>32004
+		LESSER_EARTH=>32003
+		LESSER_FIRE=>32005
+	]
+
+	ACTION_PHP_EACH elem_desc_array AS elem=>desc_tra BEGIN
+		OUTER_SPRINT resref EVAL "%WIZARD_CONJURE_%elem%_ELEMENTAL%"
+		spl.edit[%resref%|allow_missing:i=1 edit_strrefs_in_place:i=1]
+		[
+			m_description:=(AT desc_tra)
+			m.ab_fx.delete{s_opcode=165 OR s_opcode=215 OR s_opcode=142}
+		]
+	END
+
+END

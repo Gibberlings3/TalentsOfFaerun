@@ -1,0 +1,31 @@
+DEFINE_ACTION_FUNCTION druid_xp_table BEGIN
+
+	// get the cleric XP data
+	COPY_EXISTING "xplevel.2da" "%workspace%"
+		REPLACE_EVALUATE "CLERIC\(.*\)" BEGIN
+			SPRINT cleric_data "%MATCH1%"
+		END
+		""
+		
+	// patch it over the druid XP data
+	
+	COPY_EXISTING "xplevel.2da" override
+		REPLACE_TEXTUALLY "DRUID.*" "DRUID%cleric_data%"
+		PRETTY_PRINT_2DA
+	BUT_ONLY
+	
+	// check if druid/cleric tables are identical already; if not, overwrite the druid one
+	
+	COPY_EXISTING mxsplprs.2da "%workspace%" 
+		PRETTY_PRINT_2DA
+		READ_ASCII 0x0 priest_spell_data (BUFFER_LENGTH)
+
+	COPY_EXISTING mxspldru.2da "%workspace%" 
+		PRETTY_PRINT_2DA
+		READ_ASCII 0x0 druid_spell_data (BUFFER_LENGTH)
+	
+	ACTION_IF "%priest_spell_data%" STRING_COMPARE "%druid_spell_data%" BEGIN
+	    COPY_EXISTING mxsplprs.2da "override/mxspldru.2da"
+	END
+
+END

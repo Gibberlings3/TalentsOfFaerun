@@ -1,0 +1,95 @@
+DEFINE_ACTION_FUNCTION druid_elementalist STR_VAR version="" BEGIN
+
+	ACTION_TO_UPPER version
+
+	ACTION_MATCH "%version%" WITH
+	air BEGIN
+		OUTER_SET name=32
+		OUTER_SET elem_name=RESOLVE_STR_REF(@5)
+		OUTER_SPRINT oppose earth
+	END
+	earth BEGIN
+		OUTER_SET name=33
+		OUTER_SET elem_name=RESOLVE_STR_REF(@7)
+		OUTER_SPRINT oppose air
+	END
+	fire BEGIN
+		OUTER_SET name=34
+		OUTER_SET elem_name=RESOLVE_STR_REF(@1)
+		OUTER_SPRINT oppose fire
+	END
+	water BEGIN
+		OUTER_SET name=35
+		OUTER_SET elem_name=RESOLVE_STR_REF(@3)
+		OUTER_SPRINT oppose water
+	END
+	DEFAULT
+		FAIL "druid_elementalist needs to be called with 'version' set to one of earth, air, fire, and water" 
+	END
+
+	// alter the c-to-d string to remove opposed-element elemental shapeshifting
+
+	ACTION_IF FILE_EXISTS_IN_GAME "%spl_druid_shapeshift_base%.spl" BEGIN
+		OUTER_SPRINT swap_out "%spl_druid_shapeshift_base%"
+		OUTER_SPRINT swap_in EVAL "%spl_druid_shapeshift_base_no_%oppose%%"
+	END ELSE BEGIN
+		ACTION_IF is_iwd BEGIN
+			OUTER_SPRINT swap_in ""
+			ACTION_MATCH oppose WITH
+			earth BEGIN
+				OUTER_SPRINT swap_out ",spcl112 11"
+			END
+			fire BEGIN
+				OUTER_SPRINT swap_out ",spcl113 13"
+			END
+			water BEGIN
+				OUTER_SPRINT swap_out ",spcl114 15"
+			END
+			DEFAULT
+				OUTER_SPRINT swap_out null
+			END
+		END
+	END
+	ACTION_IF "%swap_out%" STRING_COMPARE "null" BEGIN
+		OUTER_PATCH_SAVE c_to_d_grant_string "%c_to_d_grant_string%" BEGIN
+			REPLACE_TEXTUALLY "%swap_out%" "%swap_in%"
+		END
+	END
+
+	// make the core kit
+	OUTER_SPRINT kit "DW_DRUID_ELEMENTALIST_%version%"
+	
+	kit.copy[CLERIC_MAGE=>%kit%]
+	[
+		k_name:=(AT name)
+		k_description:="%desc%"
+		TO_LOWER version
+		power:=EVAL "%spl_elementalist_%version%_innate%"
+		k.kit_apply_powers{%power% 1|class=mage}
+		IF {is_iwd} {{k_bio=19429}} ELSE {{k_bio=15885}}
+		k.kit_apply_powers{%c_to_d_apply_string%|class=cleric}
+		k.kit_grant_powers{%c_to_d_grant_string%|class=cleric}
+	]
+	
+	// impose class restrictions
+	
+	LAF impose_druid_class_features INT_VAR update_description=0 STR_VAR kit parent_class=DRUID_MAGE END
+
+	// add as a virtual class on the chargen screen
+	
+	LAF assign_kit_to_virtual_class STR_VAR kit class=druid_mage END
+
+	// log the kit 
+	OUTER_SPRINT root "DW_ELEMENTALIST_%version%"
+	ACTION_TO_UPPER root 
+	LAF set_multiclass_components STR_VAR kit components="DRUID %root%" END
+
+
+
+	// log for prof component
+
+	LAF prof_redirect_kit_parent STR_VAR kit parent=DRUID_MAGE END
+
+
+
+END

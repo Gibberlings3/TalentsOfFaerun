@@ -1,0 +1,66 @@
+@1 = "This character is dual-classed; their final class is MAGE."
+@2 = "This character is dual-classed; their final class is CLERIC."
+@3 = "This character is dual-classed; their final class is FIGHTER."
+@4 = "This character is dual-classed; their final class is THIEF."
+@5 = "This character is dual-classed; their final class is RANGER."
+@6 = "This character is dual-classed; their final class is DRUID."
+@7 = "Level them up in their original class until you are prevented from doing so; then dual-class them immediately; then level them up in their final class."
+@8 = "+5% to Hide in Shadows"
+@9 = "+5% to Detect Illusions"
+@10 = "+5% to Set Traps"
+@11 = "+5% to Move Silently"
+@12 = "+5% to Open Locks"
+@13 = "+5% to Find Traps"
+@14 = "+5% to Pick Pockets"
+@15 = "Set Thief Skills"
+@16 = "This character has unspent thief skill points, which may be spent from the Special Abilities bar."
+@17= "Potion of Levelling"
+@18 = "This potion contains the distilled wisdom of the ages. Anyone drinking it gains enough experience to advance to the next level. 
+
+Multi-class characters gain enough experience to reach the next level in one class, in this priority order: Thief>Fighter=Ranger>Cleric=Druid>Mage."
+@19="The following kits are available:"
+@20="Trueclass (i.e., no kit)"
+@21="You can use this menu to select the character's class and kit.
+
+This function makes no attempt to enforce ability score minimums or alignment requirements. You are on the honor system! Race/class restrictions are currently being enforced, but you can deactivate them if you want.
+
+NOTE: if you are playing with Party AI off, turn it on briefly before levelling your character, if you are changing their class."
+@22="Exit without making any further changes."
+@23="You can reselect this power to change your choices, as long as you have not levelled the character to first level."
+@24="Select class."
+@25="Select kit."
+@26="Class is set."
+@27="Kit is set."
+@28="The following classes are available."
+@29="Customise class/kit"
+@30="This character is dual-classed. You can change the character's original-class kit, but you cannot change the original or final class (unless you abandon the original altogether)."
+@31="Abandon original class (character is no longer dual-classed)."
+@32="Are you sure? This cannot be undone."
+@33="Yes, abandon original class."
+@34="No, remain dual-classed."
+@36="This one-off power allows you to spend an additional 5 points on your thief skills."
+@37="Activating this power allows you to customise this character's choice of class and kit. Bear in mind that the game's story makes various assumptions about the character which this customization option may contradict, and that some of the character's equipment may be unusable after the power is activated.
+
+This power may only be used before the character is levelled up."
+@38="This one-off power permanently increases your Hide in Shadows ability by 5%."
+@39="This one-off power permanently increases your Detect Illusions ability by 5%."
+@40="This one-off power permanently increases your Set Traps ability by 5%."
+@41="This one-off power permanently increases your Move Silently ability by 5%."
+@42="This one-off power permanently increases your Open Locks ability by 5%."
+@43="This one-off power permanently increases your Find Traps ability by 5%."
+@44="This one-off power permanently increases your Pick Pockets ability by 5%."
+@45="To apply the character's wild-mage-specific spells, save and reload the game."
+
+@46="Actually, don't make any changes just now."
+@47="Stop enforcing race/class restrictions and allow me to choose illegal classes."
+@48="Restore race/class restrictions, and prevent illegal classes from being selected."
+@49="You can use this menu to select the character's class and kit.
+
+This function makes no attempt to enforce ability score minimums or alignment requirements. You are on the honor system! Race/class restrictions are not currently being enforced either, but you can reactivate them if you want.
+
+NOTE: if you are playing with Party AI off, turn it on briefly before levelling your character, if you are changing their class."
+@50="Class/race restrictions removed. Don't let anyone stop you from following your dream!"
+@51="Class/race restrictions restored. Welcome back to AD&D, we've missed you."
+@52="Ranger (you cannot select a favored enemy)"
+@53="Cleric/Ranger (you cannot select a favored enemy)"
+@54="Wild Mage (you must save and reload to get your bonus spells)"

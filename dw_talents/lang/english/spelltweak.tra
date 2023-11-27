@@ -1,0 +1,272 @@
+// @1 is just the IWD version of the description
+@1="Magical Stone
+(Enchantment)
+
+Level: 1
+Sphere: Combat
+Range: Visual range of the caster
+Duration: Instant
+Casting Time: 4
+Area of Effect: 1 creature
+Saving Throw: None
+
+By using this spell, the priest can temporarily enchant a small pebble, which is then hurled or slung at an opponent. The stone deals 3d4 points of crushing damage to whomever it hits except undead creatures, who take 6d4 points of crushing damage instead. The stone is considered a magical weapon, although it does not have an attack or damage bonus."
+
+// @2 is just the IWD version of the description
+@2="Call Lightning
+(Alteration)
+
+Level: 3
+Sphere: Weather
+Range: Visual range of the caster
+Duration: 1 round/level, up to 11 rounds
+Casting Time: 9
+Area of Effect: Visual range of the caster
+Saving Throw: 1/2
+
+A Call Lightning spell must be cast outside; otherwise, it will not work and the spell is wasted. The caster is able to call down 1 bolt per round per caster level (capped at 11 bolts). Each bolt causes 2d8 points of electrical damage, plus an additional 1d8 points per level of the caster. Thus, a 5th-level caster calls down five 7d8 bolts (2d8 + 5d8). The caster only chooses the first target of the spell, but subsequent bolts will only strike <PRO_HISHER> enemies."
+
+@3="Duration:" // must exactly match duration in BG version of 'protection from fire'
+@4="1 turn/level"
+@5="The effects of a Protection From Fire spell last no longer than 3 rounds plus 1 round per level of the caster." // must exactly match first sentence of BG version of 'protection from fire'.
+
+@6="Slay Living
+(Necromancy)
+
+Level: 5
+Sphere: Combat
+Range: Touch
+Duration: Instant
+Casting Time: 9
+Area of Effect: 1 creature
+Saving Throw: Special
+
+This spell forces the target to Save vs. Death or be instantly killed. If the Saving Throw is successful, the target takes 2d6+9 points of magic damage instead. Note that a character struck with a Slay Living spell can still be raised from the dead with a Raise Dead or Resurrection spell."
+
+@7="Blade Barrier
+(Evocation)
+
+Level: 6 
+Sphere: Guardian, Creation
+Range: 0
+Duration: 1 turn
+Casting Time: 9
+Area of Effect: Special
+Saving Throw: 1/2
+
+The priest employs this spell to set up a wall of circling, razor-sharp blades. These whirl and flash around the caster, creating an impenetrable barrier. Any creature attempting to pass through the Blade Barrier suffers 8d8 points of damage, with a saving throw vs. spell for half damage. The barrier remains for 1 turn."
+
+@8="Globe of Blades
+(Evocation)
+
+Level: Quest
+Sphere: Guardian, Creation 
+Range: Caster
+Duration: 1 turn
+Casting Time: 9
+Area of Effect: Special
+Saving Throw: 1/2
+
+The priest employs this spell to set up a globe of razor-sharp blades. These whirl and flash around the caster, creating a dangerous barrier. Any creature attempting to pass through the blade barrier suffers 10d10 points of damage, or half that if they succeed at a Saving Throw vs. Spell at -2. The barrier remains for 1 turn."
+
+// @9 is a verbatim copy of IWD's description
+@9="Sol's Searing Orb
+(Invocation)
+
+Level: 6
+Sphere: Sun
+Range: Visual range of the caster
+Duration: Instant
+Casting Time: 6
+Area of Effect: 1 creature
+Saving Throw: Special
+
+This spell allows the caster to hurl a brilliant, searing flash at a target. When it hits, it explodes in a flash of light, doing 6d12 points of fire damage to the target and blinding <PRO_HIMHER> for 3 rounds if a Save vs. Spell is failed. If the Saving Throw is made, the target only takes half damage and is not blinded. Undead creatures are particularly vulnerable to this spell, taking double damage."
+
+// @10 is a verbatim copy of IWD's description
+
+@10="Color Spray
+(Alteration)
+
+Level: 1
+Range: 12 ft.
+Duration: Instant
+Casting Time: 1
+Area of Effect: 29-ft. cone with 90-deg. arc
+Saving Throw: Special
+
+This spell creates a vivid, fan-shaped spray of clashing colors to spring forth from the caster's hand. Creatures within the area are affected in order of increasing distance from the wizard. All creatures in the area above the level of the caster or ones that have greater than 6 Hit Dice must make a Save vs. Spell. The spell's effects depend on the caster—creatures with Hit Dice/levels fewer than or equal to the caster are knocked unconscious (do not awaken when struck) for 5 rounds, those with Hit Dice/levels one or two greater than the wizard are blinded for 3 rounds, and any other creatures are stunned for 1 round.
+
+Blind creatures are unaffected by the color spray."
+
+// @11 is a verbatim copy of IWD's description
+
+@11="Shocking Grasp
+(Alteration)
+
+Level: 1
+Range: Touch
+Duration: Instant
+Casting Time: 1
+Area of Effect: 1 creature
+Saving Throw: None
+
+When the wizard touches a creature while this spell is in effect, an electrical charge will deal 1d8 + 1/level points of damage to the creature. For example, a 5th-level wizard will deal 1d8+5 points of electrical damage. The wizard only has one charge, and once an opponent has been touched, the spell's energies have been used. The spell always hits unless the wizard is disrupted."
+
+@12="Chromatic Orb
+(Evocation)
+
+Level: 1
+Range: Visual range of the caster
+Duration: Special
+Casting Time: 1
+Area of Effect: 1 creature
+Saving Throw: Special
+
+This spell creates a 4-inch-diameter sphere that can be hurled unerringly to its target. The orb's effects depend on the level of the wizard:
+
+– 1: Inflicts 1d4 magic damage and blinds the target for one round.
+– 2: Inflicts 1d6 fire damage and inflicts pain upon the victim (-1 penalty to Armor Class and THAC0) for one round.
+– 3: Inflicts 1d8 magic damage and burns the victim for 1d3 fire damage.
+– 4: Inflicts 1d10 magic damage and blinds the target for 4 rounds.
+– 5 to 6: Inflicts 1d12 magic damage and stuns the target for 3 rounds.
+– 7 and up: Inflicts 2d8 magic damage and paralyzes the victim for 13 rounds.
+
+There is no saving throw against the damage, but a successful Save vs. Spell negates all other effects."
+
+@13="Flame Blade
+(Evocation)
+
+Level: 2
+Sphere: Elemental Fire
+Range: 0
+Duration: 4 rounds + 1 round/level
+Casting Time: 4
+Area of Effect: The caster
+Saving Throw: None
+
+With this spell, the caster causes a blazing ray of red-hot fire to spring forth from <PRO_HISHER> hand. This blade-like ray is wielded as if it were a scimitar (i.e. it uses the Scimitar proficiency). If the caster successfully hits with the flame blade in melee combat, the creature struck suffers 1d4 points of slashing damage plus 4 points of fire damage, with a further 2 fire damage if the creature is undead. However, it is not a magical weapon in the normal sense of the term, so creatures struck only by magical weapons are not harmed by it."
+
+@14="Any evil creatures within the area of effect take 1d6 magic damage for every 2 levels of the caster, up to a maximum of 5d6 at level 10; a successful Save vs. Spell halves the damage." // must exactly match the sentence in Holy Smite IWD description
+@15="Any evil creatures within the area of effect take 1d4 magic damage for every level of the caster; a successful Save vs. Spell halves the damage."
+@16="Any creatures of good alignment within the area of effect take 1d6 magic damage for every 2 levels of the caster, up to a maximum of 5d6 at level 10; a successful Save vs. Spell halves the damage." // must exactly match the sentence in Unholy Blight IWD description
+@17="Any creatures of good alignment within the area of effect take 1d4 magic damage for every levels of the caster; a successful Save vs. Spell halves the damage."
+@18="The spell deals 6d8 points of fire damage to the target and any nearby victims, with a Save vs. Spell for half damage." // must exactly match the sentence in Flame Strike IWD description
+@19="The spell deals 1d8 points of fire damage per level of the caster to the target and any nearby victims, with a Save vs. Spell for half damage." // must exactly match the sentence in Flame Strike IWD description
+
+@20="Ghost Armor
+(Conjuration/Summoning)
+
+Level: 3
+Range: Touch
+Duration: 1 hour
+Casting Time: 1
+Area of Effect: 1 creature
+Saving Throw: None
+
+This spell creates a magical field of force with the strength of plate armor (AC 2). It is cumulative with Dexterity effects and, in the case of Fighter/Mages, with the shield bonus. The Ghost Armor spell does not hinder movement, adds no weight or encumbrance, and does not prevent spellcasting. It lasts until dispelled or until the duration runs out."
+
+@21="Ice Storm
+(Evocation)
+
+Level: 4
+Range: Visual range of the caster
+Duration: 4 rounds
+Casting Time: 4
+Area of Effect: 15-ft. radius
+Saving Throw: None
+
+When this spell is cast, shards of ice smash down on all creatures in the area of effect, doing 2d8 points of cold damage. The ice storm continues for four rounds, doing the same amount of damage at the beginning of each subsequent round."
+
+@22="3 turns" // must exactly match duration text for IWD Spirit Armor
+@23="2 hours"
+
+@24="This spell requires a moderate amount of concentration by the caster, so the priest cannot cast any spells for the chant's duration, and <PRO_HISHER> movement is slowed by half." // must exactly match the final sentence of the IWD chant description
+@25="This spell requires a moderate amount of concentration by the caster, so the priest's movement is slowed by half." 
+
+@26="Slow Poison
+(Necromancy)
+
+Level: 2
+Sphere: Healing
+Range: Touch
+Duration: Instant
+Casting Time: 1
+Area of Effect: 1 creature
+Saving Throw: None
+
+When this spell is placed upon a poisoned individual, it slows the effects of venom. This spell does not neutralize the poison; instead, it just slows it down enough for the recipient to get real healing at a temple or from <PRO_HISHER> party's priest, or for the poison to naturally fade from the recipient's system.
+
+This spell also cures intoxication."
+
+@27="Larloch's Minor Drain
+(Necromancy)
+
+Level: 1
+Range: Visual range of the caster
+Duration: Instant
+Casting Time: 1
+Area of Effect: 1 creature
+Saving Throw: None
+
+With this spell, the wizard drains the life force from a target and adds it to <PRO_HISHER> own. The target creature suffers 1d4 magic damage, while the wizard gains 1d4 Hit Points. This increases by 1d4 per two levels above first level, to a maximum of 5d4 at 9th level. If the wizard goes over <PRO_HISHER> maximum Hit Point total with this spell, <PRO_HESHE> loses them after 1 turn. This spell has no effect on constructs or undead."
+
+
+@30="priest"
+@31="wizard"
+@32="Casting time:"
+// String 33 must exactly match the description of the Symbol of Pain spell in IWDEE
+@33="All enemies within 15 ft. of the symbol of pain at the moment it is invoked must make a Save vs. Spell. Those who fail their Saving Throws are overwhelmed by pain, suffering a -4 penalty to their attack rolls, a -2 penalty to their Dexterity scores, and a -2 penalty to their Armor Class."
+@34="All enemies within 15 ft. of the symbol of pain at the moment it is invoked are overwhelmed by pain, suffering a -4 penalty to their attack rolls, a -2 penalty to their Dexterity scores, and a -2 penalty to their Armor Class."
+// string 35 must exactly match the saving throw line for the Symbol of Pain spell in IWDEE
+@35="Saving Throw: Neg."
+@36="Saving Throw: None"
+@37="Sphere:"
+@38="Level:"
+
+
+
+// 39 is verbatim copy of first few words of BG2EE Lower Resistance description
+@39="When cast upon a target creature"
+@40="When cast upon a target creature, this spell will lower the Magic Resistance of this creature by 30% + 1% per level of the caster. There is no Saving Throw, and the target's Magic Resistance, if any, does not affect this spell. For example, if a creature has 60% Magic Resistance and this spell is cast on it by a 15th-level Mage, then the target's Magic Resistance would be lowered by 45% automatically. This effect is cumulative for each casting of this spell: If Lower Resistance was cast upon the same creature again, the creature's Magic Resistance would be 60% - 45% (initial casting) - 45% (current casting), which would leave the creature with 0% Magic Resistance (the level cannot drop below 0%). This spell will last until its duration expires and cannot be dispelled."
+
+@43="2 levels of experience" // must be a substring of Energy Drain description
+@44="5 levels of experience"
+@45="Five Levels Drained"
+@46="Iron Body
+(Alteration)
+
+Level: 8
+Range: 0
+Duration: 2 turns
+Casting Time: 8
+Area of Effect: The caster
+Saving Throw: None
+
+This spell transforms the caster's body into living iron, granting <PRO_HIMHER> several powerful resistances and abilities. While the spell is in effect, the caster is 100% resistant to electricity and poison, 50% resistant to fire and acid, and 75% resistant to physical damage (though the latter cannot be further improved by other effects). Spells that affect respiration or the physiology of the caster are ignored. In addition, the caster's Strength is raised to 25, and the caster can attack twice per round with iron fists for 2d4 points of damage plus appropriate Strength bonuses.
+
+Unfortunately, the caster's movement becomes slow and awkward, setting <PRO_HISHER> movement rate to 25% of <PRO_HISHER> normal, and <PRO_HISHER> spellcasting becomes more sluggish, imposing a -2 penalty on casting times. The spell ends immediately if the caster is affected by any kind of polymorph effect."
+
+@47="1 turn/level" // must exactly match string in description of BG2 Strength
+@48="1 hour/level"
+
+@50="Death Spell
+(Necromancy)
+
+Level: 6
+Range: Visual range of the caster
+Duration: Instant
+Casting Time: 6
+Area of Effect: 15-ft. radius
+Saving Throw: None
+
+When a Death Spell is cast, it snuffs out the life force of creatures within the area of effect with 8 hit dice or fewer, instantly and irrevocably. Summoned creatures are especially vulnerable and die if they have 12 hit dice or fewer. Only enemies are affected by this spell."
+
+@120="(Abjuration)"
+@121="(Alteration)"
+@122="(Abjuration,Alteration)"
+@123="(Conjuration/Summoning)"
+@124="(Enchantment/Charm)"
+@125="(Divination)"
+@126="(Evocation)"
+@127="(Alteration,Evocation)"

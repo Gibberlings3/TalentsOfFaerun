@@ -1,0 +1,15 @@
+id								resref						type			name:i	desc:i	select_desc	prerequisite		max_count:i	require_1		require_2		require_3	require_4	require_5	exclude_kit							alignment		exclude_hla 			special			special_string		checks
+MONK_SHADOWLESS_KICK			TG#BL09						grant			3068	3069	overlay		*					20			MONK			*				*			*			*			*									*				*						edit			*					*
+MONK_DRAGON_FIST				TG#BL03						grant			3070	3071	overlay		MONK_SHADOWLESS_KICK	20		MONK			*				*			*			*			*									*				*						edit			*					*
+MONK_TIGER_STRIKE				TG#TIGS						grant			3072	3073	overlay		MONK_DRAGON_FIST	1			MONK			*				*			*			*			*									*				*						edit			*					*
+MONK_FINGER_OF_DESTRUCTION		TG#FINP						grant			3074	3075	overlay		MONK_DRAGON_FIST	1			MONK			*				*			*			*			*									not_good		MONK_SECOND_WIND		edit			*					*
+MONK_FASTER_THAN_THE_EYE		TG#FAST						grant			3088	3089	overlay		*					20			MONK			*				*			*			*			*									*				*						*				*					*
+MONK_INNER_TIME					TG#INTI						grant			3076	3077	overlay		MONK_FASTER_THAN_THE_EYE	1	MONK			*				*			*			*			*									*				*						*				*					*
+MONK_DIAMOND_SOUL				TG#DIAM						apply			3078	3079	*			*					1			MONK			*				*			*			*			*									*				*						edit			*					*
+MONK_REGENERATION				TG#REGE						apply			3080	3081	*			MONK_DIAMOND_SOUL	5			MONK			*				*			*			*			*									*				*						*				*					*
+MONK_SECOND_WIND				TG#SECW						apply			3090	3091	*			MONK_REGENERATION	1			MONK			*				*			*			*			*									not_evil		MONK_FINGER_OF_DESTRUCTION	edit		*					*
+MONK_CHANT						TG#CHNT						grant			3092	3093	overlay		MONK_DIAMOND_SOUL	20			MONK			*				*			*			*			*									*				*						edit			*					*
+MONK_ETHEREAL					TG#ETHE						grant			3094	3095	overlay		MONK_DIAMOND_SOUL	1			MONK			*				*			*			*			*									*				*						edit			*					*
+MONK_DISPLACEMENT				TG#DISP						apply			3096	3097	*			MONK_ETHEREAL		1			MONK			*				*			*			*			*									*				*						edit			*					*
+SUN_SOUL_SEARING_FISTS			spl_hla_searing_fists		apply			3098	3099	*			*					1			SUN_SOUL		*				*			*			*			*									*				*						*				*					*
+DARK_MOON_SOUL_OF_ICE			spl_hla_soul_of_ice			apply			3100	3101	*			*					1			DARK_MOON		*				*			*			*			*									*				*						copy[spdm105]|edit	*				*

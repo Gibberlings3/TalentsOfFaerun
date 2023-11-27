@@ -1,0 +1,86 @@
+DEFINE_ACTION_FUNCTION kit_cr BEGIN
+
+	LAF include STR_VAR file=symbol_stronghold.tph locbase=shared END
+	LAF include STR_VAR file=cleric_dialog_adjusts.tph END
+	LAF include STR_VAR file=multiclass.tph locbase=shared END
+	LAF run STR_VAR file=cleric_rangers_use_bows locbase=shared END
+	LAF include STR_VAR file=prof_tools.tph locbase=prof END
+
+
+	// shared druid data
+	
+	LAF include STR_VAR file=druid_shared.tph locbase=shared END	
+	LAF get_cleric_to_druid_string RET c_to_d_apply_string c_to_d_grant_string END
+
+
+	LAF check_label STR_VAR label=dw-druid_multiclass RET value END
+	ACTION_IF value BEGIN
+		LAF include STR_VAR file="druid_ranger.tph" location=kits END
+		OUTER_SPRINT replace_positive "OR()Class(\1,\2)"
+		OUTER_SPRINT replace_negative "Class(\1,\2)"
+		OUTER_SET replace_needed=0
+		ACTION_FOR_EACH dr IN
+			night_wolf
+		BEGIN
+			LAF check_ini STR_VAR ini="%dr%" RET value END
+			ACTION_IF is_iwd BEGIN
+				LAF check_ini INT_VAR silent=1 STR_VAR ini="iwd_story_block_%dr%" RET story_block=value END
+			END ELSE BEGIN
+				LAF check_ini INT_VAR silent=1 STR_VAR ini="bg_story_block_%dr%" RET story_block=value END		
+			END	
+			ACTION_IF value && !story_block BEGIN
+				LAF "%dr%" RET this_kit=kit END
+			END
+		END
+	END
+		
+
+	ACTION_FOR_EACH cr IN
+		nightstalker_of_malar
+		forester_of_baervan
+		hunter_of_selune
+		scout_of_corellon
+	BEGIN
+		LAF check_ini STR_VAR ini="%cr%" RET value END
+		ACTION_IF is_iwd BEGIN
+			LAF check_ini INT_VAR silent=1 STR_VAR ini="iwd_story_block_%cr%" RET story_block=value END
+		END ELSE BEGIN
+			LAF check_ini INT_VAR silent=1 STR_VAR ini="bg_story_block_%cr%" RET story_block=value END		
+		END
+		ACTION_IF value && !story_block BEGIN
+			OUTER_PATCH "%cr%" BEGIN
+				REPLACE_EVALUATE "of_\(.*\)" BEGIN
+					SPRINT god "%MATCH1%"
+				END
+				""
+			END
+			LAF include STR_VAR file="%god%.tph" location=kits END
+			LAF "%cr%" END
+		END
+	END
+
+
+	// update the kit-identification LUA
+	LAF ui_detect_class_kit END
+
+
+
+
+	// externalize proficiencies
+	LAF externalize_weapprof END
+	
+	// process scroll usability
+	LAF process_scroll_usability_now END
+
+	// if appropriate, rebuild dual-class grid
+	
+	ACTION_IF FILE_EXISTS_IN_GAME "m_dw_dud.lua" BEGIN
+		LAF collect_dual_class_kit_data END
+	END
+
+	
+	// NPCs
+	
+	LAF run STR_VAR file=npc_kits END
+
+END

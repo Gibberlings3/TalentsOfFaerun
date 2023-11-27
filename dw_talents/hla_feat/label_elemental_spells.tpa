@@ -1,0 +1,91 @@
+// just cosmetically adjusts the descriptions
+
+DEFINE_ACTION_FUNCTION label_elemental_spells BEGIN
+	LAF check_label STR_VAR label="dw#elementalist_spell_lists" RET elem=value END
+	LAF check_label STR_VAR label="dw-force_mage" RET force=value END
+	ACTION_IF elem || force BEGIN
+
+		INCLUDE "%MOD_FOLDER%/lua/ui_spell_system_elemental.tph"
+
+		// load in the strings 'Earth', 'Air', 'Fire', 'Water'
+		
+		WITH_TRA "%MOD_FOLDER%/lua/lang/english/sfo_lua.tra" "%MOD_FOLDER%/lua/lang/%LANGUAGE%/sfo_lua.tra" BEGIN
+			OUTER_SPRINT earth_string @32
+			OUTER_SPRINT earth_fire_string @37
+			OUTER_SPRINT air_water_string @38
+			OUTER_SPRINT air_string @31
+			OUTER_SPRINT fire_string @33
+			OUTER_SPRINT water_string @34
+			OUTER_SPRINT force_string @35
+			OUTER_SPRINT all_string @36
+		END
+
+		// load in HLAS
+		
+		LAF 2da_read STR_VAR path="%data_loc_shared%" file="dw_feat_data.2da" RET_ARRAY hla_array=array END
+	END
+	
+	// elemental effects
+	
+	ACTION_IF elem BEGIN
+	
+		ACTION_DEFINE_ASSOCIATIVE_ARRAY elem_hlas BEGIN
+			DRAGONS_BREATH=>fire
+			COMET=>earth_fire
+			ADAMANTITE_BODY=>earth
+			ELEMENTAL_SWARM_EARTH=>earth
+			ELEMENTAL_SWARM_AIR=>air
+			ELEMENTAL_SWARM_FIRE=>fire
+			ELEMENTAL_SWARM_WATER=>water
+			ELEMENTAL_PRINCE_EARTH=>earth
+			ELEMENTAL_PRINCE_AIR=>air
+			ELEMENTAL_PRINCE_FIRE=>fire
+			ELEMENTAL_PRINCE_WATER=>water
+			MALAVONS_FURY=>earth
+			BLOOD_TO_ICE=>water
+			THUNDERSTORM=>air_water
+		END
+		
+		ACTION_PHP_EACH elem_hlas AS id_short=>elem_short BEGIN
+			OUTER_SPRINT id "WIZARD_%id_short%"
+			OUTER_SPRINT elem "%elem_short%_string"
+			ACTION_IF VARIABLE_IS_SET $hla_array("%id%" "RESREF") BEGIN
+				OUTER_SPRINT spell $hla_array("%id%" "RESREF")
+				ACTION_IF FILE_EXISTS_IN_GAME "%spell%.spl" BEGIN // just a sanity check, should never fail
+					OUTER_SPRINT elem_string EVAL "%%elem%%"
+					LAF add_elem_spell_desc STR_VAR elem_string spell END
+				END
+			END
+		
+		END
+	END
+
+
+	ACTION_IF force BEGIN
+	
+		ACTION_FOR_EACH id_short IN AEGIS ENERGY_BLADES BEGIN
+			OUTER_SPRINT id "WIZARD_%id_short%"
+			ACTION_IF VARIABLE_IS_SET $hla_array("%id%") BEGIN
+				OUTER_SPRINT spell $hla_array("%id%")
+				ACTION_IF FILE_EXISTS_IN_GAME "%spell%.spl" BEGIN // just a sanity check, should never fail
+					LAF add_elem_spell_desc STR_VAR elem_string="%force_string%" spell END
+				
+				END
+			END
+			
+		
+		
+		
+		END
+	
+	
+	END
+
+
+
+
+
+
+
+
+END

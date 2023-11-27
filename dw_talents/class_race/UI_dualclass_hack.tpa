@@ -1,0 +1,110 @@
+/* 
+
+hack the dual-class system to allow characters with non-core races to dual-class
+
+*/
+
+
+
+
+DEFINE_ACTION_FUNCTION UI_dualclass_hack  BEGIN
+
+// we need the subrace functions
+
+
+
+
+
+// parse racetext.2da to find new races
+
+	COPY_EXISTING "racetext.2da" "%workspace%"
+		COUNT_2DA_COLS colcount
+		READ_2DA_ENTRIES_NOW racetext_data colcount
+		FOR (row=0;row<racetext_data;++row) BEGIN
+			READ_2DA_ENTRY_FORMER racetext_data row 1 race_id
+			PATCH_IF race_id>7 BEGIN
+				SET $new_race("%race_id%")=1
+			END
+		END
+
+
+
+// spells required
+
+CREATE spl dwdcbase
+
+COPY_EXISTING dwdcbase.spl override
+	LPF add_basic_spell_ability END
+	PHP_EACH new_race AS r=>discard BEGIN
+		SPRINT resource "dwdcr%r%"
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 parameter1=r parameter2=104 STR_VAR resource END
+		INNER_ACTION BEGIN
+			CREATE spl "%resource%"
+				LPF add_basic_spell_ability END
+				LPF ADD_SPELL_EFFECT INT_VAR opcode=72 target=2 timing=4 duration=1 parameter1=r parameter2=2 END
+		END
+	END
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=72 target=2 timing=1 parameter1=1 parameter2=2 END
+
+
+
+COPY ".../stratagems-inline/dualclass_hack_functions.lua" "override/m_dw_dch.lua"
+
+COPY_EXISTING "ui.menu" override
+	REPLACE_TEXTUALLY ~clickable	lua "characterScreen:IsDualClassButtonClickable()"~ ~clickable lua "dwDualclassClickable()"~
+	REPLACE_TEXTUALLY ~popup2Button('DUALCLASS_CONFIRMATION'~ ~dwDualclassRaceChange()%WNL%popup2Button('DUALCLASS_CONFIRMATION'~
+BUT_ONLY
+
+
+END
+
+<<<<<<<< .../stratagems-inline/dualclass_hack_functions.lua
+
+function dwDualclassRaceChange()
+
+	C:Eval('ApplySpellRES("dwdcbase",Player1)')
+	C:Eval('ApplySpellRES("dwdcbase",Player2)')
+	C:Eval('ApplySpellRES("dwdcbase",Player3)')
+	C:Eval('ApplySpellRES("dwdcbase",Player4)')
+	C:Eval('ApplySpellRES("dwdcbase",Player5)')
+	C:Eval('ApplySpellRES("dwdcbase",Player6)')
+
+
+end
+
+function dwDualclassClickable()
+
+	c,_=dwFindClassKit()
+	if c==0 then
+		return nil
+	end
+	myrace=dwFindSubraceData(characters[currentID])
+	if myrace.finalrace<8 then
+		return characterScreen:IsDualClassButtonClickable()
+	end
+	if (characters[currentID].classlevel.second) then
+		return false
+	end
+	details=characters[currentID].classlevel.first.details
+	class=dwClassDetailsHelper(details).class
+	level=dwClassDetailsHelper(details).level
+	if (level<2) then
+		return false
+	end
+	return true
+
+end
+
+
+function dwClassDetailsHelper(details)
+
+	i,j = string.find(details,"%a+:")
+	c=string.sub(details,i,j-1)
+	i,j=string.find(details,"%d+")
+	l=tonumber(string.sub(details,i,j))
+	return {class=c,level=l}
+
+end
+
+>>>>>>>>
+

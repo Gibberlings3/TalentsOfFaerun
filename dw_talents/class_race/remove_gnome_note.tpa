@@ -1,0 +1,23 @@
+DEFINE_ACTION_FUNCTION remove_gnome_note BEGIN
+
+  LAF check_label STR_VAR label="dw#remove_gnome_note" RET value END
+  ACTION_IF !value BEGIN
+
+	LAF make_label STR_VAR label="dw#remove_gnome_note" END
+	WITH_TRA "%scs_tra_loc%/english/multiclass_specialists.tra" "%scs_tra_loc%/%LANGUAGE%/multiclass_specialists.tra" BEGIN
+		OUTER_SPRINT gnome_start @21
+	END
+	
+	LAF 2da_read STR_VAR file=clastext.2da RET_ARRAY clastext_array=array END
+	ACTION_FOR_EACH mc IN FIGHTER_MAGE CLERIC_MAGE MAGE_THIEF FIGHTER_MAGE_THIEF FIGHTER_MAGE_CLERIC BEGIN
+		OUTER_SET strref=$clastext_array("%mc%" "DESCSTR")
+		strref.patch[strref][
+			REPLACE_TEXTUALLY "%gnome_start%.*" ""
+		]
+	END
+	
+  END
+
+
+
+END

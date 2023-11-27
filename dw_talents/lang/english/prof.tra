@@ -1,0 +1,3 @@
+
+@400="Favored Weapon: "
+@401="Advantages:" // must exactly match the usual string from kit descriptions

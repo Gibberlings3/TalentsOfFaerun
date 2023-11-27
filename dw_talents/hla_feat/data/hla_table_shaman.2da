@@ -1,0 +1,5 @@
+id								resref						type			name:i	desc:i	select_desc	prerequisite		max_count:i	require_1		require_2		require_3	require_4	require_5	exclude_kit							alignment		exclude_hla 			special			special_string		checks
+SHAMAN_SPIRIT_FORM				SHAMAN_SPIRIT_FORM			grant			-1		-1		overlay		*					1			SHAMAN			*				*			*			*			*									*				*						*				*					*
+SHAMAN_FAVORED_OF_THE_SPIRITS	SHAMAN_FAVORED_OF_THE_SPIRITS	grant		-1		-1		overlay		*					1			SHAMAN			*				*			*			*			*									*				*						*				*					*
+CLERIC_ETHEREAL_RETRIBUTION		spl_hla_ethereal_retribution grant			-1		-1		overlay		*					1			SHAMAN			*				*			*			*			*									*				*						copy[sppr751]|edit	*				*
+TOTEMIC_SPIRIT_BEAR				spl_hla_spirit_bear			 grant			3302	3303	overlay		*					1			TOTEMIC_DRUID	*				*			*			*			*									*				*						*				*					*

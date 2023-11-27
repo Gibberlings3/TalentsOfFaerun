@@ -1,0 +1,224 @@
+DEFINE_ACTION_FUNCTION kossuth_cleric BEGIN
+
+    LAF kossuth_shared END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_COMBUST%" new_type=innate RET spl_kossuth_combust=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_FIREBALL%" new_type=innate RET spl_kossuth_fireball=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_FIRE_SHIELD_RED%" new_type=innate RET spl_kossuth_fire_shield=new_resref END
+	OUTER_SPRINT kit DW_KOSSUTH_CLERIC
+	
+	
+	kit.copy[CLERIC=>%kit%]
+	[
+		k_name:=@78
+		k_desc:=@79
+		k.kit_apply_powers{%spl_kossuth_fire_resistance_base% 1,%spl_kossuth_fire_resistance_extra% 2 1}
+		k.kit_grant_powers{%spl_kossuth_combust% 3 6,%spl_kossuth_fireball% 5 6,%spl_kossuth_fire_shield% 7 6,%spl_kossuth_conjure_elemental% 9}
+		k_color_metal=35
+		k_color_minor_cloth=46
+		k_color_main_cloth=47
+		k_color_leather=25
+		k_color_armor=80	
+		IF {is_iwd} {{k_bio:=@1003}}
+	]
+	
+	LAF cleric_kit_substitutions STR_VAR kit god=kossuth END
+
+	LAF assign_spheres STR_VAR kit default=cleric subtract="evil necromantic good summoning" add="fire sun" END
+	LAF holy_symbol INT_VAR name=2025 follower=2026 STR_VAR kit desc_bam=a#ikos25 inv_bam=a#pkos25 bam_path=dr kit END
+	LAF adjust_cleric_stronghold STR_VAR lathander="l_g n_g c_g" helm="l_n n_n" talos="c_n l_e n_e c_e" kit END
+	LAF assign_bonus_spells STR_VAR kit spells="BURNING_HANDS" END
+ 
+ 
+END
+
+DEFINE_ACTION_FUNCTION raging_flame_of_kossuth BEGIN
+
+    LAF kossuth_shared END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_COMBUST%" new_type=innate RET spl_kossuth_combust=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_FIREBALL%" new_type=innate RET spl_kossuth_fireball=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_FIRE_SHIELD_RED%" new_type=innate RET spl_kossuth_fire_shield=new_resref END
+
+	OUTER_SPRINT kit DW_KOSSUTH_RAGING_FLAME
+	
+	kit.copy[FIGHTER_CLERIC=>%kit%]
+	[
+		k_name:=@163
+		LPF adjust_rage_descriptions INT_VAR tra_ref=164 RET k_desc=desc END
+		k.kit_apply_powers{%spl_kossuth_fire_resistance_base% 1,%spl_kossuth_fire_resistance_extra% 2 1|class=cleric}
+		k.kit_grant_powers{%spl_kossuth_combust% 3 6,%spl_kossuth_fireball% 5 6,%spl_kossuth_fire_shield% 7 6,%spl_kossuth_conjure_elemental% 9|class=cleric}
+		k.kit_grant_powers{%BERSERKER_RAGE% 1 5|class=fighter}
+		k_color_metal=35
+		k_color_minor_cloth=46
+		k_color_main_cloth=47
+		k_color_leather=25
+		k_color_armor=80	
+		k_sling=0
+		k.kit_match_usability{berserker}
+		k.kit_set_alignment{ng cg nn cn ne ce}
+		IF {is_iwd} {{k_bio:=@1003}}
+	]
+
+	LAF cleric_kit_substitutions STR_VAR kit god=kossuth END
+	LAF assign_spheres STR_VAR kit default=cleric subtract="evil necromantic good summoning" add="fire sun" END
+	LAF holy_symbol INT_VAR name=2025 follower=2026 STR_VAR kit desc_bam=a#ikos25 inv_bam=a#pkos25 bam_path=dr kit END
+	LAF adjust_cleric_stronghold STR_VAR lathander="l_g n_g c_g" helm="l_n n_n" talos="c_n l_e n_e c_e" kit END
+	LAF assign_bonus_spells STR_VAR kit spells="BURNING_HANDS" END
+	LAF set_multiclass_components STR_VAR kit components="berserker dw_kossuth_cleric"  END
+ 
+ 
+END
+
+DEFINE_ACTION_FUNCTION fire_elementalist_of_kossuth BEGIN
+
+    LAF kossuth_shared END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_COMBUST%" new_type=innate RET spl_kossuth_combust=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_FIREBALL%" new_type=innate RET spl_kossuth_fireball=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_FIRE_SHIELD_RED%" new_type=innate RET spl_kossuth_fire_shield=new_resref END
+
+	OUTER_SPRINT kit DW_KOSSUTH_FIRE_ELEMENTALIST
+
+	kit.copy[CLERIC_MAGE=>%kit%]
+	[
+		k_name:=@136
+		LPF resolve_elem_desc INT_VAR tra_ref=137 STR_VAR swap="%water_names%" RET k_desc=strref END
+		k.kit_apply_powers{%spl_elementalist_fire_innate% 1|class=mage}
+		k.kit_apply_powers{%spl_kossuth_fire_resistance_base% 1,%spl_kossuth_fire_resistance_extra% 2 1|class=cleric}
+		k.kit_grant_powers{%spl_kossuth_combust% 3 6,%spl_kossuth_fireball% 5 6,%spl_kossuth_fire_shield% 7 6,%spl_kossuth_conjure_elemental% 9|class=cleric}
+		k_color_minor_cloth=46
+		k_color_main_cloth=47
+		IF {is_iwd} {{k_bio:=@1003}}
+	]
+	
+	LAF cleric_kit_substitutions STR_VAR kit god=kossuth END
+
+	LAF assign_spheres INT_VAR update_scroll_usability=0 STR_VAR kit default=cleric subtract="evil necromantic good summoning" add="fire sun" END
+
+	LAF assign_bonus_spells STR_VAR kit spells="BURNING_HANDS" class=cleric END
+	
+	LAF set_elem_spells INT_VAR school_tra=9 school_tra2=10 STR_VAR kit elem_spec=fire elem_block=water tra=elementalist END
+	LAF bonus_spells_from_list STR_VAR kit path="%MOD_FOLDER%/class_race/bonus_spell_lists/fire.txt" class=mage END
+	LAF set_spell_learn_modifiers STR_VAR kit modifiers="mage_fire=25, mage_fire_shared=25, mage_air=15, mage_earth=15, default=-15" END
+
+	LAF holy_symbol INT_VAR name=2025 follower=2026 STR_VAR kit desc_bam=a#ikos25 inv_bam=a#pkos25 bam_path=dr kit END
+	LAF adjust_cleric_stronghold STR_VAR lathander="l_g n_g c_g" helm="l_n n_n" talos="c_n l_e n_e c_e" kit END
+
+	LAF set_multiclass_components STR_VAR kit components="DW_KOSSUTH_CLERIC DW_ELEMENTALIST_FIRE"  END
+
+ 
+ 
+END
+
+DEFINE_ACTION_FUNCTION kossuth_favored_soul BEGIN
+
+
+	LAF kossuth_shared END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_COMBUST%" new_type=innate RET spl_kossuth_combust=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_FIREBALL%" new_type=innate RET spl_kossuth_fireball=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_FIRE_SHIELD_RED%" new_type=innate RET spl_kossuth_fire_shield=new_resref END
+
+	// make the main kit
+	
+	OUTER_SPRINT kit "DW_KOSSUTH_FAVORED"
+	
+	LAF build_favored_soul_kit INT_VAR name=4075 desc=4076 god=4078 god_gender=4005 god_temple=4077 STR_VAR kit copy_from=DW_KOSSUTH_CLERIC END
+	LAF cleric_kit_substitutions STR_VAR kit god=kossuth END
+
+	kit.edit[%kit%|edit_strrefs_in_place:i=1]
+	[
+		k.kit_apply_powers{%spl_kossuth_fire_resistance_base% 1,%spl_kossuth_fire_resistance_extra% 2 1}
+		k.kit_grant_powers{%spl_kossuth_combust% 3 6,%spl_kossuth_fireball% 5 6,%spl_kossuth_fire_shield% 7 6,%spl_kossuth_conjure_elemental% 9}
+	]
+
+	// spell choices
+
+	LAF assign_bonus_spells STR_VAR kit spells="WIZARD_BURNING_HANDS CLERIC_FLAME_BLADE CLERIC_PROTECTION_FROM_FIRE CLERIC_PRODUCE_FIRE CLERIC_FLAME_STRIKE CLERIC_SOL_SEARING_ORB CLERIC_FIRE_STORM" END
+
+
+END
+
+
+
+DEFINE_ACTION_FUNCTION kossuth_shared BEGIN
+
+	LAF include STR_VAR file=log_favored_weapon.tph locbase=shared END
+	LAF log_favored_weapon STR_VAR god=KOSSUTH weapon=flailmorningstar END
+
+	
+   LAF check_label STR_VAR label=dw#kossuth_shared RET value END
+   ACTION_IF !value BEGIN
+   
+		LAF make_label STR_VAR label=dw#kossuth_shared END
+		
+		// fire resistance
+		
+		spl.make[%spl_kossuth_fire_resistance_base%]
+		[
+			m.ab.add{}
+			m.ab_fx.add{s_opcode=30 s_target=2 s_timing=9 s_parameter1=25 s_parameter2=1}
+			m.ab_fx.add{s_opcode=142 s_target=2 s_timing=9 s_parameter2=16}
+		]
+
+		spl.make[%spl_kossuth_fire_resistance_extra%]
+		[
+			m.ab.add{}
+			m.ab_fx.add{s_opcode=30 s_target=2 s_timing=9 s_parameter1=2 s_parameter2=0}
+		]
+		
+		// fire elemental summoning
+		
+		spl.copy[%CLERIC_CONJURE_FIRE_ELEMENTAL%=>%spl_kossuth_conjure_elemental%]
+		[
+			m_type:=innate
+			m_unusable_cleric=0
+			m_unusable_druid=0
+			m.ab.alter{icon=4}
+			m_description:=@1032
+			m_name:=@1031
+		]
+		ACTION_IF is_iwd BEGIN		
+			OUTER_SPRINT 8hd_elemental es8fire
+			OUTER_SPRINT 12hd_elemental es12fire
+			OUTER_SPRINT 16hd_elemental es16fire
+			OUTER_SPRINT 24hd_elemental es24fire
+		END ELSE BEGIN
+			OUTER_SPRINT 8hd_elemental elfirsu1
+			OUTER_SPRINT 12hd_elemental elfirsu2
+			OUTER_SPRINT 16hd_elemental elfirsu3
+			OUTER_SPRINT 24hd_elemental elfirsu4	
+		END
+			
+		LAF spl_resolve_smtables_entry STR_VAR name=DW_KOSSUTH_ELEMENTAL_8HD 2da="%2da_fire_elemental_kossuth_1%" RET table_kossuth_1=value END
+		LAF spl_resolve_smtables_entry STR_VAR name=DW_KOSSUTH_ELEMENTAL_12HD 2da="%2da_fire_elemental_kossuth_2%" RET table_kossuth_2=value END
+		LAF spl_resolve_smtables_entry STR_VAR name=DW_KOSSUTH_ELEMENTAL_16HD 2da="%2da_fire_elemental_kossuth_3%" RET table_kossuth_3=value END
+		LAF spl_resolve_smtables_entry STR_VAR name=DW_KOSSUTH_ELEMENTAL_24HD 2da="%2da_fire_elemental_kossuth_4%" RET table_kossuth_4=value END
+
+		LAF spl_generate_smtable STR_VAR 2da="%2da_fire_elemental_kossuth_1%" contents="%8hd_elemental%" hit_animation="MSumm1H" area_hit_animation="CFElemX" END
+		LAF spl_generate_smtable STR_VAR 2da="%2da_fire_elemental_kossuth_2%" contents="%12hd_elemental%" hit_animation="MSumm1H" area_hit_animation="CFElemX" END
+		LAF spl_generate_smtable STR_VAR 2da="%2da_fire_elemental_kossuth_3%" contents="%16hd_elemental%" hit_animation="MSumm1H" area_hit_animation="CFElemX" END
+		LAF spl_generate_smtable STR_VAR 2da="%2da_fire_elemental_kossuth_4%" contents="%24hd_elemental%" hit_animation="MSumm1H" area_hit_animation="CFElemX" END
+
+		DEFINE_PATCH_FUNCTION kossuth_temp STR_VAR arguments="" RET value BEGIN
+				
+				value = ( arguments<13? table_kossuth_1: ( arguments<17? table_kossuth_2: (arguments<21?table_kossuth_3:table_kossuth_4) ) )
+				
+		END
+			
+		spl.edit[%spl_kossuth_conjure_elemental%]
+		[
+				m.ab_fx.delete{}
+				m.ab.delete{s_level>1}
+			m.ab.clone{s_level=2+entry_index|number:i=is_iwd?29:19}
+			m.ab_fx.add{s_opcode=331 s_target=1 s_parameter1=1 s_dispel_resist=3 s_duration=60*p_level s_parameter2=( p_level<13? table_kossuth_1: ( p_level<17? table_kossuth_2: (p_level<21?table_kossuth_3:table_kossuth_4)))}
+		]
+			
+		// other innates
+		
+		LAF splconv STR_VAR spell="%WIZARD_COMBUST%" new_type=innate RET_ARRAY splconv_array END
+		LAF splconv STR_VAR spell="%WIZARD_FIREBALL%" new_type=innate RET_ARRAY splconv_array END
+		LAF splconv STR_VAR spell="%WIZARD_FIRE_SHIELD_RED%" new_type=innate RET_ARRAY splconv_array END
+
+
+	
+	END
+
+END

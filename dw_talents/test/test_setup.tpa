@@ -1,0 +1,22 @@
+DEFINE_ACTION_FUNCTION test_setup STR_VAR version=0 BEGIN
+
+	component_loc:==hla_feat
+	
+	LAF run STR_VAR file=wipe_hlas END
+	
+	
+	LAF ui_externalize_hlas END
+	
+	component_loc:==spell
+	WITH_TRA "%MOD_FOLDER%/lang/english/spell.tra" "%MOD_FOLDER%/lang/%LANGUAGE%/spell.tra" BEGIN
+		LAF run STR_VAR file=fiend_summoning END
+	END
+	component_loc:==fiend
+	INCLUDE "%MOD_FOLDER%/%component_loc%/friendly_fiends_core.tpa" 
+	WITH_TRA "%MOD_FOLDER%/lang/english/fiend.tra" "%MOD_FOLDER%/lang/%LANGUAGE%/fiend.tra" BEGIN
+		LAF friendly_fiends_core STR_VAR script_loc="fiend/script" tph_loc="fiend" END
+	END
+
+
+END
+

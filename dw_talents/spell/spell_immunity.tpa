@@ -1,0 +1,8 @@
+DEFINE_ACTION_FUNCTION spell_immunity BEGIN
+
+	ACTION_IF !enhanced_edition BEGIN
+		COPY_EXISTING "contingx.2da" override
+			REPLACE_TEXTUALLY "spwi510" "****    "
+	END
+
+END

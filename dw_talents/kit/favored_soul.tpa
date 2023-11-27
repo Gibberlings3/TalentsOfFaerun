@@ -1,0 +1,415 @@
+DEFINE_ACTION_FUNCTION favored_soul BEGIN
+
+	LAF include STR_VAR file=symbol_stronghold.tph locbase=shared END
+	LAF include STR_VAR file=cleric_dialog_adjusts.tph END
+	LAF include STR_VAR file=prof_tools.tph locbase=prof END
+
+	LAF cleric_dialog_adjusts_setup END
+	LAF run STR_VAR file= amalgamate_class_checks locbase=shared END//temporary
+	
+	// LAF label_original_classes END // do this now just as a timesaver for later components
+
+	
+	LAF find_shaman_spell_levels RET_ARRAY shaman_spell_levels END
+	LAF build_favored_soul_resistance_spells END
+
+	COPY_EXISTING "clsrcreq.2da" override
+		LPF 2da_read RET_ARRAY array END
+		PATCH_FOR_EACH class IN DWARF ELF GNOME HALFLING BEGIN
+			SET $array("SHAMAN" "%class%")=1
+		END
+		LPF 2da_write STR_VAR array default="0" END
+	BUT_ONLY
+
+	LAF add_virtual_class INT_VAR name=4000 desc=4001 STR_VAR ident="favored_soul" parent=SHAMAN END
+	LAF override_class_kit_menu INT_VAR virtual=1 title_tra=3991 STR_VAR class=favored_soul END
+	
+
+	ACTION_DEFINE_ASSOCIATIVE_ARRAY favored_soul_array BEGIN
+		auril=>DW_AURIL_CLERIC
+		tempus=>OHTEMPUS
+		talona=>DW_TALONA_CLERIC
+		lolth=>DW_LOLTH_CLERIC
+		corellon=>DW_CORELLON_CLERIC
+		gruumsh=>DW_GRUUMSH_CLERIC
+		kossuth=>DW_KOSSUTH_CLERIC
+		ilmater=>DW_ILMATER_CLERIC
+		oghma=>DW_OGHMA_CLERIC
+		mystra=>DW_MYSTRA_CLERIC
+		shar=>DW_SHAR_CLERIC
+		bane_xvim=>DW_BANE_XVIM_CLERIC
+		bhaal_cyric=>DW_BHAAL_CYRIC_CLERIC
+		myrkul_velsharoon=>DW_MYRKUL_VELSHAROON_CLERIC
+		sune=>DW_SUNE_CLERIC
+		moradin=>DW_MORADIN_CLERIC
+		tymora=>DW_TYMORA_CLERIC
+		mask=>DW_MASK_CLERIC
+		selune=>DW_SELUNE_CLERIC
+		baervan=>DW_BAERVAN_CLERIC
+		lathander=>LATHANDER
+		helm=>HELM
+		talos=>TALOS
+		tyr=>OHTYR
+	END
+	ACTION_PHP_EACH favored_soul_array AS god=>cleric BEGIN
+		ACTION_IF RESOURCE_CONTAINS "clastext.2da" "%cleric%" BEGIN
+			LAF include STR_VAR file="%god%.tph" location=kits END
+			LAF "%god%_favored_soul" END
+		END
+	END
+
+	// update the kit-identification LUA
+	LAF ui_detect_class_kit END
+
+	// generally deal with shaman detection
+	
+	LAF favored_soul_detection_general END
+	
+	// re-externalize proficiencies if appropriate
+	ACTION_IF FILE_EXISTS "%data_loc_shared%/weapprof.2da" BEGIN
+		LAF externalize_weapprof END
+	END
+
+	// process scroll usability
+	LAF process_scroll_usability_now END
+
+END
+
+
+DEFINE_ACTION_FUNCTION favored_soul_bonus_spells STR_VAR kit="" key="" spells="" RET_ARRAY clab_array BEGIN
+	OUTER_SPRINT level_string @3999
+	OUTER_SPRINT knows_string @3998
+	OUTER_SPRINT clabs ""
+	OUTER_SPRINT desc_spells ""
+	OUTER_SPRINT list "%spells%" 
+	OUTER_SET counter=0
+	OUTER_WHILE "%list%" STRING_COMPARE "" BEGIN
+		LAF return_first_entry STR_VAR list RET entry list END
+		ACTION_IF INDEX ("WIZARD_" "%entry%")>=0 BEGIN
+			LAF splconv STR_VAR spell="%entry%" new_type=priest RET entry=new_resref END
+		END
+		ACTION_IF VARIABLE_IS_SET "%entry%" BEGIN
+			OUTER_SPRINT resref EVAL "%%entry%%"
+		END ELSE BEGIN
+			OUTER_SPRINT resref "%entry%"
+		END
+		ACTION_IF FILE_EXISTS_IN_GAME "%resref%.spl" BEGIN
+			COPY_EXISTING "%resref%.spl" override
+				READ_LONG 0x34 level
+				READ_STRREF 0x8 name
+			BUT_ONLY
+			ACTION_IF "%desc_spells%" STRING_EQUAL "" BEGIN
+				OUTER_SPRINT desc_spells "%name% (%level_string% %level%)"
+			END ELSE BEGIN
+				OUTER_SPRINT desc_spells "%desc_spells%, %name% (%level_string% %level%)"
+			END
+			OUTER_SET caster_level=$shaman_spell_levels("%level%")
+			OUTER_SPRINT clabs "%clabs%, %resref% %caster_level%"
+			OUTER_SET ++counter
+		END ELSE BEGIN
+			LAF warning STR_VAR warning="Tried to add spell %resref% to favored soul spell list for %kit%, but there is no such spell" END
+		END
+	END
+	LAF define_spell_list INT_VAR silent=1 STR_VAR key spells END
+	LAF 2daq_extract STR_VAR resref=clastext row="%kit%" column=descstr RET desc_strref=value END
+	ACTION_GET_STRREF desc_strref desc
+	OUTER_PATCH_SAVE desc "%desc%" BEGIN
+		REPLACE_TEXTUALLY "BONUS_SPELLS_PLACEHOLDER" "%knows_string%%desc_spells%."
+	END
+	STRING_SET_EVALUATE desc_strref "%desc%"
+	kit.edit[%kit%]
+	[
+		k.kit_grant_powers{%clabs%}
+	]
+
+END
+
+DEFINE_ACTION_FUNCTION find_shaman_spell_levels RET_ARRAY shaman_spell_levels BEGIN
+
+	ACTION_CLEAR_ARRAY shaman_spell_levels
+	COPY_EXISTING "mxsplshm.2da" override
+		level_next=1
+		COUNT_2DA_COLS colcount
+		READ_2DA_ENTRIES_NOW shaman_data colcount
+		FOR (row=0;row<shaman_data;++row) BEGIN
+			READ_2DA_ENTRY_FORMER shaman_data row 0 this_level 
+			READ_2DA_ENTRY_FORMER shaman_data row level_next num_spells
+			PATCH_IF num_spells>0 BEGIN
+				SET $shaman_spell_levels("%level_next%")=this_level
+				++level_next
+				PATCH_IF level_next=8 BEGIN
+					SET row=shaman_data
+				END
+			END
+		END
+	BUT_ONLY
+
+END
+
+DEFINE_ACTION_FUNCTION build_favored_soul_kit INT_VAR god=0 name=0 desc=0 god_gender=0 god_temple=0 allow_neutral=0 override_bio="-1" STR_VAR kit="" favored_weapon="" copy_from="" BEGIN
+
+	LAF ds_resolve_stat STR_VAR id=DW_FAVORED_SOUL RET favored_soul_splstate=stat_ind END
+
+	// if needed, make marker spell
+	
+	ACTION_IF !FILE_EXISTS_IN_GAME "%spl_favored_soul_marker%.spl" BEGIN
+
+		spl.make[%spl_favored_soul_marker%]
+		[
+			m.ab.add{}
+			m.ab_fx.add{s_opcode=328 s_target=2 s_timing=9 s_parameter2=favored_soul_splstate s_special=1} 
+			m.ab_fx.add{s_opcode=144 s_target=2 s_timing=9 s_parameter2=10} // deactivate spirit dance
+		]
+	
+	END
+	
+	// get god
+	
+	OUTER_SPRINT god_id "not_found"
+	OUTER_PATCH "%kit%" BEGIN
+		REPLACE_EVALUATE "DW_\(.*\)_FAVORED" BEGIN
+			SPRINT god_id "%MATCH1%"
+		END
+		""
+	END
+	ACTION_IF "%god_id%" STRING_EQUAL "not_found" BEGIN
+		WARN "cannot find god_id for favored soul kit %kit%; probably it's not in the DW_[god]_FAVORED required canonical format."
+	END
+	
+	// get favored weapon
+	
+	ACTION_IF "%favored_weapon%" STRING_EQUAL "" BEGIN
+	COPY "%data_loc%/favored_weapons.2da" "%workspace%"
+		REPLACE_EVALUATE "%god_id%[ %TAB%]+\([^ %TAB%%WNL%%LNL%%MNL%]*\)" BEGIN
+			SPRINT favored_weapon "%MATCH1%"
+		END
+		""
+	END
+
+	// process favored weapon
+
+	LAF 2daq_extract STR_VAR resref=weapprof row="%favored_weapon%" column=NAME_REF RET weapon_name_strref=value END
+
+	ACTION_GET_STRREF weapon_name_strref weapon_name
+	OUTER_SPRINT desc (AT desc)
+	OUTER_PATCH_SAVE desc "%desc%" BEGIN
+		REPLACE_TEXTUALLY "FAVORED_WEAPON_PLACEHOLDER" "%weapon_name%"
+	END
+	
+	kit.copy[SHAMAN=>%kit%]
+	[
+		k_name:=(AT name)
+		k_desc:="%desc%"
+		k.kit_remove_powers{sppr150 sppr250 sppr350 sppr450 sppr550 sppr650 sppr750 spsh005 %spl_shaman_unusability_flag%}
+		k.kit_apply_powers{%spl_favored_soul_resistance_fire% 5,%spl_favored_soul_resistance_cold% 10,%spl_favored_soul_resistance_lightning% 15,%spl_favored_soul_resistance_acid% 20}
+		k_alignment:="0,0,0,0,0,0,0,0,0"
+		k_melee=1
+		k_ranged=1
+		k_scale_detect_illusion=0
+		k_initial_skill_detect_illusion=0
+		TO_LOWER favored_weapon
+		"k_%favored_weapon%"=2
+		PATCH_IF is_iwd BEGIN
+			PATCH_IF override_bio>=0 BEGIN
+				k_bio:=(AT override_bio)
+			END ELSE BEGIN
+				k_bio:=@3993
+				INNER_PATCH_SAVE k_bio "%k_bio%" BEGIN
+					REPLACE_TEXTUALLY GOD_NAME "%god_string%"
+					REPLACE_TEXTUALLY GOD_TEMPLE "%god_temple%"
+					REPLACE_TEXTUALLY GOD_HISHER "%god_gender%"					
+				END
+			END
+		END ELSE BEGIN
+			k_bio:=15884
+		END
+	]
+	
+	// racial restrictions, colors, alignment copied from cleric
+	
+	COPY_EXISTING "clsrcreq.2da" override
+		LPF 2da_read RET_ARRAY temp_array=array columns END
+		PHP_EACH columns AS col=>discard BEGIN
+			SET $temp_array("%kit%" "%col%")=$temp_array("%copy_from%" "%col%")
+		END
+		LPF 2da_write STR_VAR array=temp_array default="0" END		
+	BUT_ONLY
+
+	COPY_EXISTING "alignmnt.2da" override
+		LPF 2da_read RET_ARRAY temp_array=array columns END
+		PHP_EACH columns AS col=>discard BEGIN
+			SET $temp_array("%kit%" "%col%")=$temp_array("%copy_from%" "%col%")
+		END
+		PATCH_IF !allow_neutral BEGIN
+			SET $temp_array("%kit%" "N_N")=0
+		END
+		LPF 2da_write STR_VAR array=temp_array default="0" END	
+	BUT_ONLY
+
+	COPY_EXISTING "clascolr.2da" override
+		LPF 2da_read RET_ARRAY temp_array=array rows END
+		PHP_EACH rows AS row=>discard BEGIN
+			SET $temp_array("%row%" "%kit%")=$temp_array("%row%" "%copy_from%")
+		END
+		LPF 2da_write STR_VAR array=temp_array default="54" END		
+	BUT_ONLY
+	
+	// sort out chargen
+
+	LAF assign_kit_to_virtual_class STR_VAR kit class=favored_soul END
+
+	LAF override_chargen_kit_name INT_VAR override=god STR_VAR kit class=SHAMAN END
+
+	// turn off spirit and detect-illusions powers
+
+	LAF hide_ability_button_for_kit STR_VAR kit buttons="3=>SHAMANDANCE 4=>DETECTTRAPS" END
+	
+	// apply spheres
+	
+	LAF ui_read_spell_lists INT_VAR literal=0 STR_VAR kit="%copy_from%" RET priest block_priest END
+	LAF assign_spheres STR_VAR kit spheres="%priest%" block="%block_priest%" END
+	
+	// log for prof component
+	
+	LAF prof_redirect_kit_parent STR_VAR kit parent=FAVORED_SOUL END
+
+
+
+END
+
+DEFINE_ACTION_FUNCTION build_favored_soul_resistance_spells BEGIN
+
+	//fire
+
+	spl.make[%spl_favored_soul_resistance_fire%]
+	[
+		m_name:=@3994
+		m.ab.add{}
+		m.ab_fx.add{s_opcode=30 s_target=2 s_timing=9 s_parameter1=25}
+		m.ab_fx.add{s_opcode=142 s_target=2 s_timing=9 s_parameter2=16}
+	]
+
+	//cold
+	spl.make[%spl_favored_soul_resistance_cold%]
+	[
+		m_name:=@3996
+		m.ab.add{}
+		m.ab_fx.add{s_opcode=28 s_target=2 s_timing=9 s_parameter1=25}
+		m.ab_fx.add{s_opcode=142 s_target=2 s_timing=9 s_parameter2=25}
+	]
+
+	//electricity
+	spl.make[%spl_favored_soul_resistance_lightning%]
+	[
+		m_name:=@3995
+		m.ab.add{}
+		m.ab_fx.add{s_opcode=29 s_target=2 s_timing=9 s_parameter1=25}
+		m.ab_fx.add{s_opcode=142 s_target=2 s_timing=9 s_parameter2=27}
+	]
+
+	//acid
+	spl.make[%spl_favored_soul_resistance_acid%]
+	[
+		m_name:=@3997
+		m.ab.add{}
+		m.ab_fx.add{s_opcode=27 s_target=2 s_timing=9 s_parameter1=25}
+		m.ab_fx.add{s_opcode=142 s_target=2 s_timing=9 s_parameter2=24}
+	]
+
+
+
+END
+
+
+DEFINE_ACTION_FUNCTION favored_soul_detection_general BEGIN
+
+	LAF run STR_VAR file= amalgamate_class_checks locbase=shared END
+
+	LAF ds_resolve_stat STR_VAR id=DW_FAVORED_SOUL RET favored_soul_splstate=stat_ind END
+
+	// alter dialog and scripts to detect FSs properly
+	
+	// exclude a few 'druid, not shaman' entries
+	
+	ACTION_IF is_bg2 BEGIN
+		ACTION_FOR_EACH script IN baldur genshy BEGIN
+			ACTION_TO_LOWER script
+			OUTER_SPRINT $shaman_script_exclude("%script%") ""
+		END
+		ACTION_FOR_EACH dialog IN brus2 cechalle cedruid1 cefaldor cernd25a cernd trgrd03 neeraj BEGIN
+			ACTION_TO_LOWER dialog
+			OUTER_SPRINT $shaman_dialog_exclude("%dialog%") ""
+		END
+	
+	END
+	
+	// fast finder for 'Class'
+	
+	ACTION_CLEAR_ARRAY shaman_scripts
+	ACTION_CLEAR_ARRAY shaman_dialogs
+	COPY_EXISTING_REGEXP - ".*\.bcs" nowhere 
+		PATCH_MATCH "%SOURCE_RES%" WITH baldur genshy BEGIN // exclude a few 'druid, not shaman' entries
+		END
+		DEFAULT
+			PATCH_IF INDEX_BUFFER (16396)>=0 BEGIN
+				SPRINT $shaman_scripts("%SOURCE_RES%") ""
+			END
+		END
+	COPY_EXISTING_REGEXP - ".*\.dlg" nowhere 
+		PATCH_MATCH "%SOURCE_RES%" WITH brus2 cechalle cedruid1 cefaldor cernd25a cernd trgrd03 neeraj  BEGIN // exclude a few 'druid, not shaman' entries
+		END
+		DEFAULT
+			PATCH_IF INDEX_BUFFER ("Class(")>=0 BEGIN
+				SPRINT $shaman_dialogs("%SOURCE_RES%") ""
+			END
+		END	
+	
+	ACTION_PHP_EACH shaman_scripts AS script=>discard BEGIN
+	
+		//  actual shaman references get subbed to exclude favored souls
+		
+		OUTER_SPRINT match "Class(\([^,]+\),SHAMAN)" 
+		OUTER_SPRINT replace "Class(\1,SHAMAN)|!CheckSpellState(\1,%favored_soul_splstate%)"
+		LAF disjunctive_substitution_bcs STR_VAR script match replace END
+		
+		// druid references get subbed to exclude favored souls
+
+		OUTER_SPRINT match "Class(\([^,]+\),\(DRUID_ALL\|DRUID\))" 
+		OUTER_SPRINT replace "Class(\1,\2)|!CheckSpellState(\1,%favored_soul_splstate%)"
+		LAF disjunctive_substitution_bcs STR_VAR script match replace END
+
+
+		
+		// cleric_all references *in*clude FS
+		
+		OUTER_SPRINT match "Class(\([^,]+\),\(CLERIC_ALL\|CLERIC\))" 
+		OUTER_SPRINT replace "OR()Class(\1,\2)|CheckSpellState(\1,%favored_soul_splstate%)"
+		LAF disjunctive_substitution_bcs STR_VAR script match replace END
+
+	END
+	
+	ACTION_PHP_EACH shaman_dialogs AS dialog=>discard BEGIN
+	
+		//  actual shaman references get subbed to exclude favored souls
+		
+		OUTER_SPRINT match "Class(\([^,]+\),SHAMAN)" 
+		OUTER_SPRINT replace "Class(\1,SHAMAN)|!CheckSpellState(\1,%favored_soul_splstate%)"
+		LAF disjunctive_substitution_dlg STR_VAR dialog match replace END
+		
+		// druid references get subbed to exclude favored souls
+
+		OUTER_SPRINT match "Class(\([^,]+\),\(DRUID_ALL\|DRUID\))" 
+		OUTER_SPRINT replace "Class(\1,\2)|!CheckSpellState(\1,%favored_soul_splstate%)"
+		LAF disjunctive_substitution_dlg STR_VAR dialog match replace END
+
+
+		
+		// cleric_all references *in*clude FS
+		
+		OUTER_SPRINT match "Class(\([^,]+\),\(CLERIC_ALL\|CLERIC\))" 
+		OUTER_SPRINT replace "OR()Class(\1,\2)|CheckSpellState(\1,%favored_soul_splstate%)"
+		LAF disjunctive_substitution_dlg STR_VAR dialog match replace END
+
+	END
+
+END

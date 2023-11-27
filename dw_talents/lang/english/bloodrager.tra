@@ -1,0 +1,23 @@
+@1="Bloodrager"
+// in @2, do not translate BERSERKER_RAGE_PLACEHOLDER
+@2="BLOODRAGER: Bloodragers are sorcerers whose innate magical power is tied to a deep reservoir of buried rage. While most spellcasters require some level of calm and discipline to use their magic to best effect, a bloodrager can enter a state of savage fury while still drawing on their powerful magic abilities.
+
+Advantages:
+- May use any melee weapon.
+- May achieve Specialisation (two stars) with any melee weapon.
+- May use leather, studded leather, scale mail, chain mail and hide armor while still being able to cast spells.
+- +1 bonus to attack rolls per 3 levels
+- May use Rage ability once per day. Gains one use at level 1 and an additional use every 4 levels thereafter.
+- Hit Die: d6
+
+RAGE: BERSERKER_RAGE_PLACEHOLDER
+
+Disadvantages:
+
+- May only select spells from the schools of Abjuration, Alteration, Invocation, and Necromancy.
+- Becomes winded after berserking: -2 penalty to Armor Class, to-hit rolls, and damage rolls.
+- May not be Lawful.
+- May not use ranged weapons."
+
+// unmodified description of berserker Rage spell (except that 'character' replaces 'Berserker'
+@3="The enraged state lasts for 1 turn. While enraged, the character gains a bonus of +2 to <PRO_HISHER> attack and damage rolls as well as to <PRO_HISHER> Armor Class, and becomes immune to charm, confusion, fear, feeblemind, hold, imprisonment, level drain, maze, stun, and sleep. The character also gains 15 temporary Hit Points which are taken away at the end of <PRO_HISHER> berserk spree, possibly knocking <PRO_HIMHER> unconscious."

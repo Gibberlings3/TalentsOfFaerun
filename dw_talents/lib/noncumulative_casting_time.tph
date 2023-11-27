@@ -1,0 +1,54 @@
+DEFINE_PATCH_FUNCTION make_this_casting_time_bonus_non_cumulative INT_VAR bonus=0 debug=0 splprot=0 BEGIN
+	// find the splprot entry
+	
+	// delete the existing effect
+	LPF DELETE_EFFECT INT_VAR match_opcode=189 END
+	// put a text warning
+	LPF ADD_ITEM_EQEFFECT INT_VAR insert_point="-1" opcode=326 timing=1 target=1 parameter1=1 parameter2=splprot STR_VAR resource=dwncctd END	
+	// count down, adding an immunity if speed bonus> bonus and incrementing by 1
+	
+	FOR (n = 1; n<=bonus;++n) BEGIN
+		LPF ADD_ITEM_EQEFFECT INT_VAR insert_point="-1" opcode=318 timing=2 target=1 parameter1=bonus parameter2=splprot STR_VAR resource="%SOURCE_RES%" END
+		PATCH_IF debug BEGIN
+			disp=RESOLVE_STR_REF ("Reached step %n%")
+			LPF ADD_ITEM_EQEFFECT INT_VAR insert_point="-1" opcode=139 timing=1 target=1 parameter1=disp END
+		END	
+		LPF ADD_ITEM_EQEFFECT INT_VAR insert_point="-1" opcode=189 timing=2 target=1 parameter1=1 parameter2=0 END
+	END
+
+
+END
+
+DEFINE_ACTION_FUNCTION noncumulative_casting_time INT_VAR display_strref=0 debug=0 BEGIN
+
+  LAF check_label STR_VAR label=dw#noncumulative_casting_time RET value END
+  ACTION_IF !value BEGIN 
+  
+	LAF make_label STR_VAR label=dw#noncumulative_casting_time END
+
+	LAF resolve_splprot_entry INT_VAR stat=77 value="-1" STR_VAR relation=greater_equal RET splprot=value END
+
+	CREATE spl dwncctd
+		LPF add_basic_spell_ability END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=139 target=1 timing=1 parameter1=display_strref END
+	
+
+	COPY_EXISTING_REGEXP ".*\.itm" override
+		GET_OFFSET_ARRAY fx_arr ITM_V10_GEN_EFFECTS
+		bonus=0
+		PHP_EACH fx_arr AS fx_ind=>fx_off BEGIN
+			PATCH_IF (SHORT_AT fx_off)=189 BEGIN
+				READ_LONG 0x4+fx_off bonus
+			END
+		END
+		PATCH_IF bonus>0 BEGIN
+			LPF  make_this_casting_time_bonus_non_cumulative INT_VAR bonus debug splprot END
+		END
+	BUT_ONLY
+  END
+	
+
+
+
+
+END

@@ -1,0 +1,9 @@
+2DA V1.0
+*
+				NAME		DESC			PARENT			FINAL_RACE	ICON	ICON_STRREF	COLOR_SKIN	COLOR_HAIR	COLOR_MAJOR	COLOR_MINOR	STR	DEX	CON	INT	WIS	CHA	EXTRA_PROF	BIO_OLD		BIO_NEW	PP 	OL 	FT  MS  HS  DI  ST		SPL_INIT	SPL_RECUR
+ELF_MOON		@4			@104			ELF				*			dwico52 @600		4			24			-1			-1			0	1	-1	0	0	0	0			-1			-1		5	-5	0	5	10	0	0		-1			-1
+ELF_SUN			@11			@111			ELF				*			dwico52	@600		20			2			-1			-1			0	0	-1	1	0	0	0			@502		@518	5	-5	0	5	5	5	0		-1			-1
+ELF_WILD		@6			@106			ELF				*			dwico52 @600		23			26			-1			-1			1	1	0	0	-1	-1	0			@502		@511	0	-10	10	10	10	0	5		-1			-1
+ELF_WOOD		@12			@112			ELF				*			dwico52	@600		22			1			-1			-1			1	1	0	-1	0	-1	0			-1			-1		0	-5	10	5	10	0	0		-1			-1
+ELF_DROW		@5			@105			ELF				*			dwico63	R_63		43			0			-1			-1			0	1	-1	1	-1	1	0			@502		@510	0	-5	0	10	10	0	0		%spl_subrace_drow%		%spl_subrace_drow_recurring%
+ELF_WINGED		@25			-1				ELF				*			dwico52	@600		-1			-1			-1			-1			0	0	0	0	0	0	0			-1			-1		0	0	0	0	0	0	0		-1			-1

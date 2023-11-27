@@ -1,0 +1,100 @@
+DEFINE_ACTION_FUNCTION vanilla_adjustments BEGIN
+
+	// assign schools to a bunch of school-less mage L10 spells
+	
+	ACTION_DEFINE_ASSOCIATIVE_ARRAY l10_spells BEGIN
+		"%WIZARD_IMPROVED_ALACRITY%"=>alteration
+		"%WIZARD_DRAGONS_BREATH%"=>evocation
+		"%WIZARD_SUMMON_PLANATAR_GOOD%"=>conjuration
+		"%WIZARD_ENERGY_BLADES%"=>evocation
+		"%WIZARD_COMET%"=>evocation
+	END
+	ACTION_PHP_EACH l10_spells AS resref=>school BEGIN
+		LAF set_school STR_VAR resref school END
+	END
+	
+	// change description of Mass Raise Dead from 'Level: 7' to 'Level: Quest'
+	
+	COPY_EXISTING - "%CLERIC_MASS_RAISE_DEAD%.spl" nowhere
+		SPRINT old_string @3318
+		SPRINT new_string @3319
+		READ_LONG 0x50 desc_strref
+		GET_STRREF desc_strref desc
+		INNER_PATCH_SAVE desc "%desc%" BEGIN
+			REPLACE_TEXTUALLY "%old_string%" "%new_string%"
+		END
+		INNER_ACTION BEGIN
+			STRING_SET_EVALUATE desc_strref "%desc%"
+		END
+		
+	// assign spheres to several quest spells
+	
+	ACTION_DEFINE_ASSOCIATIVE_ARRAY q_spells BEGIN
+		"%CLERIC_AURA_OF_FLAMING_DEATH%"=>combat_fire
+		"%CLERIC_STORM_OF_VENGEANCE%"=>combat_weather
+		"%CLERIC_ENERGY_BLADES%"=>combat
+		"%CLERIC_SUMMON_DEVA%"=>summoning
+		"%CLERIC_IMPLOSION%"=>combat
+	END
+	ACTION_PHP_EACH q_spells AS resref=>sphere BEGIN
+		LAF define_sphere_description STR_VAR resref sphere END
+	END
+
+END
+
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION set_school STR_VAR resref="" school="" BEGIN
+
+	COPY_EXISTING "%resref%.spl" override
+		SPRINT resref "%SOURCE_RES%"
+		DEFINE_ASSOCIATIVE_ARRAY school_map BEGIN
+			alteration,8,3201,10=>1
+			conjuration,2,3202,14=>1
+			evocation,6,3200,15=>1
+		END
+		PHP_EACH school_map AS k=>discard BEGIN
+			PATCH_IF "%k_0%" STR_EQ "%school%" BEGIN
+				WRITE_SHORT 0x22 k_3
+				WRITE_BYTE 0x25 k_1
+				SPRINT new_string (AT k_2)
+				SPRINT old_string @3199
+				READ_LONG 0x50 desc_strref
+				GET_STRREF desc_strref desc
+				INNER_PATCH_SAVE desc "%desc%" BEGIN
+					REPLACE_TEXTUALLY "%old_string%" "%new_string%"
+				END
+				INNER_ACTION BEGIN
+					STRING_SET_EVALUATE desc_strref "%desc%"
+				END
+				
+			END
+		END
+
+END
+
+DEFINE_ACTION_FUNCTION define_sphere_description STR_VAR resref="" sphere="" BEGIN
+
+	ACTION_DEFINE_ASSOCIATIVE_ARRAY sphere_map BEGIN
+		combat=>3320
+		combat_weather=>3321
+		summoning=>3322
+		combat_fire=>3323
+	END
+
+	COPY_EXISTING "%resref%.spl" nowhere
+		READ_LONG 0x50 desc_strref
+		new_number=$sphere_map("%sphere%")
+		SPRINT new (AT new_number)
+		SPRINT old @3319
+		GET_STRREF desc_strref desc
+		INNER_PATCH_SAVE desc "%desc%" BEGIN
+			REPLACE_TEXTUALLY "%old%" "%old%%WNL%%new%"
+		END
+	STRING_SET_EVALUATE desc_strref "%desc%"
+
+
+
+
+END

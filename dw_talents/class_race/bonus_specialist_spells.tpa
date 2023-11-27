@@ -1,0 +1,17 @@
+DEFINE_ACTION_FUNCTION bonus_specialist_spells BEGIN
+
+	LAF 2daq_extract STR_VAR resref=kitlist column=ROWNAME RET_ARRAY kitlist_array=array END
+	ACTION_PHP_EACH kitlist_array AS discard=>kit BEGIN
+		ACTION_FOR_EACH spec IN ABJURER CONJURER DIVINER ENCHANTER ILLUSIONIST INVOKER NECROMANCER TRANSMUTER BEGIN
+			ACTION_IF INDEX("%spec%" "%kit%")>=0 BEGIN
+				OUTER_SPRINT path "%MOD_FOLDER%/class_race/bonus_spell_lists/%spec%.txt"
+				ACTION_TO_LOWER path
+				LAF bonus_spells_from_list STR_VAR kit path class=mage END			
+			END
+		END
+	END
+
+
+END
+
+

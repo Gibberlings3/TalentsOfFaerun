@@ -1,0 +1,119 @@
+DEFINE_ACTION_FUNCTION tempus_cleric BEGIN
+
+	LAF tempus_shared END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_EMOTION_COURAGE%" type=innate RET spl_tempus_courage=new_resref END
+
+	OUTER_SPRINT kit OHTEMPUS
+	kit.edit[%kit%|edit_strrefs_in_place:i=1]
+	[
+		k_name:=@60
+		k_desc:=@61
+		k.kit_remove_powers{ohtmps1 ohtmps2}
+		k.kit_grant_powers{ohtmps2 3 5,ohtmps1 5 5,%spl_tempus_courage% 7 5}
+		k_club=2
+		k_flailmorningstar=2
+		k_mace=2
+		k_warhammer=2
+		k_quarterstaff=2
+	]
+
+	
+	
+	LAF cleric_kit_substitutions STR_VAR kit god=tempus END
+	LAF assign_spheres STR_VAR kit default=cleric add=tempus_allow subtract="evil charm good divination" END
+	LAF assign_bonus_spells STR_VAR kit spells="STRENGTH HASTE IMPROVED_HASTE POWER_WORD_STUN" END
+	LAF adjust_cleric_stronghold STR_VAR talos="c_e" lathander="n_n c_g c_n" kit END
+
+
+END
+
+DEFINE_ACTION_FUNCTION berserkerpriest_of_tempus BEGIN
+
+	LAF tempus_shared END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_EMOTION_COURAGE%" type=innate RET spl_tempus_courage=new_resref END
+
+	OUTER_SPRINT kit DW_TEMPUS_BERSERKER
+	LAF adjust_rage_descriptions INT_VAR tra_ref=6 RET desc END
+	
+	kit.copy[FIGHTER_CLERIC=>%kit%]
+	[
+		k_name:=@5
+		k_desc:="%desc%"
+		k.kit_grant_powers{ohtmps2 3 5,ohtmps1 5 5,%spl_tempus_courage% 7 5|class=cleric}	
+		k.kit_grant_powers{%BERSERKER_RAGE% 1 5|class=fighter}
+		k_warhammer=3
+		k_club=3
+		k_flailmorningstar=3
+		k_mace=3
+		k_quarterstaff=3
+		k_sling=0
+		k.kit_match_usability{berserker}
+		k.kit_set_alignment{cg nn cn ce}
+	]
+	
+	LAF cleric_kit_substitutions STR_VAR kit god=tempus END
+	LAF assign_spheres STR_VAR kit default=cleric add=tempus_allow subtract="evil charm good divination" END
+	LAF assign_bonus_spells STR_VAR kit spells="STRENGTH HASTE IMPROVED_HASTE POWER_WORD_STUN" END
+	LAF adjust_cleric_stronghold STR_VAR talos="c_e" lathander="n_n c_g c_n" kit END
+
+	LAF set_multiclass_components STR_VAR kit components="berserker ohtempus"  END
+
+END
+
+DEFINE_ACTION_FUNCTION tempus_favored_soul BEGIN
+
+	LAF tempus_shared END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_EMOTION_COURAGE%" type=innate RET spl_tempus_courage=new_resref END
+
+	// make the main kit
+	
+	OUTER_SPRINT kit "DW_TEMPUS_FAVORED"
+	
+	LAF build_favored_soul_kit INT_VAR name=4018 desc=4019 god=4020 god_gender=4005 god_temple=4021 STR_VAR kit copy_from=OHTEMPUS END
+	LAF cleric_kit_substitutions STR_VAR kit god=tempus END
+	kit.edit[%kit%|edit_strrefs_in_place:i=1]
+	[
+		k.kit_grant_powers{ohtmps2 3 5,ohtmps1 5 5,%spl_tempus_courage% 7 5}
+		k_melee=2
+	]
+
+	// spell choices
+
+	LAF assign_bonus_spells STR_VAR kit spells="CLERIC_REMOVE_FEAR WIZARD_STRENGTH WIZARD_HASTE CLERIC_RECITATION CLERIC_RIGHTEOUS_MAGIC WIZARD_IMPROVED_HASTE WIZARD_POWER_WORD_STUN" END
+	LAF adjust_cleric_stronghold STR_VAR talos="c_e" lathander="n_n c_g c_n" kit END
+
+
+
+END
+
+DEFINE_ACTION_FUNCTION tempus_shared BEGIN
+
+	LAF include STR_VAR file=log_favored_weapon.tph locbase=shared END
+	LAF log_favored_weapon STR_VAR god=TEMPUS weapon=axe END
+
+
+	LAF check_label STR_VAR label=dw#tempus_shared RET value END
+	ACTION_IF !value BEGIN
+	
+		LAF make_label STR_VAR label=dw#tempus_shared END
+
+		// innate Courage
+		
+		LAF splconv STR_VAR spell="%WIZARD_EMOTION_COURAGE%" new_type=innate RET_ARRAY splconv_array END
+		
+		// spell list
+		
+		LAF define_spell_list STR_VAR key="tempus_allow" spells="CLERIC_STAR_METAL_CUDGEL CLERIC_BLOOD_RAGE CLERIC_IRONSKIN" END
+	
+		// on BG2 installs, deactivate the default code that allocates Tempus to Lathander's temple
+		
+		ACTION_IF is_bg2 BEGIN
+			LAF DELETE_SCRIPT_BLOCK 
+				STR_VAR script=ar0900
+						match1=~Kit(Player1,OHTEMPUS)~
+						match2=~SetGlobal("OHLathanderOverride","GLOBAL",1)~
+			END
+		END
+	
+	END
+END

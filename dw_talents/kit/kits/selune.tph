@@ -1,0 +1,228 @@
+DEFINE_ACTION_FUNCTION selune_cleric BEGIN
+
+    LAF selune_shared END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_MOONBLADE%" new_type=innate RET spl_selune_moonblade=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_TRUE_SIGHT%" new_type=innate RET spl_selune_true_seeing=new_resref END
+	OUTER_SPRINT kit DW_SELUNE_CLERIC
+	kit.copy[CLERIC=>%kit%]
+	[
+		k_name:=@27
+		k_desc:=@28
+		k.kit_grant_powers{%spl_selune_moonblade% 3 5,%spl_selune_free_action% 5 6,%spl_selune_true_seeing% 9 6}
+		k.kit_apply_powers{%spl_selune_innate% 1}
+		k_color_metal=35
+		k_color_minor_cloth=21
+		k_color_main_cloth=58
+		k_color_leather=25
+		k_color_armor=80	
+		k.kit_set_alignment{ng cg cn}	
+		IF {is_iwd} {{k_bio:=@1002}}
+	]
+
+	LAF cleric_kit_substitutions STR_VAR kit god=selune END
+
+	LAF assign_spheres STR_VAR kit default=cleric subtract="evil necromantic" add="moon fey selune_allow" END
+	LAF holy_symbol INT_VAR name=2000 follower=2001 STR_VAR kit desc_bam=cdpslhly inv_bam=cdislhly bam_path=dr kit END
+	LAF adjust_cleric_stronghold STR_VAR lathander=all kit END
+  
+END
+
+DEFINE_ACTION_FUNCTION hunter_of_selune BEGIN
+
+	LAF selune_shared END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_MOONBLADE%" new_type=innate RET spl_selune_moonblade=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_TRUE_SIGHT%" new_type=innate RET spl_selune_true_seeing=new_resref END
+	OUTER_SPRINT kit DW_SELUNE_HUNTER
+
+	kit.copy[CLERIC_RANGER=>%kit%]
+	[
+		k_name:=@25
+		k_desc:=@26
+		k.kit_grant_powers{%spl_selune_moonblade% 3 5,%spl_selune_free_action% 5 6,%spl_selune_true_seeing% 9 6|class=cleric}
+		k.kit_apply_powers{%spl_selune_innate% 1|class=cleric}
+		k_color_metal=35
+		k_color_minor_cloth=21
+		k_color_main_cloth=58
+		k_color_leather=25
+		k_color_armor=80
+		k.kit_set_alignment{ng cg cn}
+		IF {is_iwd} {{k_bio:=@1002}}
+	]
+
+	LAF cleric_kit_substitutions STR_VAR kit god=selune END
+
+	LAF assign_spheres STR_VAR kit default=cleric subtract="evil necromantic" add="moon fey selune_allow" END
+	LAF holy_symbol INT_VAR name=2000 follower=2001 STR_VAR kit desc_bam=cdpslhly inv_bam=cdislhly bam_path=dr kit END
+	LAF adjust_cleric_stronghold STR_VAR lathander=all kit END
+	LAF set_multiclass_components STR_VAR kit components="dw_selune_cleric"  END
+
+END
+
+DEFINE_ACTION_FUNCTION sword_of_selune BEGIN
+
+    LAF selune_shared END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_MOONBLADE%" new_type=innate RET spl_selune_moonblade=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_TRUE_SIGHT%" new_type=innate RET spl_selune_true_seeing=new_resref END
+	OUTER_SPRINT kit DW_SELUNE_SWORD
+
+	kit.copy[FIGHTER_CLERIC=>%kit%]
+	[
+		k_name:=@9
+		k_desc:=@10
+		k.kit_grant_powers{%spl_selune_moonblade% 3 5,%spl_selune_free_action% 5 6,%spl_selune_true_seeing% 9 6|class=cleric}
+		k.kit_grant_powers{spcl144 1 4|class=fighter}
+		k.kit_apply_powers{%spl_selune_innate% 1|class=cleric}
+		k.kit_apply_powers{spcl143 1,spcl143 4 4,spcl141 3 3,spcl142 1|class=fighter}
+		k_color_metal=35
+		k_color_minor_cloth=21
+		k_color_main_cloth=58
+		k_color_leather=25
+		k_color_armor=80	
+		k_sling=0
+		k_swordandshield=0
+		k.kit_match_usability{kensai}
+		k.kit_set_alignment{ng cg cn}
+		IF {is_iwd} {{k_bio:=@1002}}
+	]
+
+	LAF cleric_kit_substitutions STR_VAR kit god=selune END
+
+	LAF assign_spheres STR_VAR kit default=cleric subtract="evil necromantic" add="moon fey selune_allow" END
+	LAF holy_symbol INT_VAR name=2000 follower=2001 STR_VAR kit desc_bam=cdpslhly inv_bam=cdislhly bam_path=dr kit END
+	LAF adjust_cleric_stronghold STR_VAR lathander=all kit END
+	LAF set_multiclass_components STR_VAR kit components="kensai dw_selune_cleric"  END
+  
+END
+
+DEFINE_ACTION_FUNCTION diviner_of_selune BEGIN
+
+    LAF selune_shared END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_MOONBLADE%" new_type=innate RET spl_selune_moonblade=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_TRUE_SIGHT%" new_type=innate RET spl_selune_true_seeing=new_resref END
+	OUTER_SPRINT kit DW_SELUNE_DIVINER
+	
+	
+	kit.copy[CLERIC_MAGE=>%kit%][
+		k_name:=@124
+		k_desc:=@125
+		k.kit_grant_powers{%spl_selune_moonblade% 3 5,%spl_selune_free_action% 5 6,%spl_selune_true_seeing% 9 6|class=cleric}
+		k.kit_apply_powers{%spl_selune_innate% 1|class=cleric}
+		k_color_minor_cloth=21
+		k_color_main_cloth=58
+		k.kit_set_alignment{ng cg cn}
+		IF {is_iwd} {{k_bio:=@1002}}
+	]
+	LAF cleric_kit_substitutions STR_VAR kit god=selune END
+
+	LAF assign_spheres INT_VAR update_scroll_usability=0 STR_VAR kit default=cleric subtract="evil necromantic" add="moon fey selune_allow" END
+	LAF holy_symbol INT_VAR name=2000 follower=2001 STR_VAR kit desc_bam=cdpslhly inv_bam=cdislhly bam_path=dr kit END
+	LAF adjust_cleric_stronghold STR_VAR lathander=all kit END
+
+ 	LAF make_multiclass_specialist STR_VAR kit school=divination END
+	LAF set_multiclass_components STR_VAR kit components="DW_SELUNE_CLERIC DIVINER"  END
+
+ 
+END
+
+DEFINE_ACTION_FUNCTION transmuter_of_selune BEGIN
+
+    LAF selune_shared END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_MOONBLADE%" new_type=innate RET spl_selune_moonblade=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_TRUE_SIGHT%" new_type=innate RET spl_selune_true_seeing=new_resref END
+	OUTER_SPRINT kit DW_SELUNE_TRANSMUTER
+	
+	
+	kit.copy[CLERIC_MAGE=>%kit%]
+	[
+		k_name:=@126
+		k_desc:=@127
+		k.kit_grant_powers{%spl_selune_moonblade% 3 5,%spl_selune_free_action% 5 6,%spl_selune_true_seeing% 9 6|class=cleric}
+		k.kit_apply_powers{%spl_selune_innate% 1|class=cleric}
+		k_color_minor_cloth=21
+		k_color_main_cloth=58
+		k.kit_set_alignment{ng cg cn}
+		if {is_iwd} {{k_bio:=@1002}}
+	]
+	
+	LAF cleric_kit_substitutions STR_VAR kit god=selune END
+
+	LAF assign_spheres INT_VAR update_scroll_usability=0 STR_VAR kit default=cleric subtract="evil necromantic" add="moon fey selune_allow" END
+	LAF holy_symbol INT_VAR name=2000 follower=2001 STR_VAR kit desc_bam=cdpslhly inv_bam=cdislhly bam_path=dr kit END
+	LAF adjust_cleric_stronghold STR_VAR lathander=all kit END
+
+ 	LAF make_multiclass_specialist STR_VAR kit school=alteration END
+	LAF set_multiclass_components STR_VAR kit components="DW_SELUNE_CLERIC TRANSMUTER"  END
+
+ 
+END
+
+DEFINE_ACTION_FUNCTION selune_favored_soul BEGIN
+
+
+	LAF selune_shared END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_MOONBLADE%" new_type=innate RET spl_selune_moonblade=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_TRUE_SIGHT%" new_type=innate RET spl_selune_true_seeing=new_resref END
+
+	// make the main kit
+	
+	OUTER_SPRINT kit "DW_SELUNE_FAVORED"
+	
+	LAF build_favored_soul_kit INT_VAR name=4035 desc=4036 god=4037 god_gender=4029 god_temple=4038 STR_VAR kit copy_from=DW_SELUNE_CLERIC END
+	LAF cleric_kit_substitutions STR_VAR kit god=selune END
+
+	kit.edit[%kit%|edit_strrefs_in_place:i=1]
+	[
+		k.kit_grant_powers{%spl_selune_moonblade% 3 5,%spl_selune_free_action% 5 6,%spl_selune_true_seeing% 9 6}
+		k.kit_apply_powers{%spl_selune_innate% 1}
+	]
+
+	// spell choices
+
+	LAF assign_bonus_spells STR_VAR kit spells="CLERIC_FAERIE_FIRE CLERIC_ALICORN_LANCE CLERIC_INVISIBILITY_PURGE CLERIC_WALL_OF_MOONLIGHT CLERIC_SHIELD_OF_LATHANDER CLERIC_HEAL CLERIC_MIST_OF_ELDATH" END
+
+
+END
+
+
+
+DEFINE_ACTION_FUNCTION selune_shared BEGIN
+
+	LAF include STR_VAR file=log_favored_weapon.tph locbase=shared END
+	LAF log_favored_weapon STR_VAR god=SELUNE weapon=mace END
+
+	
+   LAF check_label STR_VAR label=dw#selune_shared RET value END
+   ACTION_IF !value BEGIN
+   
+		LAF make_label STR_VAR label=dw#selune_shared END
+		
+		// moonblade/true seeing
+		
+		LAF splconv STR_VAR spell="%CLERIC_MOONBLADE%" new_type=innate RET_ARRAY splconv_array END
+		LAF splconv STR_VAR spell="%CLERIC_TRUE_SIGHT%" new_type=innate RET_ARRAY splconv_array END
+
+
+		
+		// free action
+		LAF splconv STR_VAR spell="%CLERIC_FREE_ACTION%" new_type=innate new_resref="%spl_selune_free_action%" END
+
+		spl.edit[%spl_selune_free_action%]
+		[
+			m.ab.alter{s_target=5}
+			m_description:=@1015
+		]
+
+
+		// +2 AC vs lycanthropes
+
+		spl.make[%spl_selune_innate%]
+		[
+				m.ab.add{}
+				m.ab_fx.add{s_opcode=219 s_target=2 s_timing=9 s_parameter1=IDS_OF_SYMBOL (race lycanthrope) s_parameter2=4}
+		]
+
+		LAF define_spell_list STR_VAR key="selune_allow" spells="CLERIC_ALICORN_LANCE CLERIC_MIST_OF_ELDATH" END
+
+	
+   END
+END

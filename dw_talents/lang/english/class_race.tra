@@ -1,0 +1,102 @@
+@1="Multiclass"
+@2="MULTICLASS: A multiclassed character can use the abilities of two or more classes, gaining experience in each class equally."
+@10="Then... then you are unworthy to be the ranger of our village! By Mielikki, I've never seen a ranger of your sort!" // this is the first two sentences of BG2EE string 38115 - the third sentence, which refers to Fallen Rangers, has been omitted
+
+@100="The race of your character will determine what their base abilities can be, as well as assign possible intrinsic talents such as infravision." // This is the first sentence of BGEE string 17237
+@101="If you become dual-classed, you stop advancing in your current class and begin advancing in a second class."
+@102="Your character must have scores of 10 or higher in the prime requisites of the class you wish to change to."  
+
+@200="Humans may advance as any class and are also the only race that can dual-class. Humans may not multi-class." // This must exactly match the appropriate pair of sentences in BGEE string 9550
+@300="Humans may advance as any class and are also the only race that can dual-class. Humans may not multi-class." // This must exactly match the appropriate pair of sentences in BG2EE string 9550
+@400="Humans may advance as any class and are also the only race that can dual-class. Humans may not multi-class." // This must exactly match the appropriate pair of sentences in IWDEE string 37481
+
+@201="Dual-classing is an ability that only humans have. It is the process by which you stop advancing in your current class and begin advancing in a second class."  //This must exactly match the appropriate pair of sentences in BGEE string 10811
+@202="Your character must have scores of 15 or higher in the prime requisites of your current class and scores of 17 or more in the prime requisites of the class you wish to change to."  //This must exactly match the appropriate sentence in BGEE string 10811
+@301="Dual-classing is an ability that only humans have. It is the process by which you stop advancing in your current class and begin advancing in a second class." //This must exactly match the appropriate pair of sentences in BG2EE string 10811
+@302="Your character must have scores of 15 or higher in the prime requisites of your current class and scores of 17 or more in the prime requisites of the class you wish to change to."  //This must exactly match the appropriate sentence in BG2EE string 10811
+@401="Dual-classing is an ability that only humans have. It is the process by which you stop advancing in your current class and begin advancing in a second class." //This must exactly match the appropriate pair of sentences in IWDEE string 10811
+@402="Your character must have scores of 15 or higher in the prime requisites of your current class and scores of 17 or more in the prime requisites of the class you wish to change to."  //This must exactly match the appropriate sentence in IWDEE string 10811
+
+@500="Gnomes can choose this multi-class, but become Fighter/Illusionists by default. Gnomes are the only race that can combine a specialist Mage class in a multi-class." // must exactly match the text in the FIghter/Mage description
+@501="Gnomes can choose this multi-class, but become Illusionist/Thieves by default. Gnomes are the only race that can combine a specialist Mage class in a multi-class." // must exactly match the text in the Mage/Thief description.
+@502="Gnomes can choose this multi-class, but become Cleric/Illusionists by default. Gnomes are the only race that can combine a specialist Mage class in a multi-class." // must exactly match the text in the Cleric/Mage description
+
+@600="RANGER: The Ranger is a warrior and a woods<PRO_MANWOMAN> who is skilled with weapons and is knowledgeable in the ways of the forest. The Ranger often protects and guides lost travelers and honest peasant-folk. A Ranger needs to be strong and wise to the ways of nature to live a full life." // must exactly match the ranger description text
+@601="RANGER: The Ranger is a warrior and a woods<PRO_MANWOMAN> who is skilled with weapons and is knowledgeable in the ways of the forest. The Ranger often protects and guides lost travelers and honest peasant-folk. Evil rangers, though rare, are much to be feared, reveling in cruelty and seeking to emulate the most fearsome predators."
+@602="Alignment restricted to good\." // must exactly match string from ranger description
+@603="Alignment restricted to true neutral\." // must exactly match string from druid description
+@604="Alignment restricted to neutral good, neutral evil, lawful neutral, chaotic neutral, and true neutral."
+@605="Alignment restricted to any except lawful good\." // must exactly match string from Thief description
+@606="May only distribute 15 skill points per level among thieving skills\." // must exactly match string from Assassin description
+@607="Alignment restricted to any non-good."
+
+
+@700="1 turn" // must match string from BG2 SPCL213
+@701="24 turns"
+@702="1 creature" // must match string from BG2 SPCL213
+@703="The caster"
+@704="The paladin can use this ability at will (once per round)."
+@705="Smite Evil"
+@706="Smite Evil
+
+Paladins have the ability to call down a column of holy light once per day. This ability deals 1d6 + 1d6 points of magic damage for every 3 levels to a single, evil-aligned creature within the visual range of the Paladin."
+
+@707="PALADIN: A Paladin is a warrior bold and pure, the exemplar of everything good and true. Like the Fighter, the Paladin is a person of action and combat. However, the Paladin lives for the ideals of righteousness, justice, honesty, piety, and chivalry and strives to be a living example of these virtues so that others may learn from <PRO_HIMHER> as well as gain by <PRO_HISHER> actions.
+
+CLASS FEATURES:
+
+- May wear helmets.
+- May wear any armor and use any weapon.
+- May not exceed Specialization (two slots) in any weapon class.
+- May achieve Specialization (two slots) in any fighting style and allocate three slots in Two-Weapon Style.
+- May use Lay On Hands ability once per day to heal a target for 2 Hit Points per level of the Paladin.
+- May use the Cure Disease ability once per day.
+- May cast the Detect Evil ability at will (once per round).
+- May cast a special version of Protection From Evil once per day. This ability only affects the Paladin and lasts for 24 turns.
+- May use the Smite Evil ability once per day to deal 1d6 + 1d6 points of damage for every 3 levels of the paladin to a single, evil-aligned opponent.
+- May Turn Undead as a Cleric two levels lower, starting at level 3.
+- May cast priest spells starting at level 6.
+- 3rd level: Gains the Divine Courage ability becoming immune to fear.
+- Receives a +2 bonus to all Saving Throws.
+- Paladins are completely immune to all forms of disease, magical or mundane.
+- Alignment restricted to lawful good.
+- Hit Die: d10"
+
+
+@708="Smite Evil
+
+The paladin prepares to make a mighty strike against a single evil opponent. The next successful melee attack the paladin makes - provided it is against an evil creature - will inflict 1d6 points of magic damage, plus another 1d6 points per two levels after 1st level. Until the attack hits, the paladin gains a bonus to attack rolls against evil creatures dependent on <PRO_HISHER> Charisma - the bonus is +1 at 12 Charisma and increases by +1 per 2 points of Charisma after that - +2 at Charisma 14, +3 at Charisma 16, and so on, up to a maximum of +7 at Charisma 24.
+
+Smite Evil will be wasted if not used within 24 turns."
+
+
+
+@709="An additional use is gained at level PLACEHOLDER1 and every PLACEHOLDER2 levels thereafter." // do not translate PLACEHOLDER1, PLACEHOLDER2
+
+@710="Smite Evil
+
+The cavalier prepares to make a mighty strike against a single evil opponent. The next successful melee attack the cavalier makes - provided it is against an evil creature - will inflict 1d6 points of magic damage, plus another 1d6 points per two levels after 1st level. This damage is doubled against evil dragons and evil extraplanar creatures. Until the attack hits, the cavalier gains a bonus to attack rolls against evil creatures dependent on <PRO_HISHER> Charisma - the bonus is +1 at 12 Charisma and increases by +1 per 2 points of Charisma after that - +2 at Charisma 14, +3 at Charisma 16, and so on, up to a maximum of +7 at Charisma 24.
+
+Smite Evil will be wasted if not used within 24 turns."
+
+@711="Smite Evil
+
+The undead hunter prepares to make a mighty strike against a single evil opponent. The next successful melee attack the undead hunter makes - provided it is against an evil creature - will inflict 1d6 points of magic damage, plus another 1d6 points per two levels after 1st level. This damage is doubled against undead creatures. Until the attack hits, the undead hunter gains a bonus to attack rolls against evil creatures dependent on <PRO_HISHER> Charisma - the bonus is +1 at 12 Charisma and increases by +1 per 2 points of Charisma after that - +2 at Charisma 14, +3 at Charisma 16, and so on, up to a maximum of +7 at Charisma 24.
+
+Smite Evil will be wasted if not used within 24 turns."
+
+@712="Smite Good"
+
+@713="Smite Good
+
+The blackguard prepares to make a mighty strike against a single good opponent. The next successful melee attack the blackguard makes - provided it is against a good creature - will inflict 1d6 points of magic damage, plus another 1d6 points per two levels after 1st level. Until the attack hits, the blackguard gains a bonus to attack rolls against good creatures dependent on <PRO_HISHER> Charisma - the bonus is +1 at 12 Charisma and increases by +1 per 2 points of Charisma after that - +2 at Charisma 14, +3 at Charisma 16, and so on, up to a maximum of +7 at Charisma 24.
+
+Smite Evil will be wasted if not used within 24 turns."
+
+@714="Advantages:" // must exactly match standard string used in kit descriptions
+@715="May use the Smite Good ability once per day to make a mighty strike against a single good opponent.  The next successful melee attack the blackguard makes - provided it is against a good creature - will inflict 1d6 points of magic damage, plus another 1d6 points per two levels after 1st level. Until the attack hits, the blackguard gains a bonus to attack rolls against good creatures dependent on <PRO_HISHER> Charisma - the bonus is +1 at 12 Charisma and increases by +1 per 2 points of Charisma after that - +2 at Charisma 14, +3 at Charisma 16, and so on, up to a maximum of +7 at Charisma 24."
+@716="- Smite evil does double damage against evil dragons and evil extraplanar creatures."
+@717="- Smite evil does double damage against undead creatures."
+@718="May use the Smite Evil ability once per day to make a mighty strike against a single evil opponent.  The next successful melee attack the paladin makes - provided it is against an evil creature - will inflict 1d6 points of magic damage, plus another 1d6 points per two levels after 1st level. Until the attack hits, the paladin gains a bonus to attack rolls against evil creatures dependent on <PRO_HISHER> Charisma - the bonus is +1 at 12 Charisma and increases by +1 per 2 points of Charisma after that - +2 at Charisma 14, +3 at Charisma 16, and so on, up to a maximum of +7 at Charisma 24."
+
+@719="Smite Evil/Good"

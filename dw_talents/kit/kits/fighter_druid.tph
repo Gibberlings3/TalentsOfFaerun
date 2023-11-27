@@ -1,0 +1,74 @@
+DEFINE_ACTION_FUNCTION totemic_shaman BEGIN
+
+	LAF fighter_druid_shared END
+	OUTER_SPRINT kit DW_TOTEMIC_SHAMAN
+	kit.copy[FIGHTER_DRUID=>%kit%]
+	[
+	    k_name:=@177
+		LPF adjust_rage_descriptions INT_VAR tra_ref=178 RET k_desc=desc END
+		k.kit_apply_powers{%spl_remove_all_druid_shapeshifts% 1 1|class=druid}
+		k.kit_apply_powers{spcl151 1,spcl153 11,spcl154 15 4 20|class=fighter}
+		k.kit_grant_powers{%TOTEMIC_DRUID_SUMMON_SPIRIT_ANIMAL% 1 5|class=druid}
+		k.kit_grant_powers{%BARBARIAN_RAGE% 1 4|class=fighter}
+		k.kit_match_usability{barbarian}
+	]
+
+	LAF assign_spheres STR_VAR kit default=druid END
+	LAF set_multiclass_components STR_VAR kit components="barbarian totemic_druid"  END
+
+END
+
+DEFINE_ACTION_FUNCTION raging_shifter BEGIN
+
+	LAF fighter_druid_shared END
+	OUTER_SPRINT kit DW_RAGING_SHIFTER
+	kit.copy[FIGHTER_DRUID=>%kit%]
+	[
+		k_name:=@179
+		LPF adjust_rage_descriptions INT_VAR tra_ref=180 RET desc END
+		LPF adjust_shapeshifter_descriptions STR_VAR desc RET k_desc=desc END
+		k.kit_apply_powers{%spl_remove_all_druid_shapeshifts% 1 1|class=druid}
+		k.kit_grant_powers{%BERSERKER_RAGE% 1 5|class=fighter}
+		k_sling=0
+		k_dart=0
+		k.kit_match_usability{shapeshifter}
+		LPF check_label STR_VAR label="dw#rebalance_shapeshifter" RET value END
+		IF {value} 
+		{{
+			k.kit_grant_powers{%spl_shapeshifter_lesser_werewolf% 1 3 4,spcl643 10,spcl644 16,%spl_shapeshifter_werewolf_lord% 22 3|class=druid}
+			k.kit_apply_powers{%spl_shapeshifter_werewolf_applicator% 7,%spl_shapeshifter_greater_werewolf_applicator% 13,%spl_shapeshifter_werewolf_lord_applicator% 19|class=druid}
+		}}
+		ELSE 
+		{{
+			k.kit_grant_powers{%SHAPESHIFTER_SHAPESHIFT_WEREWOLF% 1 2 12,%SHAPESHIFTER_SHAPESHIFT_GREATERWEREWOLF% 13 2|class=druid}
+		}}
+		k_kitlist_unusable:=" 0x10000001"
+		k_l_g=0
+		k_l_n=0
+		k_l_e=0
+	]
+	LAF assign_spheres STR_VAR kit default=druid END
+	LAF set_multiclass_components STR_VAR kit components="berserker shapeshifter"  END
+
+END
+
+DEFINE_ACTION_FUNCTION fighter_druid_shared BEGIN
+
+	ACTION_IF !FILE_EXISTS_IN_GAME "%spl_remove_all_druid_shapeshifts%.spl" BEGIN
+		
+		CREATE spl "%spl_remove_all_druid_shapeshifts%" 
+			LPF add_basic_spell_ability END
+			PATCH_IF FILE_EXISTS_IN_GAME "%spl_druid_shapeshift_base%.spl" BEGIN // ToF improved shapeshifting 
+				LPF ADD_SPELL_EFFECT INT_VAR opcode=172 target=1 timing=1 STR_VAR resource="%spl_druid_shapeshift_base%" END
+			END ELSE BEGIN
+				PATCH_FOR_EACH shapeshift IN DRUID_SHAPESHIFT_POLAR_BEAR DRUID_SHAPESHIFT_WINTER_WOLF DRUID_SHAPESHIFT_BORING_BEETLE DRUID_SHAPESHIFT_ELEMENTAL_FIRE DRUID_SHAPESHIFT_ELEMENTAL_WATER DRUID_SHAPESHIFT_ELEMENTAL_FIRE DRUID_SHAPESHIFT_BROWNBEAR DRUID_SHAPESHIFT_WOLF DRUID_SHAPESHIFT_BLACKBEAR BEGIN
+					PATCH_IF VARIABLE_IS_SET "%shapeshift%" BEGIN
+						SPRINT resource EVAL "%%shapeshift%%"
+						LPF ADD_SPELL_EFFECT INT_VAR opcode=172 target=1 timing=1 STR_VAR resource END
+					END
+				END
+			END
+		
+	END
+
+END

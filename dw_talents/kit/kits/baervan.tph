@@ -1,0 +1,260 @@
+DEFINE_ACTION_FUNCTION baervan_cleric BEGIN
+
+	LAF splconv_get_name STR_VAR type=innate resref="%CLERIC_ANIMAL_SUMMONING_1%" RET spl_baervan_animals_1=new_resref END
+	LAF splconv_get_name STR_VAR type=innate resref="%CLERIC_ANIMAL_SUMMONING_2%" RET spl_baervan_animals_2=new_resref END
+	LAF splconv_get_name STR_VAR type=innate resref="%CLERIC_ANIMAL_SUMMONING_3%" RET spl_baervan_animals_3=new_resref END
+
+	OUTER_SPRINT kit DW_BAERVAN_CLERIC
+	LAF baervan_shared END
+	kit.copy[CLERIC=>%kit%]
+	[
+		k_name:=@98
+		k_desc:=@99	
+		k.kit_grant_powers{%spl_baervan_barkskin% 1 6,%spl_baervan_animals_1% 5,%spl_baervan_animals_2% 7,%spl_baervan_animals_3% 9,%spl_baervan_improved_invisibility% 7 7}
+		k.kit_apply_powers{%spl_baervan_innate% 3,%spl_baervan_remove_animals_1% 7,%spl_baervan_remove_animals_2% 9}
+		k_color_metal=25
+		k_color_leather=2
+		k_color_armor=24
+		k_color_minor_cloth=56
+		k_color_main_cloth=41
+		if {is_iwd} {{k_bio:=@1053}}
+		k_any_race=0
+		k_gnome=1
+		k_elf=1
+		k_half_elf=1
+		k.kit_set_alignment{lg ng cg}
+	]
+	LAF cleric_kit_substitutions STR_VAR kit god=baervan END
+	LAF holy_symbol INT_VAR name=2040 follower=2041 STR_VAR inv_bam=ibeltbw desc_bam=cbeltbw kit END
+	LAF assign_spheres STR_VAR kit default=cleric add="air water animal plant fey moon" subtract="evil necromantic combat summoning wards" END
+
+
+END
+
+DEFINE_ACTION_FUNCTION forester_of_baervan BEGIN
+
+	LAF splconv_get_name STR_VAR type=innate resref="%CLERIC_ANIMAL_SUMMONING_1%" RET spl_baervan_animals_1=new_resref END
+	LAF splconv_get_name STR_VAR type=innate resref="%CLERIC_ANIMAL_SUMMONING_2%" RET spl_baervan_animals_2=new_resref END
+	LAF splconv_get_name STR_VAR type=innate resref="%CLERIC_ANIMAL_SUMMONING_3%" RET spl_baervan_animals_3=new_resref END
+
+	ACTION_IF is_iwd BEGIN
+		OUTER_SPRINT archer_buff spcl124
+	END ELSE BEGIN
+		OUTER_SPRINT archer_buff spcl122
+	END
+    LAF baervan_shared END	
+	LAF build_ranger_charm_remover END
+	
+	OUTER_SPRINT kit DW_BAERVAN_FORESTER
+
+	kit.copy[CLERIC_RANGER=>%kit%]
+	[
+		k_name:=@217
+		k_desc:=@218
+		k.kit_grant_powers{%spl_baervan_barkskin% 1 6,%spl_baervan_animals_1% 5,%spl_baervan_animals_2% 7,%spl_baervan_animals_3% 9,%spl_baervan_improved_invisibility% 7 7|class=cleric}
+		k.kit_grant_powers{spcl121 4 4|class=ranger}
+		k.kit_apply_powers{%spl_baervan_innate% 3,%spl_baervan_remove_animals_1% 7,%spl_baervan_remove_animals_2% 9|class=cleric}
+		k.kit_apply_powers{%archer_buff% 3 3,%spl_ranger_charm_remover% 1 1|class=ranger}
+		k_color_minor_cloth=56
+		k_color_main_cloth=41
+		k_warhammer=1
+		k_club=1
+		k_flailmorningstar=1
+		k_mace=1
+		k_quarterstaff=1
+		k_longbow=4
+		k_shortbow=4
+		k_2handed=1
+		k_swordandshield=1
+		k_singleweapon=1
+		k_2weapon=1
+		k.kit_match_usability{feralan}
+		if {is_iwd} {{k_bio:=@1053}}
+		k_any_race=0
+		k_gnome=1
+		k_elf=1
+		k_half_elf=1
+		k.kit_set_alignment{lg ng cg}
+	]
+	
+	LAF cleric_kit_substitutions STR_VAR kit god=baervan END
+
+	LAF holy_symbol INT_VAR name=2040 follower=2041 STR_VAR inv_bam=ibeltbw desc_bam=cbeltbw kit END
+	LAF assign_spheres INT_VAR update_scroll_usability=0 STR_VAR kit default=cleric add="air water animal plant fey moon" subtract="evil necromantic combat summoning wards" END
+	LAF set_multiclass_components STR_VAR kit components="archer dw_baervan_cleric"  END
+
+
+
+END
+
+DEFINE_ACTION_FUNCTION illusionist_of_baervan BEGIN
+
+	LAF splconv_get_name STR_VAR type=innate resref="%CLERIC_ANIMAL_SUMMONING_1%" RET spl_baervan_animals_1=new_resref END
+	LAF splconv_get_name STR_VAR type=innate resref="%CLERIC_ANIMAL_SUMMONING_2%" RET spl_baervan_animals_2=new_resref END
+	LAF splconv_get_name STR_VAR type=innate resref="%CLERIC_ANIMAL_SUMMONING_3%" RET spl_baervan_animals_3=new_resref END
+
+
+    LAF baervan_shared END
+	OUTER_SPRINT kit DW_BAERVAN_ILLUSIONIST
+	kit.copy[CLERIC_MAGE=>%kit%]
+	[
+		k_name:=@146
+		k_desc:=@147
+		k.kit_grant_powers{%spl_baervan_barkskin% 1 6,%spl_baervan_animals_1% 5,%spl_baervan_animals_2% 7,%spl_baervan_animals_3% 9,%spl_baervan_improved_invisibility% 7 7|class=cleric}
+		k.kit_apply_powers{%spl_baervan_innate% 3,%spl_baervan_remove_animals_1% 7,%spl_baervan_remove_animals_2% 9|class=cleric}
+		k_color_minor_cloth=56
+		k_color_main_cloth=41
+		if {is_iwd} {{k_bio:=@1053}}
+		k_any_race=0
+		k_gnome=1
+		k_elf=1
+		k_half_elf=1
+		k.kit_set_alignment{lg ng cg}
+	]
+
+	LAF cleric_kit_substitutions STR_VAR kit god=baervan END
+
+	LAF holy_symbol INT_VAR name=2040 follower=2041 STR_VAR inv_bam=ibeltbw desc_bam=cbeltbw kit END
+	LAF assign_spheres INT_VAR update_scroll_usability=0 STR_VAR kit default=cleric add="air water animal plant fey moon" subtract="evil necromantic combat summoning wards" END
+
+ 
+ 	LAF make_multiclass_specialist STR_VAR kit school=illusion END
+	LAF set_multiclass_components STR_VAR kit components="DW_BAERVAN_CLERIC ILLUSIONIST"  END
+ 
+
+END
+
+DEFINE_ACTION_FUNCTION air_elementalist_of_baervan BEGIN
+
+	LAF splconv_get_name STR_VAR type=innate resref="%CLERIC_ANIMAL_SUMMONING_1%" RET spl_baervan_animals_1=new_resref END
+	LAF splconv_get_name STR_VAR type=innate resref="%CLERIC_ANIMAL_SUMMONING_2%" RET spl_baervan_animals_2=new_resref END
+	LAF splconv_get_name STR_VAR type=innate resref="%CLERIC_ANIMAL_SUMMONING_3%" RET spl_baervan_animals_3=new_resref END
+
+
+    LAF baervan_shared END
+	OUTER_SPRINT kit DW_BAERVAN_AIR_ELEMENTALIST
+	kit.copy[CLERIC_MAGE=>%kit%]
+	[
+		k_name:=@144
+		LPF resolve_elem_desc INT_VAR tra_ref=145 STR_VAR swap="%earth_names%" RET k_desc=strref END
+		k.kit_grant_powers{%spl_baervan_barkskin% 1 6,%spl_baervan_animals_1% 5,%spl_baervan_animals_2% 7,%spl_baervan_animals_3% 9,%spl_baervan_improved_invisibility% 7 7|class=cleric}
+		k.kit_apply_powers{%spl_baervan_innate% 3,%spl_baervan_remove_animals_1% 7,%spl_baervan_remove_animals_2% 9|class=cleric}
+		k.kit_apply_powers{%spl_elementalist_air_innate% 1|class=mage}
+		k_color_minor_cloth=56
+		k_color_main_cloth=41
+		if {is_iwd} {{k_bio:=@1053}}
+		k_any_race=0
+		k_gnome=1
+		k_elf=1
+		k_half_elf=1
+		k.kit_set_alignment{lg ng cg}
+	]
+	
+	LAF cleric_kit_substitutions STR_VAR kit god=baervan END
+
+	LAF holy_symbol INT_VAR name=2040 follower=2041 STR_VAR inv_bam=ibeltbw desc_bam=cbeltbw kit END
+	LAF assign_spheres INT_VAR update_scroll_usability=0 STR_VAR kit default=cleric add="air water animal plant fey moon" subtract="evil necromantic combat summoning wards" END
+
+		LAF set_elem_spells INT_VAR school_tra=13 school_tra2=14 STR_VAR kit elem_spec=air elem_block=earth tra=elementalist END
+		LAF bonus_spells_from_list STR_VAR kit path="%MOD_FOLDER%/class_race/bonus_spell_lists/air.txt" class=mage END
+		LAF set_spell_learn_modifiers STR_VAR kit modifiers="mage_air=25, mage_air_shared=25, mage_water=15, mage_fire=15, default=-15" END
+
+	LAF set_multiclass_components STR_VAR kit components="DW_BAERVAN_CLERIC DW_ELEMENTALIST_AIR"  END
+
+
+ 
+END
+
+DEFINE_ACTION_FUNCTION baervan_favored_soul BEGIN
+
+	LAF splconv_get_name STR_VAR type=innate resref="%CLERIC_ANIMAL_SUMMONING_1%" RET spl_baervan_animals_1=new_resref END
+	LAF splconv_get_name STR_VAR type=innate resref="%CLERIC_ANIMAL_SUMMONING_2%" RET spl_baervan_animals_2=new_resref END
+	LAF splconv_get_name STR_VAR type=innate resref="%CLERIC_ANIMAL_SUMMONING_3%" RET spl_baervan_animals_3=new_resref END
+
+
+	LAF baervan_shared END
+	OUTER_SPRINT kit DW_BAERVAN_FAVORED
+	LAF build_favored_soul_kit INT_VAR name=4107 desc=4108 god=4110 god_gender=4005 god_temple=4109 STR_VAR kit copy_from=DW_BAERVAN_CLERIC END
+	LAF cleric_kit_substitutions STR_VAR kit god=baervan END
+
+	kit.edit[%kit%|edit_strrefs_in_place:i=1]
+	[
+		k.kit_grant_powers{%spl_baervan_barkskin% 1 6,%spl_baervan_animals_1% 5,%spl_baervan_animals_2% 7,%spl_baervan_animals_3% 9,%spl_baervan_improved_invisibility% 7 7}
+		k.kit_apply_powers{%spl_baervan_innate% 3,%spl_baervan_remove_animals_1% 7,%spl_baervan_remove_animals_2% 9}
+	]
+
+	LAF assign_bonus_spells STR_VAR kit spells="CLERIC_ENTANGLE CLERIC_GOOD_BERRIES CLERIC_SPIKE_GROWTH CLERIC_CALL_WOODLAND_BEINGS CLERIC_PIXIE_DUST CLERIC_CONJURE_ANIMALS CLERIC_CREEPING_DOOM" END
+
+END	
+
+
+
+DEFINE_ACTION_FUNCTION baervan_shared BEGIN
+
+	LAF include STR_VAR file=log_favored_weapon.tph locbase=shared END
+	LAF log_favored_weapon STR_VAR god=BAERVAN weapon=spear END
+
+
+	LAF check_label STR_VAR label=dw#baervan_shared RET value END
+	ACTION_IF !value BEGIN
+	
+		LAF make_label STR_VAR label=dw#baervan_shared END
+	
+		// immunity to entanglement
+		
+		spl.make[%spl_baervan_innate%]
+		[
+			m_name:=@1054
+			m.ab.add{}
+			m.ab_fx.add{s_opcode=318 s_target=2 s_timing=9 s_resource:="%CLERIC_ENTANGLE%"}
+			m.ab_fx.add{s_opcode=318 s_target=2 s_timing=9 s_resource:=SPWM111}
+			IF {VARIABLE_IS_SET BLACK_DRAGON_PLANT}
+			{{ 
+				m.ab_fx.add{s_opcode=318 s_target=2 s_timing=9 s_resource:="%BLACK_DRAGON_PLANT%"}  
+			}}
+		]
+		
+		//self-only barkskin
+
+		LAF splconv STR_VAR spell="%CLERIC_BARKSKIN%" new_type=innate new_resref="%spl_baervan_barkskin%" END
+
+		spl.edit[%spl_baervan_barkskin%]
+		[
+			m_description:=@1055
+			m.ab.alter{s_target=5}
+		]
+		
+		// self-only II
+	
+		LAF splconv STR_VAR spell="%WIZARD_IMPROVED_INVISIBILITY%" new_type=innate new_resref="%spl_baervan_improved_invisibility%" END
+
+		spl.edit[%spl_baervan_improved_invisibility%]
+		[
+			m_description:=@1072
+			m.ab.alter{s_target=5}
+		]		
+		
+		// other innates
+		
+		LAF splconv STR_VAR spell="%CLERIC_ANIMAL_SUMMONING_1%" new_type=innate RET_ARRAY splconv_array END
+		LAF splconv STR_VAR spell="%CLERIC_ANIMAL_SUMMONING_2%" new_type=innate RET_ARRAY splconv_array END
+		LAF splconv STR_VAR spell="%CLERIC_ANIMAL_SUMMONING_3%" new_type=innate RET_ARRAY splconv_array END
+		
+		// remove the lower-level animal summoning effects
+		
+		spl.make[%spl_baervan_remove_animals_1%]
+		[
+			m.ab.add{}
+			m.ab_fx.add{s_opcode=172 s_target=2 s_timing=1 s_resource:="%spl_baervan_animals_1%"}
+		]
+
+		spl.make[%spl_baervan_remove_animals_2%]
+		[
+			m.ab.add{}
+			m.ab_fx.add{s_opcode=172 s_target=2 s_timing=1 s_resource:="%spl_baervan_animals_2%"}
+		]
+
+
+	END
+
+END

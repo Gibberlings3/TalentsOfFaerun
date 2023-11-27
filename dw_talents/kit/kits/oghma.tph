@@ -1,0 +1,104 @@
+DEFINE_ACTION_FUNCTION oghma_cleric BEGIN
+		OUTER_SPRINT kit DW_OGHMA_CLERIC
+		LAF oghma_shared END
+
+		kit.copy[CLERIC=>%kit%]
+		[
+			k_name:=@39
+			k_desc:=@40
+			k.kit_grant_powers{%spl_oghma_identify% 1 4,%spl_oghma_secret_word% 5 5,%spl_oghma_pierce_magic% 9 5}
+			k.kit_apply_powers{%spl_oghma_innate% 1 1}
+			k_color_metal=35
+			k_color_minor_cloth=66
+			k_color_main_cloth=66
+			k_color_leather=25
+			k_color_armor=80	
+			IF {is_iwd} {{k_bio:=@1006}}
+		]
+		
+		LAF cleric_kit_substitutions STR_VAR kit god=oghma END
+		LAF holy_symbol INT_VAR name=2008 follower=2009 STR_VAR kit desc_bam=cdpoghly inv_bam=cdioghly bam_path=dr kit END
+		LAF assign_spheres STR_VAR kit default=cleric END
+		LAF adjust_cleric_stronghold STR_VAR lathander="l_g n_g c_g c_n" helm="l_n n_n c_n l_e n_e c_e" kit END
+END
+
+DEFINE_ACTION_FUNCTION diviner_of_oghma BEGIN
+		OUTER_SPRINT kit DW_OGHMA_DIVINER
+		LAF oghma_shared END
+
+
+		kit.copy[CLERIC_MAGE=>%kit%]
+		[
+			k_name:=@42
+			k_desc:=@43
+			k.kit_grant_powers{%spl_oghma_identify% 1 4,%spl_oghma_secret_word% 5 5,%spl_oghma_pierce_magic% 9 5|class=cleric}
+			k.kit_apply_powers{%spl_oghma_innate% 1 1|class=cleric}
+			k_color_minor_cloth=66
+			k_color_main_cloth=66
+			IF {is_iwd} {{k_bio:=@1006}}
+		]
+		
+		LAF cleric_kit_substitutions STR_VAR kit god=oghma END
+		LAF holy_symbol INT_VAR name=2008 follower=2009 STR_VAR kit desc_bam=cdpoghly inv_bam=cdioghly bam_path=dr kit END
+		LAF assign_spheres INT_VAR update_scroll_usability=0 STR_VAR kit default=cleric END
+		LAF make_multiclass_specialist STR_VAR kit school=divination END
+		LAF set_multiclass_components STR_VAR kit components="DW_OGHMA_CLERIC DIVINER"  END
+
+		LAF adjust_cleric_stronghold STR_VAR lathander="l_g n_g c_g c_n" helm="l_n n_n c_n l_e n_e c_e" kit END
+
+END
+
+DEFINE_ACTION_FUNCTION oghma_favored_soul BEGIN
+
+	LAF oghma_shared END
+
+	// make the main kit
+	
+	OUTER_SPRINT kit "DW_OGHMA_FAVORED"
+	
+	LAF build_favored_soul_kit INT_VAR name=4043 desc=4044 god=4046 god_gender=4005 god_temple=4045 STR_VAR kit copy_from=DW_OGHMA_CLERIC END
+	LAF cleric_kit_substitutions STR_VAR kit god=oghma END
+
+	kit.edit[%kit%|edit_strrefs_in_place:i=1]
+	[
+		k.kit_grant_powers{%spl_oghma_identify% 1 4,%spl_oghma_secret_word% 5 5,%spl_oghma_pierce_magic% 9 5}
+		k.kit_apply_powers{%spl_oghma_innate% 1 1}
+	]
+	LAF adjust_cleric_stronghold STR_VAR lathander="l_g n_g c_g c_n" helm="l_n n_n c_n l_e n_e c_e" kit END
+
+	// spell choices
+
+	LAF assign_bonus_spells STR_VAR kit spells="CLERIC_DOOM CLERIC_KNOW_ALIGNMENT CLERIC_INVISIBILITY_PURGE CLERIC_FAR_SIGHT CLERIC_TRUE_SIGHT CLERIC_WONDROUS_RECALL CLERIC_IMPERVIOUS_SANCTITY_OF_MIND" END
+
+
+
+END
+
+DEFINE_ACTION_FUNCTION oghma_shared BEGIN
+
+	LAF include STR_VAR file=log_favored_weapon.tph locbase=shared END
+	LAF log_favored_weapon STR_VAR god=OGHMA weapon=longsword END
+
+	
+	LAF check_label STR_VAR label=dw#oghma_shared RET value END
+	ACTION_IF !value BEGIN
+		LAF make_label STR_VAR label=dw#oghma_shared END
+
+		spl.make[%spl_oghma_innate%]
+		[
+			m.ab.add{}
+			m.ab_fx.add{s_opcode=21 s_target=2 s_timing=0 s_parameter1=9 s_duration=9999999}
+		]
+
+		LAF splconv STR_VAR spell="%WIZARD_IDENTIFY%" new_type=innate RET_ARRAY splconv_array END
+		LAF splconv STR_VAR spell="%WIZARD_SECRET_WORD%" new_type=innate RET_ARRAY splconv_array END
+		LAF splconv STR_VAR spell="%WIZARD_PIERCE_MAGIC%" new_type=innate RET_ARRAY splconv_array END
+
+
+		LAF splconv_get_name STR_VAR spell="%WIZARD_IDENTIFY%" new_type=innate RET spl_oghma_identify=new_resref END
+		LAF splconv_get_name STR_VAR spell="%WIZARD_SECRET_WORD%" new_type=innate RET spl_oghma_secret_word=new_resref END
+		LAF splconv_get_name STR_VAR spell="%WIZARD_PIERCE_MAGIC%" new_type=innate RET spl_oghma_pierce_magic=new_resref END
+
+	END
+
+END

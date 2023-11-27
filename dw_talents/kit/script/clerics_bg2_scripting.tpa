@@ -1,0 +1,102 @@
+DEFINE_ACTION_FUNCTION clerics_bg2_scripting BEGIN
+
+	// rename Yoshimo's heart
+	
+	STRING_SET_EVALUATE 1087 @1000
+
+	// discount in main Lathander temple
+
+	<<<<<<<< .../stratagems-inline/temp.baf
+	IF
+		!Global("%var_athkatla_lathander_discount%","GLOBAL",1)
+		Global("dw-lathander-kit","GLOBAL",1)
+	THEN
+		RESPONSE #100
+			SetGlobal("%var_athkatla_lathander_discount%","GLOBAL",1)
+			ChangeStoreMarkup("temlath",70,130)
+			Continue()
+	END
+	>>>>>>>>
+
+	LAF extend_area_script INT_VAR inline=1 STR_VAR area=ar0902 top=temp END
+
+	// discount in main Helm temple
+	
+	<<<<<<<< .../stratagems-inline/temp.baf
+	IF
+		!Global("%var_athkatla_helm_discount%","GLOBAL",1)
+		Global("dw-helm-kit","GLOBAL",1)
+	THEN
+		RESPONSE #100
+			SetGlobal("%var_athkatla_helm_discount%","GLOBAL",1)
+			ChangeStoreMarkup("temhelm",70,130)
+			Continue()
+	END
+	>>>>>>>>
+
+	LAF extend_area_script INT_VAR inline=1 STR_VAR area=ar0901 top=temp END
+	
+	// discount in main Talos temple
+
+	<<<<<<<< .../stratagems-inline/temp.baf
+	IF
+		!Global("%var_athkatla_talos_discount%","GLOBAL",1)
+		Global("dw-talos-kit","GLOBAL",1)
+	THEN
+		RESPONSE #100
+			SetGlobal("%var_athkatla_talos_discount%","GLOBAL",1)
+			ChangeStoreMarkup("temtalos",70,130)
+			Continue()
+	END
+	>>>>>>>>
+
+	LAF extend_area_script INT_VAR inline=1 STR_VAR area=ar0904 top=temp END
+	
+	// discount in Oghma temple
+	
+		<<<<<<<< .../stratagems-inline/temp.baf
+	IF
+		!Global("%var_athkatla_oghma_discount%","GLOBAL",1)
+		Global("dw-oghma-kit","GLOBAL",1)
+	THEN
+		RESPONSE #100
+			SetGlobal("%var_athkatla_oghma_discount%","GLOBAL",1)
+			ChangeStoreMarkup("doghma",70,130)
+			Continue()
+	END
+	>>>>>>>>
+
+	LAF extend_area_script INT_VAR inline=1 STR_VAR area=ar0319 top=temp END
+
+	// discount in Ilmater temples
+	
+	<<<<<<<< .../stratagems-inline/temp.baf
+	IF
+		!Global("%var_promenade_ilmater_discount%","GLOBAL",1)
+		Global("dw-ilmater-kit","GLOBAL",1)
+	THEN
+		RESPONSE #100
+			SetGlobal("%var_promenade_ilmater_discount%","GLOBAL",1)
+			ChangeStoreMarkup("wilmat",70,130)
+			Continue()
+	END
+	>>>>>>>>
+	
+	LAF extend_area_script INT_VAR inline=1 STR_VAR area=ar0703 top=temp END
+
+	<<<<<<<< .../stratagems-inline/temp.baf
+	IF
+		!Global("%var_slum_ilmater_discount%","GLOBAL",1)
+		Global("dw-ilmater-kit","GLOBAL",1)
+	THEN
+		RESPONSE #100
+			SetGlobal("%var_slum_ilmater_discount%","GLOBAL",1)
+			ChangeStoreMarkup("slilmat",70,130)
+			Continue()
+	END
+	>>>>>>>>
+
+	LAF extend_area_script INT_VAR inline=1 STR_VAR area=ar0408 top=temp END
+	
+
+END

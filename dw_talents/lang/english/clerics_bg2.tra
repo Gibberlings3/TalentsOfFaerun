@@ -1,0 +1,39 @@
+@0  = ~The temple superior at the Waukeenar temple agreed to search Barl's chambers and returned to report that he had found alchemical equipment - and, amusingly, a holy symbol to Talona, my Lady of Poison. Barl as much as admitted his guilt and attacked us. So be it - one so bumbling as he deserves death. If only these fool halflings knew the truth of my own faith!~
+@1  = ~Truly?... Well, after all, Baervan is a gnomish god. Perhaps it seems presumptuous to you that an elf should follow his teachings, but after I lost my wings, I could not bear to turn to my winged goddess, Aerie Faenya. I was filled with utter loss. It was Quayle who consoled me and renewed my faith.~
+@2  = ~Truly? I suppose it was silly to think that other than the gnomes, I was the only one in all the wide world who had come to love the ways of Baervan. He must have meant us to meet like this.~
+@3  = ~After I lost my wings, I could not bear to turn to my winged goddess, Aerie Faenya. I was filled with utter loss. It was Quayle who consoled me and renewed my faith.~
+@4  = ~Thank you for saying so, <CHARNAME>. I think it is a little odd, but who am I to argue with another of his clerics? Regardless, I am a flightless girl lost in a strange world. I will take what comfort I can get.~
+@5  = ~I understand. I too follow the Masked Leaf.~
+@6  = ~Of course not. Baervan and Chiktikka will always be there to love and protect one who walks in their gentle ways.~
+@7  = ~You are very insightful, <CHARNAME>... but then, you too know the mysteries of Nightsinger. Yes, I have lost so much: my faith, my home, even the darkness itself.... Shar has returned some of it to me, and I am grateful to her.~
+@8  = ~But Shar is mistress of darkness and loss, and you have lost so much.~
+@9  = ~As a mortal you have given him your allegiance, but once you ascend to godhood he may see you as a rival and a threat.~
+@10  = ~You know who I am, of course. You feel my gaze as you pray at night.~
+@11  = ~Recently I've recovered from a little bout of madness... only to find the seedlings of the former holder of my office everywhere, like weeds.~
+@12  = ~Things are starting to resolve themselves, and there's only a bare few of the spawn left. Bhaalspawn like yourself... very powerful, very resourceful mortals. Like I once was. You can imagine my concern, hm?~
+@13  = ~You think I will challenge you for the portfolio of Murder.~
+@14  = ~You wish to ensure that one of your own faithful prevails.~
+@15  = ~Perhaps. Many eventualities have crossed my mind. That is why I am here: to gauge your loyalty--or your threat--to me.~
+@16  = ~Perhaps. Many eventualities have crossed my mind. I am here to gauge your loyalty--or your threat--to me.~
+@17  = ~Then you should fear me, Cyric. I'm coming for you. I *will* achieve my destiny.~
+@18  = ~My loyalty is yours, my Lord; I will defeat the other Bhaalspawn in your name!~
+@19  = ~I have nothing to say. You know me, and can form your own conclusions.~
+@20  = ~Lies and deception... that is my portfolio, and that is all I expect from my followers. I wouldn't have it any other way. Unfortunately, though, you have outgrown yourself.~
+@21  = ~I have half a mind to cast you from my faith and strip you of your power... but alas, you are half a god now yourself, and have wormed your way within my portfolio too tenaciously to discard you without great effort and strife.~
+@22  = ~Lies and deception... that is my portfolio, and that is all I expect from my followers. I wouldn't have it any other way.~
+@23  = ~If you get far enough, I will grant you the realm of Murder, and you will sit as my ally. It is not a position that has lasted well in the past, but perhaps you can change that. In any case, rest assured that the moment you betray me even Ao will not prevent me stripping it from you.~
+@24  = ~So, <CHARNAME>, *are* you worthy of my favour? Through strife we learn our true merit; time, I think, to test your mettle against some of my other servants. Perhaps we will meet again. I suggest you prepare yourself.~
+@25  = ~Athkatla is a harsh place, and our god's compassion is much needed. I can only advise you to follow the teachings, <PRO_BROTHERSISTER>, and bring what mercy and aid you can for the suffering people of the city. Take their burdens upon your shoulders; you will bend, but if Ilmater favors you, you will not break.~
+@26  = ~I serve the Crying God myself. Is there any advice you can give me?~
+@27  = ~I have the heart of a man who died in shame, brother. I seek your aid - I am too entwined in that man's story myself to trust my judgement alone.~
+@28  = ~If you walk in the Crying God's path, seek out the children of the city. So many are lost and afraid, in need of endurance and of a respite from suffering.~
+@29  = ~I have the heart of a man who died in shame, sister. I seek your aid - I am too entwined in that man's story myself to trust my judgement alone.~
+@30  = ~Welcome, scholar. Word of your presence in the city has reached our ears, thanks to the beneficence of Oghma. A servant of the Lord of Knowledge is always welcome in this house. What can I provide for you?~
+@31  = ~I'd heard word that you kept the faith, my <PRO_LADYLORD>, but I'd not dared believe it. I'm honored to preach the word of Tempus under your roof.~
+@32  = ~A follower of Tempus will always be welcome in this keep. The chapel is yours to use, good Bolumir, and glory to the Lord of Battle!~
+
+@1000="The heart of Yoshimo is to be taken to a temple of Ilmater to remove the geas and grant the thief peace in death.
+
+STATISTICS:
+
+Weight: 2"

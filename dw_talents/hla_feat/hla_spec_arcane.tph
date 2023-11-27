@@ -1,0 +1,1090 @@
+DEFINE_PATCH_FUNCTION WIZARD_AEGIS BEGIN
+
+	LPF scs_style_hla END
+
+	// 85%->100%
+	
+	LPF ALTER_EFFECT INT_VAR match_parameter1=85 parameter1=100 END
+	
+	// CT 1
+	
+	LPF ALTER_SPELL_HEADER INT_VAR speed=1 END
+
+
+END
+
+//////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION WIZARD_RUNE_OF_IMMUNITY BEGIN
+
+	LPF scs_style_hla END
+	
+
+END
+
+//////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION WIZARD_ADAMANTITE_BODY BEGIN
+
+	LPF scs_style_hla END
+	LPF DELETE_EFFECT STR_VAR match_function="READ_SHORT 0x0 opcode   value=(opcode=12 OR opcode=40 OR opcode=45 OR opcode=60 OR opcode=93)" END
+	LPF CLONE_EFFECT INT_VAR match_opcode=0 opcode=189 parameter1="-4" parameter2=0 END	
+
+END
+
+//////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION WIZARD_CREATE_FLESH_GOLEM BEGIN
+
+	LPF scs_style_hla END
+	LPF ALTER_SPELL_HEADER INT_VAR speed=5 END
+	
+	SPRINT resref "%SOURCE_RES%"
+	INNER_ACTION BEGIN
+	// break damage off into separate spell
+		COPY_EXISTING "%resref%.spl" "override/%spl_flesh_golem_payload_high%.spl"
+			LPF ALTER_EFFECT INT_VAR resist_dispel=0 END
+			LPF DELETE_EFFECT STR_VAR match_function="!(SHORT_AT 0x0=12)" END
+	// summoned allegiance matches caster
+		COPY_EXISTING "tg#gole.eff" override WRITE_LONG 0x20 0
+			
+
+	END
+
+	LPF DELETE_EFFECT INT_VAR match_opcode=12 END // remove damage
+	LPF ALTER_EFFECT INT_VAR resist_dispel=0 dicenumber=99 dicesize=13 END // split by level
+	LPF CLONE_EFFECT INT_VAR dicenumber=12 dicesize=0 save_vs_polymorph=0 END
+	LPF ADD_SPELL_EFFECT INT_VAR target=2 opcode=324 duration=1 parameter2=1 insert_point=0 STR_VAR resource="%resref" END // undead
+	LPF ADD_SPELL_EFFECT INT_VAR target=2 opcode=324 duration=1 parameter2=113 parameter1=2 insert_point=0 STR_VAR resource="%resref%" END // animal
+	LPF ADD_SPELL_EFFECT INT_VAR target=2 opcode=324 duration=1 parameter2=113 parameter1=255 insert_point=0 STR_VAR resource="%resref%" END // monster
+	LPF ADD_SPELL_EFFECT INT_VAR target=2 opcode=324 duration=1 parameter2=9 insert_point=0 STR_VAR resource="%resref%" END // elementals
+	LPF ADD_SPELL_EFFECT INT_VAR target=2 opcode=324 duration=1 parameter2=27 insert_point=0 STR_VAR resource="%resref%"  END // golems
+	LPF ADD_SPELL_EFFECT INT_VAR target=2 opcode=326 timing=4 duration=1 STR_VAR resource="%spl_flesh_golem_payload_high%" END
+END
+
+//////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION WIZARD_IMPROVED_ALACRITY BEGIN
+
+	LPF scs_style_hla END
+	
+END
+
+//////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION WIZARD_SUMMON_PLANATAR_GOOD BEGIN
+
+	LPF scs_style_hla END
+	
+END
+
+//////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION WIZARD_WILDSTRIKE BEGIN
+
+	LPF scs_style_hla END
+	
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION WIZARD_DEMON_BINDING
+BEGIN
+   // resolve the stats needed
+   LPF ds_resolve_stat INT_VAR STR_VAR id=DW_POWER_UPGRADE_M1 RET stat_ind_low=stat_ind END
+   LPF ds_resolve_stat INT_VAR STR_VAR id=DW_POWER_UPGRADE_M2 RET stat_ind_high=stat_ind END
+   // setup the main spell
+   
+   LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=1 parameter1=stat_ind_low parameter2=110 STR_VAR resource="%spl_demon_binding_helper%" END // if initial power already possessed, grant advanced power
+   LPF ADD_SPELL_EFFECT INT_VAR opcode=318 target=1 parameter1=stat_ind_low parameter2=110 timing=0 duration=1 STR_VAR resource="%SOURCE_RES%" END // if initial power already possessed, block spell
+   LPF ADD_SPELL_EFFECT INT_VAR opcode=328 target=1 timing=9 parameter2=stat_ind_low special=1 END // grant initial power
+
+   // make the helper spell
+    INNER_ACTION BEGIN
+		spl.make[%spl_demon_binding_helper%]
+		[
+			m.ab.add{}
+			m.ab_fx.add{s_opcode=328 s_special=1 s_target=2 s_timing=9 s_parameter2=stat_ind_high}
+		]
+	END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION WIZARD_WISHCRAFT
+BEGIN
+
+// resolve stat
+
+   LPF ds_resolve_stat STR_VAR id=DW_POWER_UPGRADE_M3 RET stat_ind END
+
+// apply it
+	
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=328 special=1 timing=9 target=1 parameter2=stat_ind END
+
+// the dialog files
+	INNER_ACTION BEGIN
+<<<<<<<<   .../stratagems-inline/25wishadd.d
+APPEND WISH25
+  IF WEIGHT #-999 ~CheckSpellState(LastTalkedToBy,%stat_ind%)~ THEN BEGIN step1 SAY @3173
+      IF ~~ THEN DO ~SetupWish(4,1)~ GOTO step2 END
+  
+  IF ~~ THEN BEGIN step2 SAY @3174
+      IF ~~ THEN GOTO 12 END
+END
+>>>>>>>>
+
+		COMPILE ".../stratagems-inline/25wishadd.d" EVALUATE_BUFFER
+
+
+		COPY_EXISTING wish.dlg override
+		   DECOMPILE_AND_PATCH BEGIN
+			  REPLACE_TEXTUALLY "CheckStatGT(LastTalkedToBy,\([0-9]+\),WIS)"  "OR(2)CheckStatGT(LastTalkedToBy,\1,WIS)CheckSpellState(LastTalkedToBy,%stat_ind%)"
+			  REPLACE_TEXTUALLY "CheckStatLT(LastTalkedToBy,\([0-9]+\),WIS)"  "CheckStatLT(LastTalkedToBy,\1,WIS)!CheckSpellState(LastTalkedToBy,%stat_ind%)"
+		   END
+		BUT_ONLY
+
+	END
+
+END
+
+//////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION WIZARD_FORESIGHT BEGIN
+
+	LPF scs_style_hla END
+	
+	// casting time=1
+	
+	LPF ALTER_SPELL_HEADER INT_VAR speed=1 END
+	
+END
+
+//////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION WIZARD_REVEAL BEGIN
+
+	LPF scs_style_hla END
+	
+	// names for secondary spells
+	
+	INNER_ACTION BEGIN
+	
+		COPY_EXISTING "li#rev2.spl" override SAY 0x8 @3181
+		COPY_EXISTING "li#rev3.spl" override SAY 0x8 @3183
+	
+	END
+	
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION WIZARD_DIVINERS_FOCUS
+BEGIN
+   // get the variable
+   LPF ds_resolve_stat INT_VAR STR_VAR id=DW_POWER_UPGRADE_M4 RET stat_ind END
+   
+// apply it
+	
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=328 special=1 timing=9 target=1 parameter2=stat_ind END
+   
+   // modify the spells affected
+   
+    INNER_ACTION BEGIN
+   
+		ACTION_FOR_EACH spell IN "%WIZARD_DETECT_INVISIBILITY%" "%WIZARD_ORACLE%" "%WIZARD_TRUE_SIGHT%" "%CLERIC_TRUE_SIGHT% li#reve" BEGIN
+			COPY_EXISTING "%spell%.spl" override
+				LPF ADD_SPELL_EFFECT INT_VAR target=1 opcode=318 duration=1 parameter1=stat_ind parameter2=111 STR_VAR resource="%spell%" END // close down if don't have the variable
+				LPF ADD_SPELL_EFFECT INT_VAR target=1 opcode=193 duration=60 parameter2=1 END // apply effect
+			IF_EXISTS
+		END
+		
+	END
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION WIZARD_PIERCE_THE_VEIL
+BEGIN
+   
+   INNER_ACTION BEGIN
+	// at-will detect invisible
+		spl.copy[%WIZARD_DETECT_INVISIBILITY%=>%spl_pierce_veil_helper%]
+		[
+			m_level=1
+			m_type:=innate
+			m.ab.alter{s_location=4}
+			m.ab_fx.add{s_opcode=172 s_target=1 s_timing=1 s_resource:=%spl_pierce_veil_helper%}
+			m.ab_fx.add{s_opcode=171 s_target=1 s_timing=1 s_resource:=%spl_pierce_veil_helper%}
+		]
+   
+   
+   END
+   
+   // grant that spell
+   
+   LPF add_feat_effect INT_VAR opcode=171 STR_VAR resource="%spl_pierce_veil_helper%" END
+   
+   // see through invisibility
+   
+   LPF add_feat_effect INT_VAR opcode=193 parameter2=1 END
+   
+   
+END
+
+
+//////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION WIZARD_SPELL_WORM BEGIN
+
+	LPF scs_style_hla END
+	
+END
+
+//////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION WIZARD_TRUE_DOMINION BEGIN
+
+	LPF scs_style_hla END
+	SPRINT resref "%SOURCE_RES%"
+	spell_duration=10*6
+	
+	// edit the main (wrap) spell
+	
+	// remove elf/half-elf immunity
+	LPF DELETE_EFFECT INT_VAR match_opcode=324 match_parameter2=19 END
+	LPF DELETE_EFFECT INT_VAR match_opcode=324 match_parameter2=15 END
+	// power=10, no saving throw, bypass MR	
+	LPF ALTER_EFFECT INT_VAR resist_dispel=3 savingthrow=0 power=10 END	
+	// new icon (pro tem, from IWD2)	
+	LPF ALTER_SPELL_HEADER STR_VAR icon="%resref%" END
+	
+	// redirect subspells
+	REPLACE_TEXTUALLY SPWI506 "%resref%" (8)
+	
+	INNER_ACTION BEGIN
+		
+		// install icon
+		COPY "%MOD_FOLDER%/%component_loc%/resource/iwd2_spwi507b.bam" "override/%resref%.bam"
+		
+		// copy any subspells generated by dw_opcode
+		ACTION_CLEAR_ARRAY subspells
+		COPY_EXISTING_REGEXP - "SPWI506.*\.spl" nowhere
+			SPRINT $subspells("%SOURCE_RES%") ""
+		ACTION_PHP_EACH subspells AS spell=>discard BEGIN
+			COPY_EXISTING "%spell%.spl" override
+				LPF ALTER_EFFECT INT_VAR power=10 END
+				LPF ALTER_EFFECT INT_VAR duration=spell_duration STR_VAR match_function="(LONG_AT 0xe)>0" END
+		END
+
+	END
+	
+	
+END
+//////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION WIZARD_MASS_DOMINATION BEGIN
+
+	LPF scs_style_hla END
+	SPRINT resref "%SOURCE_RES%"
+	
+	// power=10
+	
+	LPF ALTER_EFFECT INT_VAR power=10 END
+
+	// redirect subspells
+	REPLACE_TEXTUALLY SPWI506 "%resref%" (8)
+
+	
+	// new icon (pro tem, from IWD2), new projectile
+	
+	LPF ALTER_SPELL_HEADER INT_VAR projectile=IDS_OF_SYMBOL (projectl spargonp)+1 STR_VAR icon="%resref%" END
+	
+	INNER_ACTION BEGIN
+		COPY "%MOD_FOLDER%/%component_loc%/resource/iwd2_spwi911b.bam" "override/%resref%.bam"
+
+		// copy any subspells generated by dw_opcode
+		ACTION_CLEAR_ARRAY subspells
+		COPY_EXISTING_REGEXP - "SPWI506.*\.spl" nowhere
+			SPRINT $subspells("%SOURCE_RES%") ""
+		ACTION_PHP_EACH subspells AS spell=>discard BEGIN
+			COPY_EXISTING "%spell%.spl" override
+				LPF ALTER_EFFECT INT_VAR power=10 END
+				LPF ALTER_EFFECT STR_VAR match_function="(LONG_AT 0xe)>0" END
+		END
+
+
+	END
+	
+	
+END
+
+//////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION WIZARD_MIRRORED_CLONES BEGIN
+
+	LPF scs_style_hla END
+	
+	LPF ALTER_EFFECT INT_VAR match_opcode=206 parameter1=RESOLVE_STR_REF (@3196) END
+
+	
+END
+
+///////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION WIZARD_SHADOWCLOAK BEGIN
+
+	// our spell is a modified clone of II
+	LPF scs_style_hla END
+	
+	// initial changes
+	LPF struct_read RET_ARRAY m=struct END
+	m.ab.delete{s_level>1}
+	m.ab.alter{s_icon:=spcl938c s_target=5 s_casting_time=1}
+	m.ab_fx.alter{s_target=1 s_power=10 s_duration=(s_duration=0?0:30)}
+	m.ab_fx.add{s_power=10 s_target=1 s_duration=30 s_opcode=69}  // nondetection
+	
+	// write them back
+	LPF struct_write STR_VAR struct=m END
+	
+	// make clones; patch them in
+	
+	m.ab_fx.delete{s_opcode=139 OR s_opcode=141 OR s_opcode=174}
+	
+	PATCH_FOR_EACH del_dur IN 24 18 12 6 BEGIN
+		m.ab_fx.alter{s_duration=s_duration=0?0:del_dur}
+		INNER_ACTION BEGIN
+			CREATE spl "dwshd%del_dur%"
+				LPF struct_write STR_VAR struct=m END
+		END
+		delay_time=30 - del_dur
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=146 target=1 timing=4 duration=delay_time parameter2=1 STR_VAR resource="dwshd%del_dur%" END
+	END
+
+
+END
+
+//////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION WIZARD_DRAGONS_BREATH BEGIN
+
+	LPF scs_style_hla END
+	
+END
+
+//////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION WIZARD_ENERGY_BLADES BEGIN
+
+	LPF scs_style_hla END
+	
+END
+
+//////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION WIZARD_COMET BEGIN
+
+	LPF scs_style_hla END
+	
+END
+
+//////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION WIZARD_MALAVONS_FURY BEGIN
+
+	LPF scs_style_hla END
+	
+END
+
+
+//////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION WIZARD_DEATH_FIELD BEGIN
+
+	LPF scs_style_hla END
+
+	// use tg bam
+	
+	LPF ALTER_SPELL_HEADER STR_VAR icon=tg#dthf END
+	
+	// kill summons
+	
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=177 target=2 parameter1=6 parameter2=7 STR_VAR resource=li#dth2 END
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=177 target=2 parameter1=6 parameter2=7 STR_VAR resource=destself END
+	
+	// kill anything with <30 hp
+	
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=318 target=2 timing=0 duration=1 parameter1=31 parameter2=144 STR_VAR resource="%SOURCE_RES%" END
+	LPF CLONE_EFFECT INT_VAR match_opcode=141 match_dicenumber=8 dicenumber=0 STR_VAR insert=last END
+	LPF CLONE_EFFECT INT_VAR match_opcode=13 match_dicenumber=8 dicenumber=0 STR_VAR insert=last END
+	
+	// change dicenumber from 8 to 12
+	
+	LPF ALTER_EFFECT INT_VAR match_dicenumber=8 dicenumber=12 END
+END
+
+//////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION WIZARD_DARK_PACT BEGIN
+
+	LPF scs_style_hla END
+
+	// set splprot entries
+   LPF resolve_splprot_entry INT_VAR stat=18 val="-1" STR_VAR relation=less_than_equal description="RESISTMAGIC<=n" RET splprot_num_mr=value END
+   LPF resolve_splprot_entry INT_VAR stat=73 val="-1" STR_VAR relation=less_than_equal description="MAGICDAMAGERESIST<=n" RET splprot_num_mdr=value END
+
+	// strip out most of the payload, leaving only the Con penalty and damage to caster
+	LPF DELETE_EFFECT INT_VAR match_opcode=177 END
+	LPF DELETE_EFFECT INT_VAR match_opcode=101 END
+
+	// only works on undead
+	LPF ADD_SPELL_EFFECT INT_VAR insert_point=0 opcode=326 target=2 parameter2=2 STR_VAR resource="%spl_dark_pact_only_undead%" END	
+	LPF ADD_SPELL_EFFECT INT_VAR insert_point=1 opcode=318 target=2 parameter2=2 STR_VAR resource="%SOURCE_RES%" END
+
+	// does not work on caster
+	LPF ADD_SPELL_EFFECT INT_VAR insert_point=0 opcode=326 target=2 parameter2=43 STR_VAR resource="%spl_dark_pact_not_caster%" END	
+	LPF ADD_SPELL_EFFECT INT_VAR insert_point=1 opcode=318 target=2 parameter2=2 STR_VAR resource="%SOURCE_RES%" END
+
+	duration=600
+	//hit points +100%
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=18 target=2 parameter1=100 parameter2=2 duration END
+	//+2 to hit
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=54 target=2 parameter1=2 duration END
+	//+2 damage
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=73  target=2 parameter1=2 duration END
+	//+2 to all saves
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=325 target=2 parameter1=2 duration END
+	// immunity to turn
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=297 target=2 parameter2=1 duration END
+	// improved haste
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=16 target=2 parameter2=1 duration END
+	// 50% MR
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 parameter1=50 parameter2=splprot_num_mr timing=1 STR_VAR resource="%spl_mr_50%" END
+	// 50% MDR
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 parameter1=50 parameter2=splprot_num_mdr timing=1 STR_VAR resource="%spl_mdr_50%" END
+	// aesthetics
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=177 target=2 duration parameter2=2 STR_VAR resource=tg#dar2 END
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=177 target=2 duration parameter2=2 STR_VAR resource=tg#dar3 END
+
+	// make secondary spells
+	
+	INNER_ACTION BEGIN
+	
+		spl.make[%spl_mr_50%]
+		[
+			m.ab.add{}
+			m.ab_fx.add{s_opcode=166 s_target=2 s_duration=duration s_parameter1=50 s_parameter2=1}
+		]
+		spl.make[%spl_mdr_50%]
+		[
+			m.ab.add{}
+			m.ab_fx.add{s_opcode=31 s_target=2 s_duration=duration s_parameter1=50 s_parameter2=1}
+		]	
+		spl.make[%spl_dark_pact_only_undead%]
+		[		
+			m.ab.add{}
+			m.ab_fx.add{s_opcode=139 s_target=2 s_timing=1 s_parameter1=RESOLVE_STR_REF (@3211)}
+		]
+		spl.make[%spl_dark_pact_not_caster%]
+		[		
+			m.ab.add{}
+			m.ab_fx.add{s_opcode=139 s_target=2 s_timing=1 s_parameter1=RESOLVE_STR_REF (@3212)}
+		]
+	
+	END
+END
+
+//////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION WIZARD_CREATE_GREATER_BONEGUARD BEGIN
+
+	LPF scs_style_hla END
+	LPF ALTER_SPELL_HEADER INT_VAR speed=5 END
+
+	INNER_ACTION BEGIN
+		COPY_EXISTING "bonefsu.cre" override
+			SAY 0x8 @3215
+			SAY 0xc @3215
+		COPY_EXISTING "bonesu2.cre" override
+			SAY 0x8 @3216
+			SAY 0xc @3216	
+		ACTION_FOR_EACH weapon IN bonegol1 bonegol2 BEGIN
+			COPY_EXISTING "%weapon%.itm" override
+				WRITE_LONG 0x8 10966
+				WRITE_LONG 0xc 10966
+		END
+	END
+
+END
+
+//////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION WIZARD_SUMMON_ULTROLOTH BEGIN
+
+	LPF scs_style_hla END // since our template is Call Fallen Planetar
+	SPRINT resref "%SOURCE_RES%"
+	WRITE_BYTE 0x25 2 // conjuration
+	
+	INNER_ACTION BEGIN
+	
+		/// build the ultroloth
+		// ultroloths are built as clones of the Fallen Planetar, with modified appearence/spells/script
+		
+		LAF run STR_VAR file=fiend_spells_basic locbase=fiend END
+
+		cre.copy[planevil=>%cre_ultroloth%]
+		[
+			m_both_names:=@3219
+			m_animation:=monk
+			m_alignment:=neutral_evil
+			// resistances more like PnP
+			m_resist_acid=100
+			m_resist_cold=50
+			m_resist_magic_cold=50
+			m_resist_electricity=50
+			
+			// soundset taken from greater shadow
+			m_sound_attack1:=shadbg03
+			m_sound_attack2:=shadbg04
+			m_sound_damage:=shadbg07
+			m_sound_dying:=shadbg09
+			m_sound_battle_cry1:=shadbg01
+			m_sound_battle_cry2:=shadbg02
+			m_sound_select_common1:=shadbg01
+			m_sound_select_common2:=shadbg02
+			
+			// colors
+			
+			m_color_minor=75
+			m_color_major=75
+			m_color_leather=75
+			m_color_skin=130
+			
+			// give new weapon
+			
+			m.cre_swap_items{planetar=>%itm_ultroloth_sword%}
+			
+			// remove existing spells
+			m.cre_remove_spells{all}
+			
+			// assign some new spells:
+			
+			m.cre_add_spells{
+				INNATE_FIEND_RAY_OF_ENFEEBLEMENT 
+				INNATE_FIEND_IMPROVED_INVISIBILITY 
+				INNATE_FIEND_DOMINATION 
+				CLERIC_CALL_LIGHTNING 
+				CLERIC_FIRE_STORM
+				WIZARD_NPC_SYMBOL_DEATH
+				}
+				
+			IF {VARIABLE_IS_SET WIZARD_GREAT_SHOUT} {{
+				m.cre_add_spells{WIZARD_GREAT_SHOUT}
+			}}
+			
+			// assign a script
+			
+			m_script_override:="%baf_ultroloth%"
+	
+			
+		
+		]
+		
+		LAF script_install STR_VAR script=baf_ultroloth location=resource END
+		
+		itm.copy[planetar=>%itm_ultroloth_sword%]
+		[
+			m_identified_name:=@3220
+			m.fx.alter{s_parameter1=73|match="s_opcode=7"}
+		]
+	
+		// build the EFF to summon the ultroloth
+		
+		eff.copy[spplan2=>%eff_ultroloth%]
+		[
+			m_resource:="%cre_ultroloth%"
+		]
+	
+	
+	END
+	
+	// patch the effect into the spell
+	
+	PATCH_IF FILE_EXISTS_IN_GAME "spwi924a.spl" BEGIN
+		LPF ALTER_EFFECT INT_VAR match_opcode=146 STR_VAR resource="%resref%a" END
+		INNER_ACTION BEGIN
+			COPY_EXISTING "spwi924a.spl" "override/%resref%a.spl" 
+				LPF ALTER_EFFECT INT_VAR match_opcode=177 STR_VAR resource="%eff_ultroloth%" END
+		END
+	END ELSE BEGIN
+		LPF ALTER_EFFECT INT_VAR match_opcode=177 STR_VAR resource="%eff_ultroloth%" END
+	END
+	
+	
+
+END
+
+////////////////////////////////////////////////////////////
+DEFINE_PATCH_FUNCTION DRAGON_DISCIPLE_EMPOWERED_BREATH BEGIN
+
+	LPF dragon_disciple_setup END
+	INNER_ACTION BEGIN
+		LAF 2daq_extract INT_VAR rowname_column=1 STR_VAR resref=kitlist column=KITIDS RET_ARRAY kit_array=array END
+	END
+	PATCH_IF VARIABLE_IS_SET $kit_array(DW_DRAGON_DISCIPLE_BLACK) BEGIN
+	
+		LPF resolve_splprot_entry INT_VAR stat=152 val="-1" STR_VAR relation=equal RET splprot=value END
+		SET $kit_array(DW_DRAGON_DISCIPLE_RED)=$kit_array(DRAGON_DISCIPLE)
+		array.new{dd_array}
+		{
+			BLACK=>a
+			RED=>f
+			WHITE=>c
+			GREEN=>p
+			BLUE=>l
+		}
+		PHP_EACH dd_array AS color=>letter BEGIN
+			LPF add_feat_effect INT_VAR opcode=326 parameter1=$kit_array("DW_DRAGON_DISCIPLE_%color%") parameter2=splprot STR_VAR resource="dwdd%letter%b0" END
+		END
+		
+	
+	END ELSE BEGIN
+	
+		LPF add_feat_effect INT_VAR opcode=326 STR_VAR resource=dwddfb0 END
+	END
+	
+
+
+END
+
+////////////////////////////////////////////////////////////
+DEFINE_PATCH_FUNCTION DRAGON_DISCIPLE_LINGERING_BREATH BEGIN
+
+	LPF dragon_disciple_setup END
+	INNER_ACTION BEGIN
+		LAF 2daq_extract INT_VAR rowname_column=1 STR_VAR resref=kitlist column=KITIDS RET_ARRAY kit_array=array END
+	END
+	PATCH_IF VARIABLE_IS_SET $kit_array(DW_DRAGON_DISCIPLE_BLACK) BEGIN
+	
+		LPF resolve_splprot_entry INT_VAR stat=152 val="-1" STR_VAR relation=equal RET splprot=value END
+		SET $kit_array(DW_DRAGON_DISCIPLE_RED)=$kit_array(DRAGON_DISCIPLE)
+		array.new{dd_array}
+		{
+			BLACK=>a
+			RED=>f
+			WHITE=>c
+			GREEN=>p
+			BLUE=>l
+		}
+		PHP_EACH dd_array AS color=>letter BEGIN
+			LPF add_feat_effect INT_VAR opcode=326 parameter1=$kit_array("DW_DRAGON_DISCIPLE_%color%") parameter2=splprot STR_VAR resource="dwdd%letter%b4" END
+		END
+		
+	
+	END ELSE BEGIN
+	
+		LPF add_feat_effect INT_VAR opcode=326 STR_VAR resource=dwddfb4 END
+	END	
+
+END
+
+////////////////////////////////////////////////////////////
+DEFINE_PATCH_FUNCTION DRAGON_DISCIPLE_RECURRENT_BREATH BEGIN
+
+	LPF dragon_disciple_setup END
+	LPF ds_resolve_stat STR_VAR id=DW_POWER_UPGRADE_T2 RET stat_ind END
+	LPF add_feat_effect INT_VAR opcode=328 parameter2=stat_ind special=1 END
+
+END
+
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+DEFINE_PATCH_FUNCTION WIZARD_THUNDERSTORM BEGIN
+
+	LPF scs_style_hla END
+	// make the payload spell
+	INNER_ACTION BEGIN
+			
+		// sound effect (from PS:T chain05.wav)
+		COPY "%MOD_FOLDER%/%component_loc%/resource/thunder.wav" "override/dw-thndr.wav"
+
+		spl.copy[%CLERIC_CALL_LIGHTNING%=>%spl_thunderstorm_payload%]
+		[
+			m_name="-1"
+			m_outdoors_only=0
+			m.ab.delete{s_level>1}
+			m.ab_fx.delete{s_opcode=324}
+			m.ab_fx.alter{s_dicenumber=16 s_power=10 }
+			m.ab_fx.add{s_opcode=80 s_target=2 s_duration=18 s_save_vs_spell=1}
+			m.ab.alter{s_projectile=IDS_OF_SYMBOL (projectl SKYBOLT)}
+		]
+	END
+	
+	// main spell
+	
+	LPF DELETE_EFFECT END
+	LPF ALTER_SPELL_HEADER INT_VAR projectile=159 speed=4 END
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=146 target=2 timing=1 parameter2=1 STR_VAR resource="%spl_thunderstorm_payload%" END
+	LPF ADD_SPELL_EFFECT INT_VAR target=1 opcode=174 timing=1 STR_VAR resource=dw-thndr END
+	LPF scs_style_hla END
+
+	// new icon (pro tem, from IWD2)
+	
+	LPF ALTER_SPELL_HEADER STR_VAR icon="%spl_hla_thunderstorm%" END
+	
+	INNER_ACTION BEGIN
+		COPY "%MOD_FOLDER%/%component_loc%/resource/iwd2_sppr302b.bam" "override/%spl_hla_thunderstorm%.bam"
+	END
+
+
+END
+
+DEFINE_PATCH_FUNCTION WIZARD_ABYSSAL_FURY BEGIN
+
+	LPF scs_style_hla END
+	INNER_ACTION BEGIN
+		ACTION_FOR_EACH bam IN S077CRVS S077SCRT  BEGIN
+			COPY "%MOD_FOLDER%/%component_loc%/resource/%bam%.bam" override
+		END
+		
+		COPY "%MOD_FOLDER%/%component_loc%/resource/abyssal_fury_icon.bam" "override/%resref%.bam"
+
+		COPY "%MOD_FOLDER%/%component_loc%/resource/abyssal_fury_2.bam" "override/dw-abf2.bam"
+		COPY "%MOD_FOLDER%/%component_loc%/resource/abyssal_fury_3.bam" "override/dw-abf3.bam"
+
+		COPY "%MOD_FOLDER%/%component_loc%/resource/abyss02.wav" "override/dw-abf1.wav"
+		COPY "%MOD_FOLDER%/%component_loc%/resource/abyss03.wav" "override/dw-abf2.wav"
+		COPY "%MOD_FOLDER%/%component_loc%/resource/abyss04.wav" "override/dw-abf3.wav"
+		COPY "%MOD_FOLDER%/%component_loc%/resource/abyss05.wav" "override/dw-abf4.wav"
+		COPY "%MOD_FOLDER%/%component_loc%/resource/abyss06.wav" "override/dw-abf5.wav"
+		COPY "%MOD_FOLDER%/%component_loc%/resource/abyss07.wav" "override/dw-abf6.wav"
+
+		COPY "%MOD_FOLDER%/%component_loc%/resource/ccdamah.vvc" "override/dw-abf1.vvc"
+			WRITE_ASCII 0x8 S077SCRT
+
+		<<<<<<<<.../stratagems-inline/blank
+		>>>>>>>>
+
+	
+		OUTER_SET time_in_abyss=5
+		COPY ".../stratagems-inline/blank" "override/dw-abys.vef"
+			number_1=0
+			number_2=0
+			DELETE_BYTES 0x0 BUFFER_LENGTH
+			INSERT_BYTES 0x0 0x18
+			WRITE_ASCII 0x0 "VEF "
+			WRITE_LONG 0x8 0x18
+			INSERT_BYTES 0x18 0xe0
+			++number_1
+			offset=0x18
+			WRITE_LONG (offset+0xc) 1 // vvc/bam
+			WRITE_ASCII (offset+0x10) "s077crvs"
+			
+			INSERT_BYTES 0x18 0xe0
+			++number_1
+			offset=0x18
+			WRITE_LONG (offset+0xc) 0 // wav
+			WRITE_ASCII (offset+0x10) "dw-abf1"
+
+			INSERT_BYTES offset+0xe0 0xe0
+			++number_1
+			offset +=0xe0
+			WRITE_LONG (offset+0xc) 1 
+			WRITE_ASCII (offset+0x10) "dw-abf2"
+			WRITE_LONG offset 0x20
+			INSERT_BYTES offset+0xe0 0xe0
+			++number_1
+			offset +=0xe0
+			WRITE_LONG (offset+0xc) 1 
+			WRITE_ASCII (offset+0x10) "dw-abf3"
+			WRITE_LONG offset 0x40
+			INSERT_BYTES offset+0xe0 0xe0
+			++number_1
+			offset +=0xe0
+			WRITE_LONG (offset+0xc) 1 // vvc/bam
+			WRITE_ASCII (offset+0x10) "s077crvs"
+			WRITE_LONG offset 0x80+40
+
+			INSERT_BYTES 0x18 0xe0
+			++number_1
+			offset=0x18
+			WRITE_LONG (offset+0xc) 0 // wav
+			WRITE_ASCII (offset+0x10) "dw-abf1"
+			WRITE_LONG offset 0x80+45
+
+			INSERT_BYTES offset+0xe0 0xe0
+			++number_1
+			offset +=0xe0
+			WRITE_LONG (offset+0xc) 1 // vvc/bam
+			WRITE_ASCII (offset+0x10) "dw-abf3"
+			WRITE_LONG offset 0xa0+45
+			WRITE_LONG 0xc number_1
+			WRITE_LONG 0x10 (0x18+0xe0*number_1)
+			WRITE_LONG 0x14 number_2
+
+			
+		COPY_EXISTING "SPWI912.SPL" "override/%spl_hla_abyssal_fury%b.spl"
+			LPF DELETE_SPELL_HEADER INT_VAR header_type="-1" min_level=100 END
+			LPF DELETE_EFFECT END
+			WRITE_LONG 0x8 "-1"
+			WRITE_BYTE 0x25 6
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=213 target=2 timing=0 duration=time_in_abyss parameter2=1 END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=174 target=2 timing=1 STR_VAR resource=dw-abf2 END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=13 target=2 timing=4 duration=time_in_abyss parameter2=8 save_vs_spell=1 END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=215 target=2 parameter2=1 timing=4 duration=time_in_abyss+1 STR_VAR resource=dw-abf1 END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=174 target=2 timing=4 duration=time_in_abyss+1 STR_VAR resource=dw-abf3  END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=215 target=2 parameter2=1 timing=4 duration=time_in_abyss+2 STR_VAR resource=dw-abf1  END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=215 target=2 parameter2=1 timing=4 duration=time_in_abyss+3 STR_VAR resource=dw-abf1  END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=174 target=2 timing=4 duration=time_in_abyss+3 STR_VAR resource=dw-abf4  END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=215 target=2 parameter2=1 timing=4 duration=time_in_abyss+4 STR_VAR resource=dw-abf1  END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=215 target=2 parameter2=1 timing=4 duration=time_in_abyss+5 STR_VAR resource=dw-abf1  END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=174 target=2 timing=4 duration=time_in_abyss+5 STR_VAR resource=dw-abf5  END
+			LPF CLONE_EFFECT INT_VAR match_opcode=215 opcode=12 dicesize=10 dicenumber=2 parameter2=0x100*0x10000 STR_VAR  resource="" END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 timing=4 duration=time_in_abyss+7 STR_VAR resource="%SOURCE_RES%" END	// otherwise animations seem to linger, for reasons that confuse me
+
+
+	END
+
+	LPF DELETE_SPELL_HEADER INT_VAR header_type="-1" min_level=100 END
+	LPF ALTER_SPELL_HEADER INT_VAR speed=3 STR_VAR icon="%resref%" END
+	LPF DELETE_EFFECT END
+	LPF resolve_splprot_entry INT_VAR stat=0x102 val="-1" STR_VAR relation=greater_equal RET splprot_num=value END // circle size>=N
+	LPF ADD_SPELL_EFFECT INT_VAR target=2 opcode=324 duration=1 parameter1=10 parameter2=splprot_num STR_VAR resource="%resref%" END // dragons
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=215 target=2 parameter2=2 timing=1 STR_VAR resource=dw-abys  END
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=185 target=2 parameter2=2 timing=0 duration=6 END
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 timing=4 duration=2 STR_VAR resource=dw-abysb  END
+
+
+
+END
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION WIZARD_BLOOD_TO_ICE BEGIN
+
+	savebonus="-2"
+
+	LPF scs_style_hla END
+	// change school to necromancy
+	WRITE_SHORT 0x22 9 // casting type
+	WRITE_BYTE 0x25 7 // school
+	WRITE_ASCII 0x10 CAS_M07 (8) // casting sound
+	
+	
+	SPRINT resref "%SOURCE_RES%"
+	
+	// power=10
+	
+	LPF ALTER_EFFECT INT_VAR power=10 END
+	
+	// new icon (pro tem, from IWD2), longer casting time 
+	
+	LPF ALTER_SPELL_HEADER INT_VAR speed=3 STR_VAR icon="%resref%" END
+	
+	INNER_ACTION BEGIN
+		COPY "%MOD_FOLDER%/%component_loc%/resource/iwd2_spwi318b.bam" "override/%resref%.bam"
+	END
+
+	//remove extant payload
+	
+	LPF DELETE_EFFECT END
+	
+	// immunity for dragons, undead, elementals, golems
+
+	LPF ADD_SPELL_EFFECT INT_VAR target=2 opcode=324 duration=1 parameter2=1 STR_VAR resource="%resref%" END // undead
+	LPF ADD_SPELL_EFFECT INT_VAR target=2 opcode=324 duration=1 parameter2=9 STR_VAR resource="%resref%" END // elementals
+	LPF ADD_SPELL_EFFECT INT_VAR target=2 opcode=324 duration=1 parameter2=27 STR_VAR resource="%resref%" END // golems
+
+	LPF resolve_splprot_entry INT_VAR stat=0x102 val="-1" STR_VAR relation=greater_equal RET splprot_num=value END // circle size>=N
+	LPF ADD_SPELL_EFFECT INT_VAR target=2 opcode=324 duration=1 parameter1=10 parameter2=splprot_num STR_VAR resource="%resref%" END // golems
+	// hold 6 seconds, save for 1/2
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=185 target=2 power=10 resist_dispel=3 duration=3 parameter2=2 END 
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=185 target=2 power=10 timing=4 resist_dispel=3 duration=3 parameter2=2 savebonus save_vs_spell=1 END 
+	// cold damage (no save)
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=12 target=2 power=10 resist_dispel=3 parameter1=17 timing=0 parameter2b=2 END
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=12 target=2 power=10 resist_dispel=3 parameter1=16 timing=4 duration=1 parameter2b=2 END
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=12 target=2 power=10 resist_dispel=3 parameter1=17 timing=4 duration=2 parameter2b=2 END
+	// cold damage (save to avoid)
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=12 target=2 power=10 resist_dispel=3 parameter1=17 timing=4 duration=3 parameter2b=2 savebonus save_vs_spell=1 END
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=12 target=2 power=10 resist_dispel=3 parameter1=16 timing=4 duration=4 parameter2b=2 savebonus save_vs_spell=1 END
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=12 target=2 power=10 resist_dispel=3 parameter1=17 timing=4 duration=5 parameter2b=2 savebonus save_vs_spell=1 END
+	//sparkle
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=141 target=2 power=10 resist_dispel=0 parameter2=2 timing=1 END
+	// sound effect (icelance travel)
+	INNER_ACTION BEGIN
+		COPY "%MOD_FOLDER%/%component_loc%/resource/icelance_tra.wav" "override/%resref%.wav"	
+	END
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=174 target=2 power=10 resist_dispel=0 timing=1 STR_VAR resource="%resref%" END
+	//color
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=8 target=2 power=10 resist_dispel=3 parameter1=93*0x100+155*0x10000+255*0x1000000 parameter2=255 duration=3 END
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=8 target=2 power=10 resist_dispel=3 parameter1=93*0x100+155*0x10000+255*0x1000000 parameter2=255 duration=3 timing=4 save_vs_spell=1 savebonus END
+	// remove effect, ending second hold
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 power=10 duration=6 timing=4 STR_VAR resource="%resref%" END
+END
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION WIZARD_GAZE_OF_THE_MEDUSA BEGIN
+
+	LPF scs_style_hla END
+
+	savebonus="-2"
+
+	LPF ALTER_SPELL_HEADER INT_VAR target=5 speed=4 projectile=159 STR_VAR icon="%resref%" END // INAREANP
+	LPF ALTER_EFFECT INT_VAR savebonus resist_dispel=0 END
+
+
+	INNER_ACTION BEGIN
+		COPY "%MOD_FOLDER%/%component_loc%/resource/spwi615b_iwd2.bam" "override/%resref%.bam"
+	END
+
+
+END
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION ELEMENTAL_IMMUNITY_FIRE BEGIN
+
+
+	LPF add_feat_effect INT_VAR opcode=30 parameter1=100 parameter2=1 END
+	LPF add_feat_effect INT_VAR opcode=84 parameter1=100 parameter2=1 END
+	LPF add_feat_effect INT_VAR opcode=142 parameter2=16 END
+	LPF add_feat_effect INT_VAR opcode=101 parameter2=30 END
+	LPF add_feat_effect INT_VAR opcode=101 parameter2=84 END
+	LPF add_feat_effect INT_VAR opcode=313 STR_VAR resource=dwelepro END // HLA flag to block multiple installs
+
+END
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION ELEMENTAL_IMMUNITY_ELECTRICITY BEGIN
+
+
+	LPF add_feat_effect INT_VAR opcode=29 parameter1=100 parameter2=1 END
+	LPF add_feat_effect INT_VAR opcode=142 parameter2=27 END
+	LPF add_feat_effect INT_VAR opcode=101 parameter2=29 END
+	LPF add_feat_effect INT_VAR opcode=313 STR_VAR resource=dwelepro END // HLA flag to block multiple installs
+
+END
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION ELEMENTAL_IMMUNITY_ACID BEGIN
+
+
+	LPF add_feat_effect INT_VAR opcode=27 parameter1=100 parameter2=1 END
+	LPF add_feat_effect INT_VAR opcode=142 parameter2=24 END
+	LPF add_feat_effect INT_VAR opcode=101 parameter2=27 END
+	LPF add_feat_effect INT_VAR opcode=313 STR_VAR resource=dwelepro END // HLA flag to block multiple installs
+
+END
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION ELEMENTAL_IMMUNITY_COLD BEGIN
+
+
+	LPF add_feat_effect INT_VAR opcode=28 parameter1=100 parameter2=1 END
+	LPF add_feat_effect INT_VAR opcode=85 parameter1=100 parameter2=1 END
+	LPF add_feat_effect INT_VAR opcode=142 parameter2=25 END
+	LPF add_feat_effect INT_VAR opcode=101 parameter2=28 END
+	LPF add_feat_effect INT_VAR opcode=101 parameter2=85 END
+	LPF add_feat_effect INT_VAR opcode=313 STR_VAR resource=dwelepro END // HLA flag to block multiple installs
+
+END
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+DEFINE_PATCH_FUNCTION scs_style_hla BEGIN
+
+	WRITE_SHORT 0x1c 4
+	SPRINT resref "%SOURCE_RES%"
+	INNER_ACTION BEGIN
+        ACTION_FOR_EACH copy_spell IN projimag simualcr BEGIN
+            ACTION_IF FILE_EXISTS_IN_GAME "%copy_spell%.spl" BEGIN
+               COPY_EXISTING "%copy_spell%.spl" override
+                   LPF ADD_SPELL_EFFECT INT_VAR opcode=172 target=1 timing=1 STR_VAR resource="%resref%" END
+               BUT_ONLY
+            END
+        END	
+	END
+	LPF DELETE_SPELL_HEADER INT_VAR min_level=100 END // remove any scroll making
+
+END
+
+
+
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+
+DEFINE_DIMORPHIC_FUNCTION dragon_disciple_setup BEGIN
+
+	ACTION_IF !FILE_EXISTS_IN_GAME dwddfb2 BEGIN
+		LAF ds_resolve_stat STR_VAR id=DW_POWER_UPGRADE_T2 RET stat_recurrent=stat_ind END
+		LAF dragon_disciple_setup_core STR_VAR bw_old=spdd03 bw_new=dwddfb2 bw_linger=dwddfb3 bw_grant=dwddfb0 bw_grant_linger=dwddfb4 END 
+
+		array.new[dd_extras]
+		[
+			BLACK=>a
+			GREEN=>p
+			BLUE=>l
+			WHITE=>c
+		]
+
+		ACTION_PHP_EACH dd_extras AS color=>letter BEGIN
+		
+			ACTION_IF FILE_EXISTS_IN_GAME "dwdd%letter%b1.spl" BEGIN
+				LAF dragon_disciple_setup_core STR_VAR bw_old="dwdd%letter%b1" bw_new="dwdd%letter%b2" bw_linger="dwdd%letter%b3" bw_grant="dwdd%letter%b0" bw_grant_linger="dwdd%letter%b4" END
+			END
+		
+		
+		END
+
+	END
+
+
+END
+
+
+DEFINE_ACTION_FUNCTION dragon_disciple_setup_core STR_VAR bw_old="" bw_new="" bw_linger="" bw_grant="" bw_grant_linger="" BEGIN // this actually patches the breath weapon
+
+	OUTER_SET savebonus="-20"
+	LAF check_label STR_VAR label=dw#rebalance_dragon_disciple RET rebalanced=value END
+
+	spl.make[%bw_grant%]
+	[
+		m.ab.add{}
+		m.ab_fx.add{s_opcode=172 s_target=2 s_timing=1 s_resource:=%bw_old%}
+		m.ab_fx.add{s_opcode=171 s_target=2 s_timing=1 s_resource:=%bw_new%|number:i=rebalanced?4:1}
+	]
+
+	spl.make[%bw_grant_linger%]
+	[
+		m.ab.add{}
+		m.ab_fx.add{s_opcode=172 s_target=2 s_timing=1 s_resource:=%bw_new%}
+		m.ab_fx.add{s_opcode=171 s_target=2 s_timing=1 s_resource:=%bw_linger%}
+		IF {rebalanced}
+		{{
+			m.ab_fx.add{s_opcode=318 s_target=2 s_timing=0 s_duration=1 s_parameter1=stat_recurrent s_parameter2=110 s_resource:=%sfo_filename%}
+			m.ab_fx.add{s_opcode=171 s_target=2 s_timing=1 s_resource:=%bw_linger%|number:i=3}
+		}}
+	]
+
+
+	spl.copy[%bw_old%=>%bw_new%]
+	[
+		m.ab.delete{s_level>1}
+		m.ab_fx.alter{s_dicenumber=12|match="s_opcode=12"}
+		m.ab_fx.add{s_opcode=318 s_target=1 s_parameter1=stat_recurrent s_parameter2=111 s_resource:=%sfo_filename%}
+		m.ab_fx.add{s_opcode=172 s_target=1 s_timing=1 s_resource:=%sfo_filename%}
+		m.ab_fx.add{s_opcode=171 s_target=1 s_timing=4 s_duration=24 s_resource:=%sfo_filename%}
+	
+	]
+	
+	spl.copy[%bw_new%=>%bw_linger%]
+	[
+		m.ab_fx.clone{s_timing=4 s_duration=entry_index+1 s_dicenumber=1 s_save_vs_breath=1 s_savebonus="-4" |match="s_opcode=12" number:i=6}
+		m.ab_fx.alter{s_resource:=%bw_linger%|match="s_opcode=318 OR s_opcode=172 OR s_opcode=171"}
+	
+	]
+END

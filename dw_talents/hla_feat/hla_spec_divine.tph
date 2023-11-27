@@ -1,0 +1,1162 @@
+DEFINE_PATCH_FUNCTION CLERIC_MASS_HEAL BEGIN
+
+	// level=7
+	
+	WRITE_LONG 0x34 7
+	LPF ALTER_EFFECT INT_VAR match_power=6 power=7 END
+	
+	// new projectile
+	
+	LPF ALTER_SPELL_HEADER INT_VAR target=5 projectile=IDS_OF_SYMBOL (projectl sparblpa) + 1 END
+
+	LPF scs_style_hla END
+
+	// new icon (pro tem, from IWD2)
+	
+	LPF ALTER_SPELL_HEADER STR_VAR icon="%resref%" END
+	
+	INNER_ACTION BEGIN
+		COPY "%MOD_FOLDER%/%component_loc%/resource/iwd2_sppr802b.bam" "override/%resref%.bam"
+	END
+
+END
+
+////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION CLERIC_DIVINE_SHELL BEGIN
+
+	LPF scs_style_hla END
+	
+	// casting time reduced to 2
+	
+	LPF ALTER_SPELL_HEADER INT_VAR speed=2 END
+	
+	// 80% damage resistance
+	
+	PATCH_FOR_EACH opcode IN 87 88 89 90 BEGIN
+		LPF CLONE_EFFECT INT_VAR match_opcode=28 opcode parameter1=80 END
+	END
+
+
+
+END
+
+////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION CLERIC_DIVINE_PROTECTION BEGIN
+
+	// make the actual protective spell
+	
+	INNER_ACTION BEGIN
+	
+		spl.make[%spl_divine_protection_payload%]
+		[
+			m_name:=@3227
+			m.ab.add{}
+			m.ab_fx.add{s_target=1 s_opcode=146 s_timing=1 s_parameter2=1 s_resource:=%CLERIC_SHIELD_OF_THE_ARCHONS%}
+			m.ab_fx.add{s_target=1 s_opcode=146 s_timing=1 s_parameter2=1 s_resource:=%CLERIC_PHYSICAL_MIRROR%}
+			m.ab_fx.add{s_target=1 s_opcode=146 s_timing=1 s_parameter2=1 s_resource:=%CLERIC_SANCTUARY%}
+			m.ab_fx.add{s_target=1 s_opcode=321 s_timing=1 s_resource:=%spl_hla_divine_protection%}
+			m.ab_fx.add{s_target=1 s_opcode=146 s_timing=4 s_duration=2400 s_resource:=%spl_hla_divine_protection%}	
+		
+		]
+		
+		
+	END
+	
+	LPF ADD_SPELL_EFFECT INT_VAR target=1 opcode=232 timing=9 parameter2=2 STR_VAR resource="%spl_divine_protection_payload%" END
+
+END
+
+////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION DRUID_BOON_OF_THE_FEY BEGIN
+
+	// make the actual protective spell
+	
+	INNER_ACTION BEGIN
+	
+		spl.make[%spl_boon_of_the_fey_payload%]
+		[
+			m_name:=@3286
+			m.ab.add{}
+			m.ab_fx.add{s_target=1 s_opcode=146 s_timing=1 s_parameter2=1 s_resource:=%CLERIC_IRONSKIN%}
+			m.ab_fx.add{s_target=1 s_opcode=146 s_timing=1 s_parameter2=1 s_resource:=%CLERIC_PHYSICAL_MIRROR%}
+			m.ab_fx.add{s_target=1 s_opcode=146 s_timing=1 s_parameter2=1 s_resource:=%WIZARD_IMPROVED_INVISIBILITY%}
+			m.ab_fx.add{s_target=1 s_opcode=321 s_timing=1 s_resource:=%spl_hla_boon_of_the_fey%}
+			m.ab_fx.add{s_target=1 s_opcode=146 s_timing=4 s_duration=2400 s_resource:=%spl_hla_boon_of_the_fey%}	
+		
+		]
+		
+		
+	END
+	
+	LPF ADD_SPELL_EFFECT INT_VAR target=1 opcode=232 timing=9 parameter2=2 STR_VAR resource="%spl_boon_of_the_fey_payload%" END
+
+
+END
+////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION CLERIC_STORM_OF_VENGEANCE BEGIN
+
+	LPF scs_style_hla END
+
+
+END
+
+////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION CLERIC_ELEMENTAL_SWARM_AIR BEGIN
+
+	LPF scs_style_hla END
+
+END
+
+////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION CLERIC_ELEMENTAL_SWARM_EARTH BEGIN
+
+	LPF scs_style_hla END
+
+END
+
+////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION CLERIC_ELEMENTAL_SWARM_FIRE BEGIN
+
+	LPF scs_style_hla END
+
+END
+
+////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION CLERIC_ELEMENTAL_SWARM_WATER BEGIN
+
+	LPF scs_style_hla END
+
+END
+
+////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION CLERIC_ELEMENTAL_SWARM BEGIN
+
+	LPF scs_style_hla END
+
+END
+
+////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION CLERIC_ELEMENTAL_PRINCE_AIR BEGIN
+
+	LPF scs_style_hla END
+
+END
+
+////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION CLERIC_ELEMENTAL_PRINCE_EARTH BEGIN
+
+	LPF scs_style_hla END
+
+END
+
+////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION CLERIC_ELEMENTAL_PRINCE_FIRE BEGIN
+
+	LPF scs_style_hla END
+
+END
+
+////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION CLERIC_ELEMENTAL_PRINCE_WATER BEGIN
+
+	LPF scs_style_hla END
+
+END
+
+////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION CLERIC_GATE BEGIN
+
+	LPF scs_style_hla END
+	
+	// have an on-casting effect that gives 12 seconds of the fiend-summoning splstate from Demon Binding.
+	// We can then just rely on Friendly Fiends.
+
+   LPF ds_resolve_stat INT_VAR STR_VAR id=DW_POWER_UPGRADE_M2 RET stat_ind_high=stat_ind END  
+   LPF ADD_SPELL_CFEFFECT INT_VAR opcode=328 target=1 duration=12 special=1 parameter2=stat_ind_high END
+   
+   // remove Gate from the regular L7 spells
+   
+   INNER_ACTION BEGIN
+		APPEND "hidespl.2da" "SPPR703%TAB%1%TAB%0%TAB%0" UNLESS SPPR703
+  END
+
+END
+
+////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION CLERIC_THUNDERSTORM
+BEGIN
+	LPF 10th_to_quest STR_VAR sphere=air END
+END
+
+////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION DRUID_TRANQUILITY BEGIN
+
+	LPF scs_style_hla END
+	LPF DELETE_EFFECT STR_VAR match_function="SHORT_AT 0x0 = 40 || SHORT_AT 0x0 = 142" END
+
+END
+
+////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION DRUID_VOLCANO BEGIN
+
+	LPF scs_style_hla END
+	LPF DELETE_EFFECT STR_VAR match_resource="li#difa" END
+
+END
+
+////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION CLERIC_SUNBURST BEGIN
+
+	LPF scs_style_hla END
+	
+	LPF struct_read RET_ARRAY m=struct END
+	
+		m.ab.delete{s_level>1}  // remove abilities above L1
+		m.ab_fx.alter{s_power=10}
+		m.ab_fx.delete{s_opcode=142}// blinded maintains its own icon, no need to add one manually
+		m.ab_fx.alter{s_dicenumber=12|match="s_opcode=12"} // increase damage to 12d6
+		m.ab_fx.alter{s_savebonus="-4"|match="s_resource==unddeath"} // -4 to undead saving throw
+		m.ab_fx.alter{s_dicesize=13|match="s_opcode=74 OR s_opcode=139"} // effect-with-save only at L13
+		m.ab_fx.alter{s_dicesize=13|match="s_opcode=177 AND s_resource==UNDDEATH"}
+		m.ab_fx.clone{s_dicesize=0 s_dicenumber=12 s_save_vs_spell=0|match="s_opcode=74 OR s_opcode=139"} // clone as no-save L12-
+		m.ab_fx.alter{s_dicesize=0 s_dicenumber=12 s_save_vs_spell=0 s_savebonus=0|match="s_opcode=177 AND s_resource==UNDDEATH"}
+		m.ab_fx.alter{s_resource:=SP707L20|match="s_resource==SP707L14"} 
+		m.ab.alter{s_icon:="%spl_hla_sunburst%"}
+
+	LPF struct_write STR_VAR struct=m END
+
+	// new icon (pro tem, from IWD2)
+	
+	INNER_ACTION BEGIN
+		COPY "%MOD_FOLDER%/%component_loc%/resource/iwd2_spwi519b.bam" "override/%spl_hla_sunburst%.bam"
+	END
+
+
+END
+
+////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION CLERIC_STARLIGHT_BLADES BEGIN
+
+	LPF scs_style_hla END
+	REPLACE_TEXTUALLY "eneblade" "%itm_starlight_blade%" (8)
+	LPF ALTER_EFFECT INT_VAR match_opcode=139 parameter1=RESOLVE_STR_REF (@3273) END
+	
+	// extra damage should be magic, not electrical;
+	// main damage should be piercing, not slashing
+	
+	INNER_ACTION BEGIN
+	
+		COPY "%MOD_FOLDER%/%component_loc%/resource/spenbld_recolored.bam" "override/%pro_starlight_blade%.bam"
+		pro.copy[spenbld=>%pro_starlight_blade%|missile_entry="dw_starlight_blade"]
+		[
+			m_pro_animation:="%pro_starlight_blade%"
+		]
+		
+		itm.copy[eneblade=>%itm_starlight_blade%]
+		[
+			m_both_names:=@3268
+			m_unidentified_description:=@3269
+			m.ab.alter{s_damage_type:=piercing s_projectile:=%pro_starlight_blade%}
+			m.ab_fx.alter{s_damage_type:=magic|match="s_opcode=12"}
+		]
+	
+	END
+
+END
+
+////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION CLERIC_ENERGY_DRAIN BEGIN
+
+	LPF scs_style_hla END
+	
+	LPF ALTER_EFFECT INT_VAR power=10 END
+	
+	// change description
+	
+	READ_STRREF 0x50 desc
+	INNER_PATCH_SAVE desc "%desc%" BEGIN
+		SPRINT old @3270
+		SPRINT new @3271
+		REPLACE_TEXTUALLY "%old%" "%new%"
+	END
+	SAY 0x50 "%desc%"
+
+   // remove Energy Drain from the regular L7 spells
+   
+    INNER_ACTION BEGIN
+		APPEND "hidespl.2da" "%CLERIC_ENERGY_DRAIN%%TAB%1%TAB%0%TAB%0" UNLESS "%CLERIC_ENERGY_DRAIN%"
+    END
+
+END
+
+///////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION CLERIC_CREATE_GREATER_BONEGUARD BEGIN
+
+	LPF 10th_to_quest STR_VAR sphere=necromantic END
+END
+
+///////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION CLERIC_FORESIGHT BEGIN
+
+	LPF 10th_to_quest STR_VAR sphere=divination END
+END
+
+///////////////////////////////////////////////////////////
+
+
+DEFINE_PATCH_FUNCTION CLERIC_AURA_OF_CONFUSION BEGIN
+
+	duration=120
+	INNER_ACTION BEGIN
+		pro.copy[INAREANP=>%pro_area_small_not_party%|missile_entry="dw-area_small_not_party"]
+		[
+			m_trap_size=64
+			m_explosion_size=64
+
+		]
+
+		spl.make[%spl_aura_of_confusion_payload%]
+		[
+			m.ab.add{s_projectile:=%pro_area_small_not_party%}
+			// follow the pattern of 'chaos'
+			m.ab_fx.add{s_opcode=324 s_target=2 s_power=10 s_parameter1=IDS_OF_SYMBOL (splstate CONFUSION_IMMUNITY) s_parameter2=110 s_resource:=%spl_aura_of_confusion_payload%}
+			m.ab_fx.add{s_opcode=128 s_target=2 s_power=10 s_duration=6 s_save_vs_spell=1 s_savebonus="-4"}
+			m.ab_fx.clone{s_opcode=139 s_timing=1 s_duration=0 s_parameter1=14782|match="s_opcode=128"}
+			m.ab_fx.clone{s_opcode=142 s_parameter2=3|match="s_opcode=128"}
+			m.ab_fx.clone{s_opcode=174 s_timing=4 s_resource:=EFF_E05|match="s_opcode=128"}
+			m.ab_fx.clone{s_opcode=215 s_parameter2=1 s_resource:=SPCONFUS|match="s_opcode=128"}
+			m.ab_fx.clone{s_opcode=61 s_parameter1=0x1e5a7800 s_parameter2b=25 s_timing=1 s_duration=0 s_resource:=SPCONFUS|match="s_opcode=128"}
+			// for aura, should only hit 1/rd
+			m.ab_fx.add{s_opcode=318 s_target=2 s_duration=6 s_resource:=%spl_aura_of_confusion_payload%}
+
+		]
+		OUTER_SPRINT string @3274
+		LAF resolve_statdesc STR_VAR string bam_name=auto bam=blue_chaos_base location=resource RET stat_num END
+		
+		spl.copy[%CLERIC_CHAOTIC_COMMANDS%=>%spl_aura_of_confusion_cc%]
+		[
+			m.ab.delete{s_level>1}
+			m.ab_fx.alter{s_duration=s_duration=0?0:duration s_power=10}
+			m.ab_fx.delete{s_opcode=215 OR s_opcode=61}
+			m_name="-1"
+		]
+		
+		LAF eff_make_casting_effect STR_VAR spell="%spl_aura_of_confusion_payload%" effect="%eff_aura_of_confusion%" END
+		COPY "%MOD_FOLDER%/hla_feat/resource/blue_chaos_b.bam" "override/%spl_hla_aura_of_confusion%.bam"
+		COPY "%MOD_FOLDER%/hla_feat/resource/cloak_of_chaos.bam" "override/dw-cloak.bam"
+
+	END
+	
+	WRITE_ASCII 0x10 CAS_P05 (8)
+	WRITE_SHORT 0x22 11
+	WRITE_BYTE 0x25 4
+	WRITE_BYTE 0x27 11
+	WRITE_BYTE 0x19 0x10
+
+	LPF ALTER_SPELL_HEADER INT_VAR speed=3 target=1 range=30 STR_VAR icon="%spl_hla_aura_of_confusion%" END
+	LPF ADD_SPELL_EFFECT INT_VAR target=2 duration opcode=272 parameter1=1 parameter2=3 resist_dispel=2 STR_VAR resource="%eff_aura_of_confusion%" END
+	LPF ADD_SPELL_EFFECT INT_VAR target=2 duration opcode=142 parameter2=stat_num resist_dispel=2 END
+	LPF ADD_SPELL_EFFECT INT_VAR target=2 timing=1 opcode=326 STR_VAR resource="%spl_aura_of_confusion_cc%" END
+	LPF ADD_SPELL_EFFECT INT_VAR target=2 duration=2 opcode=215 parameter2=1 STR_VAR resource=dw-cloak END
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=9 target=2 duration parameter1=0x003c781e parameter2=0x10000*25+255 END
+
+	LPF scs_style_hla END	
+
+
+
+
+
+
+END
+
+////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION CLERIC_HOLY_AURA BEGIN
+
+
+	duration=120
+	mr=25
+	savebonus=0
+	LPF resolve_splprot_entry INT_VAR stat = 18 /* resist magic */ val="-1" STR_VAR relation="greater_than" RET stat_ind=value END
+	SPRINT string @3276
+	LPF resolve_statdesc STR_VAR string bam_name=auto bam=blue_holy_word_base location=resource RET stat_num END
+
+
+	// main spell
+	
+	LPF scs_style_hla END
+	LPF struct_read RET_ARRAY m=struct END
+		m_completion_sound:=CAS_P02
+		m_casting_animation=12
+		m_school:=Abjurer
+		m_sectype=7
+		m_level=10
+		m_break_sanctuary=1
+		m.ab.alter{s_target=5 s_casting_time=3 s_icon:=%spl_hla_holy_aura% s_projectile:=INAREAPA}
+		// tidy up
+		m.ab_fx.add{s_opcode=321 s_target=2 s_timing=1 s_resource:=%spl_hla_holy_aura%}
+		m.ab_fx.add{s_opcode=321 s_target=2 s_timing=1 s_resource:=%spl_hla_unholy_aura%}
+		// cosmetics
+		m.ab_fx.add{s_opcode=9 s_target=2 s_parameter1=0x00a58400 s_parameter2=255+0x10000*25 s_duration=duration}
+		m.ab_fx.add{s_opcode=215 s_target=2 s_parameter2=1 s_duration=3 s_resource:=SPHOLYMT}
+		m.ab_fx.add{s_opcode=174 s_target=2 s_timing=1 s_resource:="EFF_P70"}
+		m.ab_fx.add{s_opcode=174 s_target=2 s_timing=1 s_resource:="#EFF_E01"}
+		////
+		// global icon
+		m.ab_fx.add{s_opcode=142 s_target=2 s_parameter2=stat_num s_duration=duration}
+		////
+		// +2 to saving throws
+		m.ab_fx.add{s_opcode=325 s_target=2 s_duration=duration s_parameter1=2 }
+		// +2 to AC
+		m.ab_fx.add{s_opcode=0 s_target=2 s_duration=duration s_parameter1=2 }
+		// immunity to Charm
+		m.ab_fx.add{s_opcode=328 s_target=2 s_duration=duration s_special=1  s_parameter2=IDS_OF_SYMBOL(splstate CHARM_IMMUNITY)}
+		m.ab_fx.add{s_opcode=101 s_target=2 s_duration=duration s_parameter2=5}
+		m.ab_fx.add{s_opcode=296 s_target=2 s_duration=duration  s_resource:=SPFLAYER}
+		m.ab_fx.add{s_opcode=296 s_target=2 s_duration=duration  s_resource:=SPNWCHRM}
+		m.ab_fx.add{s_opcode=267 s_target=2 s_duration=duration  s_parameter1=14780}
+		m.ab_fx.add{s_opcode=267 s_target=2 s_duration=duration  s_parameter1=14672}
+		m.ab_fx.add{s_opcode=267 s_target=2 s_duration=duration  s_parameter1=8364}
+		m.ab_fx.add{s_opcode=169 s_target=2 s_duration=duration  s_parameter2=0}
+		m.ab_fx.add{s_opcode=169 s_target=2 s_duration=duration  s_parameter2=1}
+		m.ab_fx.add{s_opcode=169 s_target=2 s_duration=duration  s_parameter2=43}
+		m.ab_fx.add{s_opcode=142 s_target=2 s_parameter2=52 s_duration=duration }
+		// backlash
+		m.ab_fx.add{s_opcode=177 s_target=2 s_duration=duration s_parameter2=2 s_resource:=%eff_holy_aura_backlash%}
+		// MR
+		m.ab_fx.add{s_opcode=318 s_target=2 s_duration=1 s_parameter1=mr s_parameter2=stat_ind s_resource:=%spl_hla_holy_aura%}
+		m.ab_fx.add{s_opcode=142 s_target=2 s_parameter2=63 s_duration=duration }
+		m.ab_fx.add{s_opcode=166 s_target=2 s_duration=duration s_parameter1=mr  s_parameter2=1}
+	LPF struct_write STR_VAR struct=m END
+
+
+	LPF scs_style_hla END
+
+	INNER_ACTION BEGIN
+	
+		// icons
+		
+		COPY "%MOD_FOLDER%/%component_loc%/resource/blue_holy_word_b.bam" "override/%spl_hla_holy_aura%.bam"
+	
+		// effect for backlash
+		
+
+		eff.make[%eff_holy_aura_backlash%]
+		[
+			m_opcode=232
+			m_target=2
+			m_timing=1
+			m_parameter1=1
+			m_resource:="%spl_holy_aura_backlash%"
+		]
+
+			// spell for backlash
+		
+		spl.make[%spl_holy_aura_backlash%]
+		[
+			m.ab.add{s_range=1000}
+			m.ab_fx.add{s_opcode=321 s_target=2 s_timing=1 s_resource:=%spl_holy_aura_backlash%} //tidy up
+			m.ab_fx.add{s_opcode=318 s_target=2 s_duration=1 s_parameter2=33 s_resource:=%spl_holy_aura_backlash%} // good
+			m.ab_fx.add{s_opcode=318 s_target=2 s_duration=1 s_parameter2=35 s_resource:=%spl_holy_aura_backlash%} // neutral
+			m.ab_fx.add{s_opcode=74 s_target=2 s_duration=6 s_save_vs_spell=1 s_savebonus=savebonus} // main payload
+			m.ab_fx.add{s_opcode=142 s_target=2 s_parameter2=8 s_duration=6 s_save_vs_spell=1 s_savebonus=savebonus} // icon
+			m.ab_fx.add{s_opcode=139 s_target=2 s_parameter1=14674 s_timing=1 s_save_vs_spell=1 s_savebonus=savebonus} // icon
+			m.ab_fx.add{s_opcode=141 s_target=2 s_parameter2=26 s_save_vs_spell=1 s_savebonus=savebonus}
+			m.ab_fx.add{s_opcode=174 s_target=2 s_timing=1 s_resource:=EFF_P85 s_save_vs_spell=1 s_savebonus=savebonus} 
+			m.ab_fx.add{s_opcode=206 s_parameter1=0 s_timing=10 s_duration=2 s_resource:=%spl_holy_aura_backlash%}
+		]
+	
+	END
+	
+	
+
+END
+////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION CLERIC_UNHOLY_AURA BEGIN
+
+	// we are assuming we can use the Holy Aura version as a baseline
+	
+	savebonus=0
+
+	SPRINT string @3278
+	LPF resolve_statdesc STR_VAR string bam_name=auto bam=blue_unholy_word_base location=resource RET stat_num END
+
+	// different icons
+	LPF ALTER_SPELL_HEADER STR_VAR icon="%spl_hla_unholy_aura%" END
+	LPF ALTER_EFFECT INT_VAR match_opcode=142 parameter2=stat_num STR_VAR match_function="!(LONG_AT 0x8=52 OR LONG_AT 0x8=63)"  END
+	// different cosmetics
+	LPF ALTER_EFFECT INT_VAR match_opcode=215 opcode=146 duration=0 timing=1 parameter2=1 STR_VAR resource="%spl_red_holy_might%" END
+	LPF ALTER_EFFECT INT_VAR match_opcode=174 STR_VAR resource="EFF_P69" END
+	LPF ALTER_EFFECT INT_VAR match_opcode=9 parameter1=180*0x100 + 30* 0x10000 + 30* 0x1000000 END
+	// different backlash
+	LPF ALTER_EFFECT INT_VAR match_opcode=177 STR_VAR resource="%eff_unholy_aura_backlash%" END
+	
+	INNER_ACTION BEGIN
+	
+		// icons
+		
+		COPY "%MOD_FOLDER%/%component_loc%/resource/blue_unholy_word_b.bam" "override/%spl_hla_unholy_aura%.bam"
+
+		spl.make[%spl_red_holy_might%] // I don't actually know how to get this animation
+		[
+			m.ab.add{s_projectile=195}
+		]
+	
+		eff.copy[%eff_holy_aura_backlash%=>%eff_unholy_aura_backlash%]
+		[
+			m_resource:="%spl_unholy_aura_backlash%"		
+		]
+	
+		spl.make[%spl_unholy_aura_backlash%]
+		[
+			m.ab.add{s_range=1000}
+			m.ab_fx.add{s_opcode=321 s_target=2 s_timing=1 s_resource:=%spl_unholy_aura_backlash%} //tidy up
+			m.ab_fx.add{s_opcode=318 s_target=2 s_duration=1 s_parameter2=37 s_resource:=%spl_unholy_aura_backlash%} // evil
+			m.ab_fx.add{s_opcode=318 s_target=2 s_duration=1 s_parameter2=35 s_resource:=%spl_unholy_aura_backlash%} // neutral
+			m.ab_fx.add{s_opcode=325 s_target=2 s_duration=24 s_parameter1="-2" } // -2 to saves
+			m.ab_fx.add{s_opcode=54 s_target=2 s_duration=24 s_parameter1="-2" } // -2 to attacks
+			m.ab_fx.add{s_opcode=142 s_target=2 s_parameter2=100 s_duration=24 s_save_vs_spell=1 s_savebonus=savebonus} // icon ('doom')
+			m.ab_fx.add{s_opcode=139 s_target=2 s_parameter1=360 s_timing=1 s_save_vs_spell=1 s_savebonus=savebonus} // string ('weakened')
+			m.ab_fx.add{s_opcode=141 s_target=2 s_parameter2=26 s_save_vs_spell=1 s_savebonus=savebonus} // graphics
+			m.ab_fx.add{s_opcode=174 s_target=2 s_timing=1 s_resource:=EFF_P85 s_save_vs_spell=1 s_savebonus=savebonus}  //sound  
+			m.ab_fx.add{s_opcode=206 s_parameter1=0 s_timing=10 s_duration=2 s_resource:=%spl_unholy_aura_backlash%} // block to avoid arms race
+		]
+		
+	
+	
+	END
+
+END
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION CLERIC_FURY_OF_THE_PACK BEGIN
+
+	INNER_ACTION BEGIN
+
+		// make wolf weapons
+		
+		itm.copy[wolfspir=>%itm_fury_of_the_pack_standard%]
+		[
+			m_enchantment=10
+			m_magical=1
+			m.fx.delete{s_opcode=65} // get rid of blur
+			m.ab.alter{s_speed=0 s_dicesize=0 s_dicenumber=0 s_damage_type=0 s_attack_bonus=1000 s_damage_bonus=0 s_add_strength_bonus=0} // always hit, instant, no damage
+			m.ab_fx.delete{} // get rid of existing effects 
+			m.ab_fx.add{s_opcode=326 s_target=2 s_timing=1 s_resource:=%spl_fury_of_the_pack_payload%} // payload
+			m.ab_fx.add{s_opcode=168 s_target=1 s_timing=4 s_duration=1} // destroy self one second later
+		]
+		
+		itm.copy[%itm_fury_of_the_pack_standard%=>%itm_fury_of_the_pack_nonmagical%]
+		[
+			m_magical=0
+		]
+		
+		// make wolves
+		
+		cre.copy[spirwolf=>%cre_fury_of_the_pack%]
+		[
+			//scripting
+			m.cre_strip_scripts{all}
+			m_script_override:="%baf_fury_of_the_pack%"
+			// effects: immunity to all spell levels
+			m.fx.add{s_opcode=102 s_target=1 s_timing=9 s_parameter1=entry_index+1|number:i=10}
+			// effects: immunity to all damage types
+			DEFINE_ARRAY immune_array BEGIN 27 28 29 30 31 84 85 86 87 88 89 END
+			m.fx.add{s_opcode=$immune_array("%entry_index%") s_parameter1=100 s_parameter2=1|number:i=11}
+			// effects: no circle
+			m.fx.add{s_opcode=287}
+			// effects: invisible
+			m.fx.add{s_opcode=20}
+			// allegiance
+			m_allegiance:=neutral
+			// translucency
+			m_translucency=180
+			//weapons
+			m.cre_remove_items{all}
+			m.cre_add_items{%itm_fury_of_the_pack_standard%}
+			m.cre_add_items{%itm_fury_of_the_pack_nonmagical%}
+			// attacks
+			m_attacks=1
+			
+		]
+		
+		// scripting
+		
+	<<<<<<<<.../stratagems-inline/baf_fury_of_the_pack.baf
+	IF
+		OR(2)
+			StateCheck(LastSummonerOf(Myself),STATE_REALLY_DEAD)
+			!Detect(LastSummonerOf(Myself))
+	THEN	
+		RESPONSE #100
+			DestroySelf()
+	END
+
+	IF
+		Detect(LastSummonerOf(Myself))
+		!CheckSpellState(LastSummonerOf(Myself),PROTECTION_FROM_MAGICAL_WEAPONS)
+	THEN
+		RESPONSE #100
+			EquipItem("%itm_fury_of_the_pack_standard%")
+			Attack(LastSummonerOf(Myself))
+	END
+
+	IF
+		Detect(LastSummonerOf(Myself))
+		CheckSpellState(LastSummonerOf(Myself),PROTECTION_FROM_MAGICAL_WEAPONS)
+	THEN
+		RESPONSE #100
+			EquipItem("%itm_fury_of_the_pack_nonmagical%")
+			Attack(LastSummonerOf(Myself))
+	END
+	>>>>>>>>
+
+		LAF install_script INT_VAR inline=1 STR_VAR script=baf_fury_of_the_pack END
+
+		// make payload spell
+		
+		spl.make[%spl_fury_of_the_pack_payload%]
+		[
+			m.ab.add{}
+			m.ab_fx.add{s_opcode=12 s_target=2 s_damage_type:=piercing s_timing=1 s_probability1=49 s_dicesize=8 s_dicenumber=2 s_save_vs_spell=1 s_savebonus="-2" s_save_for_half=1}
+			m.ab_fx.add{s_opcode=12 s_target=2 s_damage_type:=slashing s_timing=1 s_probability1=100 s_probability2=50 s_dicesize=8 s_dicenumber=2 s_save_vs_spell=1 s_savebonus="-2" s_save_for_half=1}
+		]
+
+		// make summoning effect
+		
+		eff.make[%eff_fury_of_the_pack%]
+		[
+			m_opcode=67
+			m_target=1
+			m_parameter2=2
+			m_duration=6
+			m_resource:="%cre_fury_of_the_pack%"
+			m_resource2:=NONE
+		
+		]
+		
+	END
+	
+	// make primary spell
+
+	LPF struct_read RET_ARRAY m=struct END
+	m_completion_sound:=CAS_P03
+	m_casting_animation=14
+	m_school:=Conjurer
+	m_sectype=10
+	m_level=10
+	m_break_sanctuary=1
+	m_hostile=1
+	PATCH_IF FILE_EXISTS_IN_GAME "dw#inst.pro" BEGIN
+		SPRINT projectile "dw#inst"
+	END ELSE BEGIN
+		SPRINT projectile "1"
+	END
+	m.ab.alter{s_range=100 s_icon:=spin114 s_projectile:="%projectile%" s_casting_time=5 s_level=1 s_target:=LivingActor}
+	m.ab_fx.delete{}
+	m.ab_fx.add{s_opcode=174 s_target=2 s_duration=2 s_resource:=WWOLF03}
+	m.ab_fx.add{s_opcode=177 s_target=2 s_timing=4 s_duration=(entry_index/2)+1 s_parameter2=2 s_resource:=%eff_fury_of_the_pack%|number:i=12}
+	
+	LPF struct_write STR_VAR struct=m END
+
+	LPF scs_style_hla END	
+	
+END
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION HELM_ENHANCED_SEEKING_SWORD BEGIN
+
+	INNER_ACTION BEGIN
+		// resolve splstate
+		LAF ds_resolve_stat STR_VAR id=DW_POWER_UPGRADE_C3 RET stat_ind END
+
+		// make new sword
+		
+		itm.copy[sw1hseek=>%itm_enhanced_seeking_sword%]
+		[
+			m.fx.delete{s_opcode=145} // no longer disables spellcasting
+			m.ab_fx.add{s_opcode=12 s_target=2 s_dicenumber=1 s_dicesize=6 s_damage_type:=fire s_timing=1 s_dispel_resist=2} //1d6 fire damage
+			m_enchantment=5
+			m.ab.alter{s_attack_bonus=5 s_damage_bonus=5}
+		]
+
+		// clone original_spell to summon one or other sword
+		
+		spl.copy[%HELM_SEEKING_SWORD%=>%HELM_SEEKING_SWORD%A]
+		[
+			m_name="-1"
+		]
+		spl.copy[%HELM_SEEKING_SWORD%=>%HELM_SEEKING_SWORD%B]
+		[
+			m_name="-1"
+			m.ab_fx.alter{s_resource:=%itm_enhanced_seeking_sword%|match="s_opcode=111"}
+		]
+		
+		// make the core spell
+		
+		spl.edit[%HELM_SEEKING_SWORD%]
+		[
+			m.ab_fx.delete{}
+			m.ab_fx.add{s_opcode=326 s_target=1 s_timing=1 s_parameter1=stat_ind s_parameter2=111 s_resource:=%HELM_SEEKING_SWORD%A}
+			m.ab_fx.add{s_opcode=326 s_target=1 s_timing=1 s_parameter1=stat_ind s_parameter2=110 s_resource:=%HELM_SEEKING_SWORD%B}
+		]
+
+	END
+	
+	// actual HLA
+	
+	LPF add_feat_effect INT_VAR opcode=328 special=1 parameter2=stat_ind END
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION LATHANDER_ENHANCED_BOON
+BEGIN
+
+	INNER_ACTION BEGIN
+		
+		// resolve splstate
+		LAF ds_resolve_stat STR_VAR id=DW_POWER_UPGRADE_C3 RET stat_ind END
+
+		// clone original spell to include upgrade
+		
+		spl.copy[%LATHANDER_BOON%=>%LATHANDER_BOON%B]
+		[
+			m_name="-1"
+			m.ab_fx.alter{s_parameter1=3|match="s_opcode=33 OR s_opcode=34 OR s_opcode=35 OR s_opcode=36 OR s_opcode=37 OR s_opcode=54 OR s_opcode=73"}
+			
+		]
+		
+	END
+
+END
+
+////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION SHAPESHIFTER_FERAL_STRENGTH
+BEGIN		
+		LPF shapeshifter_setup END
+		LPF ds_resolve_stat STR_VAR id=DW_POWER_UPGRADE_M1 RET stat_ind END
+		LPF add_feat_effect INT_VAR opcode=328 special=1 parameter2=stat_ind END
+
+END
+
+////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION SHAPESHIFTER_FERAL_RESILIENCE
+BEGIN		
+		LPF shapeshifter_setup END
+		LPF ds_resolve_stat STR_VAR id=DW_POWER_UPGRADE_M2 RET stat_ind END
+		LPF add_feat_effect INT_VAR opcode=328 special=1 parameter2=stat_ind END
+
+END
+
+////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION SHAPESHIFTER_TRUE_SHAPESHIFTER
+BEGIN		
+		LPF shapeshifter_setup END
+		LPF ds_resolve_stat STR_VAR id=DW_POWER_UPGRADE_M3 RET stat_ind END
+		LPF add_feat_effect INT_VAR opcode=328 special=1 parameter2=stat_ind END
+
+END
+
+////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION TOTEMIC_SPIRIT_BEAR
+BEGIN		
+	LPF struct_read RET_ARRAY m=struct END
+	// icon
+	m.ab.alter{s_icon:=spiritb}
+	// remove all existing ones
+	m.ab_fx.add{s_opcode=321 s_timing=1 s_target=2 s_resource:="%spl_hla_spirit_bear%"}
+	m.ab_fx.add{s_opcode=321 s_timing=1 s_target=2 s_resource:="%spl_hla_spirit_lion%"}
+	m.ab_fx.add{s_opcode=321 s_timing=1 s_target=2 s_resource:="%spl_hla_spirit_snake%"}
+	m.ab_fx.add{s_opcode=321 s_timing=1 s_target=2 s_resource:="%spl_hla_spirit_wolf%"}
+	// remove and regrant power
+	m.ab_fx.add{s_opcode=172 s_timing=1 s_target=2 s_resource:="%spl_hla_spirit_bear%"}
+	m.ab_fx.add{s_opcode=171 s_timing=1 s_target=2 s_resource:="%spl_hla_spirit_bear%"}
+	// payload: +3 STR
+	m.ab_fx.add{s_opcode=44 s_target=2 s_timing=0 s_duration=999999 s_parameter1=3}
+	// payload: +3 CON
+	m.ab_fx.add{s_opcode=10 s_target=2 s_timing=0 s_duration=999999 s_parameter1=3}
+	// payload: immunity
+	m.immunity_effect{sleep}
+	m.immunity_effect{stun}
+	
+	LPF struct_write STR_VAR struct=m END
+END
+
+////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION TOTEMIC_SPIRIT_LION
+BEGIN		
+	LPF struct_read RET_ARRAY m=struct END
+	// icon
+	m.ab.alter{s_icon:=spiritl}
+	// remove all existing ones
+	m.ab_fx.add{s_opcode=321 s_timing=1 s_target=2 s_resource:="%spl_hla_spirit_bear%"}
+	m.ab_fx.add{s_opcode=321 s_timing=1 s_target=2 s_resource:="%spl_hla_spirit_lion%"}
+	m.ab_fx.add{s_opcode=321 s_timing=1 s_target=2 s_resource:="%spl_hla_spirit_snake%"}
+	m.ab_fx.add{s_opcode=321 s_timing=1 s_target=2 s_resource:="%spl_hla_spirit_wolf%"}
+	// remove and regrant power
+	m.ab_fx.add{s_opcode=172 s_timing=1 s_target=2 s_resource:="%spl_hla_spirit_lion%"}
+	m.ab_fx.add{s_opcode=171 s_timing=1 s_target=2 s_resource:="%spl_hla_spirit_lion%"}
+	// payload: +3 STR
+	m.ab_fx.add{s_opcode=44 s_target=2 s_timing=0 s_duration=999999 s_parameter1=3}
+	// payload: +3 CHA
+	m.ab_fx.add{s_opcode=6 s_target=2 s_timing=0 s_duration=999999 s_parameter1=3}
+	// payload: immunity
+	m.immunity_effect{fear}
+	m.immunity_effect{death}
+	
+	LPF struct_write STR_VAR struct=m END
+END
+
+////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION TOTEMIC_SPIRIT_SNAKE
+BEGIN		
+	LPF struct_read RET_ARRAY m=struct END
+	// icon
+	m.ab.alter{s_icon:=spirits}
+	// remove all existing ones
+	m.ab_fx.add{s_opcode=321 s_timing=1 s_target=2 s_resource:="%spl_hla_spirit_bear%"}
+	m.ab_fx.add{s_opcode=321 s_timing=1 s_target=2 s_resource:="%spl_hla_spirit_lion%"}
+	m.ab_fx.add{s_opcode=321 s_timing=1 s_target=2 s_resource:="%spl_hla_spirit_snake%"}
+	m.ab_fx.add{s_opcode=321 s_timing=1 s_target=2 s_resource:="%spl_hla_spirit_wolf%"}
+	// remove and regrant power
+	m.ab_fx.add{s_opcode=172 s_timing=1 s_target=2 s_resource:="%spl_hla_spirit_snake%"}
+	m.ab_fx.add{s_opcode=171 s_timing=1 s_target=2 s_resource:="%spl_hla_spirit_snake%"}
+	// payload: +5 INT
+	m.ab_fx.add{s_opcode=19 s_target=2 s_timing=0 s_duration=999999 s_parameter1=3}
+	// payload: +3 WIS
+	m.ab_fx.add{s_opcode=49 s_target=2 s_timing=0 s_duration=999999 s_parameter1=3}
+	// payload: immunity
+	m.immunity_effect{poison}
+	m.immunity_effect{charm}
+	LPF struct_write STR_VAR struct=m END
+
+END
+
+////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION TOTEMIC_SPIRIT_WOLF
+BEGIN		
+	LPF struct_read RET_ARRAY m=struct END
+	// icon
+	m.ab.alter{s_icon:=spiritw}
+	// remove all existing ones
+	m.ab_fx.add{s_opcode=321 s_timing=1 s_target=2 s_resource:="%spl_hla_spirit_bear%"}
+	m.ab_fx.add{s_opcode=321 s_timing=1 s_target=2 s_resource:="%spl_hla_spirit_lion%"}
+	m.ab_fx.add{s_opcode=321 s_timing=1 s_target=2 s_resource:="%spl_hla_spirit_snake%"}
+	m.ab_fx.add{s_opcode=321 s_timing=1 s_target=2 s_resource:="%spl_hla_spirit_wolf%"}
+	// remove and regrant power
+	m.ab_fx.add{s_opcode=172 s_timing=1 s_target=2 s_resource:="%spl_hla_spirit_wolf%"}
+	m.ab_fx.add{s_opcode=171 s_timing=1 s_target=2 s_resource:="%spl_hla_spirit_wolf%"}
+	// payload: +5 INT
+	m.ab_fx.add{s_opcode=19 s_target=2 s_timing=0 s_duration=999999 s_parameter1=3}
+	// payload: +3 WIS
+	m.ab_fx.add{s_opcode=49 s_target=2 s_timing=0 s_duration=999999 s_parameter1=3}
+	// payload: evasion
+	LPF ds_resolve_stat STR_VAR id=EVASION RET stat_ind END
+	m.ab_fx.add{s_opcode=328 s_target=2 s_duration=999999 s_special=1 s_parameter2=stat_ind}
+	LPF struct_write STR_VAR struct=m END
+END
+
+////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION CLERIC_SUMMON_DEVA BEGIN	LPF scs_style_hla END   END
+DEFINE_PATCH_FUNCTION CLERIC_GLOBE_OF_BLADES BEGIN	LPF scs_style_hla END   END
+DEFINE_PATCH_FUNCTION CLERIC_AURA_OF_FLAMING_DEATH BEGIN	LPF scs_style_hla END   END
+DEFINE_PATCH_FUNCTION CLERIC_IMPLOSION BEGIN	LPF scs_style_hla END   END
+DEFINE_PATCH_FUNCTION CLERIC_MASS_RAISE_DEAD BEGIN	LPF scs_style_hla END   END
+DEFINE_PATCH_FUNCTION DRUID_COMET BEGIN	LPF scs_style_hla END   END
+DEFINE_PATCH_FUNCTION DRUID_NATURES_WRATH BEGIN	LPF scs_style_hla END   END
+
+
+
+////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION scs_style_hla BEGIN
+
+	WRITE_SHORT 0x1c 4
+	SPRINT resref "%SOURCE_RES%"
+	LPF ALTER_SPELL_HEADER INT_VAR location=2 END
+	INNER_ACTION BEGIN
+        ACTION_FOR_EACH copy_spell IN projimag simualcr BEGIN
+            ACTION_IF FILE_EXISTS_IN_GAME "%copy_spell%.spl" BEGIN
+               COPY_EXISTING "%copy_spell%.spl" override
+                   LPF ADD_SPELL_EFFECT INT_VAR opcode=172 target=1 timing=1 STR_VAR resource="%resref%" END
+               BUT_ONLY
+            END
+        END	
+	END
+	LPF DELETE_SPELL_HEADER INT_VAR min_level=100 END // remove any scroll making
+
+END
+
+////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION 10th_to_quest STR_VAR sphere="" BEGIN
+
+
+	SPRINT resref "%SOURCE_RES%"
+	DEFINE_ASSOCIATIVE_ARRAY 10_to_q_sphere_names BEGIN
+		necromantic=>3325
+		divination=>3324
+		air=>3321
+	END
+	PATCH_IF !VARIABLE_IS_SET $10_to_q_sphere_names("%sphere%") BEGIN
+		PATCH_WARN "Unable to update %SOURCE_RES% description to a quest spell: unknown sphere %sphere%"
+	END ELSE BEGIN
+		READ_STRREF 0x50 desc
+		INNER_PATCH_SAVE desc "%desc%" BEGIN
+			SPRINT old @3272
+			SPRINT new @3271
+			SPRINT sphere_num $10_to_q_sphere_names("%sphere%")
+			SPRINT add (AT sphere_num)
+			REPLACE_TEXTUALLY "%old%" "%new%%WNL%%add%"
+		END
+		SAY 0x50 "%desc%"
+	END
+	INNER_ACTION BEGIN
+        ACTION_FOR_EACH copy_spell IN projimag simualcr BEGIN
+            ACTION_IF FILE_EXISTS_IN_GAME "%copy_spell%.spl" BEGIN
+               COPY_EXISTING "%copy_spell%.spl" override
+                   LPF ADD_SPELL_EFFECT INT_VAR opcode=172 target=1 timing=1 STR_VAR resource="%resref%" END
+               BUT_ONLY
+            END
+        END	
+	END	
+END
+
+////////////////////////////////////////////////////////////
+
+DEFINE_DIMORPHIC_FUNCTION shapeshifter_setup
+BEGIN
+
+	LAF check_label STR_VAR label=dw-hla_shapeshifter_setup RET value END
+	ACTION_IF !value BEGIN
+		LAF make_label STR_VAR label=dw-hla_shapeshifter_setup END
+
+		LAF ds_resolve_stat STR_VAR id=DW_POWER_UPGRADE_M1 RET stat_ind_1=stat_ind END
+		LAF ds_resolve_stat STR_VAR id=DW_POWER_UPGRADE_M2 RET stat_ind_2=stat_ind END
+		LAF ds_resolve_stat STR_VAR id=DW_POWER_UPGRADE_M3 RET stat_ind_3=stat_ind END
+
+		// if we've got 'rebalanced shapeshifters' installed, tweak that
+
+		ACTION_IF FILE_EXISTS_IN_GAME "%spl_shapeshifter_werewolf_lord%.spl" BEGIN
+				
+			itm.copy[werewlf2=>%itm_werewolf_greater_upgrade_1% %itm_shapeshifter_werewolf_lord%=>%itm_werewolf_lord_upgrade_1%]
+			[
+				m.fx.alter{s_parameter1+=2|match="s_opcode=44"}
+			]
+			itm.copy[%itm_werewolf_greater_upgrade_1%=>%itm_werewolf_greater_upgrade_2% %itm_werewolf_lord_upgrade_1%=>%itm_werewolf_lord_upgrade_2%]
+			[
+				m.fx.add{s_opcode=98 s_parameter1=2 s_parameter2=2 s_special=87 s_timing=2}
+			]
+			itm.copy[%itm_werewolf_greater_upgrade_2%=>%itm_werewolf_greater_upgrade_3% %itm_werewolf_lord_upgrade_2%=>%itm_werewolf_lord_upgrade_3%]
+			[
+				m.fx.delete{s_opcode=145 OR (s_opcode=144 AND !(s_parameter2=7))}
+			]
+			
+			array.new[werewolf_map]
+			[
+				2_1=>werewlf2
+				2_2=>"%itm_werewolf_greater_upgrade_1%"
+				2_3=>"%itm_werewolf_greater_upgrade_2%"
+				3_1=>"%itm_shapeshifter_werewolf_lord%"
+				3_2=>"%itm_werewolf_lord_upgrade_1%"
+				3_3=>"%itm_werewolf_lord_upgrade_2%"
+			]
+			ACTION_PHP_EACH werewolf_map AS code=>item BEGIN
+				spell:==EVAL "%spl_hla_werewolf_subspell_%code%%"
+				spl.make[%spell%]
+				[
+					m.ab.add{}
+					m.ab_fx.add{s_opcode=111 s_target=1 s_timing=1 s_resource:="%item%"}
+				]								
+			END
+			
+
+			
+			spl.edit[%SHAPESHIFTER_SHAPESHIFT_GREATERWEREWOLF%]
+			[
+				m.ab_fx.delete{s_opcode=111}
+				m.ab_fx.add{s_opcode=326 s_target=1 s_timing=1 s_parameter1=stat_ind_1 s_parameter2=111 s_resource:=%spl_hla_werewolf_subspell_2_1%}
+				m.ab_fx.add{s_opcode=318 s_target=1 s_timing=0 s_duration=1 s_parameter1=stat_ind_1 s_parameter2=111 s_resource:=%sfo_filename%}
+				m.ab_fx.add{s_opcode=326 s_target=1 s_timing=1 s_parameter1=stat_ind_2 s_parameter2=111 s_resource:=%spl_hla_werewolf_subspell_2_2%}
+				m.ab_fx.add{s_opcode=318 s_target=1 s_timing=0 s_duration=1 s_parameter1=stat_ind_2 s_parameter2=111 s_resource:=%sfo_filename%}
+				m.ab_fx.add{s_opcode=326 s_target=1 s_timing=1 s_parameter1=stat_ind_3 s_parameter2=111 s_resource:=%spl_hla_werewolf_subspell_2_3%}
+				m.ab_fx.add{s_opcode=318 s_target=1 s_timing=0 s_duration=1 s_parameter1=stat_ind_3 s_parameter2=111 s_resource:=%sfo_filename%}
+				m.ab_fx.add{s_opcode=111 s_target=1 s_timing=1 s_resource:=%itm_werewolf_greater_upgrade_3%}
+				m.ab_fx.add{s_opcode=172 s_target=1 s_timing=1 s_resource:=%sfo_filename%}
+				m.ab_fx.add{s_opcode=171 s_target=1 s_timing=1 s_resource:=%sfo_filename%}
+			]
+			spl.edit[%spl_shapeshifter_werewolf_lord%]
+			[
+				m.ab_fx.delete{s_opcode=111}
+				m.ab_fx.add{s_opcode=326 s_target=1 s_timing=1 s_parameter1=stat_ind_1 s_parameter2=111 s_resource:=%spl_hla_werewolf_subspell_3_1%}
+				m.ab_fx.add{s_opcode=318 s_target=1 s_timing=0 s_duration=1 s_parameter1=stat_ind_1 s_parameter2=111 s_resource:=%sfo_filename%}
+				m.ab_fx.add{s_opcode=326 s_target=1 s_timing=1 s_parameter1=stat_ind_2 s_parameter2=111 s_resource:=%spl_hla_werewolf_subspell_3_2%}
+				m.ab_fx.add{s_opcode=318 s_target=1 s_timing=0 s_duration=1 s_parameter1=stat_ind_2 s_parameter2=111 s_resource:=%sfo_filename%}
+				m.ab_fx.add{s_opcode=326 s_target=1 s_timing=1 s_parameter1=stat_ind_3 s_parameter2=111 s_resource:=%spl_hla_werewolf_subspell_3_3%}
+				m.ab_fx.add{s_opcode=318 s_target=1 s_timing=0 s_duration=1 s_parameter1=stat_ind_3 s_parameter2=111 s_resource:=%sfo_filename%}
+				m.ab_fx.add{s_opcode=111 s_target=1 s_timing=1 s_resource:=%itm_werewolf_lord_upgrade_3%}
+				m.ab_fx.add{s_opcode=172 s_target=1 s_timing=1 s_resource:=%sfo_filename%}
+				m.ab_fx.add{s_opcode=171 s_target=1 s_timing=1 s_resource:=%sfo_filename%}
+			]			
+			
+			
+		END ELSE BEGIN
+		
+			// if not, rebuild shapeshifters ToF style first.
+		
+		
+			LAF include STR_VAR file=lib_shapeshift.tph locbase=lib END
+
+			spl.edit[spcl643][m.ab_fx.alter{s_resource:=werewlf1|match="~%s_resource%~ STR_EQ brbrp"}]
+			spl.edit[spcl644][m.ab_fx.alter{s_resource:=werewlf2|match="~%s_resource%~ STR_EQ brbrp"}]
+			itm.copy[brbrp=>werewlf1 brbrp=>werewlf2][]
+
+			// normal werewolf 
+			
+			LAF make_shapeshift_spell
+				INT_VAR str=19
+						dex=16
+						ac=1
+						apr=2
+						enchantment=2
+						dicenumber=1
+						dicesize=6
+						timing=1
+						healing=1
+						resistmagic=20
+						grant_natural_form_spell=1
+				STR_VAR weapon=werewlf1
+						spell=spcl643
+						copy_spell=spcl643
+						damagetype=slashing
+						cre=werewodr
+			END
+			
+			// greater werewolf 
+
+			LAF make_shapeshift_spell
+				INT_VAR str=21
+						dex=20
+						ac="-6"
+						apr=3
+						enchantment=3
+						dicenumber=1
+						dicesize=10
+						timing=1
+						healing=1
+						resistmagic=40
+						resistacid=50
+						resistfire=50
+						resistcold=50
+						resistelectricity=50
+						grant_natural_form_spell=1
+				STR_VAR weapon=werewlf2
+						spell=spcl644
+						copy_spell=spcl644
+						damagetype=slashing
+						cre=weregrdr
+			END		
+			
+			// now apply the effects
+			
+			itm.copy[werewlf2=>%itm_werewolf_greater_upgrade_1% werewlf1=>%itm_werewolf_upgrade_1%]
+			[
+				m.fx.alter{s_parameter1+=2|match="s_opcode=44"}
+			]
+			itm.copy[%itm_werewolf_greater_upgrade_1%=>%itm_werewolf_greater_upgrade_2% %itm_werewolf_upgrade_1%=>%itm_werewolf_upgrade_2%]
+			[
+				m.fx.add{s_opcode=98 s_special=87 s_parameter1=2 s_parameter2=2 s_timing=2}
+			]
+			itm.copy[%itm_werewolf_greater_upgrade_2%=>%itm_werewolf_greater_upgrade_3% %itm_werewolf_upgrade_2%=>%itm_werewolf_upgrade_3%]
+			[
+				m.fx.delete{s_opcode=145 OR (s_opcode=144 AND !s_parameter2=7)}
+			]
+			array.new[werewolf_map]
+			[
+				1_1=>werewlf1
+				1_2=>"%itm_werewolf_upgrade_1%"
+				1_3=>"%itm_werewolf_upgrade_2%"
+				2_1=>werewlf2
+				2_2=>"%itm_werewolf_greater_upgrade_1%"
+				2_3=>"%itm_werewolf_greater_upgrade_2%"
+			]
+			
+			ACTION_PHP_EACH werewolf_map AS code=>item BEGIN
+				spell:==EVAL "%spl_hla_werewolf_subspell_%code%%"
+				spl.make[%spell%]
+				[
+					m.ab.add{}
+					m.ab_fx.add{s_opcode=111 s_target=1 s_timing=1 s_resource:="%item%"}
+				]								
+			END
+			
+
+			
+			spl.edit[%SHAPESHIFTER_SHAPESHIFT_GREATERWEREWOLF%]
+			[
+				m.ab_fx.delete{s_opcode=111}
+				m.ab_fx.add{s_opcode=326 s_target=1 s_timing=1 s_parameter1=stat_ind_1 s_parameter2=111 s_resource:=%spl_hla_werewolf_subspell_2_1%}
+				m.ab_fx.add{s_opcode=318 s_target=1 s_timing=0 s_duration=1 s_parameter1=stat_ind_1 s_parameter2=111 s_resource:=%sfo_filename%}
+				m.ab_fx.add{s_opcode=326 s_target=1 s_timing=1 s_parameter1=stat_ind_2 s_parameter2=111 s_resource:=%spl_hla_werewolf_subspell_2_2%}
+				m.ab_fx.add{s_opcode=318 s_target=1 s_timing=0 s_duration=1 s_parameter1=stat_ind_2 s_parameter2=111 s_resource:=%sfo_filename%}
+				m.ab_fx.add{s_opcode=326 s_target=1 s_timing=1 s_parameter1=stat_ind_3 s_parameter2=111 s_resource:=%spl_hla_werewolf_subspell_2_3%}
+				m.ab_fx.add{s_opcode=318 s_target=1 s_timing=0 s_duration=1 s_parameter1=stat_ind_3 s_parameter2=111 s_resource:=%sfo_filename%}
+				m.ab_fx.add{s_opcode=111 s_target=1 s_timing=1 s_resource:=%itm_werewolf_greater_upgrade_3%}
+				m.ab_fx.add{s_opcode=172 s_target=1 s_timing=1 s_resource:=%sfo_filename%}
+				m.ab_fx.add{s_opcode=171 s_target=1 s_timing=1 s_resource:=%sfo_filename%}
+			]
+			spl.edit[%SHAPESHIFTER_SHAPESHIFT_WEREWOLF%]
+			[
+				m.ab_fx.delete{s_opcode=111}
+				m.ab_fx.add{s_opcode=326 s_target=1 s_timing=1 s_parameter1=stat_ind_1 s_parameter2=111 s_resource:=%spl_hla_werewolf_subspell_3_1%}
+				m.ab_fx.add{s_opcode=318 s_target=1 s_timing=0 s_duration=1 s_parameter1=stat_ind_1 s_parameter2=111 s_resource:=%sfo_filename%}
+				m.ab_fx.add{s_opcode=326 s_target=1 s_timing=1 s_parameter1=stat_ind_2 s_parameter2=111 s_resource:=%spl_hla_werewolf_subspell_3_2%}
+				m.ab_fx.add{s_opcode=318 s_target=1 s_timing=0 s_duration=1 s_parameter1=stat_ind_2 s_parameter2=111 s_resource:=%sfo_filename%}
+				m.ab_fx.add{s_opcode=326 s_target=1 s_timing=1 s_parameter1=stat_ind_3 s_parameter2=111 s_resource:=%spl_hla_werewolf_subspell_3_3%}
+				m.ab_fx.add{s_opcode=318 s_target=1 s_timing=0 s_duration=1 s_parameter1=stat_ind_3 s_parameter2=111 s_resource:=%sfo_filename%}
+				m.ab_fx.add{s_opcode=111 s_target=1 s_timing=1 s_resource:=%itm_werewolf_upgrade_3%}
+				m.ab_fx.add{s_opcode=172 s_target=1 s_timing=1 s_resource:=%sfo_filename%}
+				m.ab_fx.add{s_opcode=171 s_target=1 s_timing=1 s_resource:=%sfo_filename%}
+			]			
+			
+		
+		
+		
+		END
+	END
+END

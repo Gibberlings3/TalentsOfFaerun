@@ -1,0 +1,17 @@
+DEFINE_ACTION_FUNCTION no_kensai_robes BEGIN
+
+
+	LAF check_label STR_VAR label=dw-no_kensai_robes RET value END
+	ACTION_IF !value BEGIN
+		LAF make_label STR_VAR label=dw-no_kensai_robes END
+		COPY_EXISTING_REGEXP ".*\.itm" override
+			PATCH_IF (SHORT_AT 0x1c)=2 BEGIN // in the armor slot
+				READ_BYTE 0x18 flags
+				PATCH_IF ((flags BAND 0b01000100)=0b01000100) BEGIN // magical, droppable
+					WRITE_BYTE 0x2f (THIS BOR BIT2)
+				END 
+			END		
+		BUT_ONLY
+	END
+
+END

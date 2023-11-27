@@ -1,0 +1,145 @@
+/*
+
+Free up the WIZARD_CHAOTIC_COMMANDS, WIZARD_FIRE_SHIELD, and WIZARD_SPELL_IMMUNITY stats by utilizing the overlapping spellstates.
+
+
+*/
+
+
+DEFINE_ACTION_FUNCTION reroute_stats BEGIN
+
+
+
+	ACTION_DEFINE_ASSOCIATIVE_ARRAY stat_array BEGIN
+		CLERIC_CHAOTIC_COMMANDS,1,CHAOTIC_COMMANDS=>cc
+		WIZARD_FIRE_SHIELD,1,RED_FIRESHIELD=>fsr
+		WIZARD_FIRE_SHIELD,2,BLUE_FIRESHIELD=>fsb
+		WIZARD_SPELL_IMMUNITY,1,SI_ABJURATION=>siabj
+		WIZARD_SPELL_IMMUNITY,2,SI_CONJURATION=>siconj
+		WIZARD_SPELL_IMMUNITY,3,SI_DIVINATION=>sidiv
+		WIZARD_SPELL_IMMUNITY,4,SI_ENCHANTMENT=>siench
+		WIZARD_SPELL_IMMUNITY,5,SI_ILLUSION=>siill
+		WIZARD_SPELL_IMMUNITY,6,SI_EVOCATION=>sievo
+		WIZARD_SPELL_IMMUNITY,7,SI_NECROMANCY=>sinec
+		WIZARD_SPELL_IMMUNITY,8,SI_TRANSMUTATION=>sialt
+
+		
+	END
+
+	COPY_EXISTING_REGEXP - ".*\.\(spl\|itm\)" nowhere
+		PATCH_IF "%SOURCE_EXT%" STR_EQ "itm" BEGIN
+			GET_OFFSET_ARRAY fx_arr ITM_V10_GEN_EFFECTS
+			PHP_EACH fx_arr AS fx_ind=>fx_off BEGIN
+				LPM stat_to_splstate_helper
+			END
+			GET_OFFSET_ARRAY ab_arr ITM_V10_HEADERS
+		END ELSE BEGIN
+			GET_OFFSET_ARRAY ab_arr SPL_V10_HEADERS
+		END
+		PHP_EACH ab_arr AS ab_ind=>ab_off BEGIN
+			GET_OFFSET_ARRAY2 fx_arr ab_off ITM_V10_HEAD_EFFECTS
+			PHP_EACH fx_arr AS fx_ind=>fx_off BEGIN
+				LPM stat_to_splstate_helper
+			END
+		END
+
+
+	ACTION_PHP_EACH stat_array AS k=>v BEGIN
+		ACTION_PHP_EACH "%v%_stat" AS file=>discard BEGIN
+			COPY_EXISTING "%file%" override
+				PATCH_IF IDS_OF_SYMBOL (stats "%k_0%")>=156 BEGIN
+					PATCH_IF VARIABLE_IS_SET $"%v%_splstate"("%file%") BEGIN
+						LPF DELETE_EFFECT INT_VAR match_opcode=282 match_parameter2=IDS_OF_SYMBOL (stats "%k_0%") - 156 match_parameter1=k_1 END
+					END ELSE BEGIN
+						LPF ALTER_EFFECT INT_VAR match_opcode=282 match_parameter2=IDS_OF_SYMBOL (stats "%k_0%") - 156 match_parameter1=k_1 opcode=328 parameter1=0 parameter2=IDS_OF_SYMBOL (splstate "%k_2%") special=1 END				
+					END					
+				END ELSE BEGIN
+					PATCH_IF VARIABLE_IS_SET $"%v%_splstate"("%file%") BEGIN
+						LPF DELETE_EFFECT INT_VAR match_opcode=233 match_parameter2=IDS_OF_SYMBOL (stats "%k_0%") match_parameter1=k_1 END
+					END ELSE BEGIN
+						LPF ALTER_EFFECT INT_VAR match_opcode=233 match_parameter2=IDS_OF_SYMBOL (stats "%k_0%") match_parameter1=k_1 opcode=328 parameter1=0 parameter2=IDS_OF_SYMBOL (splstate "%k_2%") special=1 END				
+					END
+				END
+		END
+	END
+	
+	OUTER_SET cc_stat=IDS_OF_SYMBOL (stats CLERIC_CHAOTIC_COMMANDS)
+	OUTER_SET fs_stat=IDS_OF_SYMBOL (stats WIZARD_FIRE_SHIELD)
+	OUTER_SET si_stat=IDS_OF_SYMBOL (stats WIZARD_SPELL_IMMUNITY)
+	COPY_EXISTING_REGEXP ".*\.bcs" override
+		//chaotic commands
+		PATCH_IF INDEX_BUFFER (" %cc_stat% ")>=0 BEGIN
+			DECOMPILE_AND_PATCH BEGIN
+				REPLACE_TEXTUALLY "CheckStatGT(\([^,]*\),0,CLERIC_CHAOTIC_COMMANDS)" "CheckSpellState(\1,CHAOTIC_COMMANDS)"			
+				REPLACE_TEXTUALLY "CheckStat(\([^,]*\),0,CLERIC_CHAOTIC_COMMANDS)" "!CheckSpellState(\1,CHAOTIC_COMMANDS)"		
+				REPLACE_TEXTUALLY "!!" ""
+			END
+		END
+		// fire shield (we assume only direct checks)
+		PATCH_IF INDEX_BUFFER (" %fs_stat% ")>=0 BEGIN
+			DECOMPILE_AND_PATCH BEGIN
+				REPLACE_TEXTUALLY "CheckStat(\([^,]*\),1,WIZARD_FIRE_SHIELD)" "CheckSpellState(\1,RED_FIRESHIELD)"		
+				REPLACE_TEXTUALLY "CheckStat(\([^,]*\),2,WIZARD_FIRE_SHIELD)" "CheckSpellState(\1,BLUE_FIRESHIELD)"		
+			END
+		END
+		// spell immunity direct cases (we need to collect others for a disjunctive substitution)
+		PATCH_IF INDEX_BUFFER (" %si_stat% ")>=0 BEGIN
+			DECOMPILE_AND_PATCH BEGIN
+				REPLACE_TEXTUALLY "CheckStat(\([^,]*\),1,WIZARD_SPELL_IMMUNITY)" "CheckSpellState(\1,SI_ABJURATION)"	
+				REPLACE_TEXTUALLY "CheckStat(\([^,]*\),2,WIZARD_SPELL_IMMUNITY)" "CheckSpellState(\1,SI_CONJURATION)"	
+				REPLACE_TEXTUALLY "CheckStat(\([^,]*\),3,WIZARD_SPELL_IMMUNITY)" "CheckSpellState(\1,SI_DIVINATION)"	
+				REPLACE_TEXTUALLY "CheckStat(\([^,]*\),4,WIZARD_SPELL_IMMUNITY)" "CheckSpellState(\1,SI_ENCHANTMENT)"	
+				REPLACE_TEXTUALLY "CheckStat(\([^,]*\),5,WIZARD_SPELL_IMMUNITY)" "CheckSpellState(\1,SI_ILLUSION)"	
+				REPLACE_TEXTUALLY "CheckStat(\([^,]*\),6,WIZARD_SPELL_IMMUNITY)" "CheckSpellState(\1,SI_EVOCATION)"	
+				REPLACE_TEXTUALLY "CheckStat(\([^,]*\),7,WIZARD_SPELL_IMMUNITY)" "CheckSpellState(\1,SI_NECROMANCY)"	
+				REPLACE_TEXTUALLY "CheckStat(\([^,]*\),8,WIZARD_SPELL_IMMUNITY)" "CheckSpellState(\1,SI_TRANSMUTATION)"		
+			END
+			SPRINT $si_subs("%SOURCE_RES%") ""
+		END
+	BUT_ONLY
+	
+	ACTION_PHP_EACH si_subs AS script=>discard BEGIN
+		LAF disjunctive_substitution STR_VAR script match="CheckStatGT(\([^,]*\),0,WIZARD_SPELL_IMMUNITY)" replace="OR()CheckSpellState(\1,SI_ABJURATION)|CheckSpellState(\1,SI_CONJURATION)|CheckSpellState(\1,SI_DIVINATION)|CheckSpellState(\1,SI_ENCHANTMENT)|CheckSpellState(\1,SI_ILLUSION)|CheckSpellState(\1,SI_EVOCATION)|CheckSpellState(\1,SI_NECROMANCY)|CheckSpellState(\1,SI_TRANSMUTATION)" END
+	END
+	
+
+END
+
+
+// not self-contained at all, just an abbreviation to avoid having to repeat code
+DEFINE_PATCH_MACRO stat_to_splstate_helper BEGIN
+	LOCAL_SET parameter1=0
+	LOCAL_SET parameter2=0
+	LOCAL_SET k=0
+	LOCAL_SET k_0=0
+	LOCAL_SET k_1=0
+	LOCAL_SET k_2=0
+	LOCAL_SET array_name=0
+	PATCH_IF SHORT_AT fx_off=233 BEGIN
+		READ_LONG fx_off+0x4 parameter1
+		READ_LONG fx_off+0x8 parameter2
+		PHP_EACH stat_array AS k=>array_name BEGIN
+			PATCH_IF parameter1=k_1 && parameter2=IDS_OF_SYMBOL (stats "%k_0%") BEGIN
+				SPRINT $"%array_name%_stat"("%SOURCE_FILE%") ""
+			END
+		END
+	END ELSE
+	PATCH_IF SHORT_AT fx_off=282 BEGIN
+		READ_LONG fx_off+0x4 parameter1
+		READ_LONG fx_off+0x8 parameter2
+		PHP_EACH stat_array AS k=>array_name BEGIN
+			PATCH_IF parameter1=k_1 && parameter2=IDS_OF_SYMBOL (stats "%k_0%") - 156 BEGIN
+				SPRINT $"%array_name%_stat"("%SOURCE_FILE%") ""
+			END
+		END	
+	END
+	PATCH_IF SHORT_AT fx_off=328 BEGIN
+		READ_LONG fx_off+0x8 parameter2
+		PHP_EACH stat_array AS k=>array_name BEGIN
+			PATCH_IF parameter2=IDS_OF_SYMBOL (splstate "%k_2%") BEGIN
+				SPRINT $"%array_name%_splstate"("%SOURCE_FILE%") ""
+			END
+		END
+	END
+
+END

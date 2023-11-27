@@ -1,0 +1,149 @@
+DEFINE_ACTION_FUNCTION umberlee_cleric BEGIN
+
+    LAF umberlee_shared END
+	OUTER_SPRINT kit DW_UMBERLEE_CLERIC
+	LAF splconv_get_name STR_VAR spell="%CLERIC_STORM_SHELL%" new_type=innate RET spl_umberlee_storm_shell=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_SMASHING_WAVE%" new_type=innate RET spl_umberlee_smashing_wave=new_resref END
+	
+	kit.copy[CLERIC=>%kit%]
+	[
+		k_name:=@106
+		k_desc:=@107
+		k.kit_apply_powers{%spl_umberlee_water_elemental_protection% 1,%spl_umberlee_smashing_wave_immunity% 1}
+		k.kit_grant_powers{%spl_umberlee_storm_shell% 3 6,%spl_umberlee_smashing_wave% 6 6,%spl_umberlee_conjure_elemental% 9}
+		k_color_metal=35
+		k_color_minor_cloth=56
+		k_color_main_cloth=31
+		k_color_leather=25
+		k_color_armor=80
+		k.kit_set_alignment{cn ne ce}
+		IF {is_iwd} {{k_bio:=@1063}}
+	]
+	
+	
+	LAF cleric_kit_substitutions STR_VAR kit god=umberlee END
+
+	LAF assign_spheres STR_VAR kit default=cleric subtract="good summoning wards" add="air water" END
+	LAF holy_symbol INT_VAR name=2048 follower=2049 STR_VAR kit desc_bam=camul10 inv_bam=iamul08 kit END
+	LAF adjust_cleric_stronghold STR_VAR talos="all" kit END
+ 
+ 
+END
+
+DEFINE_ACTION_FUNCTION water_elementalist_of_umberlee BEGIN
+
+    LAF umberlee_shared END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_STORM_SHELL%" new_type=innate RET spl_umberlee_storm_shell=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_SMASHING_WAVE%" new_type=innate RET spl_umberlee_smashing_wave=new_resref END
+
+	OUTER_SPRINT kit DW_UMBERLEE_WATER_ELEMENTALIST
+	kit.copy[CLERIC_MAGE=>%kit%]
+	[
+		k_name:=@148
+		LPF resolve_elem_desc INT_VAR tra_ref=149 STR_VAR swap="%fire_names%" RET k_desc=strref END	
+		k.kit_apply_powers{%spl_umberlee_water_elemental_protection% 1,%spl_umberlee_smashing_wave_immunity% 1|class=cleric}
+		k.kit_grant_powers{%spl_umberlee_storm_shell% 3 6,%spl_umberlee_smashing_wave% 6 6,%spl_umberlee_conjure_elemental% 9|class=cleric}
+		k.kit_apply_powers{%spl_elementalist_water_innate% 1|class=mage}
+		k_color_minor_cloth=56
+		k_color_main_cloth=31
+		k.kit_set_alignment{cn ne ce}
+		IF {is_iwd} {{k_bio:=@1063}}
+	]
+	LAF cleric_kit_substitutions STR_VAR kit god=umberlee END
+
+	LAF assign_spheres INT_VAR update_scroll_usability=0 STR_VAR kit default=cleric subtract="good summoning wards" add="air water" END
+	LAF holy_symbol INT_VAR name=2048 follower=2049 STR_VAR kit desc_bam=camul10 inv_bam=iamul08 kit END
+	LAF adjust_cleric_stronghold STR_VAR talos="all" kit END
+
+
+	LAF set_elem_spells INT_VAR school_tra=11 school_tra2=12 STR_VAR kit elem_spec=water elem_block=fire tra=elementalist END
+	LAF set_spell_learn_modifiers STR_VAR kit modifiers="mage_water=25, mage_water_shared=25, mage_air=15, mage_earth=15, default=-15" END
+	LAF bonus_spells_from_list STR_VAR kit path="%MOD_FOLDER%/class_race/bonus_spell_lists/water.txt" class=mage END
+	
+	LAF set_multiclass_components STR_VAR kit components="DW_UMBERLEE_CLERIC DW_ELEMENTALIST_WATER"  END
+
+ 
+END
+
+DEFINE_ACTION_FUNCTION umberlee_shared BEGIN
+	
+   LAF check_label STR_VAR label=dw#umberlee_shared RET value END
+   ACTION_IF !value BEGIN
+   
+    LAF make_label STR_VAR label=dw#umberlee_shared END
+
+	LAF include STR_VAR file=log_favored_weapon.tph locbase=shared END
+	LAF log_favored_weapon STR_VAR god=UMBERLEE weapon=spear END
+	
+	// ignored by water elementals
+	
+	spl.make[%spl_umberlee_water_elemental_protection%]
+	[
+		m.ab.add{}
+		m.ab_fx.add{s_opcode=100 s_target=2 s_timing=9 s_parameter1=219 s_parameter2=5}
+	]
+	
+	// smashing wave immunity
+	
+	spl.make[%spl_umberlee_smashing_wave_immunity%]
+	[
+		m.ab.add{}
+		m.ab_fx.add{s_opcode=324 s_target=2 s_timing=9 s_resource:=%CLERIC_SMASHING_WAVE%}
+	]
+
+
+	
+	// water elemental summoning (we copy fire elemental because whether CLERIC_CONJURE_WATER_ELEMENTAL exists depends on whether elemental_cre is installed)
+
+	
+	ACTION_IF is_iwd BEGIN
+		OUTER_SPRINT 8hd_elemental es8watr
+		OUTER_SPRINT 12hd_elemental es12watr
+		OUTER_SPRINT 16hd_elemental es16watr
+		OUTER_SPRINT 24hd_elemental es24watr
+	END ELSE BEGIN
+		OUTER_SPRINT 8hd_elemental es8watr
+		OUTER_SPRINT 12hd_elemental dw#wate2
+		OUTER_SPRINT 16hd_elemental dw#wate3
+		OUTER_SPRINT 24hd_elemental dw#wate4	
+	END
+		
+	LAF spl_resolve_smtables_entry STR_VAR name=DW_UMBERLEE_ELEMENTAL_8HD 2da="%2da_water_elemental_umberlee_1%" RET table_umberlee_1=value END
+	LAF spl_resolve_smtables_entry STR_VAR name=DW_UMBERLEE_ELEMENTAL_12HD 2da="%2da_water_elemental_umberlee_2%" RET table_umberlee_2=value END
+	LAF spl_resolve_smtables_entry STR_VAR name=DW_UMBERLEE_ELEMENTAL_16HD 2da="%2da_water_elemental_umberlee_3%" RET table_umberlee_3=value END
+	LAF spl_resolve_smtables_entry STR_VAR name=DW_UMBERLEE_ELEMENTAL_24HD 2da="%2da_water_elemental_umberlee_4%" RET table_umberlee_4=value END
+
+	LAF spl_generate_smtable STR_VAR 2da="%2da_water_elemental_umberlee_1%" contents="%8hd_elemental%" hit_animation="MSumm1H" area_hit_animation="CWElemX" END
+	LAF spl_generate_smtable STR_VAR 2da="%2da_water_elemental_umberlee_2%" contents="%12hd_elemental%" hit_animation="MSumm1H" area_hit_animation="CWElemX" END
+	LAF spl_generate_smtable STR_VAR 2da="%2da_water_elemental_umberlee_3%" contents="%16hd_elemental%" hit_animation="MSumm1H" area_hit_animation="CWElemX" END
+	LAF spl_generate_smtable STR_VAR 2da="%2da_water_elemental_umberlee_4%" contents="%24hd_elemental%" hit_animation="MSumm1H" area_hit_animation="CWElemX" END
+
+	
+	spl.copy[%CLERIC_CONJURE_FIRE_ELEMENTAL%=>%spl_umberlee_conjure_elemental%]
+	[
+		m_type:=innate
+		m_unusable_cleric=0
+		m_unusable_druid=0
+		m.ab.alter{s_location=1}
+		m_description:=@1062
+		m_name:=@1061
+		m_icon:="%WIZARD_CONJURE_LESSER_WATER_ELEMENTAL%A"
+		m.ab_fx.delete{}
+		m.ab.delete{s_level>1}
+		m.ab.alter{s_icon:="%WIZARD_CONJURE_LESSER_WATER_ELEMENTAL%B"}
+		m.ab.clone{s_level=2+entry_index|number:i=is_iwd?29:19}
+		m.ab_fx.add{s_opcode=331 s_target=1 s_parameter1=1 s_dispel_resist=3 s_duration=60*p_level s_parameter2=( p_level<13? table_umberlee_1: ( p_level<17? table_umberlee_2: (p_level<21?table_umberlee_3:table_umberlee_4)))}
+
+	]
+	
+	// other innates
+	
+	LAF splconv STR_VAR spell="%CLERIC_STORM_SHELL%" new_type=innate RET_ARRAY splconv_array END
+	LAF splconv STR_VAR spell="%CLERIC_SMASHING_WAVE%" new_type=innate RET_ARRAY splconv_array END
+
+
+
+	
+	END
+
+END

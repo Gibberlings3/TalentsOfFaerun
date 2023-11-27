@@ -1,0 +1,260 @@
+DEFINE_PATCH_FUNCTION MONK_SHADOWLESS_KICK BEGIN
+
+	// speed should be zero
+    LPF ALTER_SPELL_HEADER INT_VAR speed=0 target=1 END
+	//graphics
+    LPF ADD_SPELL_EFFECT INT_VAR insert_point=0 opcode=138 target=1 timing=0 parameter2=12 END
+	// sufficiently large creatures are immune to knockback
+	LPF CLONE_EFFECT INT_VAR match_opcode=235 opcode=324 parameter2=13 timing=0 duration=1 STR_VAR insert=above resource="%SOURCE_RES%" END
+	// add saving throw vs stun
+	LPF ALTER_EFFECT INT_VAR match_opcode=39 save_vs_breath=1 savebonus="-4" END
+	// label 'don't kick yourself' immunity
+	LPF ALTER_EFFECT INT_VAR match_opcode=206 parameter1=RESOLVE_STR_REF (@3102) END
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION MONK_DRAGON_FIST BEGIN
+
+	// remove stray slow effect
+	LPF DELETE_EFFECT INT_VAR match_opcode=40 END
+	// set a bespoke icon
+	LPF resolve_statdesc INT_VAR strref=RESOLVE_STR_REF (@3070) STR_VAR bam=tg#bl03b RET stat_num END
+	LPF ALTER_EFFECT INT_VAR match_opcode=142 parameter2=stat_num END
+	
+	INNER_ACTION BEGIN
+		// MR reduction save is breath
+		COPY_EXISTING 
+		"TG#DRG1.EFF" override 
+		"TG#DRG2.EFF" override 
+		"TG#DRG4.EFF" override 
+			WRITE_BYTE 0x40 BIT1
+		// specific protection: only 1 removed; save is breath
+		COPY_EXISTING "TG#DRG3.EFF" override
+			WRITE_LONG 0x10 230
+			WRITE_BYTE 0x40 BIT1
+		// combat protection: only 1 removed
+		COPY_EXISTING "TG#DRG7.EFF" override
+			WRITE_LONG 0x10 230	
+	END
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION MONK_TIGER_STRIKE BEGIN
+
+	// set a bespoke icon
+	LPF resolve_statdesc INT_VAR strref=RESOLVE_STR_REF (@3072) STR_VAR bam=tg#tigsb RET stat_num END
+	LPF ALTER_EFFECT INT_VAR match_opcode=142 parameter2=stat_num END
+	// copy the Smite scripting state
+	LPF CLONE_EFFECT INT_VAR match_opcode=142 opcode=282 parameter1=5 parameter2=3 END
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION MONK_FINGER_OF_DESTRUCTION BEGIN
+
+	// rename item
+	INNER_ACTION BEGIN
+		COPY_EXISTING "tg#finp.itm" override
+			SAY 0x8 @3071
+			SAY 0xc @3071
+	END
+
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION MONK_FASTER_THAN_THE_EYE BEGIN
+
+	// get the specs for physical mirror from the cleric spell
+	
+	INNER_ACTION BEGIN
+		ACTION_CLEAR_ARRAY physical_mirror_projs
+		COPY_EXISTING - "%CLERIC_PHYSICAL_MIRROR%.spl" nowhere
+			GET_OFFSET_ARRAY ab_arr SPL_V10_HEADERS
+			GET_OFFSET_ARRAY2 fx_arr ab_arr_0 SPL_V10_HEAD_EFFECTS
+			PHP_EACH fx_arr AS fx_ind=>fx_off BEGIN
+				PATCH_IF SHORT_AT fx_off=197 BEGIN
+					READ_LONG (fx_off+8) parameter
+					SET $physical_mirror_projs("%parameter%")=1
+				END
+			END
+	END
+	
+	// set the physical mirror effects on the spell
+	
+	LPF DELETE_EFFECT INT_VAR match_opcode=197 END
+	PHP_EACH physical_mirror_projs AS proj=>discard BEGIN
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=197 target=1 power=6 parameter2=proj duration=18 END
+	END
+
+	// should not be dispellable
+	
+	LPF ALTER_EFFECT INT_VAR resist_dispel=0 END
+
+	// bespoke icon
+	
+	LPF resolve_statdesc INT_VAR strref=RESOLVE_STR_REF (@3076) STR_VAR bam=tg#intib RET stat_num END
+	LPF ALTER_EFFECT INT_VAR match_opcode=142 parameter2=stat_num END
+	
+
+
+END
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION MONK_DIAMOND_SOUL BEGIN
+
+	// remove polymorph immunity, which won't work in EE via opcode anyway and which blocks 'good' shapechange
+	
+	LPF DELETE_EFFECT INT_VAR match_opcode=101 match_parameter2=135 END
+	
+	// add explicit immunity to polymorph other
+	
+	LPF add_feat_effect INT_VAR opcode=206 STR_VAR resource="%WIZARD_POLYMORPH_OTHER%" END
+	LPF add_feat_effect INT_VAR opcode=206 STR_VAR resource="%MAJOR_POLYMORPH%" END
+
+	// add spellstate immunity to disintegrate and petrify
+	
+	LPF ds_resolve_stat STR_VAR id=DISINTEGRATE_IMMUNITY RET disint_stat=stat_ind END
+	LPF ds_resolve_stat STR_VAR id=PETRIFY_IMMUNITY RET petrify_stat=stat_ind END
+	LPF add_feat_effect INT_VAR opcode=328 special=1 parameter2=disint_stat END
+	LPF add_feat_effect INT_VAR opcode=328 special=1 parameter2=petrify_stat END
+
+
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION MONK_SECOND_WIND BEGIN
+
+	// bespoke icon
+	LPF resolve_statdesc INT_VAR strref=RESOLVE_STR_REF (@3090) STR_VAR bam=tg#secwb RET stat_num END
+	LPF ALTER_EFFECT INT_VAR match_opcode=142 parameter2=stat_num END
+	// remove sectype magic
+	WRITE_BYTE 0x27 8 // contingency
+	// permanent
+	LPF ALTER_EFFECT INT_VAR timing=9 duration=0 END
+	
+	// name the secondary spell; have it remove and autoreapply the primary; clear up cruft
+	
+	INNER_ACTION BEGIN
+		COPY_EXISTING "tg#sec2.spl" override
+			WRITE_LONG 0x8 73944
+			LPF DELETE_EFFECT INT_VAR match_opcode=221 END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 timing=1 STR_VAR resource="tg#secw" END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=146 target=2 timing=4 duration=2400 STR_VAR resource="tg#secw" END
+	END
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION MONK_CHANT BEGIN
+
+	// bespoke icon
+	LPF resolve_statdesc INT_VAR strref=RESOLVE_STR_REF (@3092) STR_VAR bam=tg#chntb RET stat_num END
+	LPF ALTER_EFFECT INT_VAR match_opcode=142 parameter2=stat_num END
+	
+	// 206->321
+	
+	LPF DELETE_EFFECT INT_VAR match_opcode=206 END
+	LPF ADD_SPELL_EFFECT INT_VAR insert_point=0 opcode=321 target=1 timing=1 STR_VAR resource="tg#chnt" END
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION MONK_ETHEREAL BEGIN
+
+	// 206->321
+	
+	LPF DELETE_EFFECT INT_VAR match_opcode=206 END
+	LPF ADD_SPELL_EFFECT INT_VAR insert_point=0 opcode=321 target=1 timing=1 STR_VAR resource="tg#chnt" END
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION MONK_DISPLACEMENT BEGIN
+
+	// timing=9
+	LPF ALTER_EFFECT INT_VAR timing=9 END
+	// add icon
+	LPF resolve_statdesc INT_VAR strref=RESOLVE_STR_REF (@3092) STR_VAR bam=tg#chntb RET stat_num END
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=142 target=1 timing=9 parameter2=stat_num END
+	
+	
+	INNER_ACTION BEGIN
+		COPY_EXISTING "tg#dis2.spl" override
+			// set name string
+			LPF ALTER_EFFECT INT_VAR match_opcode=139 parameter1=RESOLVE_STR_REF (@3096) END
+			// remove main effect, recast main effect after 8 hours
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 timing=1 STR_VAR resource=tg#disp END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=146 target=2 timing=4 duration=2400 STR_VAR resource=tg#disp END
+	
+	END
+END
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION SUN_SOUL_SEARING_FISTS
+BEGIN
+
+	// get the stat
+    LPF ds_resolve_stat STR_VAR id=DW_POWER_UPGRADE_F1 RET stat_ind END
+   
+    // apply it
+	
+	LPF add_feat_effect INT_VAR opcode=328 special=1 parameter2=stat_ind END
+	
+	INNER_ACTION BEGIN
+
+    // make more powerful version of Flaming Fists
+
+		COPY_EXISTING "spcl238.spl" "override/%spl_searing_fists_payload%.spl"
+			WRITE_LONG 0x8 "-1"
+			LPF ALTER_EFFECT INT_VAR match_opcode=248 STR_VAR resource="%eff_searing_fists%" END
+
+	// effect for more powerful version
+
+		COPY_EXISTING "monkflam.eff" "override/%eff_searing_fists%.eff" WRITE_LONG 0x38 3
+		
+		// patch it into existing spell
+		
+		COPY_EXISTING "spcl238.spl" override
+			LPF ADD_SPELL_EFFECT INT_VAR insert_point=0 opcode=318 target=1 parameter1=stat_ind parameter2=110 duration=1 STR_VAR resource=spcl238 END
+			LPF ADD_SPELL_EFFECT INT_VAR insert_point=0 opcode=326 target=1 parameter1=stat_ind parameter2=110 STR_VAR resource="%spl_searing_fists_payload%" END
+
+	END
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION DARK_MOON_SOUL_OF_ICE
+BEGIN
+
+	LPF ALTER_EFFECT INT_VAR match_opcode=248 duration=0 timing=9 STR_VAR resource="%eff_dark_moon_soul_of_ice%" END // change payload, make permanent
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=1 timing=1 STR_VAR resource=spdm105 END // remove any residual effect of Frozen Fists
+	LPF add_feat_effect INT_VAR opcode=206 STR_VAR resource=spdm105 END // immunity to Frozen Fists
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=172  target=1 timing=1 STR_VAR resource=spdm105 END  // remove Frozen Fists ability
+
+	INNER_ACTION BEGIN
+		// create the new fx
+		COPY_EXISTING "monkchil.eff" "override/%eff_dark_moon_soul_of_ice%.eff"
+			WRITE_LONG 0x1c 4
+	END
+
+
+END
+

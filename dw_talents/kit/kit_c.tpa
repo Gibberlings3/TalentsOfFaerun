@@ -1,0 +1,135 @@
+DEFINE_ACTION_FUNCTION kit_c BEGIN
+
+	LAF include STR_VAR file=symbol_stronghold.tph locbase=shared END
+	LAF include STR_VAR file=cleric_dialog_adjusts.tph END
+
+	LAF ui_spell_system_spheres END
+	LAF virtual_class_setup END
+
+	LAM data_spells_by_level
+
+
+	// LAF label_original_classes END // do this now just as a timesaver for later components
+
+	ACTION_FOR_EACH god IN
+		selune
+		mask
+		oghma
+		sune
+		tymora
+		moradin
+		kossuth
+		bhaal_cyric
+		bane_xvim
+		myrkul_velsharoon
+		azuth
+		ilmater
+		mystra
+		corellon
+		gruumsh
+		shar
+		auril
+		malar
+		umberlee
+        talona
+		clangeddin
+		baervan
+		lolth
+	BEGIN
+		LAF include STR_VAR file="%god%.tph" location=kits END
+		LAF check_ini STR_VAR ini="priest_of_%god%" RET value END
+		ACTION_IF is_iwd BEGIN
+			LAF check_ini INT_VAR silent=1 STR_VAR ini="iwd_story_block_priest_of_%god%" RET story_block=value END
+		END ELSE BEGIN
+			LAF check_ini INT_VAR silent=1 STR_VAR ini="bg_story_block_priest_of_%god%" RET story_block=value END		
+		END
+		ACTION_IF value && !story_block BEGIN
+			LAF "%god%_cleric" END
+		END ELSE BEGIN
+			LAF "%god%_shared" END
+		END
+	END
+
+	// update the kit-identification LUA
+	LAF ui_detect_class_kit END
+
+	// amend the cleric select screen to list only gods
+	
+	LAF check_ini STR_VAR ini=Cleric_Chargen_Hides_Priest_Titles RET value END
+	ACTION_IF value BEGIN
+	
+		LAF override_class_kit_menu INT_VAR title_tra=10016 STR_VAR class=cleric END
+		ACTION_CLEAR_ARRAY patch_data
+		ACTION_DEFINE_ASSOCIATIVE_ARRAY patch_data BEGIN
+			dw_sune_cleric=>4049
+			dw_oghma_cleric=>4046
+			dw_tymora_cleric=>4028
+			dw_mask_cleric=>4041
+			dw_selune_cleric=>4037
+			dw_moradin_cleric=>4033
+			dw_kossuth_cleric=>4078
+			dw_mystra_cleric=>4082
+			dw_ilmater_cleric=>4086
+			dw_azuth_cleric=>4090
+			dw_shar_cleric=>4094
+			dw_gruumsh_cleric=>4098
+			dw_corellon_cleric=>4102
+			dw_lolth_cleric=>4106
+			dw_baervan_cleric=>4110
+			dw_clangeddin_cleric=>4114
+			dw_auril_cleric=>4118
+			dw_talona_cleric=>4122
+			dw_umberlee_cleric=>4126
+			dw_malar_cleric=>4130
+			ohtyr=>4024
+			ohtempus=>4020
+			helm=>4016
+			lathander=>4004
+			talos=>4012	
+			trueclass=>10017
+		END
+		ACTION_IF is_iwd BEGIN
+			ACTION_DEFINE_ASSOCIATIVE_ARRAY patch_data BEGIN // intentionally no wipe
+				dw_bane_xvim_cleric=>4057
+				dw_myrkul_velsharoon_cleric=>4061
+				dw_bhaal_cyric_cleric=>4053
+			END
+		END ELSE BEGIN
+			ACTION_DEFINE_ASSOCIATIVE_ARRAY patch_data BEGIN // intentionally no wipe
+				dw_bane_xvim_cleric=>4069
+				dw_myrkul_velsharoon_cleric=>4073
+				dw_bhaal_cyric_cleric=>4065
+			END		
+		END
+		LAF 2da_read STR_VAR file=kitlist.2da rowname_column=ROWNAME RET_ARRAY ui_kitlist_rows=rows ui_kitlist_data=array END
+		ACTION_PHP_EACH patch_data AS kit=>override BEGIN
+			ACTION_IF RESOURCE_CONTAINS "kitlist.2da" "%kit%" || "%kit%" STRING_EQUAL_CASE trueclass BEGIN
+			   LAF override_chargen_kit_name INT_VAR override STR_VAR kit class=cleric END
+			END
+		END
+	
+		// re-externalize proficiencies if appropriate
+		ACTION_IF FILE_EXISTS "%data_loc_shared%/weapprof.2da" BEGIN
+			LAF externalize_weapprof END
+		END
+
+		// process scroll usability
+		LAF process_scroll_usability_now END
+		
+		// if appropriate, rebuild dual-class grid
+		
+		ACTION_IF FILE_EXISTS_IN_GAME "m_dw_dud.lua" BEGIN
+			LAF collect_dual_class_kit_data END
+		END
+	
+	
+	END
+	
+	// NPCs
+	
+	LAF run STR_VAR file=npc_kits END
+	
+	
+
+
+END

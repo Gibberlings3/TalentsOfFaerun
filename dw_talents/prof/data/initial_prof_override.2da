@@ -1,0 +1,23 @@
+2DA V1.0
+*
+							FIGHTER_THIEF		FIGHTER_MAGE		FIGHTER_MAGE_THIEF	CLERIC_RANGER	FAVORED_SOUL	DRUID_RANGER	DRUID_THIEF		DRUID_MAGE		MAGE	
+BASTARDSWORD				0					0					0					0				0				0				0				0				0		
+LONGSWORD					1					1					1					0				0				0				0				0				0		
+SHORTSWORD					1					1					1					0				0				0				0				0				0		
+AXE							0					0					0					0				0				0				0				0				0		
+TWOHANDEDSWORD				0					0					0					0				0				0				0				0				0		
+KATANA						0					0					0					0				0				0				0				0				0		
+SCIMITARWAKISASHININJATO	1					0					1					0				0				1				1				1				0		
+DAGGER						1					1					1					0				1				1				1				1				1		
+WARHAMMER					0					0					0					1				1				0				0				0				0		
+CLUB						1					1					1					1				1				1				1				1				1		
+SPEAR						0					0					0					0				0				1				1				0				0	
+HALBERD						0					0					0					0				0				0				0				0				0	
+FLAILMORNINGSTAR			0					0					0					1				1				0				0				0				0	
+MACE						0					0					0					1				1				0				0				0				0
+QUARTERSTAFF				1					1					1					1				1				1				1				1				1			
+CROSSBOW					1					1					1					0				1				0				0				0				1
+LONGBOW						0					0					0					1				0				1				0				0				0
+SHORTBOW					1					0					1					1				0				1				1				0				0
+DART						1					1					1					0				0				1				1				1				1
+SLING						0					1					0					1				1				1				1				1				1

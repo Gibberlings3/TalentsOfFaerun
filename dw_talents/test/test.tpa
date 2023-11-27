@@ -1,0 +1,4 @@
+DEFINE_ACTION_FUNCTION test STR_VAR version=0 BEGIN
+
+	LAM data_scroll_resrefs
+END

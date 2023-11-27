@@ -1,0 +1,142 @@
+DEFINE_ACTION_FUNCTION helm_cleric BEGIN
+
+	LAF helm_shared END
+
+	OUTER_SPRINT kit HELM
+	LAF cleric_kit_substitutions STR_VAR kit=GODHELM god=helm END
+	kit.edit[%kit%|edit_strrefs_in_place:i=1]
+	[
+		k_name:=@58
+		k_desc:=@59
+		k.kit_remove_powers{%HELM_SEEKING_SWORD% %HELM_TRUE_SIGHT%}
+		k.kit_grant_powers{%HELM_SEEKING_SWORD% 5 5,%HELM_TRUE_SIGHT% 7 5,%spl_helm_glyph% 3 5}
+		
+	]
+	LAF assign_spheres STR_VAR kit kit_clastext=GODHELM default=cleric subtract="charm good evil necromantic" END
+	LAF assign_bonus_spells STR_VAR kit spells="PROTECTION_FROM_NORMAL_MISSILES PROTECTION_FROM_NORMAL_WEAPONS ORACLE PROTECTION_FROM_MAGIC_WEAPONS MANTLE" END
+
+
+END
+
+DEFINE_ACTION_FUNCTION magehunter_of_helm BEGIN
+
+	LAF helm_shared END
+
+	LAF adjust_wizard_slayer_descriptions INT_VAR tra_ref=12 RET desc END
+	OUTER_SPRINT kit DW_HELM_MAGEHUNTER
+	kit.copy[FIGHTER_CLERIC=>%kit%]
+	[
+		k_name:=@11
+		k_desc:="%desc%"
+		k.kit_grant_powers{%HELM_SEEKING_SWORD% 5 5,%HELM_TRUE_SIGHT% 7 5,%spl_helm_glyph% 3 5|class=cleric}
+		k.kit_apply_powers{spcl133 1|class=fighter}
+		k.kit_match_usability{wizard_slayer}
+		k.kit_set_alignment{lg ln nn le}
+		k_colors:="18,5,24,27,30"
+		LPF check_label STR_VAR label="dw#rebalance_wizard_slayer" RET rebalanced_wizard_slayer=value END
+		IF {rebalanced_wizard_slayer}
+		{{
+			k.kit_apply_powers{%spl_wizard_slayer_base_resistance% 1,%spl_wizard_slayer_incremental_resistance% 2 1|class=fighter}
+		}}
+		ELSE
+		{{
+			k.kit_apply_powers{spcl131 1 1|class=fighter}
+		}}
+	]
+	
+	LAF cleric_kit_substitutions STR_VAR kit god=helm END
+	LAF assign_spheres STR_VAR kit default=cleric subtract="charm good evil necromantic" END
+	LAF assign_bonus_spells STR_VAR kit spells="PROTECTION_FROM_NORMAL_MISSILES PROTECTION_FROM_NORMAL_WEAPONS ORACLE PROTECTION_FROM_MAGIC_WEAPONS MANTLE" END
+	LAF holy_symbol INT_VAR name=2056 follower=7 STR_VAR kit desc_bam=pbelt13 inv_bam=ibelt13 kit END
+	LAF set_multiclass_components STR_VAR kit components="wizard_slayer helm"  END
+
+
+END
+
+DEFINE_ACTION_FUNCTION guardian_of_helm BEGIN
+
+	LAF helm_shared END
+	OUTER_SPRINT kit DW_HELM_GUARDIAN
+	kit.copy[FIGHTER_CLERIC=>%kit%]
+	[
+		k_name:=@21
+		k_desc:=@22
+		k.kit_grant_powers{%HELM_SEEKING_SWORD% 5 5,%HELM_TRUE_SIGHT% 7 5,%spl_helm_glyph% 3 5|class=cleric}
+		k.kit_set_alignment{lg ln nn le}
+		k_colors:="18,5,24,27,30"
+	]
+	LAF cleric_kit_substitutions STR_VAR kit god=helm END
+	LAF assign_spheres STR_VAR kit default=cleric subtract="charm good evil necromantic" END
+	LAF assign_bonus_spells STR_VAR kit spells="PROTECTION_FROM_NORMAL_MISSILES PROTECTION_FROM_NORMAL_WEAPONS ORACLE PROTECTION_FROM_MAGIC_WEAPONS MANTLE" END
+	LAF holy_symbol INT_VAR name=2056 follower=7 STR_VAR kit desc_bam=pbelt13 inv_bam=ibelt13 kit END
+	LAF set_multiclass_components STR_VAR kit components="helm"  END
+
+
+END
+
+
+
+
+DEFINE_ACTION_FUNCTION helm_favored_soul BEGIN
+
+	LAF helm_shared END
+
+	// make the main kit
+	
+	OUTER_SPRINT kit "DW_HELM_FAVORED"
+	
+	LAF build_favored_soul_kit INT_VAR name=4014 desc=4015 god=4016 god_gender=4005 god_temple=4017 STR_VAR kit copy_from=HELM END
+	LAF cleric_kit_substitutions STR_VAR kit god=helm END
+	
+	kit.edit[%kit%|edit_strrefs_in_place:i=1]
+	[
+		k.kit_grant_powers{%HELM_SEEKING_SWORD% 5 5,%HELM_TRUE_SIGHT% 7 5,%spl_helm_glyph% 3 5}
+	]
+
+	// spell choices
+
+	LAF assign_bonus_spells STR_VAR kit spells="CLERIC_ARMOR_OF_FAITH CLERIC_HOLD_PERSON WIZARD_PROTECTION_FROM_NORMAL_MISSILES CLERIC_DEFENSIVE_HARMONY WIZARD_ORACLE WIZARD_PROTECTION_FROM_NORMAL_WEAPONS WIZARD_PROTECTION_FROM_MAGIC_WEAPONS WIZARD_MANTLE" END
+
+
+END
+
+
+
+DEFINE_ACTION_FUNCTION helm_shared BEGIN
+
+	LAF include STR_VAR file=log_favored_weapon.tph locbase=shared END
+	LAF log_favored_weapon STR_VAR god=HELM weapon=bastardsword END
+
+
+	LAF check_label STR_VAR label=dw#helm_shared RET value END
+	ACTION_IF !value BEGIN
+
+		LAF make_label STR_VAR label=dw#helm_shared END
+
+
+		// innate spells
+		
+		LAF splconv STR_VAR spell="%CLERIC_GLYPH_OF_WARDING%" new_type=innate new_resref="%spl_helm_glyph%" END
+		
+		// adjust Glyph damage to allow for below-level-5 casting
+		spl.edit[%spl_helm_glyph%]
+		[
+			m.ab.clone{s_level=entry_index+4|match="s_level=1" number:i=2}
+			m.ab_fx.alter{s_dicenumber=3|match="p_level=1 AND s_opcode=12"}
+			m.ab_fx.alter{s_dicenumber=4|match="p_level=4 AND s_opcode=12"}
+		]
+		
+		// seeking sword doesn't block spellcasting
+
+		itm.edit[sw1hseek][m.fx.delete{s_opcode=145}]
+		spl.edit[%HELM_SEEKING_SWORD%|edit_strrefs_in_place:i=1]
+		[
+			m_description=m_description.patch{
+				to_wipe:=@1018
+				REPLACE_TEXTUALLY "%to_wipe%" ""
+				}
+		]
+
+	END
+
+END

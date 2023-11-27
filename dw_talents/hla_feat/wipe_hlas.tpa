@@ -1,0 +1,92 @@
+//// Remove all original-game HLAs, leaving 3rd-party-added HLAs.
+////
+
+DEFINE_ACTION_FUNCTION wipe_hlas BEGIN
+
+	// main set of warrior/rogue abilities
+	OUTER_FOR (n=900;n<924;++n) BEGIN
+		OUTER_SPRINT $wipe_this_hla("SPCL%n%") ""
+	END
+
+	// extra spells
+	OUTER_FOR (n=928;n<931;++n) BEGIN
+		OUTER_SPRINT $wipe_this_hla("SPCL%n%") ""
+	END
+	
+	// 10th level spells
+
+	OUTER_FOR (n=920;n<926;++n) BEGIN
+		OUTER_SPRINT $wipe_this_hla("SPWI%n%") ""
+	END
+	
+	// quest spells
+
+	OUTER_FOR (n=721;n<733;++n) BEGIN
+		OUTER_SPRINT $wipe_this_hla("SPPR%n%") ""
+	END
+	
+	// EE Blackguard/Shadowdancer
+	
+	OUTER_FOR (n=935;n<939;++n) BEGIN
+		OUTER_SPRINT $wipe_this_hla("SPCL%n%") ""	
+	END
+	
+	//EE shaman
+	
+	OUTER_SPRINT $wipe_this_hla("SPPR751") ""
+	OUTER_SPRINT $wipe_this_hla("SPCL940") ""	
+	OUTER_SPRINT $wipe_this_hla("SPCL941") ""	
+	
+
+	ACTION_CLEAR_ARRAY new_hlas
+	LAF 2da_read STR_VAR file=luabbr.2da RET_ARRAY lu_rows=rows lu_array=array END
+	ACTION_PHP_EACH lu_rows AS row=>discard BEGIN
+		OUTER_SPRINT this_lu $lu_array("%row%" "ABBREV")
+		ACTION_IF FILE_EXISTS_IN_GAME "lu%this_lu%.2da" BEGIN
+			COPY_EXISTING "lu%this_lu%.2da" override
+				LPF 2da_read RET_ARRAY rows columns old_array=array END
+				count=0
+				CLEAR_ARRAY new_array
+				PHP_EACH rows AS row2=>discard2 BEGIN
+					SPRINT check $old_array("%row2%" ABILITY)
+					PATCH_IF "%check%" STR_CMP "*" BEGIN
+						TO_UPPER check
+						INNER_PATCH_SAVE check_short "%check%" BEGIN
+							DELETE_BYTES 0x0 3 // remove GA_ or AP_
+						END
+						PATCH_IF !VARIABLE_IS_SET $wipe_this_hla("%check_short%") BEGIN
+							SPRINT $new_hlas("%check_short%") ""
+							++count
+							PHP_EACH columns AS col=>discard3 BEGIN
+								SPRINT $new_array("%count%" "%col%") $old_array("%row2%" "%col%") 
+							END
+						END
+					END
+				END
+				PATCH_IF count=0 BEGIN // no remaining HLAs
+					PHP_EACH columns AS col=>discard BEGIN
+						SPRINT $new_array(1 "%col%") "*"
+					END
+				END
+				LPF 2da_write STR_VAR array=new_array END
+		END
+	END
+
+
+
+
+
+
+
+
+
+END
+
+
+<<<<<<<<.../stratagems-inline/lu_blank.2da
+2DA V1.0
+*
+                   ABILITY            ICON               STRREF             MIN_LEV            MAX_LEVEL          NUM_ALLOWED        PREREQUISITE       EXCLUDED_BY        ALIGNMENT_RESTRICT
+1                  *		          *                  *                  *                  *                  *                  *                  *                  *
+
+>>>>>>>>

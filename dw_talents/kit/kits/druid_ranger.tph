@@ -1,0 +1,95 @@
+DEFINE_ACTION_FUNCTION druid_ranger BEGIN
+
+	// make the core kit
+	OUTER_SPRINT kit DW_DRUID_RANGER
+	
+	kit.copy[CLERIC_RANGER=>%kit%]
+	[
+		k_name:=@3
+		k_description:=@4
+		k_l_g=0
+		k_c_g=0
+		k_l_e=0
+		k_c_e=0
+		IF {is_iwd} {{k_bio=19429}} ELSE {{k_bio=15885}}
+		k.kit_apply_powers{%c_to_d_apply_string%|class=cleric}
+		k.kit_grant_powers{%c_to_d_grant_string%|class=cleric}
+	]
+	// impose druid class features
+	
+	LAF impose_druid_class_features STR_VAR kit END
+	
+	// add as a virtual class on the chargen screen
+	
+	LAF 2da_read STR_VAR file=clsrcreq.2da case=lower RET_ARRAY array END
+	ACTION_FOR_EACH column IN human elf dwarf gnome halfling half_elf halforc BEGIN
+		OUTER_SET "%column%"=$array("cleric_mage" "%column%")
+	END	
+	LAF add_virtual_class INT_VAR name=3 desc=4 multiclass=1 STR_VAR ident="druid_ranger" human elf dwarf gnome halfling half_elf halforc all_races="false" parent=CLERIC_RANGER END
+	LAF assign_kit_to_virtual_class STR_VAR kit class=druid_ranger END
+
+	// log the kit 
+
+	LAF set_multiclass_components STR_VAR kit components="DRUID" END
+		
+	// log for prof component
+	
+	LAF prof_redirect_kit_parent STR_VAR kit parent=DRUID_RANGER END
+
+END
+
+DEFINE_ACTION_FUNCTION night_wolf RET kit BEGIN
+
+	// make the core kit
+	OUTER_SPRINT kit DW_NIGHT_WOLF
+
+	kit.copy[CLERIC_RANGER=>%kit%]
+	[
+		k_name:=@221
+		LPF adjust_shapeshifter_descriptions INT_VAR tra_ref=222 RET k_desc=desc END
+		k_l_g=0
+		k_c_g=0
+		k_l_e=0
+		k_c_e=0
+		PATCH_PRINT "ook"
+		IF {is_iwd} {{k_bio=19429}} ELSE {{k_bio=15885}}
+		k.kit_apply_powers{spcl331 1|class=ranger}
+		k.kit_apply_powers{%c_to_d_apply_string%|class=cleric}	
+		PATCH_PRINT "blook"		
+		LPF check_label STR_VAR label="dw#rebalance_shapeshifter" RET value END
+		IF {value}
+		{{
+		k.kit_grant_powers{%spl_shapeshifter_lesser_werewolf% 1 3 4,spcl643 10,spcl644 16,%spl_shapeshifter_werewolf_lord% 22 3|class=cleric}
+		k.kit_apply_powers{%spl_shapeshifter_werewolf_applicator% 7,%spl_shapeshifter_greater_werewolf_applicator% 13,spl_shapeshifter_werewolf_lord_applicator% 19|class=cleric}
+		}}
+		ELSE
+		{{
+		k.kit_grant_powers{%SHAPESHIFTER_SHAPESHIFT_WEREWOLF% 1 2 12,%SHAPESHIFTER_SHAPESHIFT_GREATERWEREWOLF% 13 2}
+		}}
+	]
+
+	// impose druid class features
+	
+	LAF impose_druid_class_features INT_VAR enforce_alignment=0 STR_VAR kit parent_class=DRUID_RANGER END
+
+
+	LAF copy_backstab STR_VAR kit copy_from=stalker class=ranger END
+	LAF assign_bonus_spells STR_VAR kit spells="HASTE MINOR_SPELL_DEFLECTION IMPROVED_INVISIBILITY" END
+	// add as a virtual kit on the chargen screen
+	
+	LAF assign_kit_to_virtual_class STR_VAR kit class=druid_ranger END
+
+	// override cleric/ranger description on character sheet
+
+	LAF set_multiclass_components STR_VAR kit components="shapeshifter stalker"  END
+
+	// log for prof component
+	
+	LAF prof_redirect_kit_parent STR_VAR kit parent=DRUID_RANGER END
+
+
+
+
+
+
+END

@@ -1,0 +1,24 @@
+// death animation
+
+IF
+	Die()
+THEN
+	RESPONSE #100
+		CreateVisualEffectObject("SPUNHOLY",Myself)
+		DestroySelf()
+END
+
+// fear effect
+
+IF
+	ActionListEmpty()
+	See(NearestEnemyOf(Myself))
+	Global("PITFEAR","LOCALS",0)
+THEN
+	RESPONSE #100
+		ForceSpell(LastSeenBy(Myself),DEMON_FEAR)  // SPIN890.SPL (Demon Fear)
+		SetGlobal("PITFEAR","LOCALS",1)
+END
+
+
+// following PLANGOOD model, we won't bother trying to use abilities in this script. Leave it for SCS.

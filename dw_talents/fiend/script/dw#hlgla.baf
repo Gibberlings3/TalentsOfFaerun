@@ -1,0 +1,24 @@
+/// super-basic, vanilla-level, script for player-controlled fiend
+
+IF
+	ActionListEmpty()
+	See(NearestEnemyof(Myself))
+	HaveSpell(WIZARD_POWER_WORD_STUN)
+THEN
+	RESPONSE #70
+		AttackOneRound(LastSeenBy(Myself))
+		AttackOneRound(LastSeenBy(Myself))
+	RESPONSE #30
+		Spell(LastSeenBy(Myself),WIZARD_POWER_WORD_STUN)  // SPWI715.SPL (Power Word, Stun)
+		AttackOneRound(LastSeenBy(Myself))
+END
+
+
+IF
+	ActionListEmpty()
+	See(NearestEnemyof(Myself))
+THEN
+	RESPONSE #70
+		AttackOneRound(LastSeenBy(Myself))
+END
+

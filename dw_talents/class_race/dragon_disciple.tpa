@@ -1,0 +1,216 @@
+DEFINE_ACTION_FUNCTION dragon_disciple BEGIN
+
+
+	LAF run STR_VAR file=one_fewer_spell locbase=shared END
+
+	// virtual-class setup
+	LAF run STR_VAR file=setup_menus locbase=shared END 
+
+	// black dragon projectile
+	
+	ACTION_IF !FILE_EXISTS_IN_GAME "vsphert.bam" BEGIN
+		COPY "%MOD_FOLDER%/%component_loc%/resource/vsphert.bam" override
+	END
+	ACTION_IF !FILE_EXISTS_IN_GAME "#TRA_60" BEGIN
+		COPY "%MOD_FOLDER%/%component_loc%/resource/#tra_60.wav" override
+	END
+	
+	black_dragon_pro=pro.copy[ddbreat=>%pro_black_dragon_disciple_breath%]
+	[
+		m_ring_animation:=VSPHERT
+		m_cone_width=20
+		m_fire_sound:="#TRA_60"
+	]
+	
+	// green dragon projectile
+	
+	green_dragon_pro=pro.copy[ddbreat=>%pro_green_dragon_disciple_breath%]
+	[
+		m_ring_animation:=""
+		m_cone_width=20
+		m_explosion_effect=18
+	]
+	
+	
+	// breath weapon
+	// the namespace works like this:
+	///   base: dwdd
+	///   damage type: f[ire], a[cid], l[ightning], c[old], p[oison]
+	///   b for breath weapon, rs for resistance
+	///   1 for baseline
+	///   i.e. baseline breath weapon is dwdd[damage type]b1,
+	///   damage resistance increment is dwdd[damagetype]rs
+	/// (except we don't bother renaming the baseline effect)
+
+
+	// remove silly animation from (red) dragon breath
+	
+	COPY_EXISTING "spdd03.spl" override 
+		LPF DELETE_EFFECT INT_VAR match_opcode=215 END	
+
+	// add fire resistance icon to innate DD resistance
+	
+	COPY_EXISTING "spdd02.spl" override
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=142 target=2 timing=9 parameter2=16 END
+
+
+
+	
+
+	// make the other spells
+	
+	ACTION_FOR_EACH color IN BLACK GREEN WHITE BLUE BEGIN
+		ACTION_MATCH "%color%" WITH
+		  BLACK BEGIN
+			  OUTER_SET dmgtype=1
+			  OUTER_SET projectile=black_dragon_pro
+			  OUTER_SET resistance=27
+			  OUTER_SET resistance_icon=24
+			  OUTER_SET description=9
+			  OUTER_SET breath_description=14
+			  OUTER_SET name=4
+			  OUTER_SET override=54
+			  OUTER_SPRINT letter a
+			  OUTER_SET color_minor=56
+			  OUTER_SET color_major=30
+		  END
+		  BLUE BEGIN
+			  OUTER_SET dmgtype=4
+			  OUTER_SET projectile=40
+			  OUTER_SET resistance=29
+			  OUTER_SET resistance_icon=27
+			  OUTER_SET description=7
+			  OUTER_SET breath_description=12
+			  OUTER_SET name=2
+			  OUTER_SET override=52
+			  OUTER_SPRINT letter l
+			  OUTER_SET color_minor=97
+			  OUTER_SET color_major=122
+		  END
+		  WHITE BEGIN
+			  OUTER_SET dmgtype=2
+			  OUTER_SET projectile=250
+			  OUTER_SET resistance=28
+			  OUTER_SET resistance_icon=25
+			  OUTER_SET description=10
+			  OUTER_SET breath_description=15
+			  OUTER_SET name=5
+			  OUTER_SET override=55
+			  OUTER_SPRINT letter c
+			  OUTER_SET color_minor=102
+			  OUTER_SET color_major=105
+		  END
+		  GREEN BEGIN
+			  OUTER_SET dmgtype=32
+			  OUTER_SET projectile=green_dragon_pro
+			  OUTER_SET resistance=173
+			  OUTER_SET resistance_icon="-1"
+			  OUTER_SET description=8
+			  OUTER_SET breath_description=13
+			  OUTER_SET name=3
+			  OUTER_SET override=53
+			  OUTER_SPRINT letter p
+			  OUTER_SET color_minor=54
+			  OUTER_SET color_major=56
+		  END
+		  DEFAULT END
+		  OUTER_SPRINT kit "DW_DRAGON_DISCIPLE_%color%"
+		  spl.copy[spdd03=>dwdd%letter%b1]
+		  [
+			m.ab_fx.alter{s_parameter2b=dmgtype|match="s_opcode=12"}
+			m.ab.alter{s_projectile=projectile}
+		  ]
+		  spl.copy[spdd02=>dwdd%letter%rs]
+		  [
+			m_description:=(AT breath_description)
+			m.ab_fx.alter{s_opcode=resistance|match="s_opcode=30"}
+			m.ab_fx.alter{s_parameter2=resistance_icon|match="s_opcode=142"}
+		  ]
+		  kit.copy[DRAGON_DISCIPLE=>%kit%]
+		  [
+			k_name:=(AT name)
+			k_description:=(AT description)
+			LPF check_label STR_VAR label="dw#rebalance_dragon_disciple" RET value END
+			IF {!value} {{ k_description=k_description.patch{LPF swap_dd_description END} }}
+			k_color_minor_cloth=color_minor
+			k_color_main_cloth=color_major
+			k.kit_remove_powers{spdd02 spdd03}
+			k.kit_apply_powers{dwdd%letter%rs 4 4 16,%spl_two_fewer_spells% 1}
+			k.kit_grant_powers{dwdd%letter%b1 3}
+			IF {value} {{ k.kit_grant_powers{dwdd%letter%b1 6 6 18} }}
+		  ]
+		  
+		  LAF override_chargen_kit_name INT_VAR override STR_VAR kit class=SORCERER END
+
+
+
+	END
+
+	// re-externalize proficiencies if appropriate
+	ACTION_IF FILE_EXISTS "%data_loc_shared%/weapprof.2da" BEGIN
+		LAF externalize_weapprof END
+	END
+	
+	// remove icon from green dragon power
+	
+	spl.edit[dwddprs][m.ab_fx.delete{s_opcode=142}]
+	
+	// make and apply green dragon poison resistance
+	
+	spl.make[%spl_green_dragon_disciple_poison_immunity%]
+	[
+		m.ab.add{}
+		m.immunity_effect{poison}
+	]
+
+	kit.edit[DW_DRAGON_DISCIPLE_GREEN][k.kit_apply_powers{%spl_green_dragon_disciple_poison_immunity% 16}]
+	
+	// rename the default class
+	
+	kit.edit[DRAGON_DISCIPLE]
+	[
+		k_name:=@1 
+		k_description:=@11
+		LPF check_label STR_VAR label="dw#rebalance_dragon_disciple" RET value END
+		IF {!value} {{ k_description=k_description.patch{LPF swap_dd_description END} }}
+	]
+	
+	spl.edit[spdd03|edit_strrefs_in_place:i=1]
+	[
+		m_description:=@20
+	]
+	
+
+	LAF override_chargen_kit_name INT_VAR override=51 STR_VAR kit=DRAGON_DISCIPLE class=SORCERER END
+
+
+	// specialist menu
+	LAF add_kit_menu INT_VAR name=21 desc=22 title=23 STR_VAR id=dragon_disciple kits="DRAGON_DISCIPLE DW_DRAGON_DISCIPLE_BLUE DW_DRAGON_DISCIPLE_GREEN DW_DRAGON_DISCIPLE_BLACK DW_DRAGON_DISCIPLE_WHITE" class=SORCERER END
+
+
+	// update the kit-identification LUA
+	LAF ui_detect_class_kit END
+
+
+
+
+
+
+
+
+END
+
+DEFINE_PATCH_FUNCTION swap_dd_description
+BEGIN
+	swap_out_1:=@16
+	swap_out_2:=@17
+	swap_out_3:=@24
+	swap_out_4:=@25
+	swap_out_5:=@26
+	REPLACE_TEXTUALLY "^.*%swap_out_1%.*[%WNL%%LNL%%MNL%]" ""
+	REPLACE_TEXTUALLY "^.*%swap_out_2%.*[%WNL%%LNL%%MNL%]" ""	
+	REPLACE_TEXTUALLY "^.*%swap_out_3%.*[%WNL%%LNL%%MNL%]" ""	
+	REPLACE_TEXTUALLY "^.*%swap_out_4%.*[%WNL%%LNL%%MNL%]" ""	
+	REPLACE_TEXTUALLY "^.*%swap_out_5%.*[%WNL%%LNL%%MNL%]" ""				
+
+END

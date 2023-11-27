@@ -1,0 +1,129 @@
+DEFINE_ACTION_FUNCTION restoration_ability_drain BEGIN
+	// get data needed by lib_opcode
+	
+	LAM opcode_load_data
+	// define required sectypes
+
+	LAF resolve_sectype STR_VAR sectype=dw_persistent_700 RET sectype_value END
+
+	// go through resources
+	
+	ACTION_CLEAR_ARRAY restoration_list
+	ACTION_CLEAR_ARRAY drain_list
+	COPY_EXISTING_REGEXP - ".*\.\(itm\|spl\)" nowhere
+		is_drain=0
+		CLEAR_ARRAY headers
+		PATCH_IF "%SOURCE_EXT%" STR_EQ "ITM" BEGIN
+			GET_OFFSET_ARRAY ab_arr ITM_V10_HEADERS
+		END ELSE BEGIN
+			GET_OFFSET_ARRAY ab_arr SPL_V10_HEADERS
+		END
+		PHP_EACH ab_arr AS ab_ind=>ab_off BEGIN		
+			PATCH_IF "%SOURCE_EXT%" STR_EQ "itm" || (SHORT_AT (0x10+ab_off))<=50 BEGIN
+				GET_OFFSET_ARRAY2 fx_arr ab_off ITM_V10_HEAD_EFFECTS
+				got_drain_data=0
+				drain_mismatch=0
+				SET $headers("%ab_ind%")=0
+				PHP_EACH fx_arr AS fx_ind=>fx_off BEGIN
+					opcode=SHORT_AT fx_off
+					PATCH_IF opcode=177 BEGIN
+						READ_ASCII fx_off+0x14 eff
+						TO_UPPER eff
+						PATCH_IF IS_AN_INT $opcode_eff_arr("%eff%") BEGIN
+							opcode=$opcode_eff_arr("%eff%")
+							via_177=1
+						END
+					END ELSE BEGIN
+						via_177=0
+						SPRINT eff ""
+					END				
+					PATCH_MATCH opcode WITH
+					224 BEGIN 
+						SPRINT $restoration_list("%SOURCE_FILE%") "%eff%"
+					END	
+					6 10 15 19 44 49 BEGIN
+						READ_LONG fx_off+0x4 param1
+						READ_LONG fx_off+0x8 param2
+						PATCH_IF (param2=0 && param1<0) || (param2=1 && param1<12) BEGIN
+							is_drain=1
+							SET $headers("%ab_ind%")=1
+							READ_BYTE 0x12+fx_off prob1_here
+							READ_BYTE 0x13+fx_off prob2_here
+							READ_LONG 0x24+fx_off save_here
+							READ_LONG 0x28+fx_off save_bonus_here
+							PATCH_IF !got_drain_data && !drain_mismatch BEGIN
+								prob1=prob1_here
+								prob2=prob2_here
+								save=save_here
+								save_bonus=save_bonus_here
+							END ELSE BEGIN
+								drain_mismatch=drain_mismatch || !(prob1=prob1_here) || !(prob2=prob2_here) || !(save=save_here) || !(save_bonus=save_bonus_here)
+								PATCH_IF drain_mismatch BEGIN
+									SPRINT $drain_mismatch("%SOURCE_FILE%") ""
+								END
+							END
+							PATCH_IF via_177 BEGIN
+								SPRINT $via_177("%filename%") "%eff%"
+							END
+						END
+					END
+					DEFAULT
+					END
+				END
+			END
+		END
+		PATCH_IF is_drain BEGIN
+			PATCH_IF "%SOURCE_EXT%" STR_EQ "spl" BEGIN
+				all_headers=1
+				PHP_EACH ab_arr AS ab_ind=>discard BEGIN
+					all_headers=all_headers && $headers("%ab_ind%")
+				END
+			END ELSE BEGIN
+				all_headers=0
+			END
+			PATCH_IF all_headers BEGIN
+				SPRINT $drain_list("%SOURCE_FILE%" "-1") ""
+			END ELSE BEGIN
+				PHP_EACH ab_arr AS ab_ind=>discard BEGIN
+					PATCH_IF $headers("%ab_ind%") BEGIN
+						SPRINT $drain_list("%SOURCE_FILE%" "%ab_ind%") ""
+					END
+				END
+			END
+		END
+
+	// break out drained objects
+	
+	ACTION_PHP_EACH drain_list AS k=>discard BEGIN
+		OUTER_SPRINT file "%k_0%"
+		OUTER_SET header=k_1
+		ACTION_IF VARIABLE_IS_SET $via_177("%file%") BEGIN
+			OUTER_SPRINT eff $via_177("%file%")
+		END ELSE BEGIN
+			OUTER_SPRINT eff ""
+		END
+		ACTION_IF VARIABLE_IS_SET $drain_mismatch("%file%") BEGIN
+			LAF warn STR_VAR warning="restoration_ability_drain: skipping %file% as it's a mismatched ability-drain we don't know how to process" END
+		END ELSE BEGIN
+			LAF opcode_extract INT_VAR opcode=700 header include_primary=1 sectype=sectype_value STR_VAR file eff END
+		END	
+	END
+
+	// patch restoration effects
+	
+	ACTION_PHP_EACH restoration_list AS file=>eff BEGIN
+		COPY_EXISTING "%file%" override
+			PATCH_IF "%eff%" STR_EQ "" BEGIN
+				LPF CLONE_EFFECT INT_VAR match_opcode=224 opcode=221 parameter1=10 parameter2=sectype_value END
+			END ELSE BEGIN
+				LPF CLONE_EFFECT INT_VAR match_opcode=177 opcode=221 parameter1=10 parameter2=sectype_value STR_VAR match_resource="%eff%" END			
+			END
+	END
+
+
+
+
+
+END
+
+

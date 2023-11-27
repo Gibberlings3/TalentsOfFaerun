@@ -1,0 +1,57 @@
+/// super-basic, vanilla-level, script for player-controlled fiend
+
+
+IF
+	ActionListEmpty()
+	See(NearestEnemyOf(Myself))
+	HaveSpell(WIZARD_NPC_SYMBOL_STUN)
+	!GlobalTimerNotExpired("stun","LOCALS")
+THEN
+	RESPONSE #100
+		SetGlobalTimer("stun","LOCALS",18)
+		Spell(LastSeenBy(Myself),WIZARD_NPC_SYMBOL_STUN)  // SPWI898.SPL (Symbol, Stun)
+	RESPONSE #100
+		Continue()
+END
+
+IF
+	ActionListEmpty()
+	See(NearestEnemyOf(Myself))
+	!StateCheck(LastSeenBy,STATE_HELPLESS)
+	HaveSpell(TANARI_PARALYZE)
+THEN
+	RESPONSE #100
+		Spell(LastSeenBy,TANARI_PARALYZE)  // SPIN999.SPL (Paralyze)
+	RESPONSE #100
+		Continue()
+END
+
+IF
+	ActionListEmpty()
+	See(NearestEnemyOf(Myself))
+	StateCheck(LastSeenBy,STATE_HELPLESS)
+THEN
+	RESPONSE #100
+		AttackOneRound(LastSeenBy)
+		AttackOneRound(LastSeenBy)
+END
+
+IF
+	ActionListEmpty()
+	See(NearestEnemyOf(Myself))
+	HaveSpell(WIZARD_CONFUSION)
+THEN
+	RESPONSE #100
+		Spell(NearestEnemyOf(Myself),WIZARD_CONFUSION)  // SPWI401.SPL (Confusion)
+	RESPONSE #100
+		Continue()
+END
+
+IF
+	ActionListEmpty()
+	See(NearestEnemyOf(Myself))
+THEN
+	RESPONSE #100
+		AttackReevaluate(LastSeenBy(Myself),30)
+END
+

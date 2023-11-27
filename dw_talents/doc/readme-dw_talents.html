@@ -1,0 +1,1119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>Talents of Faer&ucirc;n</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="stylesheet" href="files/g3readme_cam_022916_dwedit.css" type="text/css" />
+<link href="files/g3icon.ico" rel="icon" type="image/bmp" />
+</head>
+<body>
+<div id="container">
+  <div class="ribbon_menu">
+    <ul>
+      <li><a href="#over">Overview</a></li>
+      <li><a href="#compatibility">Compatibility</a></li>
+      <li><a href="#install">Installation</a></li>
+      <li><a href="#content">Detailed content</a></li>
+      <li><a href="#customization">Customization</a></li>
+      <li><a href="#acknow">Acknowledgements</a></li>
+      <li><a href="#copy">Copyright info</a></li>
+      <li><a href="#version">History</a></li>
+    </ul>
+    <span> <img src="files/logo.gif" width="305" height="83" alt="G3" /></span> </div>
+  <div class="ribbon_bubble">
+    <div class="ribbon_rectangle">
+      <h1>Talents of Faer&ucirc;n </h1>
+    </div>
+    <div class="ribbon_triangle-l"></div>
+    <div class="ribbon_triangle-r"></div>
+    <div class="section">
+      <p><strong><a href="http://www.gibberlings3.net/">A Gibberlings Three Mod</a><br />
+        </strong> <strong>Author:</strong> <a href="https://www.gibberlings3.net/profile/1067-davidw/">DavidW</a> <br />
+        <strong> On the web: </strong><a href="https://www.gibberlings3.net/mods/tweaks/tof/">Home
+        page</a>, <a href="https://www.gibberlings3.net/forums/forum/236-talents-of-faer&ucirc;n/">discussion
+        forum</a>, <a href="https://www.gibberlings3.net/gallery/album/42-talents-of-faer&ucirc;n/">image gallery</a>, and <a href="https://discord.gg/yTzjMTb">Discord</a></p>
+      <p> <strong>Version beta 1</strong><br />
+        <strong>Languages: </strong>English<br />
+        <strong>Platforms: </strong>Windows, macOS, Linux </p>
+      <p> Talents of Faer&ucirc;n (ToF) is a collection of about 85 mini-mods for the Enhanced Edition versions of Baldur's Gate, Baldur's Gate II, and Icewind Dale, partially inspired by existing mods and tabletop Dungeons and Dragons resources. It contains many optional tweaks to various parts of gameplay, focusing on expanding and rebalancing player character abilities. Features include 150-odd new high-level abilities, a new 'feat' system where lower-level characters gain abilities every few levels, revisions to existing kits, new classes, new kits for multi-class characters, new types of magical specialization, a dozen or so new spells, many spell tweaks, 20-odd new gods for clerics to worship, a subrace system, a revised system of cleric/druid spells, and tweaks to the rules for ability scores and proficiencies. </p>
+      <p> Talents of Faer&ucirc;n is currently in 'beta', meaning that I think it ought to be recreationally playable but almost certainly contains significant bugs that my own testing has not discovered. Use at own risk.</p>
+    </div>
+    <div class="ribbon_rectangle_h2"><a id="TableOfContents" name="TableOfContents"></a>
+      <h2>Table of Contents</h2>
+    </div>
+    <div class="ribbon_triangle_h2-l"></div>
+    <div class="ribbon_triangle_h2-r"></div>
+    <div class="section">
+      <ol>
+        <li><a href="#over">Overview </a> </li>
+        <li><a href="#install">Installation</a></li>
+        <li><a href="#compat">Compatibility with other mods</a></li>
+        <li><a href="#content">Detailed content</a>
+          <ul>
+            <li><a href="#spelltweaks">Spell System Revisions and New Spells </a></li>
+            <li><a href="#races">Races and Subraces </a></li>
+            <li><a href="#kit_change">Class and Kit Revisions</a></li>
+            <li><a href="#new-class-kit">New Classes and Kits</a></li>
+            <li><a href="#multiclass-kit">Multi-classes/Dual-classed Kits</a></li>
+            <li><a href="#hla-feat">Revised and New High-Level and Lower-Level Abilities</a></li>
+            <li><a href="#rules">Rules Changes</a></li>
+            <li><a href="#ui">User Interface Tweaks</a></li>
+          </ul>
+        </li>
+        <li><a href="#customization">Customization Options</a></li>
+        <li><a href="#acknow">Acknowledgements</a></li>
+        <li><a href="#copy">Copyright Information</a></li>
+        <li><a href="#version">Version History</a> </li>
+      </ol>
+    </div>
+    <div class="ribbon_rectangle_h2">
+      <h2><a name="over" id="over"></a>Overview</h2>
+    </div>
+    <div class="ribbon_triangle_h2-l"></div>
+    <div class="ribbon_triangle_h2-r"></div>
+    <div class="section">
+      <p> Talents of Faer&ucirc;n (ToF) is a collection of mini-mods for the Enhanced Edition versions of Baldur's Gate, Baldur's Gate II, and Icewind Dale. It contains many optional tweaks to various parts of gameplay, focusing on expanding and rebalancing player character abilities. There are about 85 components in all; highlights include: </p>
+      <ul>
+        <li>A subrace system modeled on Icewind Dale II</li>
+        <li>A sphere system for cleric and druid spells, loosely based on pen-and-paper Advanced Dungeons and Dragons but heavily modified to reflect the needs of a computer game, along with about 20 new gods for clerics to worship</li>
+        <li>A new character class, the Favored Soul, which spontaneously casts cleric spells (i.e., a clerical-magic version of the Sorcerer or Shaman), along with about 25 kits for that class (one per god)</li>
+        <li>Implementation of the pen-and-paper rule that mage specialists must memorize at least one spell from their school at each level, along with the option to automatically add one correct-school spell to their spell book at each level</li>
+        <li>A new style of magic, elementalism, and four new mage kits who specialize in each of the four elements, along with significant revisions for elementals themselves</li>
+        <li>A new system for sorcerers&mdash;bloodlines&mdash;which grants a sorcerer additional known spells at the cost of making some spell schools inaccessible</li>
+        <li>The option for druids to multi-class as mages, rangers, or thieves</li>
+        <li>About 75 multi-classed kits, along with the option to dual-class from a single-classed to a multi-classed kit</li>
+        <li>A new proficiency system, very loosely based on 3rd edition D&amp;D, where characters can use all weapons and begin proficient in a group of weapons dependent on their class, and where non-fighters can gain some level of weapon training</li>
+        <li>A new high-level ability system for Baldur's Gate II, including about 150 new abilities (some borrowed from classic mods, some original)</li>
+        <li>A new 'low-level ability' system, where characters gain a new ability every 3 levels; this is loosely based on Icewind Dale II's feat system.</li>
+        <li>A rebalancing of many of the original-game kits to work better in Baldur's Gate and Icewind Dale</li>
+        <li>A number of rule chances to ability scores, inspired by 3rd edition D&amp;D</li>
+        <li>A dozen or so new spells, along with a range of tweaks to existing spells</li>
+      </ul>
+      <p>A hidden, common theme in ToF is that most of its changes rely to some extent on the ability to edit the user interface&mdash;something that the Enhanced Editions have made possible but which has been exploited to only a limited extent so far. (One major reason I wrote ToF was to build systematic ways to exploit this powerful new modding technique.)</p>
+      <p>Many components of ToF overlap with other mods, though the implementations are usually different. As always, you should read the documentation carefully and decide what is best for your game.</p>
+    </div>
+    <div class="ribbon_rectangle_h2">
+      <h2><a name="compat" id="compat"></a>Compatibility</h2>
+    </div>
+    <div class="ribbon_triangle_h2-l"></div>
+    <div class="ribbon_triangle_h2-r"></div>
+    <div class="section">
+      <h3>Games</h3>
+      <p> Talents of Faer&ucirc;n is
+        designed to work with any of the following install options: </p>
+      <ul>
+        <li>Baldur's Gate: Enhanced Edition (version 2.6), with or without the Siege of Dragonspear expansion</li>
+        <li>Baldur's Gate II: Enhanced Edition (version 2.6)</li>
+        <li>Icewind Dale: Enhanced Edition (version 2.6)</li>
+      </ul>
+      <p>It is probably largely compatible with the Enhanced Edition Trilogy (EET) combination of BGEE, BG2EE, and SoD (based on v2.6 of BGEE/BG2EE/SoD), but has had only limited testing on them. (What testing I have done assumes that the EET_End component of EET is installed <em>before</em> ToF, contra the official EET install instructions.) It may also work on versions 2.0-2.5 of the Enhanced Edition games, but they are not officially supported. It does not work on versions 1.3 and earlier.</p>
+      <p>ToF does not work with any non-Enhanced Edition game, and never will (it relies on new features of the Enhanced Editions).</p>
+      <h3>Mods</h3>
+      <p> ToF <em>tries</em> to be as compatibility-friendly as possible; however, it changes game files in quite sweeping ways that may conflict with other mods. I have limited testing information so far; my expectations are as follows. </p>
+      <ul>
+        <li>ToF really needs to be installed as late as possible in the install order. It should go before Sword Coast Stratagems and can <em>probably</em> cope with going before Tweaks Anthology; otherwise, install it last. If you have another mod that insists on being installed last because it makes large-scale changes to the game, that other mod is fairly likely to be incompatible with ToF.</li>
+        <li>ToF <em>absolutely cannot be installed before any UI mod</em>; doing so will almost certainly break your game. It <em>might</em> be able to cope with being installed after a UI mod, but I haven't tested this.</li>
+        <li>ToF will be incompatible with any other mod that makes the sort of changes to the game system that ToF does. For instance, it will be incompatible with other mods that introduce a sphere system (like Divine Remix), that add subraces (like Tipun's subrace mod), or that require specialists to learn spells from their school. Because of the way mods like these work, ToF will probably be incompatible with them even if you don't use the specific bit of ToF that overlaps with them. (I hope to be able to reduce the incompatibilities here in the medium term by sharing the code base that ToF uses.)</li>
+		<li>ToF is <em>probably</em> compatible with mods that use OlvynChuru's ClassSpellTool (such as OlvynChuru's Spell Pack), provided it is installed after them. (It is definitely not compatible with them if installed before them.)</li>
+        <li>The good news is that ToF ought to be compatible with most 'simple' (i.e., not systematically-rule-changing) kit, spell, item, quest, and NPC mods.</li>
+		<li>ToF should be compatible with my 'Sword Coast Stratagems' (SCS) mod, provided ToF is installed before SCS. SCS will detect ToF and respond to some of its components (it will use the new priest kits, new spells, and new HLAs, for instance).</li>
+      </ul>
+    </div>
+    <div class="ribbon_rectangle_h2">
+      <h2><a name="install" id="install"></a>Installation</h2>
+    </div>
+    <div class="ribbon_triangle_h2-l"></div>
+    <div class="ribbon_triangle_h2-r"></div>
+    <div class="section">
+      <p> <b>You should start a new game after installing Talents of Faer&ucirc;n. Many of its components will cause serious bugs if you try to use them in an existing game.</b> </p>
+      <p>First time installing a mod? Check out <abbr title="The Gibberlings Three">G3</abbr>&#39;s comprehensive tutorial: <a href="https://www.gibberlings3.net/forums/topic/33164-a-new-player%E2%80%99s-guide-to-installing-and-playing-mods/">A New Player's Guide to Installing and Playing Mods</a>. </p>
+      <p> <strong>Enhanced Editions Note</strong><br />
+        The Enhanced Editions are actively supported games. Please note that every patch update will wipe your current mod setup! If in the middle of a modded game you might want to delay the patch update (if possible) as even after reinstalling the mods, you might not be able to continue with your old savegames. Alternatively, copy the whole game&#39;s folder into a new one that can be modded and will stay untouched by game patches. It is important that you install the mod to the language version you are playing the game in. Otherwise, the dialogues of the mod will not show but give error messages. </p>
+      <p> <strong>Windows</strong><br />
+        Talents of Faer&ucirc;n is distributed as a self-extracting archive and includes a WeiDU installer. To install,
+        simply double-click the archive and follow the instructions on screen. </p>
+      <p> Alternatively, the files can be extracted into your game directory using <a href="http://www.7-zip.org/download.html">7zip</a> or <a
+                        href="http://www.rarlab.com/download.htm">WinRAR</a>.
+        When properly extracted, your game directory will contain <strong>setup-dw_talents.exe</strong> and
+        the folder <strong>dw_talents</strong>. To install, double-click <strong>setup-dw_talents.exe</strong> and follow
+        the instructions on screen. </p>
+      <p> You can run <strong>setup-dw_talents.exe</strong> in your game folder to reinstall, uninstall or
+        otherwise change components.</p>
+      <p> <strong>macOS</strong><br />
+        Talents of Faer&ucirc;n for macOS is distributed as a compressed tarball and includes a WeiDU installer.</p>
+      <p> First, extract the files from the tarball into your game directory. When properly extracted, your
+        game directory will contain <strong>setup-dw_talents</strong>, <strong>setup-dw_talents.command</strong>, and the folder <strong>dw_talents</strong>. To install,
+        double-click <strong>setup-dw_talents.command</strong> and follow the instructions on screen.</p>
+      <p> You can run <strong>setup-dw_talents.command</strong> in your game folder to reinstall, uninstall or
+        otherwise change components. </p>
+      <p><strong>Linux</strong><br />
+        Talents of Faer&ucirc;n for Linux is distributed as a compressed tarball and does not include a WeiDU installer. </p>
+      <p>Extract the contents of the mod to the folder of the game you wish to modify.</p>
+      <p> Download the latest version of WeiDU for Linux from <a
+                        href="http://www.weidu.org/%7Ethebigg/">WeiDU.org</a> and copy WeiDU and WeInstall to /usr/bin.
+        Following that, open a terminal, cd to your game installation directory, run tolower and answer Y to
+        both queries. You can avoid running the second option (linux.ini) if you've already ran it once in
+        the same directory. To save time, the archive is already tolowered, so there's no need to run the
+        first option (lowercasing file names) either if you've extracted only this mod since the last time
+        you lowercased file names. If you're unsure, running tolower and choosing both options is the safe
+        bet. </p>
+      <p>To install, run WeInstall dw_talents in your game folder. Then run wine BGMain.exe and start playing. </p>
+      <p><strong>Batch mode installation option</strong><br />
+        ToF, like any multi-component mod, normally asks about a component, installs it, then asks about the next component. Since some of ToF's components can take a while to install, this can be tedious. ToF ships with an experimental 'batch mode': if you select this (by installing the 'batch mode' component, which should be the first component offered to you) then ToF will ask about all components first but will not install them. After you have chosen your components, you will be offered a new component, 'finish batch mode installation', which will then install all of them. After you've done this, a file (dw_talents.bat) will be created in the weidu_external/batch subfolder in your main game folder; clicking on it will uninstall and reinstall all your chosen options. (An optional alternative is to create the dw_talents.bat folder but not install anything.) Batch mode is currently only available for Windows installs (basically because I don't know how batch files work in OSX or Linux and don't have a testing environment for them). </p>
+      <p> <strong>Note for Complete Uninstallation</strong><br />
+        In addition to the methods above for removing individual components, you can completely uninstall
+        the mod using setup-dw_talents --uninstall at the command line to remove all components without
+        wading through prompts. </p>
+    </div>
+    <div class="ribbon_rectangle_h2">
+      <h2><a name="content" id="content"></a>Detailed Contents</h2>
+    </div>
+    <div class="ribbon_triangle_h2-l"></div>
+    <div class="ribbon_triangle_h2-r"></div>
+    <div class="section">
+      <p>Unless otherwise noted, all components are for all (Enhanced Edition) forms of the game. Components that affect Baldur's Gate: Enhanced Edition (BGEE) also affect Siege of Dragonspear.</p>
+      <p>A number of the components are inspired by various tabletop roleplaying resources; see the <a href="#acknow">acknowledgements</a> for details.</p>
+    </div>
+    <div class="ribbon_rectangle_h3">
+      <h3><a name="spelltweaks" id="spelltweaks"></a>Spell System Revisions and New Spells</h3>
+    </div>
+    <div class="ribbon_triangle_h3-l"></div>
+    <div class="ribbon_triangle_h3-r"></div>
+    <div class="section">
+      <p><strong>Install Arcane Spells from Icewind Dale: Enhanced Edition<br />
+        </strong><em>Not available for IWDEE</em></p>
+      <p>This component includes almost all the arcane spells in Icewind Dale: Enhanced Edition that are not already included in Baldur's Gate. (I think Contact Outer Plane is the only exception on Enhanced Edition games). For the most part, if a spell is present already in BG2 then the IWD version is not used. Scrolls of the new spells are scattered throughout the game; they should be about as common as equivalent-level spells in the main system. </p>
+      <p> The system is slightly tweaked to resolve some thematic inconsistencies with the existing system:</p>
+      <ul>
+        <li>The IWD version of Mordenkainen's Sword summons a weapon which the caster can use at range, rather than summoning swords that act as independent monsters. Since both versions of the spell are quite fun, I have included the IWD version, renamed as Mordenkainen's Force Blade.</li>
+        <li>The IWD elemental animations look very different (bulkier, more humanoid) than the BG2 ones. To avoid visual awkwardness, I have used the existing BG2 water elemental animation instead of the IWD one.</li>
+        <li>The fifth-level IWD 'conjure water elemental' spell has been renamed 'conjure lesser water elemental' and a sixth-level 'conjure water elemental' spell has been added; the magical-battle aspect of elemental summoning has been removed.</li>
+        <li>The collection of creatures summoned by Monster Summoning has been systematically rebalanced, focusing on humanoid creatures; this is to avoid thematic overlap with spells like Spider Spawn and Carrion Summons.</li>
+        <li>The BG2 Emotion: Hopelessness spell has been overwritten by the IWD one, to ensure consistency with the other Emotion spells added by IWD.</li>
+        <li>In IWD, summoning spells have green icons; in BG2, they have red icons. I recolor all BG2 summoning spells to green.</li>
+      </ul>
+      <p>A full list of arcane spells added, and documentation for each, can be found <a href="subdocuments_dw/scs_iwd_desc_arcane.html">here</a>.</p>
+      <p>SCS's 'Smarter Mages' AI will detect and use the IWD spells if they are installed.</p>
+      <p><strong>Install Divine Spells from Icewind Dale: Enhanced Edition<br />
+        </strong><em>Not available for IWDEE</em></p>
+      <p>This component includes pretty much all the divine spells in Icewind Dale: Enhanced Edition that are not already included in Baldur's Gate. For the most part, if a spell is present already in BG2 then the IWD version is not used. Party-joinable spellcasters gain access to the new spells (provided you started a new game).</p>
+      <p>The system is slightly tweaked to resolve some thematic inconsistencies with the existing system:</p>
+      <ul>
+        <li>IWD's third-level 'Prayer' spell is about as powerful as BG's second-level 'Chant' spell, while the IWD version of 'Chant' halves the caster's movement and blocks their spellcasting. I split the difference, installing the IWD versions of both spells but removing the disable-spellcasting effect.</li>
+        <li>BG's sixth-level 'Physical Mirror' spell reflects all missiles and lasts nine rounds. IWD's sixth-level 'Entropy Shield' spell deflects all missiles, gives immunity to many spells, boosts damage resistance and armor class, and lasts one round per level. There's just no real reason to learn Physical Mirror in place of Entropy Shield. (Theoretically the reflection power is nice, but any half-way intelligent enemy will just notice it.) The simplest solution is to change the level of one of the spells; in my judgement Physical Mirror is underpowered for sixth level and Entropy Shield is about right, so I lower Physical Mirror to 5th level. </li>
+        <li>IWD restricts its Cause Wounds spells to evil casters (and its Cure Wounds spells to good casters), but the BG versions aren't so restricted. I remove the restrictions. (There is an ini option to override this; see <a href="#customization"> here</a>.) In addition, BG Cause Wounds require a melee hit, whereas IWD Cause Wounds are just range=touch; I standardize to the IWD version.</li>
+        <li>In IWD, summoning spells have green icons; in BG2, they have red icons. I recolor all BG2 summoning spells to green.</li>
+      </ul>
+      <p>A full list of divine spells added, and documentation for each, can be found <a href="subdocuments_dw/scs_iwd_desc_divine.html">here</a>.</p>
+      <p>SCS's 'Smarter Priests' AI will detect and use the IWD spells if they are installed.</p>
+      <p><strong>Install Bard Songs from Icewind Dale: Enhanced Edition</strong><strong><br />
+        </strong><em>Not available for IWDEE</em></p>
+      <p>In Icewind Dale, bards have six different songs to choose from (gaining access to the first at 1st level and to another at each odd level up to level 13). This component makes these songs available to (non-kitted) bards in the various Baldur's Gate games.</p>
+      <p><strong>Use Baldur's Gate-Style Insects in Icewind Dale</strong><strong><br />
+        </strong><em>Only available for IWDEE</em></p>
+      <p>This component replaces the Insect Plague and Creeping Doom spells from Icewind Dale (which summon fairly weak monsters) with the Baldur's Gate version (where the swarm does damage and disrupts spellcasting).</p>
+      <p><strong>Make the Baldur's Gate Version of Mordenkainen's Sword (as well as the Icewind Dale version) Available in Icewind Dale</strong><strong><br />
+        </strong><em>Only available for IWDEE</em></p>
+      <p>The IWD version of Mordenkainen's Sword summons a weapon which the caster can use at range, while the BG2 version summons swords that act as independent monsters. Since both versions of the spell are quite fun, this component makes the BG2 version available in Icewind Dale (and renames the IWD version to 'Mordenkainen's Force Blade').</p>
+       <p><strong>Install All Spell Tweaks</strong></p>
+      <p>This component installs the whole package of Stratagems of Mystra spell tweaks. (If you don't select it you will be given the chance to select tweaks by category.)</p>
+      <p>Full documentation for spell tweaks can be found <a href="subdocuments_dw/spell_tweaks.html">here</a> (broken down by mod component) or <a href="subdocuments_dw/changes_by_spell.html">here</a> (broken down by spell modified).</p>
+      For more fine-grained control of which tweaks you install (beyond what the component system allows) see under <a href="#customization">customization</a>.
+      <p><strong>Core Stratagems Spell-System Changes (assumed by Sword Coast Stratagems mod)</strong></p>
+      <p>These tweaks alter a range of spells, mostly but not entirely focused around a spellcaster's defenses and abilities to remove other creatures' defenses. What unites them is that all are assumed by the enemy AI in Sword Coast Stratagems, and enemy spellcasters may act quite strangely from time to time if this is not installed. These components will be automatically installed if you install any of SCS's AI or Tactical Challenge components if it is not installed here. (<a href="subdocuments_dw/spell_tweaks.html#core-scs">details</a>)</p>
+      <p><strong>Baldur's Gate-Inspired Tweaks to Icewind Dale Spells</strong></p>
+      <p>Tweaks in this section alter Icewind Dale spells to more closely match how they work in Baldur's Gate/Baldur's Gate II. In most cases this slightly increases the power of the spell .(<a href="subdocuments_dw/spell_tweaks.html#bg">details</a>)</p>
+      <p><strong>Changes to Restoration</strong></p>
+      <p> Tweaks in this section alter the Restoration and Lesser Restoration spells. (<a href="subdocuments_dw/spell_tweaks.html#restoration">details</a>) </p>
+      <p><strong>Changes to Shapeshift Spells</strong></p>
+      <p>Tweaks in this section alter shapeshift spells, making them more flexible and somewhat more powerful. (<a href="subdocuments_dw/spell_tweaks.html#shapeshift">details</a>)</p>
+      <p><strong>Icewind Dale-inspired Tweaks to Baldur's Gate/Baldur's Gate II Spells</strong></p>
+      <p>Tweaks in this section alter Baldur's Gate/Baldur's Gate II spells to more closely match how they work in Icewind Dale. In most cases this slightly increases the power of the spell. (<a href="subdocuments_dw/spell_tweaks.html#iwd">details</a>)</p>
+      <p><strong>Rebalancings of Slightly-Too-Powerful Spells</strong></p>
+      <p>Tweaks in this section rebalance various slightly too-powerful spells. The enemy AI in Sword Coast Stratagems will sometimes behave a little oddly if this component is not installed. (<a href="subdocuments_dw/spell_tweaks.html#rebalance">details</a>)</p>
+      <p><strong>Spell School Changes</strong></p>
+      <p>Tweaks in this section alter the schools of certain mage spells. (<a href="subdocuments_dw/spell_tweaks.html#school">details</a>) </p>
+      <p><strong>Spells Increased in Power</strong></p>
+      <p>Tweaks in this section somewhat increase the power of various spells which (in my subjective judgement) were a little under-powered compared to similar spells at the same level. (<a href="subdocuments_dw/spell_tweaks.html#boost">details</a>)</p>
+      <p><strong>Add Nine New Arcane Spells </strong></p>
+      <p>This component adds nine new arcane (sorcerer/wizard/bard) spells to the game, mostly focused on elemental effects. A full list can be found <a href="subdocuments_dw/tof_desc_arcane.html">here</a>. SCS's 'Smarter Mages' component will use most of these spells if they are installed.</p>
+      <p><strong>Add Six New Divine Spells </strong></p>
+      <p>This component adds six new arcane (cleric/druid) spells to the game, mostly borrowed from the Divine Remix mod. A full list can be found <a href="subdocuments_dw/tof_desc_divine.html">here</a>. SCS's 'Smarter Priests' component will use some (to be honest, not many) of these spells if they are installed.</p>
+      <p><strong>Revised Elementals</strong><br />
+        <em>Requires either IWDEE or a mod (SCS, SoM, ToF, or IWDification) that introduces the IWD spells into BGEE or BG2EE.</em></p>
+      <p>This component revises the stats and abilities of the various elementals (earth/air/fire/water) that appear in the game or can be summoned, as well as the elemental-summoning spells themselves. The goal is to make elementals more interesting and varied, and to make elemental summoning a more interesting tactical option. Overall, elementals are significantly more powerful with this component installed. The detailed changes are as follows: </p>
+      <ul>
+        <li>The general statistics of elementals are systematized, and slightly improved at higher levels, as follows:
+          <ul>
+            <li>8-HD elementals get Strength 18/00, Constitution 16, AC 2.</li>
+            <li>12-HD elementals get Strength 20, Constitution 17, AC 0.</li>
+            <li>16-HD elementals get Strength 21, Constitution 18, AC -2.</li>
+            <li>More powerful elementals get Strength 22, Constitution 20, AC -4.</li>
+          </ul>
+        </li>
+        <li>Elementals get damage resistance depending on their type: air elementals get immunity to electricity and 75% resistance to missile damage, earth elementals get 50% resistance to slashing/piercing/missile damage and 25% vulnerability to crushing damage, fire elementals get 125% resistance to fire damage and 50% vulnerability to cold damage, water elementals get 75% resistance to crushing damage.</li>
+        <li>Elementals get type-specific melee abilities:
+          <ul>
+            <li>Air elementals are surrounded by a whirlwind effect which inflicts slashing damage dependent on their HD (2d8/rd at 8HD, 3d8/rd at 12HD, 4d8/rd at 16+HD) with additional damage to mist creatures, disperses clouds, and gives a 50% spell failure chance. Their attacks deal slashing and electrical damage: 2d10+1d6 electrical
+              at 8HD, 3d10 +2d6 electrical at 12-16HD, 4d10 +3d6 electrical for more powerful elementals.</li>
+            <li>Earth elementals' attacks inflict crushing damage: 3d8 at 8HD, 4d8 at 12HD, 5d8 at 16HD and above. Their attacks knock their opponents away unless they make a save vs. paralysis (at +2 for 8-HD elementals, at -2 for 16-HD elementals or more powerful elementals).</li>
+            <li>Fire elementals' attacks inflict a mixture of crushing and fire damage (2d8 + 2d6 fire at 8HD, 3d8 + 3d6 fire at 12-16HD, 4d8 + 4d6 fire at 16+ HD). Their attacks set victims on fire if they fail a save vs. breath weapon (at +2 for 8-HD elementals, at -2 for 16-HD elementals or more powerful elementals), inflicting the fire damage again each round (an additional saving throw may be attempted each round to extinguish the fire).</li>
+            <li>Water elementals are surrounded by a quenching aura that extinguishes fire shields and similar spells. Their attacks inflict crushing damage (3d6 at 8HD, 4d6 at 12-16HD, 5d6 for more powerful elementals) and can partially drown their victims if they fail a save vs. spells (at +2 for 8-HD elementals, at -2 for 16-HD elementals or more powerful elementals). Drowning creatures are slowed, -4 to hit, -4 AC, -4 saves, can't spellcast, and take 1d3 magic damage per second; a new saving throw can be attempted at the end of each round.</li>
+          </ul>
+        </li>
+        <li>More powerful elementals (16+ HD) receive innate powers usable once per 10 rounds: Whirlwind for air elementals, Spike Stones for earth elementals, Shroud of Flame for fire elementals, Smashing Wave for water elementals.</li>
+        <li>Priest elemental-summoning spells are tweaked to differentiate 6th- and 7th-level spells, and to allow summoning of all four elemental types:
+          <ul>
+            <li>The 6th level priest spell 'Conjure Fire Elemental' now has a 60% chance of calling a 12-HD elemental, a 35% chance of calling a 16-HD elemental, and a 5% chance of calling a 24-HD elemental.</li>
+            <li>The 7th level priest spell 'Conjure Earth Elemental' now has a 70% chance of calling a 16-HD elemental and a 30% chance of calling a 24-HD elemental.</li>
+            <li>A 6th-level priest spell 'Conjure Water Elemental' is introduced, with a 60% chance of calling a 12-HD elemental, a 35% chance of calling a 16-HD elemental, and a 5% chance of calling a 24-HD elemental.</li>
+            <li>A 7th-level priest spell 'Conjure Air Elemental' is introduced, with a 70% chance of calling a 16-HD elemental and a 30% chance of calling a 24-HD elemental.</li>
+          </ul>
+        </li>
+        <li>The quest spell 'Elemental Summoning' has been renamed 'Elemental Swarm' and now summons four 16-HD elementals, one from each elemental plane.</li>
+      </ul>
+    </div>
+    <div class="ribbon_rectangle_h3">
+      <h3><a name="races" id="races"></a>Races and Subraces</h3>
+    </div>
+    <div class="ribbon_triangle_h3-l"></div>
+    <div class="ribbon_triangle_h3-r"></div>
+    <div class="section">
+      <p><strong>Add New Races and Subraces</strong></p>
+      <p> This component adds Icewind Dale II-style subraces for dwarves, elves, gnomes, and halflings. Subraces are selected when you generate a character: if you select a race with subraces, you will be offered a menu to select from. There are three dwarven subraces (shield dwarves, gold dwarves, gray dwarves), five elven subraces (moon elves, sun elves, wild elves, wood elves, drow), two gnomish subraces (rock gnomes, deep gnomes), and three halfling subraces (lightfoot, strongheart, ghostwise). The component also adds a new category of races, 'planetouched' (meaning creatures whose ancestry is partly other-planar) which contains six further races: aasimar, tieflings, air genasi, earth genasi, fire genasi, and water genasi. (Planetouched creatures count as human for the purposes of multi-classing and class choices.) And it slightly improves the basic abilities granted to humans and half-orcs.</p>
+      <p>The powers and weaknesses of these races and subraces are based on a mixture of D&amp;D 2nd and 3rd edition. They're 'balanced' in the sense that I don't think any race you choose will imbalance the wider game. I haven't made that much effort to strictly balance them one against another: a deep gnome, for instance, is probably just better than a rock gnome. A full list of races, subraces, and their powers can be found <a href="subdocuments_dw/tof_race.html">here</a>. </p>
+      <p>Ideally, a component like this would also alter in-game dialog options and responses, so that NPCs react to your race/subrace&mdash;especially for 'exotic' races like tieflings or gray dwarves. I haven't (yet) done this, though.</p>
+      <p>Two choices are barred on BG/BG2: you can't play as a drow (because it would break the plot of BG2 chapter 5) and you can't play as an aasimar (because I find a Bhaalspawn aasimar a bit implausible). If you want to ignore the story-based problems with these choices, you can reactivate them using dw_talents.ini; there's no mechanical problem with either.</p>
+    </div>
+    <div class="ribbon_rectangle_h3">
+      <h3><a name="kit_change" id="kit_change"></a>Class and Kit Revisions</h3>
+    </div>
+    <div class="ribbon_triangle_h3-l"></div>
+    <div class="ribbon_triangle_h3-r"></div>
+    <div class="section">
+      <p><strong>Eliminate Class/Race Restrictions and Most Class/Ability Score Restrictions</strong></p>
+      <p>This component makes all classes available to PCs of any race, allows PC mages of any race to specialize in any school of magic, and allows both humans and non-humans to dual-class and multi-class. It reduces all ability score requirements to 10, and eliminates the high ability score requirements for dual-classing. In-game text descriptions during character creation are altered to allow for these changes.</p>
+      <p>Kit race restrictions are lifted when they coincide with their parent class's race restrictions, but not otherwise. In an otherwise-unmodded game, the only kit not available to all races in this fashion is the Dwarven Defender.</p>
+      <p>There are no animations available for non-human monks, so I repurpose the priest animation for them. As a consequence, non-human monks won't have the flashy unarmed-combat animation that human monks do.</p>
+      <p>If this component is installed, multi-class gnome mages will no longer be illusionists. If you want to create gnome illusionists, use the 'Allow Multi-Class Mages to Specialize' component.</p>
+      <p>This component automatically installs the contents of the <a href="#tidy-up-class">'Tidy Up Class-Selection Menu' component</a>.</p>
+      <p><strong>Revised Class Alignment Rules</strong></p>
+      <p>This component alters the alignment restrictions for several classes, broadly in accord with 3rd edition D&amp;D (and with Icewind Dale II). All changes are included in the in-game documentation. The specific changes are: </p>
+      <ul>
+        <li>Druids (including multi-class druids) are now only required to have a partially neutral alignment: they can be neutral good, neutral evil, lawful neutral, or chaotic neutral as well as true neutral. Jaheira and Faldorn (if applicable) have their alignment changed (respectively) to neutral good and neutral evil, to reflect their in-game behavior. (You can disable this using the ini if you want.)</li>
+        <li>Rangers (and cleric-rangers) are now permitted to be of any alignment. Rangers no longer fall if their reputation gets too low, and (in BG2) a few lines of dialog that refer to the risk of a PC ranger Falling are removed.</li>
+        <li>Thieves (except for assassins) may now be of any alignment.</li>
+        <li>Assassins may no longer be good-aligned.</li>
+      </ul>
+      <p><strong>Icewind Dale-Style Paladins</strong><strong><br />
+        </strong><em>Not available for IWDEE</em></p>
+      <p>This component gives paladins in Baldur's Gate and Baldur's Gate II the modified (and mostly enhanced) powers they receive in Icewind Dale: </p>
+      <ul>
+        <li>The paladin can use Detect Evil at will.</li>
+        <li>The paladin is immune to all diseases and can cure disease once per day, by touch.</li>
+        <li>At third level, the paladin becomes immune to fear.</li>
+        <li>Once per day, the paladin can use Smite Evil to call down a beam of holy light onto a single evil target, for 1d6 damage + 1d6 per three levels.</li>
+        <li>The paladin may use Protection from Evil once per day only, it affects only the paladin, and has a duration of 4 hours (24 turns). </li>
+        <li>The paladin is able to cast cleric spells from 6th level rather than 9th level.</li>
+      </ul>
+      <p><strong>Revised Smite Evil</strong><br />
+        <em>Requires either Icewind Dale, or the 'Icewind Dale-Style Paladins' component.</em></p>
+      <p>This component revises the paladin's Smite Evil power to more closely resemble the 3rd edition D&amp;D power which inspires it. Instead of directly striking a foe, the power affects the paladin's attacks: they receive a Charisma-dependent bonus to melee attacks against evil creatures until their next successful attack, and that attack then does 1d6 magic damage, +1d6 per two levels above first level.</p>
+      <p><strong>Higher-Level Paladins Get Additional Uses of Lay on Hands and Smite Evil</strong></p>
+      <p>This component grants paladins additional uses of their Lay on Hands and (if you're using it) Smite Evil powers as they gain level. An additional use of Lay on Hands is gained at 5th level and every 4 levels thereafter; an additional use of Smite Evil is gained at 7th level and every 8 levels thereafter.</p>
+      <p>(Partly this tracks the way these powers work in 3rd edition D&amp;D; partly it's my subjective assessment that other classes and kits tend to give out extra uses of similarly-powerful abilities.)</p>
+      <p><strong>Icewind Dale-Style Bard Songs</strong><strong><br />
+        </strong><em>Not available for IWDEE</em></p>
+      <p>This component gives Bards in Baldur's Gate and Baldur's Gate II six different bard songs (gained as they gain levels), to match the Icewind Dale version of the bard. The songs gained are: </p>
+      <ul>
+        <li>1st level: The Ballad of Three Heroes (allies within 30ft. get +1 to attack rolls, damage rolls, and saving throws)</li>
+        <li>3rd level: The Tale of Curran Strongheart (allies within 30ft. are immune to fear, and any fear effects on them are removed)</li>
+        <li>5th level: Tymora's Melody (allies within 30ft. get +1 to luck, +3 to saving throws, +10 to lore, and +10% to all thieving skills)</li>
+        <li>7th level: The Song of Kaudies (allies within 30ft. have a 50% chance to shrug off the effects of spells such as Silence, Shout, Great Shout, Command, Greater Command, or any other sound-based attack)</li>
+        <li>9th level: The Siren's Yearning (enemies within 30 ft. must make a Will save or become enthralled, unable to take action until 1 round passes or they take damage)</li>
+        <li>11th level: War Chant of Sith (allies within 30ft. get +2 to Armor Class, +10% resistance to slashing, piercing, crushing, and missile damage, and regenerate 2 hit points per round)</li>
+      </ul>
+      <p>As in Icewind Dale: Enhanced Edition, only trueclass (non-kitted) bards get these new bard songs.</p>
+      <p><strong>Thieves Gain the Evasion Ability (on a successful save for half damage against abilities that require you to dodge, take no damage) <br />
+        </strong><em>Not available for IWDEE</em></p>
+      <p>With this component installed, thieves (single and multi-classed) gain the Evasion ability at 7th level. This allows the thief, on making a successful saving throw for half damage from a spell or effect, to entirely avoid the effect.</p>
+      <p>Evasion applies to spells or effects which require the character to dodge or jump clear, like Fireball and Lightning Bolt. It does not apply to spells like Holy Smite (which require willpower to resist) or Abi-Dalzim's Horrid Wilting (which requires fortitude and resilience to resist). A full list of affected spells can be found <a href="subdocuments_dw/evasion.html">here</a>.</p>
+      <p>Several other components of Talents of Faer&ucirc;n install the content of this component automatically.</p>
+      <p><strong>Modified Thief Evasion</strong><strong><br />
+        </strong><em>Only available for IWDEE</em></p>
+      <p>This component slightly revises the thief's Evasion talent. Instead of making a separate saving throw to see if they can evade the attack, the thief now uses the same saving throw they made against the attack itself; also, the list of affected spells and items is slightly modified, so that Evasion applies only to spells and effects that require the character to dodge or jump clear, like Fireball and Lightning Bolt. It does not apply to spells like Holy Smite (which require willpower to resist) or Abi-Dalzim's Horrid Wilting (which requires fortitude and resilience to resist). A full list of affected spells can be found <a href="subdocuments_dw/evasion.html">here</a>. </p>
+      <p>This component is actually identical to the previous component; they are listed under different names for different versions of the game to avoid confusion and cumbersome names.</p>
+      <p><strong>Rebalanced Thief and Bounty Hunter Traps at Low Levels</strong></p>
+      <p>The snares that thieves (and bounty hunters) can set are balanced for Baldur's Gate II and are a bit overpowered at low levels, as well as remaining unchanged until level 11. This component introduces slightly weaker 1st-level snares, with the original versions granted at level 6.</p>
+      <p>Specifically: </p>
+      <ul>
+        <li>a 1st-level rogue's snare does 1d8+5 damage (previously 2d8+5)</li>
+        <li>a 6th-level rogue's snare does 2d8+5 damage (previously 3d8+5) and slows the target for 5 rounds if they fail an unmodified save vs. spell (previously it was a save vs. spell at -4)</li>
+      </ul>
+      <p><strong>Revised Druid Shapeshifting</strong></p>
+      <p> This component significantly revises the druid's (and the Avenger's) shapeshift ability, somewhat inspired by Icewind Dale. Druids now gain one use of a general Shapeshift ability at third level, and then another use every three levels after that. The available forms vary by level, and are selected at the time the spell is cast: </p>
+      <ul>
+        <li>At 3rd level, the only form available is Wolf.</li>
+        <li>At 5th level, Black Bear is added.</li>
+        <li>At 7th level, the Wolf form is upgraded to a Dire Wolf, and Boring Beetle is added.</li>
+        <li>At 9th level, the Black Bear form is upgraded to a Cave Bear (or to a Polar Bear in IWD:EE).</li>
+        <li>At 12th level, Lesser Elementals (of all four elements) are added.</li>
+        <li>At 15th level, the Lesser Elemental forms are upgraded to Elementals.</li>
+      </ul>
+      (In Icewind Dale, druids got access to Winter Wolves; I removed this as it seemed to go against the idea that druid forms should be natural, nonintelligent animals.) Full documentation for druids' shapeshift forms is <a href="subdocuments_dw/druid_ss_desc.html">here</a>.
+      <p>Avengers gain forms every 2nd level rather than every 3rd, and have access to new forms: </p>
+      <ul>
+        <li>At 4th level, Hunting Spider is added.</li>
+        <li>At 6th level, Baby Wyvern is added.</li>
+        <li>At 7th level, the Wolf form is upgraded to a Winter Wolf instead of a Dire Wolf.</li>
+        <li>At 8th level, the Hunting Spider form is upgraded to a Sword Spider.</li>
+        <li>At 10th level, the Baby Wyvern form is upgraded to a Wyvern.</li>
+      </ul>
+      (The underlying idea is that Avengers have access to monstrous 'animals' as well as natural ones. From that perspective the Fire Salamander, an intelligent extraplanar creature, is out of place.) Avengers' additional forms are fully documented <a href="subdocuments_dw/avenger_ss_desc.html">here</a>.
+      <p><strong>Druids Use Cleric XP and Spell Tables</strong></p>
+      <p>The XP tables for druids in IWD, BG and BG2 are based (to varying degree) on 2nd edition Dungeons and Dragons, and hence inherit some oddities that don't really make sense in a CRPG (and frankly were kind of questionable in D&amp;D too). Even though druids and clerics have the same spell-advancement rate and are otherwise fairly comparable in power, their XP requirements are quite out of sync: druids initially require more XP than clerics, then require much less, and then (in BG2) need a staggering 750,000 XP to get from level 13 to level 14 and an astonishing 1,500,000 XP to get from level 14 to level 15. The spell table in BG2 in turn compensates by giving druids massively more spells as soon as they hit level 15. (Icewind Dale smooths out the XP table to something saner after level 14 and doesn't include the big increase in spells.)</p>
+      <p>This component cuts through all this and just gives druids the same XP and spell progression as clerics. (This is determined dynamically, so any changes other mods have made to cleric tables will be mirrored.)</p>
+      <p><strong>Revised Speciality Priests of Lathander/Helm/Talos/Tempus/Tyr</strong></p>
+      <p>This component revises the five speciality priests (i.e., cleric kits) in the unmodded game. The revisions are partly to make the kits more balanced at low levels (they are balanced for Baldur's Gate II and some of their powers are excessive for the early stages of Baldur's Gate and Icewind Dale). Partly, they just (I hope!) make the kits a bit more interesting and varied.</p>
+      <p>The new kits gain a somewhat modified and expanded list of unique powers, and gain them at various levels rather than having them automatically. They also have slightly customized spell lists&mdash;e.g., priests of Talos have access to air spells as well as a few other spells associated with lightning or destruction.</p>
+      <p>Full documentation for the modified kits can be found <a href="subdocuments_dw/vanilla_priest_desc.html">here</a>.</p>
+      <p>In addition, the component makes some small script and dialog changes in Baldur's Gate and Baldur's Gate II to recognize the protagonist's faith in appropriate situations (e.g., in the temple of your god).</p>
+      <p>This component makes use of the ToF revised sphere system, which is documented <a href="subdocuments_dw/spheres.html">here</a>.</p>
+      <p><strong>Modified Cleric Stronghold Quest for Priests of any God except Lathander/Helm/Talos<br />
+        </strong><em>Only available for BG2EE, EET</em></p>
+      <p> The cleric stronghold quests in Baldur's Gate II very strongly presume that your character worships one of Lathander, Helm and Talos. This shows up in small ways (various dialog cues assume it) and larger ways (you have a series of quests that require you to advise worshipers, and you are judged according to how well your advice fits the way of 'your' god). It fits badly to priests of other gods, like Tyr and Tempus in the unmodded (Enhanced Edition) game, and any added by third-party mods. </p>
+      <p> This component modifies the cleric stronghold quest for priests outside the 'core three' priesthoods. The new quest is a bit shorter, has somewhat more appropriate dialog, and omits the conversations with the worshipers. The final event of the stronghold quest (the battle between the temples) triggers automatically after sufficient time has passed (4 in-game weeks by default, though it is accelerated later in the game). The component also adds some god-specific lines for priests of Tyr, Tempus, and the faiths introduced by the 'New Choices of God/Goddess for Speciality Priests' component from Talents of Faer&ucirc;n. Because the quest is shorter, it does not count as a stronghold for the purposes of determining whether you can get another stronghold. </p>
+      <p><strong>Allow Monks to Use Staffs</strong></p>
+      <p>The Infinity Engine games don't allow monks to use staffs, despite the staff being an iconic monk weapon; this is for technical reasons, not as a design choice. This component works around those technical reasons and allows staff-wielding monks.</p>
+      <p>As an unavoidable side-effect, human monks will slightly change the color of their clothing when they equip a staff. If you are using non-human monks from the 'Allow All Class/Race Combinations' component, they will not be affected in this way.</p>
+      <p>(What's actually going on is that the 'wielding two-handed weapons' animation of the human monk is repurposed by the core game for unarmed combat, so that if you let a monk use a staff, it isn't synchronized with the character's actual movements and seems to float in the air. But the human monk animation is otherwise just a slight recoloring of the human fighter. I program all the two-handed weapons in the game to change a monk's animation to the fighter animation when equipped. Non-human monks are using the priest animation anyway so the issue doesn't arise.)</p>
+      <p><strong>Adjust Opposition Schools for Speciality Mages</strong></p>
+      <p>Icewind Dale and the Baldur's Gate games use different sets of opposition schools (schools that specialist wizards can't learn) from one another, and neither is exactly what is used in the AD&amp;D game on which both are based. This component lets you choose which system to use: the Baldur's Gate system (least restrictive), the Icewind Dale system, AD&amp;D, or a custom version very closely based on AD&amp;D that's slightly less harsh for illusionists. In-game documentation will be updated to reflect your choice.</p>
+      <table summary="Opposition Schools for Mages">
+        <tr>
+          <td></td>
+          <th colspan="4">Opposed Schools</th>
+        </tr>
+        <tr>
+          <th>Speciality</th>
+          <th>Baldur's Gate</th>
+          <th>Icewind Dale</th>
+          <th>AD&amp;D</th>
+          <th>ToF Custom</th>
+        </tr>
+        <tr>
+          <td>Abjurer </td>
+          <td>Alteration</td>
+          <td>Alteration, Illusion</td>
+          <td>Alteration, Illusion</td>
+          <td>Alteration, Illusion</td>
+        </tr>
+        <tr>
+          <td>Conjurer </td>
+          <td>Divination</td>
+          <td>Invocation</td>
+          <td>Divination, Invocation</td>
+          <td>Divination, Invocation</td>
+        </tr>
+        <tr>
+          <td>Diviner </td>
+          <td>Conjuration</td>
+          <td>Conjuration</td>
+          <td>Conjuration</td>
+          <td>Conjuration</td>
+        </tr>
+        <tr>
+          <td>Enchanter </td>
+          <td>Invocation</td>
+          <td>Invocation</td>
+          <td>Invocation, Necromancy</td>
+          <td>Invocation, Necromancy</td>
+        </tr>
+        <tr>
+          <td>Illusionist </td>
+          <td>Necromancy</td>
+          <td>Abjuration, Necromancy</td>
+          <td>Abjuration, Invocation, Necromancy</td>
+          <td>Invocation, Necromancy</td>
+        </tr>
+        <tr>
+          <td>Invoker </td>
+          <td>Enchantment</td>
+          <td>Conjuration, Divination</td>
+          <td>Conjuration, Enchantment</td>
+          <td>Conjuration, Enchantment</td>
+        </tr>
+        <tr>
+          <td>Necromancer </td>
+          <td>Illusion</td>
+          <td>Enchantment, Illusion</td>
+          <td>Enchantment, Illusion</td>
+          <td>Enchantment, Illusion</td>
+        </tr>
+        <tr>
+          <td>Transmuter </td>
+          <td>Abjuration</td>
+          <td>Abjuration, Necromancy</td>
+          <td>Abjuration, Necromancy</td>
+          <td>Abjuration, Necromancy</td>
+        </tr>
+      </table>
+      <p><strong>Require Speciality Mages to Memorize at Least One Spell per Level from their Speciality School</strong></p>
+      <p>In the unmodded game, the main benefit for being a specialist is that you get one extra spell per level, but that spell can be anything you like&mdash;so specialists are defined more by the schools they can't use than by their supposed speciality. This component (which follows pen-and-paper Dungeons and Dragons) requires the additional spell to be from the speciality school. If you are selecting your last spell at a given level and have not yet memorized a spell from your speciality school, all spells not from that school will be grayed out and unselectable. (The only exception is if there <em>are</em> no spells from that school at that level.) In-game documentation is updated and your speciality kit description includes a complete list of spells from your chosen school.</p>
+      <p>This component also makes a few minor changes to existing schools, to standardize differences that apply between IWD and BG/BG2: </p>
+      <ul>
+        <li>Lower Resistance is Abjuration/Alteration. (It's Alteration in IWD, Abjuration in BG/BG2.)</li>
+        <li>Fire Shield: Red, Fire Shield: Blue, Death Fog and Melf's Minute Meteors are all Alteration/Invocation, matching IWD. (In BG/BG2, they're all plain Alteration.)</li>
+        <li>Tenser's Transformation and Otiluke's Resilient Sphere are both Alteration/Invocation, again matching IWD. (In BG/BG2, they're both plain Invocation.)</li>
+      </ul>
+      <p>If you use this component together with 'Include Arcane Spells from Icewind Dale: Enhanced Edition', 'Add Nine New Arcane Spells ', 'Move Power Words to the School of Enchantment', and 'Move Symbols to the School of Enchantment', you should find that there are sufficiently many more-or-less useful spells at every level for each speciality to have reasonable options, with the exception of Diviners.</p>
+      <p><a name="multiclass-specialists" id="multiclass-specialists"></a><strong>Allow Multi-Classed and Dual-Classed Mages to Become Specialists and Wild Mages</strong></p>
+      <p>This component permits cleric/mage, fighter/mage, mage/thief, fighter/mage/cleric and fighter/mage/thief characters to be wild mages or specialist mages, instead of generalists. In-game documentation is adjusted to recognize this change.</p>
+      <p>Existing racial restrictions on specialities are enforced: unless you have installed 'Eliminate Class/Race Restrictions and Most Class/Ability Score Restrictions' then elves can only be diviners, enchanters, and wild mages; half-elves can be conjurers, diviners, enchanters, transmuters, and wild mages; and gnomes are automatically illusionists.</p>
+      <p>The component also permits <em>unkitted</em> characters who dual-class into mages to become specialists or wild mages. Again, existing racial restrictions are enforced; so are ability-score requirements (again, unless you have deactivated them via 'Eliminate Class/Race Restrictions and Most Class/Ability Score Restrictions').</p>
+      <p>This component automatically installs the contents of the <a href="#tidy-up-class">'Tidy Up Class-Selection Menu' component</a>.</p>
+      <p><strong>Speciality Mages Automatically Get One Speciality Spell at Each Level (where possible)</strong></p>
+      <p>This component does not need 'Require Speciality Mages to Memorize at Least One Spell per Level from their Speciality School' to be installed, but it is designed with it in mind: by making sure that specialists always know at least one spell of each level, it prevents the serious weakness (and annoyance) that occurs when a mage has just failed to find any spells of their speciality at the appropriate level.</p>
+      <p><strong>Dragon Disciples can be Disciples of Any Chromatic Dragon (Red/Blue/Green/Black/White)</strong></p>
+      <p>In the unmodded game, all Dragon Disciples are specifically disciples of red dragons. This component allows sorcerers to be disciples of any chromatic dragon type: red, blue, green, black, white. The character's elemental resistance and breath weapon damage will be tied to their dragon type: red=fire, blue=electricity, green=poison, black=acid, white=cold.</p>
+      <p><strong>Rebalanced and Revised Kits</strong></p>
+      <p>Nearly all the kits in the unmodded game come from the original Baldur's Gate II, and many of them are not really well balanced for the other games&mdash;many kits gain powerful abilities too early, since the BG2 kits were only designed to be used from 7th level onward; some kits provide static benefits for long periods in the early game (e.g. the Jester's song, which is fixed from 1st level to 14th level); some abilities are specifically based around Shadows of Amn content (such as the cavalier's resistance to fire and acid, the two elemental damage types used by dragons in Shadows of Amn). In addition, a few kits (in my judgement) are a little too weak or strong.</p>
+      <p>This component modifies the following kits (main changes are listed): </p>
+      <ul>
+        <li>Assassin: sneak attack increases at 1/3 levels; on IWD, Poison Weapon is changed to function as the (better-balanced) BGEE/BG2EE version</li>
+        <li>Barbarian: Rage power scales with level (immunities are gained gradually until level 14, not all at once)</li>
+        <li>Berserker: Rage power scales with level (extra hit points are level-dependent; immunities are gained gradually until level 14, not all at once)</li>
+        <li>Blade: Defensive Spin gained at level 3; Offensive Spin gained at level 5.</li>
+        <li>Cavalier: resistances changed to all elemental types; begins at 10% and increases by 5% every 5 levels; immunity to poison/charm gained gradually; may evade dragon breath weapons entirely on a successful save at level 12</li>
+        <li>Dragon Disciple: gains immunity to paralysis at level 7 and immunity to charm at level 13.</li>
+        <li>Inquisitor: True Sight replaced by Detect Invisibility until level 9; immunity to paralysis/charm gained gradually; dispel magic not gained until 3rd level.</li>
+        <li>Jester: bard song gradually improves with level</li>
+        <li>Shapeshifter: weaker werewolf form until 7th level; stronger form at 19th level; old werewolf forms are replaced by new ones once gained</li>
+        <li>Skald: bard song gradually improves with level</li>
+        <li>Totemic Druid: spirit animals continue to increase in power with level up to 16th level.</li>
+        <li>Undead Hunter: bonuses to hit and immunities gained gradually until 9th level, not all at once</li>
+        <li>Wizard Slayer: magic resistance changed to 20% + 1%/level</li>
+      </ul>
+      Cleric kits are unmodified by this component because the 'Revised Speciality Priests of Lathander/Helm/Talos/Tempus/Tyr' handles them. The Bounty Hunter kit is affected by the 'Rebalanced Thief and Bounty Hunter Traps at Low Levels' component. The Avenger kit is affected by the 'Revised Druid Shapeshifting' component. The Kensai, Dwarven Defender, Swashbuckler, Shadowdancer, and Totemic Druid kits, and all Ranger kits, are not affected.
+      <p>Full documentation for any kits altered by Talents of Faer&ucirc;n (except cleric speciality priests) may be found <a href="subdocuments_dw/vanilla_kit_desc.html">here</a>. </p>
+    </div>
+    <div class="ribbon_rectangle_h3">
+      <h3><a name="new-class-kit" id="new-class-kit"></a>New Classes and Kits</h3>
+    </div>
+    <div class="ribbon_triangle_h3-l"></div>
+    <div class="ribbon_triangle_h3-r"></div>
+    <div class="section">
+      <p><strong>New Wizard Specializations: Elemental Specialists</strong></p>
+      <p>This component adds a new style for specialist wizards: elemental magic. Elementalists shun the traditional division of magic into schools, and instead embrace the power of spells focused on a single element: earth, air, fire, or water.</p>
+      <p>As with conventional specialists, elementalists receive one extra spell per level, which must be from their preferred element (assuming there are any elemental spells of that level). They are barred from learning spells from the element opposed to their own: air opposes earth, fire opposes water. There is at least one spell of each element at each level (some come from the 'Add Nine New Arcane Spells' component), and elementalists automatically add one spell of their element to their spellbook for each level of spells they can cast (so that they will always be able to memorize at least one elemental spell of each level). A full list of spells for each element may be found <a href="subdocuments_dw/elemental_spells.html">here</a>.</p>
+      <p>Elementalists gain a +25% chance of learning a spell of their preferred element and a +15% chance of learning spells from the two elements not opposed to their own. They also gain 10% resistance to, and +20% damage when using, one particular damage type: electricity for air elementalists, acid for earth elementalists, fire for fire elementalists, cold for water elementalists.</p>
+      <p>Elementalists have no racial or ability-score restrictions beyond those which apply to mages. If you have installed <a href="#multiclass-specialists">'Allow Multi-Classed Mages to Become Specialists and Wild Mages'</a> then multi-classed mages can also become elementalists.</p>
+      <p>By default, this component requires you to be using the Icewind Dale arcane spells (either because you are playing IWD:EE, or because you have them installed) and the 'Add Nine New Arcane Spells' component of ToF. This is because without these extra spells, there aren't really enough elemental spells to make the specialities fun. If you want to bypass this for any reason you can do so via the ini.</p>
+      <p>This component automatically installs the contents of the <a href="#tidy-up-class">'Tidy Up Class-Selection Menu' component</a> and (for technical reasons) the <a href="#no-int-based-spell-restrictions">'No Intelligence-Based Spell Restrictions' component</a>.</p>
+      <p><strong>New Wizard Specialization: Force Mage</strong></p>
+      <p>This component adds another new style for specialist wizards: force magic. Force mages specialize in spells that directly produce or manipulate pure magical energy to launch telekinetic attacks, strike with magic missiles or magical blades, hold foes immobile or stunned, or protect the caster with force fields. The cost is that they are untrained with magic that summons impure&mdash;that is, elemental&mdash;energies.</p>
+      <p>As with conventional specialists, force mages receive one extra spell per level, which must be from the list of Force spells. They are barred from learning spells associated with any of the four elements: air (including electricity), earth (including acid), fire, and water (including cold and ice). A full list of spells for each element, and a list of force spells, may be found here.</p>
+      <p>Force mages gain a +25% chance of learning a force spell. They also gain 10% resistance to magical damage, and +20% damage when using effects or spells that inflict magical damage.</p>
+      <p>Force mages have no racial or ability-score restrictions beyond those which apply to mages. If you have installed <a href="#multiclass-specialists">'Allow Multi-Classed Mages to Become Specialists and Wild Mages'</a> then multi-classed mages can also become force mages.</p>
+      <p>This component automatically installs the contents of the <a href="#tidy-up-class">'Tidy Up Class-Selection Menu' component</a> and (for technical reasons) the <a href="#no-int-based-spell-restrictions">'No Intelligence-Based Spell Restrictions' component</a>.</p>
+      <p><strong>New Wizard Kits: Militant Wizards</strong></p>
+      <p>Militant Wizards train for physical as well as magical combat. They can become proficient, or specialized, in any weapon, and have some ability to cast spells while wearing armor: they can cast spells in leather, studded leather, and hide armor from 1st level; from 7th level they can also cast spells in chainmail or scale mail; from 15th level they can also cast spells in splint mail or plate mail (but not in full plate).</p>
+      <p>All militant wizards specialize in one or other school of magic, although not all schools are suited to the class: militant wizards can be abjurers, conjurers, invokers, or necromancers. Because of their physical training, they are less versatile than other specialists, being barred from three schools of magic rather than one or two.</p>
+      <table summary="Opposition Schools for Militant Wizards">
+        <tr>
+          <th>Speciality</th>
+          <th>Opposed Schools</th>
+        </tr>
+        <tr>
+          <td>Abjurer </td>
+          <td>Alteration, Divination, Illusion</td>
+        </tr>
+        <tr>
+          <td>Conjurer </td>
+          <td>Alteration, Divination, Invocation</td>
+        </tr>
+        <tr>
+          <td>Invoker</td>
+          <td>Conjuration, Enchantment, Illusion</td>
+        </tr>
+        <tr>
+          <td>Necromancer </td>
+          <td>Alteration, Enchantment, Illusion</td>
+        </tr>
+      </table>
+      <p>Militant wizards may not multi-class. They have the same ability score restrictions (if any) as standard specialists. Any class capable of becoming a mage may become a militant wizard of any speciality school.</p>
+      <p>This component automatically installs the contents of the <a href="#tidy-up-class">'Tidy Up Class-Selection Menu' component</a> and (for technical reasons) the <a href="#no-int-based-spell-restrictions">'No Intelligence-Based Spell Restrictions' component</a>.</p>
+      <p><strong>New Sorcerer Kit: Bloodrager</strong></p>
+      <p>Bloodragers are sorcerers whose innate magical power is tied to a deep reservoir of buried rage. While most spellcasters require some level of calm and discipline to use their magic to best effect, bloodragers can enter a state of savage fury while still drawing on their powerful magic abilities.</p>
+      <p>Bloodragers receive the berserker's rage ability, and are somewhat better trained in weapons and armor than normal sorcerers (they can use any melee weapon; they can become specialized in any weapon; they can use light armor; they receive +1 to hit per 3 levels, partly compensating for sorcerers' poor attack rolls; they have 1d6 hit points per level). However, they are sharply restricted in their choice of spells: they can only learn spells from the schools of abjuration, alteration, invocation, and necromancy.</p>
+      <p><strong>New Choices of God/Goddess for Speciality Priests</strong></p>
+      <p>This component introduces 23 additional gods and goddesses for a cleric to worship (in addition to the five in the baseline game: Helm, Lathander, Talos, Tempus and Tyr). Clerics of these powers receive appropriate special abilities and also choose spells from slightly altered spell lists, using the Talents of Faer&ucirc;n <a href="subdocuments_dw/spheres.html">sphere system.</a>.</p>
+      <p>This component borrows some ideas, some icons and other files, and some dialog from the <a href="https://www.gibberlings3.net/mods/kits/cleric/">Divine Remix</a> mod. I'm grateful to CamDawg, co-author of that mod, for permission to do so.</p>
+      <p> On any install, the following 20 additional gods and goddesses are added: </p>
+      <ul>
+        <li>Auril, the Frostmaiden</li>
+        <li>Azuth, the Lord of Spells</li>
+        <li>Baervan Wildwanderer, the Forest Gnome (gnomes, elves and half-elves only)</li>
+        <li>Clangeddin, the Father of Battle (dwarves only)</li>
+        <li>Corellon Larethian, Creator of the Elves (elves only)</li>
+        <li>Gruumsh One-Eye, god of the orcs (half-orcs only)</li>
+        <li>Ilmater, the Painbearer</li>
+        <li>Kossuth, the Lord of Flames</li>
+        <li>Lolth, the Queen of the Spiders (female elves and half-elves only)</li>
+        <li>Malar, the Beastlord</li>
+        <li>Mask, the Lord of Shadows</li>
+        <li>Moradin, the Dwarffather (dwarves only)</li>
+        <li>Mystra, the Mother of All Magic</li>
+        <li>Oghma, the Lord of Knowledge</li>
+        <li>Sel&ucirc;ne, the Moonmaiden</li>
+        <li>Shar, the Lady of Loss</li>
+        <li>Sune, Lady Firehair</li>
+        <li>Talona, the Lady of Poison</li>
+        <li>Tymora, the Lady of Luck</li>
+        <li>Umberlee, evil goddess of the sea</li>
+      </ul>
+      <p>On an IWD install, these three evil gods are also included: </p>
+      <ul>
+        <li>Bane, the Black Lord</li>
+        <li>Bhaal, the Lord of Murder</li>
+        <li>Myrkul, the Lord of the Dead</li>
+      </ul>
+      <p>At the time of the Baldur's Gate saga, all three are dead; on a BG or BG2 install, you instead get these three gods: </p>
+      <ul>
+        <li>Cyric, the Black Sun</li>
+        <li>Velsharoon, the Archmage of Necromancy</li>
+        <li>Iyachtu Xvim, the Godson</li>
+      </ul>
+      <p>(Priests of Cyric, game-mechanically, are pretty much equivalent to priests of Bhaal; priests of Velsharoon are pretty much equivalent to priests of Myrkul; priests of Iyachtu Xvim are pretty much equivalent to priests of Bane.)</p>
+      <p>Unless otherwise noted, all gods and goddesses introduced may be worshiped by clerics of any race.</p>
+      <p>By default, priests of Auril, Myrkul and Talona are not available as player characters in Icewind Dale, and priestesses of Lolth and Umberlee are not available as player characters in Baldur's Gate and Baldur's Gate II. In both cases, this is for plot reasons: having a priest of that deity in your party would mess with the plot in significant ways. These gods are installed in any case and are usable by enemy NPCs (if you install Sword Coast Stratagems). You can enable these choices for player characters via the ini if you want, though in-game dialog will not really respond appropriately.</p>
+      <p>On a BG or BG2 install, Viconia becomes a cleric of Shar.</p>
+      <p>This component requires you to be using the Icewind Dale arcane and divine spells (either because you are playing IWD:EE, or because you have them installed from Sword Coast Stratagems, IWDification, or Talents of Faer&ucirc;n) and the 'Add Nine New Arcane Spells' and 'Add Six New Divine Spells' components of ToF.</p>
+      <p><strong>New Class: Favored Soul</strong></p>
+      <p>Favored souls are spellcasters with an innate connection to a particular god or goddess. They are similar to clerics, but their power flows directly from their patron, without any need to study the litanies of a church. In game terms, they cast spells spontaneously, like a sorcerer or shaman, but choose their spells from the cleric list (with some modifications according to their faith). They lack the ability to turn undead, but gain additional known spells based on the god or goddess they serve.</p>
+      <p>Favored souls must select a god/goddess to serve at character creation, chosen from almost all of those included in Talents of Faer&ucirc;n as well as the 'core five' in the unmodded game. For the purposes of dialog options, strongholds, and the like, they are treated as clerics of their chosen deity. ('Under the hood', favored souls are formally a set of kits for shamans, but hopefully this should not be visible in-game.)</p>
+      <p>This component requires the 'New Choices of God/Goddess for Speciality Priests' component to be installed. It also requires you to be using the Icewind Dale arcane and divine spells (either because you are playing IWD:EE, or because you have them installed) and the 'Add Nine New Arcane Spells' and 'Add Six New Divine Spells' components of ToF.</p>
+      <p>This component automatically installs the contents of the <a href="#tidy-up-class">'Tidy Up Class-Selection Menu' component</a>, and makes use of the ToF revised sphere system, which is documented <a href="subdocuments_dw/spheres.html">here</a>.</p>
+      <p><strong>Druids May Multi-Class as Mages, Rangers, and Thieves</strong></p>
+      <p>This component introduces three new multi-class options: druid/mage, druid/ranger, and druid/thief. All three are legal 2nd edition Advanced Dungeons and Dragons classes, but were omitted from Baldur's Gate. These work as you would expect: all three are restricted to druid weapon choices, druid/mages cannot cast spells in armor, and druid/thieves cannot use thief skills in armor heavier than studded leather. All three classes are correctly treated as druid multi-classes in in-game conversations (for instance, in Baldur's Gate II they all will be offered the druid stronghold, as well as the stronghold corresponding to their other class). The component also adjusts cleric/rangers so as to use the cleric spell list (in the unmodded game they used the druid list).</p>
+      <p>These classes are available to the same races as (respectively) the cleric/mage, cleric/ranger, and cleric/thief. So in an otherwise unmodded game, only half-elves can be druid/mages and druid/rangers, and only gnomes can be druid/thieves. If you install the 'Eliminate Class/Race Restrictions and Most Class/Ability Score Restrictions' component, all races can select these classes.</p>
+      <p>Druid/mages cannot specialize in a school of magic, even if you have 'Allow Multi-Classed and Dual-Classed Mages to Become Specialists and Wild Mages' installed. They can, however, become elementalists if 'New Wizard Specializations: Elemental Specialists' and 'Allow Multi-Classed and Dual-Classed Mages to Become Specialists and Wild Mages' are both installed. Druid/Elementalists cannot use priest spells associated with their opposing element, and (if you are using Icewind Dale and/or 'Revised Druid Shapeshifting') cannot shapeshift into an elemental of the opposed type.</p>
+      <p>Druid/mages and druid/thieves must conform to the alignment restrictions of druids (i.e., they must be neutral, or must be at least partly neutral if you have installed an appropriate component). Druid/rangers must be at least partly neutral.</p>
+      <p>There are a couple of technical limitations to note: </p>
+      <ul>
+        <li>Multi-class druids use the spell and XP progression tables of clerics (even if you have not installed the 'Druids Use Cleric XP and Spell Tables' component.)</li>
+        <li>Druid/Rangers will be asked to select one too many mage spells to memorize at character creation. (The extra spells will be grayed out and uncastable; you can delete them from your memorized spells in-game.)</li>
+      </ul>
+      <p>('Under the hood', these limitations reflect the fact that technically these are all kits of the respective cleric multi-classes&mdash;but hopefully this should be pretty much invisible in game!)</p>
+      <p>This component automatically installs the contents of the <a href="#tidy-up-class">'Tidy Up Class-Selection Menu' component</a>, and makes use of the ToF revised sphere system, which is documented <a href="subdocuments_dw/spheres.html">here</a>.</p>
+    </div>
+    <div class="ribbon_rectangle_h3">
+      <h3><a name="multiclass-kit" id="multiclass-kit"></a>Multi-Classed/Dual-Classed Kits</h3>
+    </div>
+    <div class="ribbon_triangle_h3-l"></div>
+    <div class="ribbon_triangle_h3-r"></div>
+    <div class="section">
+      <p>These components introduce new kits for multi-classed characters, or for characters who dual-class. Each is (approximately) a combination of two single-classed kits, or of an unkitted class and a single-classed kit. There are about 70 of these kits (the exact number depends on other installation choices, and on whether you are playing IWD, BG, or BG2) and at least one is available for almost all multi-class combinations (currently fighter/mage/thief is the only exception).</p>
+      <p>Multi-classed characters can select these kits at character creation; unless otherwise noted, they are available to all races. Dual-classed characters must dual-class into these kits provided that their initial class and kit must match one or other part of the multi-classed kit. For instance, a wizard slayer or a priest of Helm can dual-class into a Magehunter of Helm (wizard slayer/priest of Helm), while an unkitted fighter or a priest of Lathander can dual-class into a Templar of Lathander (fighter/priest of Lathander). Dual-classing characters have to respect the alignment, ability and racial requirements of the kit.</p>
+      <p>Full documentation of all multi-classed kits introduced by Talents of Faer&ucirc;n can be found <a href="subdocuments_dw/multi-classed-kits.html">here.</a> </p>
+      <p>This component automatically installs the contents of the <a href="#tidy-up-class">'Tidy Up Class-Selection Menu' component</a>. Druid and cleric multi-class components also make use of the ToF revised sphere system, which is documented <a href="subdocuments_dw/spheres.html">here</a>.</p>
+      <p><strong>New Multi-Class/Dual-Class for Fighter/Clerics</strong></p>
+      <p>This component introduces 14 new kits for fighter/clerics:</p>
+      <ul>
+        <li>Axe of Clangeddin (fighter/priest of Clangeddin; dwarves only)</li>
+        <li>Battlerager of Clangeddin (berserker/priest of Clangeddin; dwarves only)</li>
+        <li>Berserker-Priest of Tempus (berserker/priest of Tempus)</li>
+        <li>Champion of Tyr (fighter/priest of Tyr)</li>
+        <li>Dark Knight of Bane (fighter/priest of Bane; IWD only)</li>
+        <li>Fury of Talos (barbarian/priest of Talos)</li>
+        <li>Guardian of Helm (fighter/priest of Helm)</li>
+        <li>Hammer of Moradin (fighter/priest of Moradin)</li>
+        <li>Knight of Iyachtu Xvim (fighter/priest of Iyachtu Xvim; BG/BG2 only)</li>
+        <li>Magehunter of Helm (wizard slayer/priest of Helm)</li>
+        <li>Raging Flame of Kossuth (berserker/priest of Kossuth)</li>
+        <li>Sword of Sel&ucirc;ne (kensai/priest of Sel&ucirc;ne)</li>
+        <li>Templar of Lathander (fighter/priest of Lathander)</li>
+        <li>Wrathful Spear of Gruumsh (barbarian/priest of Gruumsh; half-orcs only)</li>
+      </ul>
+      <p>On a BG install, Yeslick becomes an Axe of Clangeddin.</p>
+      <p>The Dark Knight of Bane and the Knight of Iyachtu Xvim are mechanically identical. This component requires you to be using the Icewind Dale arcane and divine spells (either because you are playing IWD:EE, or because you have them installed) and the 'Add Nine New Arcane Spells' and 'Add Six New Divine Spells' components of ToF.</p>
+      <p><strong>New Multi-Class/Dual-Class for Fighter/Druids</strong></p>
+      <p>This component introduces two new kits for fighter/druids: the Totemic Shaman (barbarian/totemic druid) and the Raging Shifter (berserker/shapeshifter).</p>
+      <p><strong>New Multi-Class/Dual-Class for Fighter/Mages</strong></p>
+      <p>This component introduces up to 11 new kits for fighter/mages. The component always includes these kits:</p>
+      <ul>
+        <li>Abjurant Defender (abjurer/dwarven defender; dwarves only)</li>
+        <li>Barbarian/Transmuter</li>
+        <li>Berserker/Invoker</li>
+        <li>Berserker/Wild Mage</li>
+        <li>Kensai/Enchanter</li>
+        <li>Kensai/Illusionist</li>
+      </ul>
+      <p>If you have installed the 'New Wizard Specializations: Elemental Specialists' component, the component also includes the Barbarian/Elementalist kits (four versions). If you have installed the 'New Wizard Specialization: Force Mage' component, the component also includes the Kensai/Force Mage kit.</p>
+      <p><strong>New Multi-Class/Dual-Class for Fighter/Thieves</strong></p>
+      <p>This component introduces three new kits for fighter/thieves:</p>
+      <ul>
+        <li>Fighter/Assassin</li>
+        <li>Magetracker (Wizard Slayer/Bounty Hunter)</li>
+        <li>Silent Sword (Kensai/Thief)</li>
+      </ul>
+      <p><strong>New Multi-Class/Dual-Class for Cleric/Mages</strong></p>
+      <p>This component introduces up to 26 new kits for cleric/mages. The component always includes these kits:</p>
+      <ul>
+        <li>Abjurer of Ilmater</li>
+        <li>Abjurer of Mystra</li>
+        <li>Conjurer of Azuth</li>
+        <li>Conjurer of Bane (IWD only)</li>
+        <li>Conjurer of Iyachtu Xvim (BG/BG2 only)</li>
+        <li>Diviner of Oghma</li>
+        <li>Diviner of Sel&ucirc;ne</li>
+        <li>Enchanter of Sune</li>
+        <li>Enchanter of Cyric (BG/BG2 only)</li>
+        <li>Illusionist of Azuth</li>
+        <li>Illusionist of Baervan (elves/half-elves/gnomes only)</li>
+        <li>Illusionist of Shar</li>
+        <li>Invoker of Lathander</li>
+        <li>Invoker of Talos</li>
+        <li>Necromancer of Velsharoon (BG/BG2 only)</li>
+        <li>Necromancer of Talona (BG/BG2 only)</li>
+        <li>Transmuter of Mystra</li>
+        <li>Transmuter of Sel&ucirc;ne</li>
+        <li>Wild Mage of Mystra</li>
+      </ul>
+      <p>If you have installed the 'New Wizard Specializations: Elemental Specialists' component, the following are also available: </p>
+      <ul>
+        <li>Air Elementalist of Baervan (elves/half-elves/gnomes only)</li>
+        <li>Air Elementalist of Talos</li>
+        <li>Earth Elementalist of Moradin (dwarves only)</li>
+        <li>Fire Elementalist of Kossuth</li>
+        <li>Fire Elementalist of Sune</li>
+        <li>Water Elementalist of Auril (BG/BG2 only)</li>
+        <li>Water Elementalist of Umberlee (IWD only)</li>
+      </ul>
+      <p>If you have installed the 'New Wizard Specialization: Force Mage' component, the Force Mage of Mystra is also available. </p>
+      <p>The conjurer of Bane and the conjurer of Iyachtu Xvim are game-mechanically identical. Multi-class clerics of Auril and Talona are disabled by default on IWD (as is a hidden 'necromancer of Myrkul'), and multi-class clerics of Umberlee are disabled by default on BG/BG2, because having a cleric of these gods in your party causes problems with the plot. If you want to ignore this and play one anyway, you can reactivate them via the ini.</p>
+      <p>This component requires you to be using the Icewind Dale arcane and divine spells (either because you are playing IWD:EE, or because you have them installed) and the 'Add Nine New Arcane Spells' and 'Add Six New Divine Spells' components of ToF.</p>
+      <p>On BG2 installs, Aerie becomes an air elementalist of Baervan. On BG installs, Quayle becomes an illusionist of Baervan.</p>
+      <p><strong>New Multi-Class/Dual-Class for Cleric/Rangers and Druid/Rangers</strong></p>
+      <p> This component introduces up to six new kits for cleric/rangers: </p>
+      <ul>
+        <li>Forester of Baervan (Archer/Priest of Baervan; gnomes/elves/half-elves only)</li>
+        <li>Hunter of Sel&ucirc;ne (Ranger/Priest of Sel&ucirc;ne) </li>
+        <li>Nightstalker of Malar (Stalker/Priest of Malar)</li>
+        <li>Scout of Corellon (Stalker/Priest of Corellon; elves/half-elves only)</li>
+      </ul>
+      <p>If you have installed the 'Druids May Multi-Class as Mages, Rangers, and Thieves' component, this component also adds one new kit for druid/rangers, the Night Wolf (stalker/shapeshifter). Druids and rangers cannot dual-class as druid/rangers and so cannot dual-class into a druid/ranger kit.</p>
+      <p>This component requires you to be using the Icewind Dale arcane and divine spells (either because you are playing IWD:EE, or because you have them installed) and the 'Add Nine New Arcane Spells' and 'Add Six New Divine Spells' components of ToF.</p>
+      <p><strong>New Multi-Class/Dual-Class for Cleric/Thieves and Druid/Thieves</strong></p>
+      <p> This component introduces six new kits for cleric/thieves: </p>
+      <ul>
+        <li>Assassin of Talona (BG/BG2 only)</li>
+        <li>Assassin of Bhaal (IWD only)</li>
+        <li>Assassin of Cyric (BG/BG2 only)</li>
+        <li>Bounty Hunter of Malar</li>
+        <li>Swashbuckler of Sune</li>
+        <li>Thief of Mask</li>
+        <li>Thief of Tymora</li>
+      </ul>
+      <p>If you have installed the 'Druids May Multi-Class as Mages, Rangers, and Thieves' component, this component also adds one new kit for druid/thieves, the Silent Avenger (avenger/assassin). Druids and rangers cannot dual-class as druid/rangers and so cannot dual-class into a druid/ranger kit.</p>
+      <p>The assassin of Bhaal is game-mechanically nearly identical to the assassin of Cyric. The assassin of Talona is disabled by default on Icewind Dale installs because having a priest of Talona in your party would break the story. If you want to ignore this and play one anyway, you can re-enable the kit via the ini.</p>
+      <p> On a BG install, Tiax becomes an assassin of Cyric.</p>
+      <p>This component requires you to be using the Icewind Dale arcane and divine spells (either because you are playing IWD:EE, or because you have them installed) and the 'Add Nine New Arcane Spells' and 'Add Six New Divine Spells' components of ToF.</p>
+      <p><strong>New Multi-Class/Dual-Class for Mage/Thieves</strong></p>
+      <p> This component introduces three new kits for mage/thieves: </p>
+      <ul>
+        <li>Enchanter/Swashbuckler</li>
+        <li>Illusionist/Assassin</li>
+        <li>Invoker/Assassin</li>
+      </ul>
+      <p><strong>New Multi-Class Kits for Fighter/Mage/Clerics</strong></p>
+      <p> This component introduces three new kits for fighter/mage/clerics: </p>
+      <ul>
+        <li>Adventurer of Tymora (Fighter/Enchanter/Priest of Tymora)</li>
+        <li>Guardian of Corellon (Kensai/Mage/Priest of Corellon; elves/half-elves only)</li>
+        <li>Polymath of Mystra (Fighter/Invoker/Priest of Mystra)</li>
+      </ul>
+      <p>This component requires you to be using the Icewind Dale arcane and divine spells (either because you are playing IWD:EE, or because you have them installed) and the 'add new arcane (wizard) spells' and 'add new divine (priest) spells' components of ToF. </p>
+    </div>
+    <div class="ribbon_rectangle_h3">
+      <h3><a name="hla-feat" id="hla-feat"></a>Revised and New High-Level and Lower-Level Abilities</h3>
+    </div>
+    <div class="ribbon_triangle_h3-l"></div>
+    <div class="ribbon_triangle_h3-r"></div>
+    <div class="section">
+      <p><strong>Characters Choose Minor New Abilities Every Three Levels</strong></p>
+      <p>This component is based on the 'feats' system in Icewind Dale II (and in 3rd edition D&amp;D). At 2nd level, and every three levels thereafter, a character chooses a special ability from a list. For instance: a character might gain a bonus to some saving throws or damage rolls, an extra use of a special ability, the ability to brew potions or scribe scrolls, or a new spell slot. The abilities are intended to be modest rather than dramatic, though I welcome feedback. The full list of special abilities can be seen <a href="subdocuments_dw/feats.html">here</a>.</p>
+      <p>Abilities are selected during the leveling process using a similar interface to the one used for High-Level Abilities in Baldur's Gate II. If you are playing Baldur's Gate II, the ability system merges into the High-Level Ability system when you become eligible for High-Level Abilities; normal abilities remain available as alternatives to High-Level Abilities as you continue to level.</p>
+      <p>Multi-classed and dual-classed characters gain abilities only according to their highest level.</p>
+      <p><strong>Revised High-Level Ability system<br />
+        </strong><em>Only available for BG2EE, EET</em></p>
+      <p>This component substantially revises and expands the High-Level Abilities (HLAs) granted to characters every level after reaching 3 million XP. The existing set of 46 HLAs is expanded to (depending on how you count them) 187 HLAs, of which: </p>
+      <ul>
+        <li>41 are retained from the unmodded game (although several are modified)</li>
+        <li>46 are adapted from the classic <em>Refinements</em> mod by T.G.Maestro, Littiz and the bigg, and used under the bigg's generous blanket permission for modders to adapt and use Refinements' contents</li>
+        <li>8 are adapted from the classic <em>Rogue Rebalancing</em> mod by aVENGER and used under that mod's Creative Commons 3.0 license</li>
+        <li>92 are original to Talents of Faer&ucirc;n (though in many cases inspired by other sources)</li>
+      </ul>
+      Full documentation for the revised HLA system can be found <a href="subdocuments_dw/hlas.html">here</a>.
+      <p><strong>Improved <acronym title="Non-Player Character">NPC</acronym> Customization and Management</strong><strong><br />
+        </strong><em>Not available for IWDEE</em></p>
+      <p>This component makes it much easier to customize <acronym
+title="Non-Player Characters">NPCs</acronym> and to make sure they keep up with your main character even if you swap them in and out of the group. When it is installed, NPCs (including mod-added NPCs) join your party at level zero. If you want, you can activate a special 'customize' power on their innate abilities to change their class and kit to whatever you like. After that, you can level the character to first level and choose their proficiencies, skills and the like. The character will continue leveling until they reach about the same level as your character. (The 'customize' power is unavailable once you increase above level zero.) </p>
+      If you kick the NPC out of the party and subsequently re-recruit them, they will again start leveling until they reach about your character's level. (To be more precise: they are given that level which they would have if they had as much XP as you do; they get given exactly the right amount of XP to reach that level.)
+      <p>(This component is identical to the equivalent component in Sword Coast Stratagems; it is included here because if you are using the Feat system, you may wish to start your characters at first level so that they gain feats properly.)</p>
+      <p>Engine limitations lead to some slight awkwardness with this component. Firstly, mages and bards have their spellbooks selected from a fixed list (you don't get to choose yourself). Secondly, if you have the Party AI disabled, you may occasionally notice minor glitches in the amount of experience your characters receive (this will be most noticeable if you use the customize program to change a character's class). Turning AI back on (even if only briefly) will resolve this (though it is possible to get a slightly-too-high level character if you change from single-class to multi-class and then level without AI on). Thirdly, a few NPCs in the game have illegal statistics (for instance, Coran has three proficiencies in bows); these will be lost if you use this component. Fourthly, wild mages will have to save and reload in order to get their special spells (Chaos Shield and the like.) Finally, it is not possible to let rangers choose their favored enemy.</p>
+      <p>The component should be able to allow for other mods that let humans multi-class, non-humans dual-class, and multi-class characters select kits. However, it is incompatible with any mod (notably the component of Tweaks Anthology) that removes the ability to dual-class from humans&mdash;basically because the component doesn't know what to do with the existing dual-classed humans in the game, like Imoen.</p>
+      <p>Some NPCs are only partially affected by this component: notably, Wilson the bear and the joinable vampire in BG2EE cannot be customized; nor can the sorcerer added in Baldur's Gate and the aasimar in Siege of Dragonspear.</p>
+      <p>This component makes very extensive use of features of the Enhanced Edition game engine, and so is not (and never will be) available for original BG/BG2.</p>
+      <p><b>Important note:</b> Dual-classed NPCs begin at level zero in their original class; you level them until they can't level any more, then dual-class them, then level them again. <b>Do not</b> delay dual-classing them&mdash;it is likely to break the game. (If you want to adventure with them in their original class, just respec them to that class.)</p>
+    </div>
+    <div class="ribbon_rectangle_h3">
+      <h3><a name="rules" id="rules"></a>Rules Changes</h3>
+    </div>
+    <div class="ribbon_triangle_h3-l"></div>
+    <div class="ribbon_triangle_h3-r"></div>
+    <div class="section">
+      <p><strong>Revised Ability Scores</strong></p>
+      <p>This component revises the effects of your character's ability scores to make their bonuses a bit more uniform and intelligible, and to make some of them more useful. The modifications are based on 3rd edition D&amp;D; you can choose between a 'custom' version (recommended) and a strict 3rd edition version.</p>
+      <p>The effects of your ability scores are now as follows: </p>
+      <ul>
+        <li><b>Strength</b>: Still affects melee and thrown weapon attack and damage rolls, your chance of breaking a door or gate, and your carrying capacity. <em>Exceptional strength is removed.</em> </li>
+        <li><b>Dexterity</b>: Now affects saving throws vs. Wands and Breath Weapons. Still affects armor class, attack rolls with thrown and missile weapons, and initiative.</li>
+        <li><b>Constitution</b>: Now affects saving throws vs. Poison and Paralysis. Still affects hit points (the variable fighter/non-fighter effect has been removed).</li>
+        <li><b>Intelligence</b>: Now affects maximum number of memorizable spells for wizards. Still affects chance of learning arcane spells from scrolls.</li>
+        <li><b>Wisdom</b>: Now affects number of spell slots for shamans, and saving throws vs. Spell. Still affects maximum number of memorizable spells for priests.</li>
+        <li><b>Charisma</b>: Affects maximum number of memorizable spells for bards and number of spell slots for sorcerers and favored souls, the effective level of a cleric or paladin turning the undead, and (still) also the price you are charged in stores. Paladins receive an additional bonus to their saving throws based on Charisma.</li>
+      </ul>
+      <p>Bonuses and penalties to attack rolls, hit points, armor class, and saving throws now use a common set of modifiers. (The change to a cleric or paladin's level for turning undead is half this modifier.) For ability scores between 1-18, that system is the same in both versions: </p>
+      <table summary="Ability score modifiers (value 1-18)">
+        <tr>
+          <th>Ability score value</th>
+          <th>Bonus/Penalty</th>
+        </tr>
+        <tr>
+          <td>1 </td>
+          <td>-5 </td>
+        </tr>
+        <tr>
+          <td>2-3</td>
+          <td>-4 </td>
+        </tr>
+        <tr> </tr>
+        <tr>
+          <td>4-5</td>
+          <td>-3 </td>
+        </tr>
+        <tr> </tr>
+        <tr>
+          <td>6-7</td>
+          <td>-2 </td>
+        </tr>
+        <tr> </tr>
+        <tr>
+          <td>8-9</td>
+          <td>-1 </td>
+        </tr>
+        <tr> </tr>
+        <tr>
+          <td>10-11</td>
+          <td>0 </td>
+        </tr>
+        <tr>
+          <td>12-13</td>
+          <td>+1 </td>
+        </tr>
+        <tr>
+          <td>14-15</td>
+          <td>+2 </td>
+        </tr>
+        <tr>
+          <td>16-17</td>
+          <td>+3 </td>
+        </tr>
+        <tr>
+          <td>18</td>
+          <td>+4 </td>
+        </tr>
+        <tr> </tr>
+      </table>
+      <p>For ability scores of 19+, the two systems diverge: the custom system increases more quickly than the 3rd edition system. (This reflects the fact that ability score bonuses above 18 are harder to come by in AD            &amp;D&mdash;and in the IE games&mdash;than in 3rd edition D&amp;D.) </p>
+      <table summary="Ability score modifiers (value 19+)">
+        <tr>
+          <th>Ability score value</th>
+          <th>Bonus (custom system)</th>
+          <th>Bonus (3e system)</th>
+        </tr>
+        <tr>
+          <td>19 </td>
+          <td>+5</td>
+          <td>+4</td>
+        </tr>
+        <tr>
+          <td>20</td>
+          <td>+6 </td>
+          <td>+5</td>
+        </tr>
+        <tr> </tr>
+        <tr>
+          <td>21</td>
+          <td>+7</td>
+          <td>+5</td>
+        </tr>
+        <tr>
+          <td>22</td>
+          <td>+8</td>
+          <td>+6</td>
+        </tr>
+        <tr>
+          <td>23</td>
+          <td>+9</td>
+          <td>+6</td>
+        </tr>
+        <tr>
+          <td>24</td>
+          <td>+10</td>
+          <td>+7</td>
+        </tr>
+        <tr>
+          <td>25</td>
+          <td>+11</td>
+          <td>+7</td>
+        </tr>
+        <tr> </tr>
+      </table>
+      <p>The table for spellcasters' bonus spells also depends on the version of this component you choose, with the custom version scaling more quickly for ability scores of 15+: </p>
+      <table summary="Bonus spells">
+        <tr>
+          <th>Ability score value</th>
+          <th>Bonus spells (custom system)</th>
+          <th>Bonus spells (3e system)</th>
+        </tr>
+        <tr>
+          <td>11 or less</td>
+          <td colspan="2">none</td>
+        </tr>
+        <tr>
+          <td>12-13</td>
+          <td colspan="2">+1 first-level spell</td>
+        </tr>
+        <tr>
+          <td>14</td>
+          <td colspan="2">+1 spell at levels 1-2</td>
+        </tr>
+        <tr>
+          <td>15</td>
+          <td>+1 spell at levels 1-3</td>
+          <td>+1 spell at levels 1-2</td>
+        </tr>
+        <tr>
+          <td>16</td>
+          <td>+1 spell at levels 1-4</td>
+          <td>+1 spell at levels 1-3</td>
+        </tr>
+        <tr>
+          <td>17</td>
+          <td>+2 spells at level 1, +1 spell at levels 2-5</td>
+          <td>+1 spell at levels 1-3</td>
+        </tr>
+        <tr>
+          <td>18</td>
+          <td>+2 spells at level 1-2, +1 spell at levels 3-6</td>
+          <td>+1 spell at levels 1-4</td>
+        </tr>
+        <tr>
+          <td>19</td>
+          <td>+2 spells at level 1-3, +1 spell at levels 4-7</td>
+          <td>+1 spell at levels 1-4</td>
+        </tr>
+        <tr>
+          <td>20</td>
+          <td>+2 spells at level 1-4, +1 spell at levels 5-8</td>
+          <td>+2 spells at level 1, +1 spell at levels 2-5</td>
+        </tr>
+        <tr>
+          <td>21+</td>
+          <td>+3 spells at level 1, +2 spells at level 2-5, +1 spell at levels 6-9</td>
+          <td>+2 spells at level 1, +1 spell at levels 2-5</td>
+        </tr>
+        <tr></tr>
+      </table>
+      <p>The component also changes a few other rules, to fit better with this revised system: </p>
+      <ul>
+        <li>Base saving throws are slightly weakened, to compensate for the bonuses gained by high ability scores.</li>
+        <li>Gnomes, halflings and dwarves now receive a flat saving throw bonus (+2 in each case) instead of a Constitution-dependent bonus.</li>
+        <li>If you are using the low-level abilities component, a new ability, Force of Personality, is available; this allows a character to use their Charisma bonus in place of their Wisdom bonus for saves vs. spells.</li>
+      </ul>
+      <p>For technical reasons, wizards and bards will not be able to learn any bonus spells during character creation, and sorcerers, shamans and favored souls will not receive their bonus spells until the first time they rest.</p>
+      <p><strong>Point-Buy System for Choosing Ability Scores</strong></p>
+      <p>This component replaces the default random-roll-based system for choosing ability scores with a point-buy system: you have a fixed number of points (75,80,85,90,or a randomly determined number depending on which version of the component you install) and your ability scores all start with values of 10 (or the minimum allowed, whichever is higher), modified by your class, kit and race choices. (Exception: if you are eligible for exceptional strength, your Strength begins at 18, so you can see immediately what your (randomly rolled) exceptional Strength is.)</p>
+      <p>(Really, the default system is also point-based; it's just that the total number of points is random and you start with your points all randomly allocated. The 'randomly determined number' version of the mod is equivalent to the standard system, just with the convenience of having your ability scores all preset to 10.)</p>
+      <p><strong>3rd-Edition-Style THAC0s (somewhat faster progression for clerics/thieves/mages)</strong></p>
+      <p> This component, inspired by D&amp;D 3rd edition, changes the formula for THAC0 to something a bit more generous, especially for non-fighters.</p>
+      <p>Old formula: </p>
+      <ul>
+        <li>Warriors: THAC0 = 20 - (level - 1); minimum 0</li>
+        <li>Priests: THAC0 starts at 20 and decreases by 2 every 3 levels thereafter - so roughly, THAC0 = 20 - (level - 1) x2/3; minimum 6</li>
+        <li>Rogues: THAC0 = 20 - (level - 1)/2; minimum 10</li>
+        <li>Mages: THAC0 = 20 - (level - 1)/3; minimum 13</li>
+      </ul>
+      <p>New formula: </p>
+      <ul>
+        <li>Warriors: THAC0 = 20 - level; minimum 0</li>
+        <li>Priests/Rogues: THAC0 = 20 - level x 3/4; minimum 2</li>
+        <li>Mages: THAC0 = 20 - level/2; minimum 5</li>
+      </ul>
+      <!--
+	<p><strong>3rd-edition-style Armor Class and attack rolls</strong></p>
+	<p>This component shifts the core attack-roll and Armor Class mechanic over to (something fairly close to) D&D 3rd edition, as used in Icewind Dale II. It works like this:
+<ol>
+<li>Instead of each character having a THAC0 that starts at 20 and decreases as they level, characters now have an attack bonus that starts at +0 and increases as they level.</li>
+<li>Instead of AC starting at 10 and decreasing as it gets better, AC now starts at 10 and increases as it gets better. (So AC 25 translates to old-style AC -5).</li>
+<li>When attacking, you no longer roll a d20, add any bonuses, and compare it to your THAC0 to see what AC you've hit. Instead, you roll d20, add your attack bonus, add any other bonuses, and the result is the AC that you hit.</li>
+<li>There are four types of AC bonus: Armor bonuses, Shield bonuses, Deflection bonuses, and Untyped bonuses. You can benefit from any number of Untyped bonuses, but only one of each other type of bonus.</li>
+</ol>
+</p>
+<p>This is a <em>purely cosmetic</em> change to the system. The underlying mathematics is unchanged, it's just presented differently. (The component doesn't alter anything except the UI and item descriptions.) Engine limitations mean that the attack rolls displayed in the text window will not include your attack bonus. (But then, they didn't previously include any information about your THAC0, so nothing really changes here.)
+</p>	
+<p><strong>3rd-edition-style rules for combining armor bonuses</strong></p>
+<p><em>Requires '3rd-edition-style Armor Class and attack rolls'</em></p>
+<p>In the unmodded game, certain magic items (all magic suits of armor, and those other items which I mark as having 'deflection' bonuses) can't be used together&mdash;for instance, you can't combine a Ring of Protection and a suit of magic plate mail. This component alters the rules so that items with deflection bonuses can be used with armor, again consistently with Icewind Dale II and 3rd edition D&D. It also changes the text displayed when you try to wear two deflection-bonus items to make the rule clearer.</p>
+<p>There is a functionally identical component in Tweaks Anthology, though it doesn't use the 3rd-edition terminology I use here.</p>
+<p><strong>Revised Saving Throws</strong></p>
+<p>
+This component substantially revises the saving throw system, again in line with 3rd edition D&D (and with Icewind Dale II). The five saving throws are compressed into three:
+<ul>
+<li><b>Fortitude saving throws</b> represent the ability to shrug off or disregard debilitating effects, ailments or spells. If you are using the revised ability score component, Constitution modifies Reflex saves.</li>
+<li><b>Reflex saving throws</b> represent the ability to dodge or leap away from attacks. <em>Helpless characters automatically fail Reflex saves.</em> If you are using the revised ability score component, Dexterity modifies Reflex saves.</li>
+<li><b>Will saving throws</b> represent the ability to resist effects that attack the mind, or to resist magical effects through force of will. If you are using the revised ability score component, Wisdom modifies Reflex saves.</li>
+</ul>
+</p>
+<p>Spells and effects are assigned to appropriate saving throws. For instance, Fireball requires a Reflex save; Horrid Wilting requires a Fortitude save; Holy Smite requires a Will save. In general:
+<ul>
+<li>Disease, poison, death-magic, petrification, polymorph and disintegrate effects require Fortitude saves, as do most necromantic effects.</li>
+<li>Other damage-doing effects require Reflex saves.</li>
+<li>Anything else requires a Will save.</li>
+</ul>
+There are, however, a number of exceptions. (All in-game documentation has been updated to track the new save types.)</p>
+<p>Evasion, if you are using it (either because you are playing Icewind Dale or via this mod's component) now allows a character to avoid all damage when making a Reflex save for half damage. So a character can Evade a fireball or a dragon's breath weapon, but not a Holy Smite or Horrid Wilting spell.)</p> 
+-->
+      <p><a name="no-int-based-spell-restrictions" id="no-int-based-spell-restrictions"></a><strong>Remove Intelligence-Based Restrictions on Number and Level of Learnable Spells</strong></p>
+      <p>This component removes restrictions on the maximum level of spells a mage (or bard) character can learn, and the maximum number of spells they can learn at each level. The UI is edited to remove any reference to these restrictions.</p>
+      <p>In addition, the 'erase' button is removed from the spellbook, since the intended reason to erase spells is to make room for new ones and there is no longer a capacity limit.</p>
+      <p><strong>Cleric/Rangers can Become Proficient with Bows</strong></p>
+      <p>This component grants Cleric/Rangers the ability to put up to two points into proficiency in shortbows and longbows. (It is obsolete if you install the 'Revised Weapon Proficiency System'.) </p>
+      <p><strong>Wider Access to Grand Mastery</strong></p>
+      <p>This component permits warriors other than single-class fighters to achieve Grand Mastery (five slots) in their usable weapons. There are three versions: allow multi-classed fighters to achieve grand mastery; allow paladins and single-classed rangers to achieve grand mastery; allow all warriors, single and multi-classed, to achieve grand mastery.</p>
+      <p><strong>Dual-Class Kitted Characters Must Obey the Weapon-Proficiency Restrictions of Their Kit</strong></p>
+      <p>In the unmodded game, characters with a kit who dual-class are no longer bound by any restrictions their kit places on their weapon proficiencies (though they are bound by any item-usability requirements). This component enforces kit-based proficiency restrictions even on dual-classed characters.</p>
+      <p><strong>Dual-Class Characters Gain Weapon Proficiencies as for Their Current Class</strong></p>
+      <p>In the unmodded game, a character who dual-classes and then regains their original class can add weapon proficiencies according to the rules for their old class (so that a fighter who dual-classes as a mage can continue to improve their training with the sword). This component prohibits this: proficiencies continue to obey the rules of your current class.</p>
+      <p><strong>Revised Weapon Proficiency System</strong></p>
+      <p>This component significantly revises the system for weapon proficiency and weapon use (somewhat inspired by 3rd edition D&amp;D). The core changes are:</p>
+      <ul>
+        <li>All weapons are usable by all characters. (Exception: monks can't use two-handed weapons, unless you installed the component that permits them to.)</li>
+        <li>Characters begin with a number of weapon proficiencies: roughly, they begin proficient in any weapon that they could use previously. So fighters begin proficient in all weapons; clerics begin proficient in blunt weapons, and so forth. (Fighter multi-classes are somewhat restricted compared to single-class fighters.) In addition, most classes can use crossbows and daggers.</li>
+        <li>Dwarves and elves also gain proficiency with certain weapons: axes and hammers for dwarves; bows and longswords for elves.</li>
+        <li>If you are using the cleric kits introduced by Talents of Faer&ucirc;n, clerics receive a bonus weapon proficiency point in the favored weapon of their deity.</li>
+        <li>All characters can at least become Specialized (two slots) with all weapons, and can specialize in any fighting style (other than weapon/shield, for characters who can't use shields). Characters who could already become Specialized improve their maximum achievable level by one slot.</li>
+        <li>Characters receive fewer proficiency points at first level: single-classed fighters receive two, multi-classed fighters, rangers, and paladins receive one, and all other classes receive none.</li>
+        <li>A few other kits are modified to allow for these changes: for instance, blades and swashbucklers receive proficiency in two-weapon fighting style for free at first level, and swashbucklers receive a bonus proficiency slot.</li>
+      </ul>
+      <p>The various changes are fairly thoroughly documented in-game. </p>
+    </div>
+    <div class="ribbon_rectangle_h3">
+      <h3><a name="ui" id="ui"></a>User Interface Tweaks</h3>
+    </div>
+    <div class="ribbon_triangle_h3-l"></div>
+    <div class="ribbon_triangle_h3-r"></div>
+    <div class="section">
+      <p><a name="tidy-up-class" id="tidy-up-class"></a><strong>Tidy Up Class-Selection Menu</strong></p>
+      <p>This component makes a number of (cosmetic) tweaks to the class-selection menu in character generation: </p>
+      <ul>
+        <li>Classes are presented in alphabetical order (as defined by the language in which you are playing the game).</li>
+        <li>Blackguard is now presented as a class in its own right, not as a paladin kit.</li>
+        <li>Multi-class choices, and choice of mage specialization, are presented as submenus rather than mixed into the main class/kit lists.</li>
+      </ul>
+      <p>These changes are largely intended to make the class-selection screen less messy when a larger number of classes or kits are available. Many other components install this component automatically; you will only be offered it as an install choice if you have not already installed its contents via another component.</p>
+      <p><a name="thief-skill-points" id="thief-skill-points"></a><strong>Thieves Assign Skill Points in Multiples of Five</strong></p>
+      <p>This component edits the user interface so that thief skill points are spent in multiples of five. This is purely a convenience tweak: there is no real reason to spend skill points in smaller increments and it can be tedious to have to do so. </p>
+    </div>
+    <div class="ribbon_rectangle_h2">
+      <h2> <a name="customization" id="customization"></a>Customization Options </h2>
+    </div>
+    <div class="ribbon_triangle_h2-l"></div>
+    <div class="ribbon_triangle_h2-r"></div>
+    <div class="section">
+      <p>The file &quot;dw_talents.ini&quot;, found in the dw_talents directory, allows fine-tuning of install options not available via the main installer. To do this, just edit the file in Notepad or another text editor. Each line consists of a configuration option, then '=', then a number (or in one case a string). The only thing you should edit is the number (or string). These changes need to be made before you install the mod. None of these changes are officially supported and they may have unintended consequences. Hopefully the names make most self-explanatory.</p>
+    </div>
+    <div class="ribbon_rectangle_h2">
+      <h2><a name="acknow" id="acknow"></a>Acknowledgements</h2>
+    </div>
+    <div class="ribbon_triangle_h2-l"></div>
+    <div class="ribbon_triangle_h2-r"></div>
+    <div class="section">
+      <ul>
+        <li>The Icewind Dale spells are a joint project between myself and Pete Camagna (&quot;CamDawg&quot;).</li>
+        <li>The new divine spells (with the exception of Fiendish Warding, which is just a cosmetic rename of Shield of the Archons) are borrowed from the Divine Remix mod at Gibberlings Three; thanks again to CamDawg for permission.</li>
+        <li>Many of the new thief and bard High-Level Abilities are adapted from the 'Rogue Rebalancing' mod by Avenger_RR, and are used under that mod's Creative Commons license; thanks to Avenger_RR for his generosity in allowing others to reuse his work.</li>
+        <li>Many more High-Level abilities are adapted from the 'Refinements' mod by T.G.Maestro, Littiz and the bigg; thanks to the bigg for generously giving the community permission to adapt and reuse material from Refinements.</li>
+        <li>The new arcane spells are inspired by the following sources:
+          <ul>
+            <li><em>Combust</em>: from <a href="https://www.drivethrurpg.com/product/16807/FR6-Dreams-of-the-Red-Wizards-1e"><em>Dreams of the Red Wizards</em></a> (TSR, 1988), by Steve Perrin, and the <a href="https://www.drivethrurpg.com/product/28314/Spell-Compendium-35"><em>Spell Compendium</em></a> (Wizards of the Coast, 2005), by Matthew Sernett, Jeff Grubb, and Mike McArtor.</li>
+            <li><em>Ice Knife</em>: from <a href="https://www.drivethrurpg.com/product/17334/Oriental-Adventures-1e"><em>Oriental Adventures</em></a> (TSR, 1985), by Gary Gygax, David Cook, and Francois Marcela-Froideval, and the <em>Spell Compendium</em>, <em>ibid.</em></li>
+            <li><em>Stonefist</em> and <em>Stormbolts</em>: from <a href="https://paizo.com/products/btq022bc"><em>Pathfinder Advanced Players' Guide</em></a> (Paizo, 2010), by Jason Bulmahn and others.</li>
+            <li><em>Turn Pebble to Boulder</em>: from the <a href="https://www.drivethrurpg.com/product/17391/Tome-of-Magic-2e"><em>Tome of Magic</em></a> (TSR, 1991), by David Cook, Nigel Findlay, Anthony Herring, Christopher Kubasik, Carl Sargent, and Rick Swan.</li>
+            <li><em>Veridon's Icy Ray</em>: inspired by <em>Polar Ray</em> from <a href="https://www.drivethrurpg.com/product/148008/Players-Handbook-35?manufacturers_id=44&amp;filters=44827_0_0_0_0"><em>Player's Handbook v 3.5</em></a> (Wizards of the Coast, 2003), by Jonathan Tweet, Monte Cook, and Skip Williams, and by Veridon, from <a href="https://www.drivethrurpg.com/product/17546/Netheril-Empire-of-Magic-2e?manufacturers_id=44&amp;filters=44827_0_0_0_0"><em>Netheril: Empire of Magic</em></a> (TSR, 1996), by Jim Butler.</li>
+          </ul>
+        </li>
+        <li>Material for the various additional gods for clerics is drawn from too many Forgotten Realms sources to mention, but chiefly from <a href="https://www.drivethrurpg.com/product/17569/Faiths--Avatars-2e?term=faiths+and+avatars+&amp;filters=44827_0_0_0_0&amp;manufacturers_id=44"><em>Faiths and Avatars</em></a> (TSR, 1996), by Julia Martin with Eric L. Boyd.</li>
+        <li>The Favored Soul class was inspired by <a href="https://www.drivethrurpg.com/product/28308/Complete-Divine-35?manufacturers_id=44&amp;filters=44827_0_0_0_0"><em>Complete Divine</em></a> (Wizards of the Coast, 2004) by David Noonan.</li>
+        <li>The Elementalist speciality mages are inspired by <em>Tome of Magic</em>, <em>ibid.</em></li>
+        <li>The sorcerer bloodlines are inspired by<a href="https://paizo.com/products/btq01zp3"><em>Pathfinder Core Rulebook</em></a> (Paizo, 2009), by Jason Bulmahn and others.</li>
+        <li>The Bloodrager kit is inspired by the Bloodrager class from <a href="https://paizo.com/products/btpy978v?Pathfinder-Roleplaying-Game-Advanced-Class-Guide"><em>Pathfinder Advanced Class Guide</em></a> (Paizo, 2014), by Jason Bulmahn and others.</li>
+        <li>Militant wizards are inspired by the kit of the same name from <a href="https://www.drivethrurpg.com/product/16889/PHBR4-The-Complete-Wizards-Handbook-2e?manufacturers_id=44&amp;filters=44827_0_0_0_0"><em>The Complete Wizard's Handbook</em></a> (TSR, 1990), by Rick Swan.</li>
+        <li>I'm also grateful to the following:</li>
+        <ul>
+          <li>For the game itself, and its Enhanced Editions: Bioware, Black Isle, and Beamdog</li>
+          <li>For Icewind Dale II: Black Isle.</li>
+          <li>For hosting: Gibberlings Three, and especially CamDawg and Kat Bella (&quot;TheAceFes&quot;) </li>
+          <li>For tools: Westley Weimer, Valerio Biggiani (&quot;the bigg&quot;), and Fredrik Lindgren (&quot;Wisp&quot;) for WEIDU; Jon Hauglid, devSin, argent77, and others (for Near Infinity)</li>
+          <li>For information about the game; Ascension64, for TobEx; the various contributors to the <a
+href="https://gibberlings3.github.io/iesdp/">Infinity Engine Structure Description Project</a> </li>
+          <li>For many insightful comments about the Infinity Engine kit system: SubtleDoctor.</li>
+		  <li>For proofreading this readme and cleaning up my execrable HTML: CamDawg.</li>
+          <li>For patience: Hannah Wallace</li>
+          <li>For impatience: Leo Wallace and Maia Wallace</li>
+        </ul>
+      </ul>
+    </div>
+    <div class="ribbon_rectangle_h2">
+      <h2><a name="copy" id="copy"></a>Copyright Information</h2>
+    </div>
+    <div class="ribbon_triangle_h2-l"></div>
+    <div class="ribbon_triangle_h2-r"></div>
+    <div class="section">
+      <p>Talents of Faer&ucirc;n is &copy;2023-Present, David
+        Wallace. The material in the folder 'dw_talents/hla_feat', and any files called 'hla_feat.tra' in the dw_talents/lang' folder and its subfolders, are licensed under the Creative Commons Attribution-Noncommercial-Share Alike 3.0 Unported License (CC-NC-SA 3.0).</p>
+      <p>Since in practice I'm obviously not going to sue anyone, I'll use this section to say what I'd <b>like</b> people's attitude to re-using and redistributing my mods. Basically, I don't mind
+        what you do with the code provided you (a) give me full credit when you borrow or re-use my code in your own mod, and (b) don't actually mirror this mod (or any modified version of this mod) somewhere else. (In practice this is about the same as you'd get if I released the whole mod under a CC share-alike license, but I'd rather keep it informal.) If you make use of material licensed under CC you will also have to conform to the terms of that license, which means releasing any derivative material under a CC-NC-SA 3.0 license. (That's the reason I'm doing this myself: I'm re-using material from another mod under that license.)</p>
+      <p>The 'revised High-Level Abilities' component contains some material from the 'Rogue Rebalancing' and 'Refinements' mods. The former mod was released under a Creative Commons Attribution-Noncommercial-Share Alike 3.0 Unported License and re-use of material is in accordance with that license. Valerio Biggiani ('the bigg'), co-author of 'Refinements', gave blanket permission at www.shsforums.net for material from 'Refinements' to be used by modders and re-use of that material is in accordance with that permission. (At time of writing there is no active official link to either mod, unfortunately.) </p>
+      <ul>
+        <li>The high-level abilities adapted from Rogue Rebalancing are: Break Enchantment, Call Spirit Warrior, Crippling Strike,  Enhanced Bard Song, Enhanced Skald Song, Enhanced Jester Song, Enthralling Melody, Insightful Strike, Magic Flute, Mass Charm, Resonating Weapon, Set Acid Trap, Set Exploding Trap, Sound Barrier, Sound Burst.</li>
+        <li>The high-level abilities adapted from Refinements are: Acrobatics, Adamantite Body, Aegis, Chant,  Circle of Law, Comet, Create Flesh Golem, Create Greater Boneguard, Dark Pact, Death Field, Diamond Soul, Displacement, Divine Shell, Dragon Fist, Ethereal, Exorcism, Faster than the Eye, Finger of Destruction, Foresight, Greater War Cry, Inner Time, Malavon's Fury, Mirrored Clones, Nature's Wrath, Precision, Regeneration, Reveal, Righteous Magic, Rune of Immunity, Second Wind, Set Toxic Trap, Shadowless Kick, Shield of Law, Spell Immunity, Spell Worm, Tiger Strike, Tranquility, Virtue, Volcano, Wildstrike.</li>
+        <li>Re-used material can be found in the folder 'dw_talents/hla_feat/resources' and its subfolders and can be identified by the prefix 'rr#' (for Rogue Rebalancing) or 'tg#' or 'li#' (for Refinements). None of these distributed files have been modified.</li>
+        <li>The in-game effect of these high-level abilities is modified (at install time) by the code in the files 'hla_spec_[XX].tph' in the dw_talents/hla_feat folder. The code should in most cases be human-readable and in any case the changes can be understood by comparing the respective documentation for the high-level abilities.</li>
+      </ul>
+    </div>
+    <div class="ribbon_rectangle_h2">
+      <h2><a name="version" id="version"></a>Version History</h2>
+    </div>
+    <div class="ribbon_triangle_h2-l"></div>
+    <div class="ribbon_triangle_h2-r"></div>
+    <div class="section">
+      <p> <b>Version beta 1 </b>(November 2023) </p>
+      <p> Original release. </p>
+    </div>
+  </div>
+</div>
+</body>
+</html>

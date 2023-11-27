@@ -1,0 +1,71 @@
+DEFINE_ACTION_FUNCTION manual_prof_edits BEGIN
+
+	// multiclass DDs get 3 pips in axe/hammer, 2 in everything else 
+
+	LAF alter_profs STR_VAR kit="DW_ABJURANT_DEFENDER DW_MORADIN_HAMMER" function=dd_patch END
+
+	//multiclass Kensai get only 1 pip in missile weapons
+	
+	LAF alter_profs STR_VAR kit="DW_KENSAI_ILLUSIONIST DW_KENSAI_ENCHANTER DW_KENSAI_FORCE_MAGE DW_SELUNE_SWORD DW_SILENT_SWORD DW_CORELLON_GUARDIAN" function=kensai_patch END
+	
+	// bloodragers and mc berserkers can't use missile weapons
+	
+	LAF alter_profs STR_VAR kit="DW_BLOODRAGER DW_TEMPUS_BERSERKER DW_BERSERKER_INVOKER DW_BERSERKER_WILD_MAGE DW_KOSSUTH_RAGING_FLAME DW_CLANGEDDIN_BATTLERAGER DW_RAGING_SHIFTER" function=berserker_patch END
+
+
+END
+
+DEFINE_PATCH_FUNCTION dd_patch 
+	INT_VAR prof_id=0
+			value=0
+	STR_VAR class=""
+	RET value_new
+BEGIN
+	value_new=value
+	PATCH_IF prof_id>=89 && (prof_id<111 || prof_id=115) BEGIN
+		PATCH_MATCH "%prof_id%" WITH 
+		92 97 BEGIN
+			value_new = (value<3)? 3: value
+		END
+		DEFAULT
+			value_new = (value<2)? 2: value 
+		END
+	END
+END
+
+DEFINE_PATCH_FUNCTION kensai_patch
+	INT_VAR prof_id=0
+			value=0
+	STR_VAR class=""
+	RET value_new
+BEGIN
+	value_new=value
+	PATCH_IF prof_id>=89 && (prof_id<111 || prof_id=115) BEGIN
+		PATCH_MATCH "%prof_id%" WITH
+		103 104 105 106 107 BEGIN
+			value_new=1
+		END
+		DEFAULT
+		END
+	END
+END
+		
+DEFINE_PATCH_FUNCTION berserker_patch
+	INT_VAR prof_id=0
+			value=0
+	STR_VAR class=""
+	RET value_new
+BEGIN
+	value_new=value
+	PATCH_IF prof_id>=89 && (prof_id<111 || prof_id=115) BEGIN
+		PATCH_MATCH "%prof_id%" WITH
+		103 104 105 106 107 BEGIN
+			value_new=0
+		END
+		DEFAULT
+		END
+	END
+END
+
+
+		

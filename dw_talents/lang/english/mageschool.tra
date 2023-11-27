@@ -1,0 +1,123 @@
+@1="Abjuration"
+@2="Conjuration"
+@3="Divination"
+@4="Enchantment"
+@5="Illusion"
+@6="Invocation"
+@7="Necromancy"
+@8="Alteration"
+
+@9="from the SCHOOL_PLACEHOLDER school" // do not translate SCHOOL_PLACEHOLDER
+
+@10="May not learn or cast any spells of the PLACEHOLDER school."
+@11="May not learn or cast any spells of the PLACEHOLDER1 and PLACEHOLDER2 schools."
+@12="May not learn or cast any spells of the PLACEHOLDER1, PLACEHOLDER2, and PLACEHOLDER3 schools."
+
+@20="(Abjuration)"
+@21="(Alteration)"
+@22="(Abjuration,Alteration)"
+@23="(Conjuration/Summoning)"
+@24="(Enchantment/Charm)"
+@25="(Divination)"
+@26="(Evocation)"
+@27="(Alteration,Evocation)"
+
+@50="Militant Invoker"
+@51="MILITANT INVOKER: A militant wizard who specializes in the manipulation of raw and elemental energies.
+
+Advantages:
+- May use any weapon.
+- May achieve Specialization (two slots) with any weapon class.
+- May cast spells while wearing leather, studded leather, or hide armor.
+- Level 7: May cast spells while wearing scale mail or chainmail.
+- Level 15: May cast spells while wearing splint mail or plate mail (but not full plate).
+- May cast one additional spell per level.
+- Receives a +15% bonus when scribing scrolls from the Invocation school.
+- Receives a +2 bonus when making Saving Throws against spells from the Invocation school.
+
+Disadvantages:
+- May not learn or cast any spells of the Enchantment, Divination or Conjuration schools.
+- Receives a -15% penalty when scribing scrolls from other schools."
+@52="Militant Necromancer"
+@53="MILITANT NECROMANCER: A militant wizard who specializes in magic dealing with death.
+
+Advantages:
+- May use any weapon.
+- May achieve Specialization (two slots) with any weapon class.
+- May cast spells while wearing leather, studded leather, or hide armor.
+- Level 7: May cast spells while wearing scale mail or chainmail.
+- Level 15: May cast spells while wearing splint mail or plate mail (but not full plate).
+- May cast one additional spell per level.
+- Receives a +15% bonus when scribing scrolls from the Necromancy school.
+- Receives a +2 bonus when making Saving Throws against spells from the Necromancy school.
+
+Disadvantages:
+- May not learn or cast any spells of the Enchantment, Illusion, or Alteration schools.
+- Receives a -15% penalty when scribing scrolls from other schools."
+@54="Militant Abjurer"
+@55="MILITANT ABJURER: A militant wizard who specializes in protective magics.
+
+Advantages:
+- May use any weapon.
+- May achieve Specialization (two slots) with any weapon class.
+- May cast spells while wearing leather, studded leather, or hide armor.
+- Level 7: May cast spells while wearing scale mail or chainmail.
+- Level 15: May cast spells while wearing splint mail or plate mail (but not full plate).
+- May cast one additional spell per level.
+- Receives a +15% bonus when scribing scrolls from the Abjuration school.
+- Receives a +2 bonus when making Saving Throws against spells from the Abjuration school.
+
+Disadvantages:
+- May not learn or cast any spells of the Divination, Illusion, or Alteration schools.
+- Receives a -15% penalty when scribing scrolls from other schools."
+@56="Militant Conjurer"
+@57="MILITANT CONJURER: A militant wizard who specializes in creating creatures and objects to assist <PRO_HIMHER>.
+
+Advantages:
+- May use any weapon.
+- May achieve Specialization (two slots) with any weapon class.
+- May cast spells while wearing leather, studded leather, or hide armor.
+- Level 7: May cast spells while wearing scale mail or chainmail.
+- Level 15: May cast spells while wearing splint mail or plate mail (but not full plate).
+- May cast one additional spell per level.
+- Receives a +15% bonus when scribing scrolls from the Conjuration school.
+- Receives a +2 bonus when making Saving Throws against spells from the Conjuration school.
+
+Disadvantages:
+- May not learn or cast any spells of the Divination, Invocation, or Alteration schools.
+- Receives a -15% penalty when scribing scrolls from other schools."
+
+
+@58="Militant Wizard"
+@59="Choose Specialisation"
+@60="MILITANT WIZARD: Militant Wizards train for physical as well as magical combat. They can become proficient, or specialised, in any weapon, and have some ability to cast spells while wearing armor. 
+
+All militant wizards specialise in one or other school of magic. Because of their physical training, they are less versatile than other specialists, being barred from three schools of magic rather than one or two."
+
+@61="MILITANT INVOKER: A militant wizard who specializes in the manipulation of raw and elemental energies.
+
+Advantages:
+- May use any weapon.
+- May achieve Specialization (two slots) with any weapon class.
+- May cast spells while wearing leather, studded leather, or hide armor.
+- Level 7: May cast spells while wearing scale mail or chainmail.
+- Level 15: May cast spells while wearing splint mail or plate mail (but not full plate).
+- May cast one additional spell per level.
+- Receives a +15% bonus when scribing scrolls from the Invocation school.
+- Receives a +2 bonus when making Saving Throws against spells from the Invocation school.
+
+Disadvantages:
+- May not learn or cast any spells of the Enchantment, Illusion, or Conjuration schools.
+- Receives a -15% penalty when scribing scrolls from other schools."
+
+
+@100010="May cast one additional spell per level." // must be, verbatim, the string used in the description of specialists (e.g., BG2EE string 9564).
+@100011="(except at levels LEVEL_PLACEHOLDER, at which there are no spells of that type)" // do not translate LEVEL_PLACEHOLDER
+@100012="This additional spell must be SCHOOL_PLACEHOLDER" // do not translate SCHOOL_PLACEHOLDER
+@100013="At least NUMBER_PLACEHOLDER memorized spells of each level must be SPEC_SPELL_PLACEHOLDER" // do not translate SPEC_SPELL_PLACEHOLDER and NUMBER_PLACEHOLDER
+@100014=" (except at level LEVEL_PLACEHOLDER, at which there is no spell of that school)" // do not translate LEVEL_PLACEHOLDER
+@100015="May not learn or cast any" // this needs to be the first few words of the first 'disadvantage' bullet-point (include enough to make recognition unique, other than that it doesn't matter)
+@100016="At least one memorized spell of each level must be from the SCHOOL"
+@100017="Disadvantages:" // ,must be, verbatim, the appropriate string from class/kit descriptions
+@100018="Level: "
+@100019="The full list of SCHOOL_PLACEHOLDER_2 spells is:"

@@ -1,0 +1,255 @@
+DEFINE_ACTION_FUNCTION elementalist BEGIN
+
+	LAF virtual_class_setup END
+
+	// main spell system
+	
+	LAF make_elemental_spell_lists END
+	
+	// virtualised specialists (needed to avoid risk of wizard kits erroneously picking up specialist restrictions)
+	
+	LAF include STR_VAR file=mageschools_shared.tph locbase=shared END
+	LAF virtualise_specialist_blocks STR_VAR tra=mageschool END
+
+	// a map for kit-description overrides on the chargen screen
+	
+	OUTER_SET override_AIR=38
+	OUTER_SET override_EARTH=39
+	OUTER_SET override_FIRE=40
+	OUTER_SET override_WATER=41
+
+	// set up the spell lists
+	LAF include STR_VAR file=elementalist_shared.tph END
+	LAF make_elemental_spell_lists RET earth_names air_names water_names fire_names all_names END
+	
+	// generate the class descriptions
+	LAF resolve_elem_desc INT_VAR tra_ref=2 STR_VAR swap="%water_names%" RET fire_desc=strref END
+	LAF resolve_elem_desc INT_VAR tra_ref=4 STR_VAR swap="%fire_names%" RET water_desc=strref END
+	LAF resolve_elem_desc INT_VAR tra_ref=6 STR_VAR swap="%earth_names%" RET air_desc=strref END
+	LAF resolve_elem_desc INT_VAR tra_ref=8 STR_VAR swap="%air_names%" RET earth_desc=strref END
+	
+	// make the spells used in CLABs
+	
+	LAF make_elem_clab_effects END
+	
+	// make the actual kits
+	kit.copy[MAGE=>DW_ELEMENTALIST_FIRE]
+	[
+		k_name:=@1
+		k_description:="%fire_desc%"
+		k.kit_apply_powers{%spl_elementalist_fire_innate% 1}
+		k_color_minor_cloth=129
+		k_color_main_cloth=47
+	]
+	kit.copy[MAGE=>DW_ELEMENTALIST_WATER]
+	[
+		k_name:=@3
+		k_description:="%water_desc%"
+		k.kit_apply_powers{%spl_elementalist_water_innate% 1}
+		k_color_minor_cloth=58
+		k_color_main_cloth=31
+	]
+	kit.copy[MAGE=>DW_ELEMENTALIST_AIR]
+	[
+		k_name:=@5
+		k_description:="%air_desc%"
+		k.kit_apply_powers{%spl_elementalist_air_innate% 1}
+		k_color_minor_cloth=122
+		k_color_main_cloth=176
+	]
+	kit.copy[MAGE=>DW_ELEMENTALIST_EARTH]
+	[
+		k_name:=@7
+		k_description:="%earth_desc%"
+		k.kit_apply_powers{%spl_elementalist_earth_innate% 1}
+		k_color_minor_cloth=80
+		k_color_main_cloth=87
+	]
+	
+	// assign spell lists
+	
+	LAF set_elem_spells INT_VAR school_tra=9 school_tra2=10 STR_VAR kit=DW_ELEMENTALIST_FIRE elem_spec=fire elem_block=water END
+	LAF set_elem_spells INT_VAR school_tra=11 school_tra2=12 STR_VAR kit=DW_ELEMENTALIST_WATER elem_spec=water elem_block=fire END
+	LAF set_elem_spells INT_VAR school_tra=13 school_tra2=14 STR_VAR kit=DW_ELEMENTALIST_AIR elem_spec=air elem_block=earth END
+	LAF set_elem_spells INT_VAR school_tra=15 school_tra2=16 STR_VAR kit=DW_ELEMENTALIST_EARTH elem_spec=earth elem_block=air END
+
+	// assign learning modifiers
+	
+	LAF set_spell_learn_modifiers STR_VAR kit=DW_ELEMENTALIST_FIRE modifiers="mage_fire=25, mage_fire_shared=25, mage_air=15, mage_earth=15, default=-15" END
+	LAF set_spell_learn_modifiers STR_VAR kit=DW_ELEMENTALIST_WATER modifiers="mage_water=25, mage_water_shared=25, mage_air=15, mage_earth=15, default=-15" END
+	LAF set_spell_learn_modifiers STR_VAR kit=DW_ELEMENTALIST_EARTH modifiers="mage_earth=25, mage_earth_shared=25, mage_fire=15, mage_water=15, default=-15" END
+	LAF set_spell_learn_modifiers STR_VAR kit=DW_ELEMENTALIST_AIR modifiers="mage_air=25, mage_air_shared=25, mage_fire=15, mage_water=15, default=-15" END
+
+	// update the kit-identification LUA
+	LAF ui_detect_class_kit END
+
+	// specialist menus for single-class elementalists
+	LAF add_kit_menu INT_VAR name=18 desc=19 title=20 STR_VAR id=mage_elem kits="DW_ELEMENTALIST_AIR DW_ELEMENTALIST_EARTH DW_ELEMENTALIST_FIRE DW_ELEMENTALIST_WATER" class=MAGE END
+
+	// virtual names for chargen
+	
+	ACTION_FOR_EACH element IN EARTH AIR FIRE WATER BEGIN
+		LAF override_chargen_kit_name INT_VAR override="override_%element%" STR_VAR kit="DW_ELEMENTALIST_%element%" class=MAGE END
+	END
+	
+	// block illegal items
+	
+	ACTION_FOR_EACH element IN earth air fire water BEGIN
+		LAF exclude_elemental_items STR_VAR kit="DW_ELEMENTALIST_%element%" element END
+	END
+	
+	// assign bonus spells
+
+	ACTION_FOR_EACH element IN earth air fire water BEGIN
+		OUTER_SPRINT kit "DW_ELEMENTALIST_%element%"
+		ACTION_TO_UPPER kit
+		LAF bonus_spells_from_list STR_VAR kit path="%MOD_FOLDER%/class_race/bonus_spell_lists/%element%.txt" END
+	END
+
+
+	// if appropriate, set up multiclass elementalists
+	
+	LAF check_label STR_VAR label=dw#multiclass_specialists_permitted RET value END
+	ACTION_IF value BEGIN
+		LAF multiclass_elementalists END
+	END
+	
+	// re-externalize proficiencies if appropriate
+	ACTION_IF FILE_EXISTS "%data_loc_shared%/weapprof.2da" BEGIN
+		LAF externalize_weapprof END
+	END
+	
+	// process scroll usability
+	LAF process_scroll_usability_now END
+
+	// if appropriate, rebuild dual-class grid
+	
+	ACTION_IF FILE_EXISTS_IN_GAME "m_dw_dud.lua" BEGIN
+		LAF collect_dual_class_kit_data END
+	END
+
+END
+
+DEFINE_ACTION_FUNCTION multiclass_elementalists BEGIN
+
+	// specialist menus for the various multiclasses
+  LAF add_kit_menu INT_VAR name=21 desc=26 title=20 STR_VAR id=fighter_elem kits="DW_ELEMENTALIST_FIRE DW_ELEMENTALIST_WATER DW_ELEMENTALIST_EARTH DW_ELEMENTALIST_AIR" class=FIGHTER_MAGE END
+  LAF add_kit_menu INT_VAR name=22 desc=27 title=20 STR_VAR id=cleric_elem kits="DW_ELEMENTALIST_FIRE DW_ELEMENTALIST_WATER DW_ELEMENTALIST_EARTH DW_ELEMENTALIST_AIR" class=CLERIC_MAGE END
+  LAF add_kit_menu INT_VAR name=23 desc=28 title=20 STR_VAR id=elem_thief kits="DW_ELEMENTALIST_FIRE DW_ELEMENTALIST_WATER DW_ELEMENTALIST_EARTH DW_ELEMENTALIST_AIR" class=MAGE_THIEF END
+  LAF add_kit_menu INT_VAR name=24 desc=29 title=20 STR_VAR id=fighter_elem_thief kits="DW_ELEMENTALIST_FIRE DW_ELEMENTALIST_WATER DW_ELEMENTALIST_EARTH DW_ELEMENTALIST_AIR" class=FIGHTER_MAGE_THIEF END
+  LAF add_kit_menu INT_VAR name=25 desc=30 title=20 STR_VAR id=fighter_elem_cleric kits="DW_ELEMENTALIST_FIRE DW_ELEMENTALIST_WATER DW_ELEMENTALIST_EARTH DW_ELEMENTALIST_AIR" class=FIGHTER_MAGE_CLERIC END
+
+	OUTER_SPRINT class ""
+	ACTION_FOR_EACH this_class IN fighter_mage cleric_mage mage_thief fighter_mage_thief fighter_mage_cleric BEGIN
+		LAF check_ini STR_VAR ini="elementalist_%this_class%" RET value END
+		ACTION_IF value BEGIN
+			ACTION_TO_UPPER this_class
+			OUTER_SPRINT class "%class%%this_class% "
+		END
+	END
+	
+	LAF 2daq_extract STR_VAR resref=kitlist column=ROWNAME RET_ARRAY kitid_array=array END
+	LAF array_invert STR_VAR array=kitid_array RET_ARRAY kitid_array=array END
+	LAF 2da_read STR_VAR file=kittable.2da RET_ARRAY kittable_array=array END
+	ACTION_FOR_EACH race IN human elf half_elf dwarf halfling gnome halforc BEGIN
+		ACTION_TO_UPPER race
+		ACTION_FOR_EACH class IN FIGHTER_MAGE CLERIC_MAGE MAGE_THIEF FIGHTER_MAGE_THIEF FIGHTER_MAGE_CLERIC BEGIN
+			OUTER_SPRINT table $kittable_array("%class%" "%race%")
+			ACTION_FOR_EACH kit IN DW_ELEMENTALIST_FIRE DW_ELEMENTALIST_WATER DW_ELEMENTALIST_AIR DW_ELEMENTALIST_EARTH BEGIN
+				OUTER_SET kit_id=$kitid_array("%kit%")
+				LAF kit_set_table INT_VAR present=1 kit_id STR_VAR table END
+			END
+		END
+	END
+		
+	// virtual names for chargen
+	
+	ACTION_FOR_EACH element IN EARTH AIR FIRE WATER BEGIN
+	  ACTION_FOR_EACH class IN fighter_mage cleric_mage mage_thief fighter_mage_thief fighter_mage_cleric BEGIN
+		LAF override_chargen_kit_name INT_VAR override="override_%element%" STR_VAR kit="DW_ELEMENTALIST_%element%" class END
+	  END
+	END
+	
+	// druid/elementalists need to be done separately, as their own kits
+	
+	LAF check_label STR_VAR label=dw#druid_multiclass RET value END
+	LAF check_ini STR_VAR ini="elementalist_druid_mage" RET value2=value END
+	ACTION_IF value && value2 BEGIN
+	
+		// shared data
+	
+		LAF include STR_VAR file=druid_shared.tph location=shared END
+		LAF get_cleric_to_druid_string RET c_to_d_string END
+		LAF get_druid_align_string RET d_align_string END
+		LAF include STR_VAR file=ui_spell_system.tph locbase=lib END
+		LAF include STR_VAR file=hide_ability_button.tph locbase=lib END
+
+		// main function (from druid_shared)
+		
+		LAF druid_elementalists END
+	
+	END
+
+
+
+
+
+END
+
+
+
+DEFINE_ACTION_FUNCTION make_elem_clab_effects BEGIN
+
+     OUTER_SPRINT default "s_timing=9 s_target=1"
+
+     // aegis of rime
+
+     spl.make[%spl_elementalist_water_innate%]
+     [
+		  m.ab.add{}
+          m.ab_fx.add{%default% s_opcode=28 s_parameter1=10 s_parameter2=0} // resist cold
+          m.ab_fx.add{%default% s_opcode=332 s_parameter1=20 s_parameter2=2} // extra cold damage
+		  m.ab_fx.add{%default% s_opcode=313 s_resource:=dw-ftaeg} // note HLA granted
+		  m.ab_fx.add{%default% s_opcode=142 s_parameter2=25} // resist cold icon
+          m.ab_fx.add{%default% s_opcode=85 s_parameter1=10 s_parameter2=0} // resist magic cold
+     ]
+
+     // aqua mortis
+
+     spl.make[%spl_elementalist_earth_innate%]
+     [
+		  m.ab.add{}
+          m.ab_fx.add{%default% s_opcode=27 s_parameter1=10 s_parameter2=0} // resist acid
+          m.ab_fx.add{%default% s_opcode=332 s_parameter1=20 s_parameter2=4} // extra acid damage
+		  m.ab_fx.add{%default% s_opcode=313 s_resource:=dw-ftaqu} // note HLA granted
+		  m.ab_fx.add{%default% s_opcode=142 s_parameter2=24} // resist acid icon
+     ]
+
+     // scion of storms
+     
+     spl.make[%spl_elementalist_air_innate%]
+     [
+		  m.ab.add{}
+          m.ab_fx.add{%default% s_opcode=29 s_parameter1=10 s_parameter2=0} // resist electricity
+          m.ab_fx.add{%default% s_opcode=332 s_parameter1=20 s_parameter2=3} // extra electric damage
+		  m.ab_fx.add{%default% s_opcode=313 s_resource:=dw-ftsci} // note HLA granted
+		  m.ab_fx.add{%default% s_opcode=142 s_parameter2=27} // resist electricity icon
+     ]
+
+     // spirit of flame
+     
+     spl.make[%spl_elementalist_fire_innate%]
+     [
+		  m.ab.add{}
+          m.ab_fx.add{%default% s_opcode=30 s_parameter1=10 s_parameter2=0} // resist fire
+          m.ab_fx.add{%default% s_opcode=332 s_parameter1=20 s_parameter2=1} // extra fire damage
+		  m.ab_fx.add{%default% s_opcode=313 s_resource:=dw-ftspi} // note HLA granted
+		  m.ab_fx.add{%default% s_opcode=142 s_parameter2=16} // resist fire icon
+          m.ab_fx.add{%default% s_opcode=84 s_parameter1=10 s_parameter2=0} // resist magic fire
+     ]
+
+
+
+
+
+END

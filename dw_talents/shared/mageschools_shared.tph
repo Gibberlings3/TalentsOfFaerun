@@ -1,0 +1,342 @@
+
+
+
+DEFINE_ACTION_FUNCTION adjust_multischool_spells STR_VAR tra=mageschool BEGIN
+
+	WITH_TRA "%scs_tra_loc%/english/%tra%.tra" "%scs_tra_loc%/%LANGUAGE%/%tra%.tra" BEGIN
+	ACTION_IF is_iwd BEGIN
+		// IWD: only Lower Resistance	
+		LAF adjust_this_multischool_spell INT_VAR old_desc=21 new_desc=22 STR_VAR ids=WIZARD_LOWER_RESISTANCE END
+	END ELSE BEGIN
+		// Lower Resistance: Abj->Abj/Alt
+		LAF adjust_this_multischool_spell INT_VAR old_desc=20 new_desc=22 STR_VAR ids=WIZARD_LOWER_RESISTANCE END
+		//  Inv->Alt/Inv
+		ACTION_FOR_EACH ids IN WIZARD_FIRE_SHIELD_RED WIZARD_FIRE_SHIELD_BLUE WIZARD_DEATH_FOG WIZARD_MELF_METEOR BEGIN
+			LAF adjust_this_multischool_spell INT_VAR old_desc=26 new_desc=27 STR_VAR ids END
+		END
+		//  Alt->Alt/Inv
+		ACTION_FOR_EACH ids IN WIZARD_TENSERS_TRANSFORMATION WIZARD_OTILUKES_FREEZING_SPHERE BEGIN
+			LAF adjust_this_multischool_spell INT_VAR old_desc=21 new_desc=27 STR_VAR ids END
+		END
+	END
+	END
+
+
+END
+
+DEFINE_ACTION_FUNCTION adjust_this_multischool_spell
+	INT_VAR old_desc=0
+			new_desc=0
+	STR_VAR ids=""
+BEGIN
+
+	ACTION_IF VARIABLE_IS_SET "%ids%" BEGIN
+		// zero use flags, on the assumption that no class is barred from it
+		// also set primary type to zero and get the description
+		OUTER_SPRINT resref EVAL "%%ids%%"
+		COPY_EXISTING "%resref%.spl" override
+			READ_LONG 0x50 desc_strref
+			WRITE_BYTE 0x25 0
+			WRITE_BYTE 0x1e ( (BYTE_AT 0x1e) BAND 0b00111111)
+			WRITE_BYTE 0x1f ( (BYTE_AT 0x1f) BAND 0b10000000)
+		BUT_ONLY
+		ACTION_IF VARIABLE_IS_SET "%ids%_SCROLL" BEGIN
+			OUTER_SPRINT scroll EVAL "%%ids%_SCROLL%"
+			COPY_EXISTING "%scroll%.itm" override
+				WRITE_BYTE 0x2f ( (BYTE_AT 0x2f) BAND 0b00111111)
+				WRITE_BYTE 0x1f ( (BYTE_AT 0x2d) BAND 0b10000000)
+			BUT_ONLY
+		END
+		// patch the description
+		OUTER_SPRINT old (AT old_desc)
+		OUTER_SPRINT new (AT new_desc)
+		ACTION_GET_STRREF desc_strref desc
+		OUTER_PATCH_SAVE desc "%desc%" BEGIN
+			REPLACE_TEXTUALLY "%old%" "%new%"
+		END
+		STRING_SET_EVALUATE desc_strref "%desc%"
+	END
+END
+
+DEFINE_ACTION_FUNCTION virtualise_specialist_blocks STR_VAR tra=mageschool BEGIN
+
+
+  LAF check_label STR_VAR label="dw#virtualise_specialist_blocks" RET value END
+  ACTION_IF !value BEGIN
+    LAF make_label STR_VAR label="dw#virtualise_specialist_blocks" END
+	LAF ui_detect_class_kit END
+	LAF ui_spell_system_schools END
+	// remove school-based usability flags on spells
+	COPY_EXISTING_REGEXP ".*\.spl" override
+		PATCH_IF (SHORT_AT 0x1c)=1 BEGIN // wizard spell
+			PATCH_IF ((BYTE_AT 0x1f) BOR 0b10111111) = 0b10111111 BEGIN // usable by generalists (basically a check for Nahal etc)
+				WRITE_BYTE 0x1e ( (BYTE_AT 0x1e) BAND 0b00111111)
+				WRITE_BYTE 0x1f ( (BYTE_AT 0x1f) BAND 0b10000000)
+			END
+		END
+	BUT_ONLY
+	// remove school-based usability flags on scrolls
+	COPY_EXISTING_REGEXP ".*\.itm" override
+		PATCH_IF (SHORT_AT 0x1c)=11 BEGIN // scroll
+			WRITE_BYTE 0x2f ( (BYTE_AT 0x2f) BAND 0b00111111)
+			WRITE_BYTE 0x2d ( (BYTE_AT 0x2d) BAND 0b10000000)		
+		END
+	BUT_ONLY
+	// program the barred schools
+	ACTION_CLEAR_ARRAY barred_school
+	ACTION_IF !FILE_EXISTS "%data_loc%/mageschools.2da" BEGIN
+		ACTION_IF is_iwd BEGIN
+			COPY "%MOD_FOLDER%/shared/mageschool/mageschools_iwd.2da" "%data_loc%/mageschools.2da"
+		END ELSE BEGIN
+			COPY "%MOD_FOLDER%/shared/mageschool/mageschools_bg.2da" "%data_loc%/mageschools.2da"		
+		END
+	END
+	LAF array_read STR_VAR file="mageschools.2da" path="%data_loc%" RET_ARRAY barred_school=array END
+	// implement bars
+	ACTION_PHP_EACH barred_school AS kit=>block_learn BEGIN
+		LAF set_spell_list INT_VAR update_scrolls_later=1 STR_VAR kit block_learn END	
+	END
+	
+	// process scroll usability
+	LAF process_scroll_usability_now END
+  END
+	
+END
+
+DEFINE_ACTION_FUNCTION make_barred_school_string STR_VAR barred_schools="" tra=mageschool RET barred_string BEGIN
+
+	WITH_TRA "%scs_tra_loc%/english/%tra%.tra" "%scs_tra_loc%/%LANGUAGE%/%tra%.tra" BEGIN
+	ACTION_DEFINE_ASSOCIATIVE_ARRAY school_name_map BEGIN
+		abjuration=>1
+		conjuration=>2
+		divination=>3
+		enchantment=>4
+		illusion=>5
+		invocation=>6
+		necromancy=>7
+		alteration=>8
+	END
+	ACTION_PHP_EACH school_name_map AS name=>tra_ref BEGIN
+		OUTER_SPRINT $school_name_map("%name%") (AT tra_ref)
+	END
+
+	// count number of schools
+	OUTER_PATCH_SAVE barred_schools "%barred_schools%" BEGIN
+		count=1
+		REPLACE_EVALUATE "," BEGIN
+			++count
+		END
+		" "	
+	END
+	ACTION_IF count=1 BEGIN
+		OUTER_SPRINT school1 $school_name_map("%barred_schools%")
+		OUTER_SPRINT barred_string @10
+		OUTER_PATCH_SAVE barred_string "%barred_string%" BEGIN
+			REPLACE_TEXTUALLY PLACEHOLDER "%school1%"
+		END
+	END ELSE
+	ACTION_IF count=2 BEGIN
+		LAF return_first_entry STR_VAR list="%barred_schools%" RET s1=entry s2=list END
+		OUTER_SPRINT school1 $school_name_map("%s1%")
+		OUTER_SPRINT school2 $school_name_map("%s2%")
+		OUTER_SPRINT barred_string @11
+		OUTER_PATCH_SAVE barred_string "%barred_string%" BEGIN
+			REPLACE_TEXTUALLY PLACEHOLDER1 "%school1%"
+			REPLACE_TEXTUALLY PLACEHOLDER2 "%school2%"
+		END
+	END ELSE 
+	ACTION_IF count=3 BEGIN
+		LAF return_first_entry STR_VAR list="%barred_schools%" RET s1=entry list END
+		LAF return_first_entry STR_VAR list="%barred_schools%" RET s2=entry s3=list END
+		OUTER_SPRINT school1 $school_name_map("%s1%")
+		OUTER_SPRINT school2 $school_name_map("%s2%")
+		OUTER_SPRINT school3 $school_name_map("%s3%")
+		OUTER_SPRINT barred_string @12
+		OUTER_PATCH_SAVE barred_string "%barred_string%" BEGIN
+			REPLACE_TEXTUALLY PLACEHOLDER1 "%school1%"
+			REPLACE_TEXTUALLY PLACEHOLDER2 "%school2%"
+			REPLACE_TEXTUALLY PLACEHOLDER3 "%school3%"
+		END
+	
+	END ELSE BEGIN
+		OUTER_SPRINT barred_string ""
+		LAF warning STR_VAR warning="Tried to find a barred-school string for a speciality with 4+ barred schools." END
+	END
+	END
+	
+END
+
+DEFINE_ACTION_FUNCTION bar_schools BEGIN
+
+	// get some data and sort out the description
+	COPY - ".../stratagems-inline/unusable_flags.2da" nowhere
+		LPF 2da_read RET_ARRAY unusable_flags_array=array END
+	
+	ACTION_DEFINE_ASSOCIATIVE_ARRAY school_name_map BEGIN
+		abjuration=>1
+		conjuration=>2
+		divination=>3
+		enchantment=>4
+		illusion=>5
+		invocation=>6
+		necromancy=>7
+		alteration=>8
+	END
+	
+	LAF array_read STR_VAR file="mageschools.2da" path="%data_loc%" RET_ARRAY barred_school=array END
+	ACTION_CLEAR_ARRAY bar_map
+	ACTION_PHP_EACH barred_school AS spec=>list BEGIN
+		ACTION_TO_LOWER spec
+		LAF make_barred_school_string STR_VAR barred_schools="%list%" RET barred_string END // for the description
+		LAF 2daq_extract STR_VAR resref=clastext row="%spec%" column=DESCSTR RET desc_strref=value END
+		ACTION_GET_STRREF desc_strref desc
+		OUTER_PATCH_SAVE desc "%desc%" BEGIN
+			SPRINT swap_out @100015
+			REPLACE_TEXTUALLY "%swap_out%.*" "%barred_string%"
+		END
+		STRING_SET_EVALUATE desc_strref "%desc%"
+		OUTER_WHILE "%list%" STRING_COMPARE_CASE "" BEGIN
+			LAF return_first_entry STR_VAR list separator="," RET entry list END
+			OUTER_SET school_number=$school_name_map("%entry%")
+			OUTER_SET $bar_map("%school_number%" "%spec%")=1
+		END		
+	END
+	
+	// spells
+	OUTER_FOR (number=101;number<1000;++number) BEGIN
+		ACTION_IF FILE_EXISTS_IN_GAME "SPWI%number%.spl" BEGIN
+			OUTER_SPRINT spell "SPWI%number%"
+			ACTION_IF !RESOURCE_CONTAINS "hidespl.2da" "%spell%[ %TAB%]1" BEGIN
+				ACTION_MATCH "%spell%" WITH
+				// exclude multi-school spells
+				"%WIZARD_WISH%" "%WIZARD_LIMITED_WISH%" "%WIZARD_LOWER_RESISTANCE%" "%WIZARD_EYE%" "%WIZARD_SUMMON_SHADOW%"
+				"%WIZARD_MELF_MINUTE_METEORS%" "%WIZARD_FIRE_SHIELD_BLUE%" "%WIZARD_FIRE_SHIELD_RED%" "%WIZARD_DEATH_FOG%" "%WIZARD_OTILUKES_FREEZING_SPHERE%" "%WIZARD_TENSERS_TRANSFORMATION%"
+				BEGIN END
+				DEFAULT
+					COPY_EXISTING "%spell%.spl" override
+						READ_BYTE 0x25 school 
+						SPRINT $school_of_spell("%spell%") "%school%"
+						LPF bar_this_spell INT_VAR school END
+					BUT_ONLY
+				END				
+			END				
+		END
+	END
+	
+	// scrolls
+	
+	COPY_EXISTING_REGEXP ".*\.itm" override
+		PATCH_IF SHORT_AT 0x1c = 11 BEGIN // is a scroll
+			school=0
+			GET_OFFSET_ARRAY ab_arr ITM_V10_HEADERS
+			PHP_EACH ab_arr AS ab_ind=>ab_off BEGIN
+			  GET_OFFSET_ARRAY2 fx_arr ab_off ITM_V10_HEAD_EFFECTS
+			  PHP_EACH fx_arr AS fx_ind=>fx_off BEGIN
+				PATCH_IF (SHORT_AT fx_off)=147 BEGIN
+					READ_ASCII (0x14+fx_off) spell_resref
+					TO_UPPER spell_resref
+					PATCH_IF VARIABLE_IS_SET $school_of_spell("%spell_resref%") BEGIN
+						SET school=$school_of_spell("%spell_resref%")
+					END
+				END				
+			  END
+			END
+			PATCH_IF school>0 BEGIN
+				LPF bar_this_spell INT_VAR school is_item=1 END
+			END		
+		END
+	BUT_ONLY
+
+END
+
+DEFINE_PATCH_FUNCTION bar_this_spell INT_VAR school=0 is_item=0 BEGIN
+	PATCH_IF is_item || (BYTE_AT 0x1f BAND 0b01000000)=0 BEGIN // check if it's generalist-forbidden, i.e. wild magic
+		PATCH_IF is_item BEGIN
+			WRITE_BYTE 0x2f (THIS BAND 0b00111111)
+			WRITE_BYTE 0x2d (THIS BAND 0b11000000)
+		END ELSE BEGIN
+			WRITE_BYTE 0x1e (THIS BAND 0b00111111)
+			WRITE_BYTE 0x1f (THIS BAND 0b11000000)
+		END
+		PATCH_FOR_EACH spec IN abjurer conjurer diviner enchanter illusionist invoker necromancer transmuter BEGIN
+			PATCH_IF VARIABLE_IS_SET $bar_map("%school%" "%spec%") BEGIN
+				PATCH_IF is_item BEGIN
+					SPRINT prefix ITM
+				END ELSE BEGIN
+					SPRINT prefix SPL
+				END
+				TO_UPPER spec
+				offset=$unusable_flags_array("%spec%" "%prefix%_OFF")
+				bit=$unusable_flags_array("%spec%" "%prefix%_BIT")
+				WRITE_BYTE offset (THIS BOR 2**bit)
+			END 
+		END
+	END
+END
+
+DEFINE_ACTION_FUNCTION label_kits_with_arcane_knowledge BEGIN
+
+	// only do this once
+	
+	LAF check_label STR_VAR label=dw#kits_labelled_for_ak RET value END
+	ACTION_IF !value BEGIN
+		LAF make_label STR_VAR label=dw#kits_labelled_for_ak END
+
+		// get data
+		
+		COPY - ".../stratagems-inline/arcane_knowledge_data.2da" nowhere
+			LPF 2da_read STR_VAR case=mixed RET_ARRAY arcane_knowledge_array=array END
+
+		// cycle through
+		
+		OUTER_FOR (school_number=1;school_number<=8;++school_number) BEGIN
+			// get filenames
+			OUTER_SPRINT school_name $arcane_knowledge_array("%school_number%" "school_name")
+			OUTER_SPRINT hla EVAL "%spl_hla_arcane_knowledge_%school_name%%"
+			OUTER_SPRINT label EVAL "%spl_arcane_knowledge_label_%school_name%%"
+			// make the spell
+			CREATE spl "%label%"
+				LPF add_basic_spell_ability END
+				LPF ADD_SPELL_EFFECT INT_VAR opcode=313 target=2 timing=9 STR_VAR resource="%hla%" END
+			// apply the spell
+			OUTER_SPRINT kit $arcane_knowledge_array("%school_number%" "school_kit")
+			LAF kit_edit STR_VAR kit edits=~k.kit_apply_powers{%label% 1}~ END
+		END
+
+
+
+
+	END
+
+
+END
+
+<<<<<<<< .../stratagems-inline/arcane_knowledge_data.2da
+2DA V1.0
+*
+			school_kit		school_name
+1			ABJURER			abjuration
+2			CONJURER		conjuration
+3			DIVINER			divination
+4			ENCHANTER		enchantment
+5			ILLUSIONIST		illusion
+6			INVOKER			invocation
+7			NECROMANCER		necromancy
+8			TRANSMUTER		alteration			
+>>>>>>>>
+
+
+<<<<<<<< .../stratagems-inline/unusable_flags.2da
+2DA V1.0
+*
+			SPL_OFF		SPL_BIT		ITM_OFF		ITM_BIT
+ABJURER		0x1e		6			0x2f		6
+CONJURER	0x1e		7			0x2f		7
+DIVINER		0x1f		0			0x2d		0
+ENCHANTER	0x1f		1			0x2d		1
+ILLUSIONIST 0x1f		2			0x2d		2
+INVOKER		0x1f		3			0x2d		3
+NECROMANCER 0x1f		4			0x2d		4
+TRANSMUTER	0x1f		5			0x2d		5
+
+>>>>>>>>

@@ -1,0 +1,64 @@
+
+//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+/// PORTRAIT GROUP
+//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+
+
+//////////////////////////////////////////////////////////////////////
+/// Include BG2 portraits
+//////////////////////////////////////////////////////////////////////
+
+BEGIN @301 DESIGNATED 30000 /*LABEL dw_bg2_portraits */ GROUP @3
+
+REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
+REQUIRE_PREDICATE GAME_IS "bgee iwdee" @54
+FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
+
+LAF run STR_VAR file=get_external_portraits location=portrait version=bg2 END
+
+//////////////////////////////////////////////////////////////////////
+/// Include IWD portraits
+//////////////////////////////////////////////////////////////////////
+
+BEGIN @302 DESIGNATED 30100 /*LABEL dw_iwd_portraits */ GROUP @3
+
+REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
+REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet" @51
+FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
+
+LAF run STR_VAR file=get_external_portraits location=portrait version=iwd END
+
+//////////////////////////////////////////////////////////////////////
+/// Include IWD2 portraits
+//////////////////////////////////////////////////////////////////////
+
+BEGIN @300 DESIGNATED 30200 /*LABEL dw_iwd2_portraits */ GROUP @3
+
+REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
+FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
+
+LAF run STR_VAR file=install_iwd2_portraits location=portrait END
+
+//////////////////////////////////////////////////////////////////////
+/// Hide NPC portraits
+//////////////////////////////////////////////////////////////////////
+
+BEGIN @303 DESIGNATED 30300 /*LABEL dw_hide_npc_portraits */ GROUP @3
+
+REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
+FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
+
+LAF run STR_VAR file=hide_npc_portraits location=portrait END
+
+//////////////////////////////////////////////////////////////////////
+/// Portrait coloring
+//////////////////////////////////////////////////////////////////////
+
+BEGIN @304 DESIGNATED 30400 /*LABEL dw_color_portraits */ GROUP @3
+
+REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
+FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
+
+LAF run STR_VAR file=portrait_coloring location=portrait END

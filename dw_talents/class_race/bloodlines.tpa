@@ -1,0 +1,163 @@
+DEFINE_ACTION_FUNCTION bloodlines BEGIN
+
+	// build spell lists
+	LAF ui_spell_system_schools END
+	LAF make_elemental_spell_lists END
+	
+	LAF run STR_VAR file=one_fewer_spell locbase=shared END
+
+	// install HLA labels for mage specialists (harmless to do it now, and it builds resources we need)
+	
+	LAF include STR_VAR file=mageschools_shared.tph locbase=shared END
+	LAF label_kits_with_arcane_knowledge END
+	
+	// load data
+	
+	LAF ini_read STR_VAR file="bloodlines.ini" location=data RET_ARRAY bloodline_array=array bloodlines=section_array END
+
+	// define some strings
+	
+	ACTION_DEFINE_ASSOCIATIVE_ARRAY bar_strings BEGIN
+		abjuration=>71
+		conjuration=>72
+		divination=>73
+		enchantment=>74
+		illusion=>75
+		invocation=>76
+		necromancy=>77
+		alteration=>78
+		conjuration_no_fiends=>79
+		mage_earth=>80
+		mage_water=>81
+		mage_fire=>82
+		mage_air=>83
+	END
+	ACTION_PHP_EACH bar_strings AS list=>tra_ref BEGIN
+		OUTER_SPRINT $bar_strings("%list%") (AT tra_ref)
+	END
+
+	ACTION_DEFINE_ASSOCIATIVE_ARRAY hla_strings BEGIN
+		abjuration=>91
+		conjuration=>92
+		divination=>93
+		enchantment=>94
+		illusion=>95
+		invocation=>96
+		necromancy=>97
+		alteration=>98
+	END
+	ACTION_PHP_EACH hla_strings AS list=>tra_ref BEGIN
+		OUTER_SPRINT $hla_strings("%list%") (AT tra_ref)
+	END
+
+	// implement
+	OUTER_SPRINT kits "SORCERER"
+	ACTION_PHP_EACH bloodlines AS kit=>discard BEGIN
+
+		// collect bonus spells
+		
+		OUTER_SET proceed=1
+		ACTION_CLEAR_ARRAY spell_array
+		OUTER_FOR (level=1;level<=9;++level) BEGIN
+			OUTER_SPRINT spell $bloodline_array("%kit%" "bonus%level%")
+			ACTION_IF !VARIABLE_IS_SET "%spell%" BEGIN
+				OUTER_SPRINT spell "WIZARD_%spell%"
+			END
+			ACTION_IF VARIABLE_IS_SET "%spell%" BEGIN
+				OUTER_SPRINT resref EVAL "%%spell%%"
+				OUTER_SPRINT $spell_array("%resref%") ""
+			END ELSE BEGIN
+				LAF warning STR_VAR warning="bloodlines: spell %spell% does not exist" END
+				OUTER_SET proceed=0
+			END
+		END
+		ACTION_IF proceed BEGIN
+
+
+			// note and log barred school and bonus HLA
+			OUTER_SPRINT block_learn $bloodline_array("%kit%" "bar")
+			OUTER_SPRINT hla $bloodline_array("%kit%" "hla")
+			
+			OUTER_SPRINT $bloodline_log("%kit%" "bar") "%block_learn%"
+			OUTER_SPRINT $bloodline_log("%kit%" "hla") "%hla%"
+			
+			/*
+			ACTION_IF !FILE_EXISTS "%data_loc_shared%/dw_bloodlines.2da" BEGIN
+				COPY ".../stratagems-inline/dw_bloodlines.2da" "%data_loc_shared%"
+			END
+			APPEND_OUTER "%data_loc_shared%/dw_bloodlines.2da" "%kit%%TAB%%bar%%TAB%%hla%"
+			*/
+			
+			
+			
+			// fill in barred school and bonus HLA in the description list
+
+			OUTER_SPRINT disadvantage $bar_strings("%block_learn%")
+			OUTER_SPRINT hla_string $hla_strings("%hla%")
+			OUTER_SET desc_tra=$bloodline_array("%kit%" "description")
+			OUTER_SPRINT desc (AT desc_tra)
+			OUTER_PATCH_SAVE desc "%desc%" BEGIN
+				REPLACE_TEXTUALLY DISADVANTAGE_PLACEHOLDER "%disadvantage%"
+				REPLACE_TEXTUALLY HLA_ACCESS_PLACEHOLDER "%hla_string%"
+			END
+
+			// make kit; grant arcane knowledge label
+			
+			OUTER_SPRINT kit_here "%kit%"
+			OUTER_SPRINT kits "%kits% %kit%"
+			OUTER_SPRINT label EVAL "%spl_arcane_knowledge_label_%hla%%"
+			kit.copy[SORCERER=>%kit%|debug:i=0]
+			[
+				name_tra=$bloodline_array("%kit_here%" "name")
+				k_name:=(AT name_tra)
+				k_desc:="%desc%"
+				k.kit_apply_powers{%spl_one_fewer_spell% 1}
+				k.kit_apply_powers{%label% 1}
+				PATCH_FOR_EACH region IN minor_cloth main_cloth leather armor metal BEGIN
+					PATCH_IF VARIABLE_IS_SET $bloodline_array("%kit_here%" "%region%") BEGIN
+						"k_color_%region%"=$bloodline_array("%kit_here%" "%region%")
+					END
+				END
+			]
+			
+
+			LAF assign_bonus_spells STR_VAR kit spell_array END
+			
+			// impose restrictions
+			
+			LAF set_spell_list INT_VAR update_scrolls_later=1 STR_VAR kit block_learn END
+			
+				
+			// override name
+			
+			LAF override_chargen_kit_name INT_VAR override=$bloodline_array("%kit%" "line") STR_VAR kit class=sorcerer END
+		
+		END
+	
+	END
+
+	// setup menus
+	
+	LAF 2daq_extract STR_VAR resref=clastext row=SORCERER column=MIXED RET name_strref=value END
+	
+	LAF add_kit_menu INT_VAR desc=201 title=200 name_strref trueclass_desc=101 STR_VAR id=sorcerer_bloodlines kits class=SORCERER END
+	LAF override_chargen_kit_name INT_VAR override=51 STR_VAR kit=trueclass class=sorcerer END
+	
+
+	// update the kit-identification LUA
+	LAF ui_detect_class_kit END
+
+	// write log
+	
+	LAF 2da_write STR_VAR file="dw_bloodlines.2da" path="%data_loc_shared%" array=bloodline_log END
+
+	// process scroll usability
+	LAF process_scroll_usability_now END
+
+END
+
+<<<<<<<< .../stratagems-inline/dw_bloodlines.2da
+2DA V1.0
+*
+		bar			hla
+>>>>>>>>

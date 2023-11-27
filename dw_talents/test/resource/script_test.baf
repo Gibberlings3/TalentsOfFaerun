@@ -1,0 +1,7 @@
+IF
+	See(NearestEnemyOf(Myself))
+	%variable%
+THEN
+	RESPONSE #100
+		Attack(NearestEnemyOf(Myself))
+END

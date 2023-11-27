@@ -1,0 +1,198 @@
+@1="all melee weapons"
+@2="all missile weapons"
+@3="all weapons"
+@4="May use any weapon."
+@5="May use these weapons: "
+@6="any weapon except "
+@7="any fighting style"
+@8="Begins Proficient (one slot) with all weapon classes."
+@9="Begins Proficient (one slot) with these weapon classes: "
+@11="May become Proficient (one slot) with any weapon class."
+@12="May achieve Specialization (two slots) with any weapon class."
+@13="May achieve Mastery (three slots) with any weapon class."
+@14="May achieve High Mastery (four slots) with any weapon class."
+@15="May achieve Grand Mastery (five slots) with any weapon class."
+@21="May become Proficient (one slot) with these weapon classes: "
+@22="May achieve Specialization (two slots) with these weapon classes: "
+@23="May achieve Mastery (three slots) with these weapon classes: "
+@24="May achieve High Mastery (four slots) with these weapon classes: "
+@25="May achieve Grand Mastery (five slots) with these weapon classes: "
+@26="May become Proficient (one slot) with the "
+@27="May achieve Specialization (two slots) with the "
+@28="May achieve Mastery (three slots) with the "
+@29="May achieve High Mastery (four slots) with the "
+@30="May achieve Grand Mastery (five slots) with the "
+
+@31="May become Proficient (one slot) with any melee weapon class."
+@32="May achieve Specialization (two slots) with any melee weapon class."
+@33="May achieve Mastery (three slots) with any melee weapon class."
+@34="May achieve High Mastery (four slots) with any melee weapon class."
+@35="May achieve Grand Mastery (five slots) with any melee weapon class."
+@41="May become Proficient (one slot) with any missile weapon class."
+@42="May achieve Specialization (two slots) with any missile weapon class."
+@43="May achieve Mastery (three slots) with any missile weapon class."
+@44="May achieve High Mastery (four slots) with any missile weapon class."
+@45="May achieve Grand Mastery (five slots) with any missile weapon class."
+
+
+@50="May not use these weapons: "
+@51="May only become Proficient (one slot) with these weapon classes: "
+@52="May only achieve Specialization (two slots) with these weapon classes: "
+@53="May only achieve Mastery (three slots) with these weapon classes: "
+@54="May only achieve High Mastery (four slots) with these weapon classes: "
+@55="May only achieve Grand Mastery (five slots) with these weapon classes: " // not needed, of course!
+
+@60="May not use any weapons." // quite a penalty!
+@61="May only become Proficient (one slot) with any weapon class."
+@62="May only achieve Specialization (two slots) with any weapon class."
+@63="May only achieve Mastery (three slots) with any weapon class."
+@64="May only achieve High Mastery (four slots) with any weapon class."
+@65="May only achieve Grand Mastery (five slots) with any weapon class." // not needed, of course!
+
+@70="May not use melee weapons." // probably not going to come up!
+@71="May only become Proficient (one slot) with any melee weapon class."
+@72="May only achieve Specialization (two slots) with any melee weapon class."
+@73="May only achieve Mastery (three slots) with any melee weapon class."
+@74="May only achieve High Mastery (four slots) with any melee weapon class."
+@75="May only achieve Grand Mastery (five slots) with any melee weapon class." // not needed, of course!
+
+@80="May not use ranged weapons (both missile and thrown)." // this is a slight risk, as we can't autodetect thrown weapons like daggers and axes!
+@81="May only become Proficient (one slot) with any missile weapon class."
+@82="May only achieve Specialization (two slots) with any missile weapon class."
+@83="May only achieve Mastery (three slots) with any missile weapon class."
+@84="May only achieve High Mastery (four slots) with any missile weapon class."
+@85="May only achieve Grand Mastery (five slots) with any missile weapon class." // not needed, of course!
+
+@100="May achieve Specialization (two slots) in any fighting style and allocate three slots in Two-Weapon Style."
+@101="May achieve Proficiency (one slot) in any fighting style."
+@102="May achieve Specialization (two slots) in any fighting style."
+@103="UNUSED_PLACEHOLDER"
+
+@111="May achieve Proficiency (one slot) in "
+@112="May achieve Specialization (two slots) in "
+@113="May achieve Mastery (three slots) in "
+
+@121="May achieve Proficiency (one slot) in these styles: "
+@122="May achieve Specialization (two slots) in these styles: "
+@123="UNUSED_PLACEHOLDER"
+
+
+@131="Begins Proficient (one slot) with the "
+@132="Begins Specialized (two slots) with the "
+@133="Begin Proficient (one slot) with the " // pluralized version of @131
+@141="Begins Proficient (one slot) with these weapon classes: "
+@142="Begins Specialized (two slots) with these weapon classes: "
+@143="Begin Proficient (one slot) with these weapon classes: " // pluralized version of @141
+
+@151="Begins Proficient (one slot) in "
+@152="Begins Proficient (one slot) in these fighting styles: "
+@153="Begin Proficient (one slot) in " // pluralized version of @151
+@154="Begin Proficient (one slot) in these fighting styles: " // pluralized version of @152
+
+@160="Weapon Use:"
+
+// in the below, don't translate FIRST_LEVEL, INTERVAL and MAINCLASS
+
+@168="Receives no additional weapon proficiencies to allocate at first level; receives one weapon proficiency to allocate at MAINCLASSlevel INTERVAL and another at every INTERVAL MAINCLASSlevels thereafter."
+
+@170="Receives FIRST_LEVEL additional weapon proficiencies to allocate at first level, and another weapon proficiency to allocate at MAINCLASSlevel INTERVAL and every INTERVAL MAINCLASSlevels thereafter."
+@171="Receives FIRST_LEVEL weapon proficiencies to allocate at first level, and another weapon proficiency to allocate at MAINCLASSlevel INTERVAL and every INTERVAL MAINCLASSlevels thereafter."
+@172="Receives one additional weapon proficiency to allocate at first level, and another weapon proficiency to allocate at MAINCLASSlevel INTERVAL and every INTERVAL MAINCLASSlevels thereafter."
+@173="Receives one weapon proficiency to allocate at first level, and another weapon proficiency to allocate at MAINCLASSlevel INTERVAL and every INTERVAL MAINCLASSlevels thereafter."
+
+@180="Receives one extra weapon proficiency slot at first level."
+@181="Receives PROF_NUMBER extra weapon proficiency slots at first level." // Don't translate PROF_NUMBER
+
+// these strings are search terms in the class/kit descriptions and must match what's used in the in-game text
+// these ones match IWD
+@201="Proficient (one slot)"
+@202="Specialization (two slots)"
+@203="Mastery (three slots)"
+@204="High Mastery (four slots)"
+@205="Grand Mastery (five slots)"
+@206="May only use the following weapons"
+@207="May only use non-bladed"
+@208="May not Specialize in ranged weapons"
+@209="May not use ranged weapons"
+@210="May only use weapons available to" // from Monk
+@211="May not use these weapons" // from my own code
+
+
+@250="Advantages:"
+@251="Disadvantages:"
+@252="CLASS FEATURES:"
+
+// this string is a search term in the race descriptions and must match what's used in the in-game text for races and subraces
+
+@260="traits:"
+
+
+
+// these ones match BG (if different)
+
+@301=NO_DIFFERENCE
+@302=NO_DIFFERENCE
+@303=NO_DIFFERENCE
+@304=NO_DIFFERENCE
+@305=NO_DIFFERENCE
+@306=NO_DIFFERENCE
+@307=NO_DIFFERENCE
+@308=NO_DIFFERENCE
+@309=NO_DIFFERENCE
+@310=NO_DIFFERENCE
+@311=NO_DIFFERENCE
+
+
+@350=NO_DIFFERENCE
+@351=NO_DIFFERENCE
+@352=NO_DIFFERENCE
+
+@360=NO_DIFFERENCE
+
+// these ones match BG2 (if different)
+
+@401=NO_DIFFERENCE
+@402=NO_DIFFERENCE
+@403=NO_DIFFERENCE
+@404=NO_DIFFERENCE
+@405=NO_DIFFERENCE
+@406=NO_DIFFERENCE
+@407=NO_DIFFERENCE
+@408=NO_DIFFERENCE
+@409=NO_DIFFERENCE
+@410=NO_DIFFERENCE
+@411=NO_DIFFERENCE
+
+
+@450=NO_DIFFERENCE
+@451=NO_DIFFERENCE
+@452=NO_DIFFERENCE
+
+@460=NO_DIFFERENCE
+
+// use these to swap out any lines in class descriptions that need to be swapped. Lines here should exactly match substrings of the vanilla description
+// and are swapped for the line exactly 100 steps further along in the tra
+
+@501="May wear any armor and use any weapon." // exactly matches IWD fighter
+@502="NO_SWAP" // match BG fighter if different
+@503="NO_SWAP"	// match BG2 fighter if different
+@504="They may Specialize in, but not Master, any weapon they can use." // main line used by warrior/x multiclasses
+@505="This character may Specialize in, but not Master, any weapon they can use." // ranger and FMC variant
+@506=", though weapons are restricted to only those allowed by the Cleric's ethos"
+@507=", though weapons are restricted to only those allowed by the Druid's ethos"
+@508="May not use any metal weapons (for example: swords, halberds, war hammers, or morning stars)."
+@509="May place 3 slots into Two-Weapon Style."
+@510="NO_SWAP"
+
+
+
+
+@601="May wear any armor."
+@602="May wear any armor."
+@603="May wear any armor."
+@604=""
+@605=""
+@606=""
+@607=""
+@608=""
+@609=""

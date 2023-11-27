@@ -1,0 +1,45 @@
+/// super-basic, vanilla-level, script for player-controlled fiend
+
+IF
+	ActionListEmpty()
+	See(NearestEnemyOf(Myself))
+	!General(LastSeenBy(Myself),UNDEAD)
+	HaveSpell(TANARI_DEATH_GAZE)
+THEN
+	RESPONSE #100
+		Spell(LastSeenBy(Myself),TANARI_DEATH_GAZE)  // SPIN996.SPL (Death Gaze)
+	RESPONSE #100
+		Continue()
+END
+		
+IF
+	ActionListEmpty()
+	See(NearestEnemyOf(Myself))
+	!General(LastSeenBy(Myself),UNDEAD)
+	HaveSpell(TANARI_PARALYZE)
+THEN
+	RESPONSE #100
+		Spell(LastSeenBy(Myself),TANARI_PARALYZE)  // SPIN999.SPL (Paralyze)
+	RESPONSE #100
+		Continue()
+END
+
+IF
+	ActionListEmpty()
+	See(NearestEnemyOf(Myself))
+	!General(LastSeenBy(Myself),UNDEAD)
+	HaveSpell(TANARI_VAMPIRIC_TOUCH)
+THEN
+	RESPONSE #75
+		Continue()
+	RESPONSE #25
+		ForceSpell(LastSeenBy(Myself),TANARI_VAMPIRIC_TOUCH)  // SPIN997.SPL (Vampiric Touch)
+END
+
+IF
+	ActionListEmpty()
+	See(NearestEnemyOf(Myself))
+THEN
+	RESPONSE #70
+		AttackReevaluate(LastSeenBy(Myself),30)
+END

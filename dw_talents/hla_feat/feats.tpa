@@ -1,0 +1,24 @@
+DEFINE_ACTION_FUNCTION feats BEGIN
+
+	LAF make_label STR_VAR label=dw#feats_installed END
+	LAF include STR_VAR file=make_feats.tph END
+	LAF include STR_VAR file=feat_spec.tph END
+	ACTION_FOR_EACH setup IN missing_items poison empowered_healing item_crafting paladin_touch wand_scroll_use BEGIN
+		LAF hla_feat_setup STR_VAR setup END
+	END
+	LAF ui_externalize_hlas END
+	LAF read_in_class_names RET_ARRAY class_names END
+	LAF read_in_kit_names RET_ARRAY kit_names END
+	LAF read_in_feats STR_VAR location=data table=feat_table.2da RET_ARRAY feat_names END
+	LAF read_in_basic_requirements_map RET_ARRAY basic_requirements_map END
+	LAF 2da_process_table INT_VAR STR_VAR table=feat_table.2da location=data function=make_feats_core END
+	LAF run STR_VAR file=ranger_favored_enemy END
+	LAF include STR_VAR file=install_feats.tph END
+	LAF install_feats STR_VAR feat_table=feat_table.2da location=data END
+	LAF install_feats STR_VAR feat_table=ranger_hate_table.2da path="%data_loc%" END
+
+	//LAF run STR_VAR file=start_at_level_one END
+
+
+
+END

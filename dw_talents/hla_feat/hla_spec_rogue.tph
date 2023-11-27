@@ -1,0 +1,583 @@
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION ROGUE_USE_ANY_ITEM BEGIN
+
+	INNER_ACTION BEGIN
+		// mark bards as having Use Wands (so they meet the prereq)
+		
+		spl.make[%spl_bard_use_wand_marker%]
+		[
+			m.ab.add{}
+			m.ab_fx.add{s_opcode=313 s_target=2 s_timing=9 s_resource:=dw-ftwnd}
+		]
+		kit.edit_all[BARD]
+		[
+		k.kit_apply_powers{%spl_bard_use_wand_marker% 1}
+		]
+
+
+	
+	END
+
+
+END
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION THIEF_USE_SCROLLS BEGIN
+
+	LPF ids_resolve INT_VAR min=150 STR_VAR ids=WAND idsfile=SPECIFIC RET specifics_wand=value END 
+	LPF hla_feat_setup STR_VAR setup=wand_scroll_use END
+	LPF add_feat_effect INT_VAR opcode=72 parameter1=specifics_wand parameter2=4 END
+
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION THIEF_USE_WANDS BEGIN
+
+	LPF hla_feat_setup STR_VAR setup=wand_scroll_use END
+	LPF add_feat_effect INT_VAR opcode=72 parameter1=0 parameter2=4 END
+
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION ROGUE_AVOID_DANGER BEGIN
+
+    // get upgrade stat
+	LPF ds_resolve_stat STR_VAR id=DW_POWER_UPGRADE_T1 RET stat_ind END
+    // patch in the advanced version
+	LPF ADD_SPELL_EFFECT INT_VAR insert_point=0 target=1 opcode=318 duration=1 parameter1=stat_ind parameter2=110 STR_VAR resource="%SOURCE_RES%" END
+	LPF ADD_SPELL_EFFECT INT_VAR insert_point=0 target=1 opcode=326 duration=1 parameter1=stat_ind parameter2=110 STR_VAR resource="%spl_advanced_avoid_danger_payload%" END
+
+   // make copy of advanced version with descriptive text stripped
+	INNER_ACTION BEGIN
+		COPY_EXISTING "%ROGUE_GREATER_EVASION%.spl" "override/%spl_advanced_avoid_danger_payload%.spl"
+			WRITE_LONG 0x8 "-1"
+	
+	END
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION ROGUE_ADVANCED_AVOID_DANGER
+BEGIN
+    LPF ds_resolve_stat STR_VAR id=DW_POWER_UPGRADE_T1 RET stat_ind END
+	LPF add_feat_effect INT_VAR opcode=328 special=1 parameter2=stat_ind END
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION ROGUE_SLIPPERY_MIND BEGIN
+
+	LPF hla_feat_setup STR_VAR setup=slippery_mind_avoid_death END
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=146 target=1 timing=1 STR_VAR resource="%spl_slippery_mind_payload%" END
+
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION ROGUE_AVOID_DEATH BEGIN
+
+	LPF hla_feat_setup STR_VAR setup=slippery_mind_avoid_death END
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=146 target=1 timing=1 STR_VAR resource="%spl_avoid_death_payload%" END
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION ROGUE_CRIPPLING_STRIKE
+BEGIN
+	// bespoke icon
+	LPF resolve_statdesc INT_VAR strref=RESOLVE_STR_REF (@3114) STR_VAR bam=rr#thl1b RET stat_num END
+	LPF ALTER_EFFECT INT_VAR match_opcode=142 parameter2=stat_num END
+	// 206->321
+	
+	LPF DELETE_EFFECT INT_VAR match_opcode=206 END
+	LPF ADD_SPELL_EFFECT INT_VAR insert_point=0 opcode=321 target=1 timing=1 STR_VAR resource="%SOURCE_RES%" END
+
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION SWASHBUCKLER_INSIGHTFUL_STRIKE
+BEGIN
+	// bespoke icon
+	LPF resolve_statdesc INT_VAR strref=RESOLVE_STR_REF (@3118) STR_VAR bam=rr#thl5b RET stat_num END
+	LPF ALTER_EFFECT INT_VAR match_opcode=142 parameter2=stat_num END
+	// 206->321
+	
+	LPF DELETE_EFFECT INT_VAR match_opcode=206 END
+	LPF ADD_SPELL_EFFECT INT_VAR insert_point=0 opcode=321 target=1 timing=1 STR_VAR resource="%SOURCE_RES%" END
+
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION ROGUE_SET_EXPLODING_TRAP
+BEGIN
+
+	// reroute to new payload spell
+	
+	LPF ALTER_EFFECT INT_VAR match_opcode=252 STR_VAR resource="rr#thl06" END
+	// new visual
+	LPF ALTER_EFFECT INT_VAR match_opcode=215 STR_VAR resource="rr#trpex" END
+	
+	INNER_ACTION BEGIN
+	
+	
+		COPY_EXISTING "rr#thl06.spl" override
+
+			// set projectile
+			
+			LPF ALTER_SPELL_HEADER INT_VAR projectile=RESOLVE_STR_REF (projectl rr#trpex) + 1 END 
+
+			// shift to save-for-half
+
+			LPF DELETE_EFFECT INT_VAR match_opcode=12 match_savingthrow=0 END
+			LPF ALTER_EFFECT INT_VAR match_opcode=12 dicenumber=15 save_for_half=1 END
+			
+			// use circle size to handle immunity to knockdown
+			
+			LPF DELETE_EFFECT INT_VAR match_opcode=177 END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=318 target=2 timing=0 duration=1 parameter2=13 STR_VAR resource="%SOURCE_RES%" END
+		BUT_ONLY
+	END
+	
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION BOUNTY_HUNTER_TOXIC_TRAP
+BEGIN
+
+	INNER_ACTION BEGIN
+	
+	
+		COPY_EXISTING "tg#toxb.spl" override
+
+			// set projectile
+			
+			LPF ALTER_SPELL_HEADER INT_VAR projectile=RESOLVE_STR_REF (projectl tg#toxt) + 1 END 
+
+			// flat immunity for anything immune to poison
+			
+			LPF CLONE_EFFECT INT_VAR match_opcode=254 opcode=318 target=2 timing=0 duration=1 parameter2=77 STR_VAR insert=below resource="%SOURCE_RES%" END
+
+		BUT_ONLY
+	END
+	
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION ASSASSIN_POISON_APTITUDE
+BEGIN
+
+	LPF add_feat_effect INT_VAR opcode=328 special=1 parameter2=RESOLVE_STR_REF (splstate DW_POWER_UPGRADE_T2) END
+	
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION ASSASSIN_POISON_EXPERTISE
+BEGIN
+
+	LPF add_feat_effect INT_VAR opcode=328 special=1 parameter2=RESOLVE_STR_REF (splstate DW_POWER_UPGRADE_T3) END
+	
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION BARD_RESONATING_WEAPON
+BEGIN
+
+	// duration 4 rds
+	
+	LPF ALTER_EFFECT INT_VAR match_duration=12 duration=24 END
+	
+	// 206->321
+	
+	LPF DELETE_EFFECT INT_VAR match_opcode=206 END
+	LPF ADD_SPELL_EFFECT INT_VAR insert_point=0 opcode=321 target=1 timing=1 STR_VAR resource="%SOURCE_RES%" END
+	
+	
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION BARD_SOUND_BARRIER
+BEGIN
+
+	// remove all the 206s and just use a splstate instead
+	LPF ds_resolve_stat STR_VAR id=SONIC_IMMUNITY RET stat_ind END
+	LPF DELETE_EFFECT INT_VAR match_opcode=206 END
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=328 target=1 duration=30 parameter2=stat_ind special=1 END
+	
+	// 321 at start
+
+	LPF ADD_SPELL_EFFECT INT_VAR insert_point=0 opcode=321 target=1 timing=1 STR_VAR resource="%SOURCE_RES%" END
+	
+	
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION BARD_MASS_CHARM
+BEGIN
+
+	// set projectile
+	
+	LPF ALTER_SPELL_HEADER INT_VAR projectile=RESOLVE_STR_REF (projectl rr#vrnp) + 1 END 
+	
+	// move to 324-based immunity system
+	
+	LPF DELETE_EFFECT INT_VAR match_opcode=177 END
+	LPF ADD_SPELL_EFFECT INT_VAR insert_point=0 opcode=324 target=2 duration=1 parameter1=IDS_OF_SYMBOL (splstate CHARM_IMMUNITY) parameter2=110 STR_VAR resource="%SOURCE_RES%" END
+	LPF ADD_SPELL_EFFECT INT_VAR insert_point=0 opcode=324 target=2 duration=1 parameter2=15 probability1=89 STR_VAR resource="%SOURCE_RES%" END //elves
+	LPF ADD_SPELL_EFFECT INT_VAR insert_point=0 opcode=324 target=2 duration=1 parameter2=19 probability1=29 STR_VAR resource="%SOURCE_RES%" END //half-elves
+	
+	
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION BARD_ENTHRALLING_MELODY
+BEGIN
+
+	// set projectile
+	
+	LPF ALTER_SPELL_HEADER INT_VAR projectile=RESOLVE_STR_REF (projectl rr#vrnp) + 1 END 
+	
+	// move to 324-based immunity system
+	
+	LPF DELETE_EFFECT INT_VAR match_opcode=177 END
+	LPF ADD_SPELL_EFFECT INT_VAR insert_point=0 opcode=324 target=2 duration=1 parameter1=IDS_OF_SYMBOL (splstate CONFUSION_IMMUNITY) parameter2=110 STR_VAR resource="%SOURCE_RES%" END
+	LPF ADD_SPELL_EFFECT INT_VAR insert_point=0 opcode=324 target=2 duration=1 parameter2=27 STR_VAR resource="%SOURCE_RES%" END //golems
+	
+	// remove fascination
+	
+	REPLACE_TEXTUALLY "rr#unfsc" "%spl_remove_enthralling_fascinate%" (8)
+		
+	INNER_ACTION BEGIN
+		spl.make[%spl_remove_enthralling_fascinate%]
+		[
+			m.ab.add{}
+			m.ab_fx.add{s_opcode=321 s_target=2 s_timing=1 s_resource:=rr#bhl10}
+		]
+	END
+			
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION BARD_SOUND_BURST
+BEGIN
+
+	// set projectile
+	
+	LPF ALTER_SPELL_HEADER INT_VAR projectile=RESOLVE_STR_REF (projectl rr#vrnp) + 1 END 
+	
+	// move to modern save-for-half
+	
+	LPF DELETE_EFFECT INT_VAR match_opcode=12 match_savingthrow=0 END
+	LPF ALTER_EFFECT INT_VAR match_opcode=12 dicenumber=15 save_for_half=1 END
+	
+	
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION BARD_MAESTRO_OF_ENCHANTMENT
+BEGIN
+	
+	INNER_ACTION BEGIN
+	
+OUTER_SPRINT 2da_bard_maestro dw-bdmae
+		// make the spell list
+		OUTER_SPRINT data ""
+		// check core spells
+		COPY_EXISTING_REGEXP - "spwi[1-6][0-4][0-9]\.spl" nowhere
+			counter=1
+			SPRINT resref "%SOURCE_RES%"
+			PATCH_IF (BYTE_AT 0x25)=4 BEGIN
+				PATCH_IF !RESOURCE_CONTAINS "hidespl.2da" "%resref%" BEGIN
+					SPRINT data "%data%%counter%%TAB%%resref%%TAB%3%WNL%"
+					++counter
+				END
+			END
+		// check extended spells
+		
+		ACTION_IF FILE_EXISTS "%data_loc_shared%/dw_ext_spell.ids" BEGIN
+			COPY - "%data_loc_shared%/dw_ext_spell.ids" nowhere
+				REPLACE_EVALUATE "\(SPWI6[0-9a-z][0-9az]\)" BEGIN
+					PATCH_IF FILE_EXISTS_IN_GAME "%MATCH1%.spl" BEGIN
+						INNER_ACTION BEGIN
+							COPY - "%MATCH1%.spl" nowhere
+								counter=1
+								SPRINT resref "%SOURCE_RES%"
+								PATCH_IF (BYTE_AT 0x25)=4 BEGIN
+									PATCH_IF !RESOURCE_CONTAINS "hidespl.2da" "%resref%" BEGIN
+										SPRINT data "%data%%counter%%TAB%%resref%%TAB%3%WNL%"
+										++counter
+									END
+								END	
+						
+						END						
+					END
+				END
+				""
+		END
+
+
+<<<<<<<< .../stratagems-inline/maestro.2da
+2DA V1.0
+****
+                           ResRef      Type
+%data%
+>>>>>>>>
+      COPY ".../stratagems-inline/maestro.2da" "override/%2da_bard_maestro%.2da"
+		EVALUATE_BUFFER
+		PRETTY_PRINT_2DA
+	
+		// make the payload spell
+		
+		COPY "%MOD_FOLDER%/%component_loc%/resource/hla/BARD_RESONATING_WEAPON/rr#bhl05.spl" "override/%spl_bard_maestro_payload%.spl"
+				SAY 0x8 @3141
+				SAY 0x50 @3142
+				LPF ALTER_SPELL_HEADER STR_VAR icon="rr#bf02" END
+				LPF DELETE_EFFECT END
+				LPF ADD_SPELL_EFFECT INT_VAR opcode=214 target=1 timing=1 STR_VAR resource="%2da_bard_maestro%" END
+				LPF ADD_SPELL_EFFECT INT_VAR opcode=174 target=1 timing=1 STR_VAR resource=M_FLUTE END
+
+	END
+	
+	// grant the payload spell
+	
+	FOR (n=1;n<=3;++n) BEGIN
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=171 target=1 timing=9 STR_VAR resource="%spl_bard_maestro_payload%" END
+	END
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION BARD_BREAK_ENCHANTMENT 
+BEGIN
+
+	INNER_ACTION BEGIN
+	
+		// make the payload spell
+
+		COPY "%MOD_FOLDER%/%component_loc%/resource/hla/BARD_SOUND_BURST/rr#bhl03.spl" "override/%spl_bard_break_enchantment_payload%.spl"
+				SAY 0x8 @3143
+				SAY 0x50 @3144
+				LPF ALTER_SPELL_HEADER INT_VAR target=1 projectile=1 STR_VAR icon="rr#bf01" END
+				LPF DELETE_EFFECT END
+				LPF ADD_SPELL_EFFECT INT_VAR opcode=220 target=2 parameter1=10 parameter2=4 timing=1 END // remove spell school: enchantment
+				LPF ADD_SPELL_EFFECT INT_VAR opcode=141 target=2 timing=1 parameter2=10 END // lighting effects
+				LPF ADD_SPELL_EFFECT INT_VAR opcode=174 target=1 timing=1 STR_VAR resource=M_FLUTE END // sound effect
+				LPF ADD_SPELL_EFFECT INT_VAR opcode=50 target=2 parameter1=0x96969600 duration=1 END // glow
+		
+	
+	END
+
+	// grant the payload spell
+	
+	FOR (n=1;n<=3;++n) BEGIN
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=171 target=1 timing=9 STR_VAR resource="%spl_bard_break_enchantment_payload%" END
+	END
+
+
+END
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION BARD_CALL_SPIRIT_WARRIOR
+BEGIN
+	LPF ALTER_SPELL_HEADER STR_VAR icon="rr#bf03" END
+	LPF DELETE_EFFECT END
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=174 target=1 timing=1 STR_VAR resource=EFF_M13 END
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=177 target=1 parameter2=2 duration=60 STR_VAR resource=rr#wspi END
+
+	INNER_ACTION BEGIN
+		COPY_EXISTING "rr#wspi.cre" override
+			WRITE_BYTE 0x270 5 // controlled
+	END
+
+END
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+DEFINE_PATCH_FUNCTION LINGERING_SONG BEGIN
+
+	LPF add_feat_effect INT_VAR opcode=99 parameter1=300 parameter2=2 END
+
+	// songs need to autoremove their effects
+	
+	INNER_ACTION BEGIN
+		ACTION_FOR_EACH song IN spcl542a spcl751a bardsong BARD_SONG_CURRAN BARD_SONG_TYMORA BARD_SONG KAUDIES BARD_SONG_SIREN BARD_SONG_SITH BARD_SONG_BALLAD BEGIN
+			ACTION_IF VARIABLE_IS_SET "%song%" BEGIN
+				OUTER_SPRINT resref "%%song%%"
+			END ELSE BEGIN
+				OUTER_SPRINT resref "%song%"
+			END		
+			COPY_EXISTING "%resref%.spl" override
+				LPF ADD_SPELL_EFFECT INT_VAR insert_point=0 opcode=321 target=2 timing=1 STR_VAR resource="%resref%" END
+			IF_EXISTS
+		END
+	END
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+DEFINE_PATCH_FUNCTION BARD_ENHANCED_SONG BEGIN
+
+	// bard song itself
+	INNER_ACTION BEGIN
+		COPY_EXISTING "rr#bdf04.spl" override
+			SAY 0x8 @3150
+			LPF ALTER_SPELL_HEADER INT_VAR projectile=RESOLVE_STR_REF (projectl rr#vrpo) + 1 END 
+			LPF ADD_SPELL_EFFECT INT_VAR insert_point=0 opcode=321 target=2 timing=1 STR_VAR resource="%SOURCE_RES%" END
+	
+	END
+	PATCH_IF FILE_EXISTS_IN_GAME "dw-920.spl" BEGIN // do we have the IWD bard songs?
+		// put in the new ability 
+		INNER_ACTION BEGIN
+			COPY_EXISTING "dw-920.spl" "override"
+				REPLACE_TEXTUALLY "spcl920a" "rr#bdf04" (8)
+				SAY 0x8 @3150
+				SAY 0x50 @3149
+		END
+		// remove the now-obsolete Ballad of Three Heroes and Tale of Curran Strongheart
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=172 target=2 timing=1 STR_VAR resource="#BARD1" END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=172 target=2 timing=1 STR_VAR resource="#BARD2" END
+	
+	END ELSE BEGIN // work with the basic songs
+		// patch in the new song
+	
+		REPLACE_TEXTUALLY "spcl920a" "rr#bdf04" (8)
+	
+	END
+
+END
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+DEFINE_PATCH_FUNCTION SKALD_ENHANCED_SONG BEGIN
+
+	// skald song itself
+	INNER_ACTION BEGIN
+		COPY_EXISTING "rr#bsk02.spl" override
+			SAY 0x8 @3153
+			LPF ALTER_SPELL_HEADER INT_VAR projectile=RESOLVE_STR_REF (projectl rr#vrpo) + 1 END 
+			LPF ADD_SPELL_EFFECT INT_VAR insert_point=0 opcode=321 target=2 timing=1 STR_VAR resource="%SOURCE_RES%" END
+	
+	END
+	PATCH_IF FILE_EXISTS_IN_GAME "dw-920.spl" BEGIN // do we have the IWD bard songs?
+		// put in the new ability 
+		INNER_ACTION BEGIN
+			COPY_EXISTING "dw-920.spl" "override/%spl_skald_enhanced_song_payload%"
+				REPLACE_TEXTUALLY "spcl920a" "rr#bsk02" (8)
+				REPLACE_TEXTUALLY "dw-920" "%spl_skald_enhanced_song_payload%" (8)
+				SAY 0x8 @3153
+				SAY 0x50 @3152
+		END
+		// remove the now-obsolete Saga of the North (and Curran Strongheart if applicable)
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=172 target=2 timing=1 STR_VAR resource="%spl_use_skald_bardsong%" END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=172 target=2 timing=1 STR_VAR resource="#BARD2" END
+	
+	END ELSE BEGIN // work with the basic songs
+		// patch in the new song
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=251 target=2 timing=9 STR_VAR resource="rr#bsk02" END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=206 target=2 timing=9 STR_VAR resource="spcl542" END
+	
+	END
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+DEFINE_PATCH_FUNCTION JESTER_ENHANCED_SONG BEGIN
+
+	// jester song itself
+	INNER_ACTION BEGIN
+		COPY_EXISTING "rr#bjs02.spl" override
+			SAY 0x8 @3156
+			LPF ALTER_SPELL_HEADER INT_VAR projectile=RESOLVE_STR_REF (projectl rr#vrnp) + 1 END 
+			LPF ADD_SPELL_EFFECT INT_VAR insert_point=0 opcode=321 target=2 timing=1 STR_VAR resource="%SOURCE_RES%" END
+			// move to 324-based immunity system
+			
+			LPF DELETE_EFFECT INT_VAR match_opcode=177 END
+			LPF ADD_SPELL_EFFECT INT_VAR insert_point=0 opcode=324 target=2 duration=1 parameter1=IDS_OF_SYMBOL (splstate CONFUSION_IMMUNITY) parameter2=110 STR_VAR resource="%SOURCE_RES%" END
+			LPF ADD_SPELL_EFFECT INT_VAR insert_point=0 opcode=324 target=2 duration=1 parameter2=27 STR_VAR resource="%SOURCE_RES%" END //golems
+
+			
+		COPY_EXISTING "rr#bjs10.spl" override
+			REPLACE_TEXTUALLY "rr#unfsc" "%spl_remove_jester_fascinate%" (8)
+		
+		spl.make[%spl_remove_jester_fascinate%]
+		[
+			m.ab.add{}
+			m.ab_fx.add{s_opcode=321 s_target=2 s_timing=1 s_resource:=rr#bjs10}
+		]
+			
+	
+	END
+	PATCH_IF FILE_EXISTS_IN_GAME "dw-920.spl" BEGIN // do we have the IWD bard songs?
+		// put in the new ability 
+		INNER_ACTION BEGIN
+			COPY_EXISTING "dw-920.spl" "override/%spl_jester_enhanced_song_payload%"
+				REPLACE_TEXTUALLY "spcl920a" "rr#bjs02" (8)
+				REPLACE_TEXTUALLY "dw-920" "%spl_jester_enhanced_song_payload%" (8)
+				SAY 0x8 @3156
+				SAY 0x50 @3155
+		END
+		// remove the now-obsolete Jester's Melody
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=172 target=2 timing=1 STR_VAR resource="%spl_use_jester_bardsong%" END
+	
+	END ELSE BEGIN // work with the basic songs
+		// patch in the new song
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=251 target=2 timing=9 STR_VAR resource="rr#bjs02" END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=206 target=2 timing=9 STR_VAR resource="spcl751" END
+	
+	END
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION BLADE_FINESSE BEGIN
+
+	// get variable
+	LPF ds_resolve_stat STR_VAR id=DW_POWER_UPGRADE_T2 RET stat_ind END
+  
+	// set it
+	
+	LPF add_feat_effect INT_VAR opcode=328 target=1 special=1 parameter2=stat_ind END
+  
+	INNER_ACTION BEGIN
+  
+	// modify Offensive Spin
+		COPY_EXISTING "%BLADE_OFFENSIVE_SPIN%.spl" override
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=318 target=2 duration=1 parameter1=stat_ind parameter2=111 STR_VAR resource="%SOURCE_RES%" END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=301 target=1 duration=24 parameter1=1 END
+	
+	// modify defensive spin
+		COPY_EXISTING "%BLADE_DEFENSIVE_SPIN%.spl" override
+			LPF DELETE_EFFECT INT_VAR match_opcode=176 END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=318 target=2 duration=1 parameter1=stat_ind parameter2=110 STR_VAR resource="%SOURCE_RES%" END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=176 target=1 duration=24 parameter2=1 END
+
+	END
+
+END

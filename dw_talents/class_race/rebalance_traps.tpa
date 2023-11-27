@@ -1,0 +1,85 @@
+////////////////////////////////////////////////////////////////////////////////////////
+// Traps - weakened low-level versions
+////////////////////////////////////////////////////////////////////////////////////////
+
+
+DEFINE_ACTION_FUNCTION rebalance_traps BEGIN
+
+
+	// generic thief traps
+
+	spl.edit[spcl411]
+	[
+		m.ab.clone{s_level=6 |match="s_level=1"}
+		m.ab_fx.alter{s_dicenumber=1|match="p_level=1 AND s_opcode=12"}
+	]
+	spl.edit[spcl412|edit_strrefs_in_place:i=1]
+	[	
+	desc:=@28
+		m_description=desc.patch
+		{
+			snare_desc:=@25
+			REPLACE_TEXTUALLY "SET_SNARE_PLACEHOLDER" "%snare_desc%"
+		}
+	]
+
+	// update thief class description
+	
+	OUTER_SPRINT set_snare_string @26
+	OUTER_SPRINT level_one @29
+	OUTER_SPRINT level_one_desc @30
+	OUTER_SPRINT level_six_desc @31
+	
+	class.edit[THIEF|edit_strrefs_in_place:i=0]
+	[
+		k_clastext_descstr=k_clastext_descstr.patch
+		{
+			REPLACE_TEXTUALLY "^\(.*\)%level_one%.*" "\1%level_one_desc%%WNL%\1%level_six_desc%"
+		}
+	]
+
+	// bounty hunter
+	
+	LAF rebalance_bounty_hunter END
+
+END
+
+////////////////////////////////////////////////////////////////////////////////////////
+// Bounty hunters - weakened low-level versions of special snare
+////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION rebalance_bounty_hunter BEGIN
+
+	// special traps
+	
+	spl.edit[spcl415]
+	[
+		m.ab.clone{s_level=6|match="s_level=1"}
+		m.ab_fx.alter{s_dicenumber=2|match="p_level=1 AND s_opcode=12"}
+		m.ab_fx.alter{s_savebonus=0|match="p_level=1 AND s_save_vs_spell=1"}
+	]
+	spl.edit[spcl414|edit_strrefs_in_place:i=1]
+	[
+		snare_desc:=@42
+		desc:=@43
+		m_description=desc.patch{
+			REPLACE_TEXTUALLY SET_SNARE_PLACEHOLDER "%snare_desc%"
+		}
+	]
+
+	// update BH class description
+	
+	OUTER_SPRINT set_snare_string @47
+	OUTER_SPRINT level_one @44
+	OUTER_SPRINT level_one_desc @45
+	OUTER_SPRINT level_six_desc @46
+	
+	kit.edit[BOUNTY_HUNTER|edit_strrefs_in_place:i=0]
+	[
+		k_clastext_descstr=k_clastext_descstr.patch
+		{
+			REPLACE_TEXTUALLY "^\(.*\)%level_one%.*" "\1%level_one_desc%%WNL%\1%level_six_desc%"
+		}
+	]
+
+END

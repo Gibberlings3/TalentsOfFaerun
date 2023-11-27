@@ -1,0 +1,223 @@
+////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
+////    Change fiend-summoning spells to be aligned to caster alignment (so that
+////    Cacofiend summons Bone Fiends and Summon Fiend summons Cornugons (for L casters)
+////    and Gate summons Balors (for C casters)
+////
+////    If SR is installed, we do this only for an NPC version of the spell, i.e.
+////    insulate SR changes
+////
+////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION fiend_summoning BEGIN
+
+	LAF check_label STR_VAR label=dw#fiend_summoning_tof RET value END //idempotent
+	ACTION_IF !value BEGIN 
+		LAF make_label STR_VAR label=dw#fiend_summoning_tof END
+		LAF run STR_VAR file=fiend_spells_basic END
+		ACTION_IF GAME_IS iwdee BEGIN
+			LAF fiend_summons_iwd END
+		END
+		LAF fiend_summons_cre END
+		LAF fiend_summons_spl END
+	END
+END
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+/// Edit the spells - each casts an alignment-sensitive version, and we also build neutral versions
+/// that have a 50% chance of summoning tanarri or baatezu (and which can be swapped by aTweaks to
+/// call up genuine yugoloths)
+///
+/// As of 6/22 we no longer support the yugoloths - eff_n is unused.
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION fiend_summons_spl
+BEGIN
+
+
+<<<<<<<< .../stratagems-inline/fiend_spl_table
+         spell_name                 eff_l            eff_n          eff_c         desc:i	
+         WIZARD_CACOFIEND           dw#hlbf          dw#sumya       spcaco        32103		
+         WIZARD_SUMMON_FIEND        dw#hlco          dw#sumyn       spfiend       32102		
+         WIZARD_GATE                spgate           dw#sumyu       dw#hlba       32100		
+         CLERIC_GATE                spgate           dw#sumyu       dw#hlba       32101		
+>>>>>>>>
+<<<<<<<< .../stratagems-inline/fiend_spl_table_sr
+         spell_name                 eff_l            eff_n          eff_c         desc		sr_npc_name
+         WIZARD_SUMMON_FIEND        dw#hlco          dw#sumyn       spfiend       32102		dw#sumfi
+         WIZARD_GATE                spgate           dw#sumyu       dw#hlba       32100		dw#gatem
+>>>>>>>>
+    ACTION_IF demivrgvs BEGIN 
+       OUTER_SPRINT table fiend_spl_table_sr
+    END ELSE BEGIN
+       OUTER_SPRINT table fiend_spl_table
+    END
+    LAF 2da_process_table INT_VAR inline=1 STR_VAR table function=fiend_summons_spl_helper END
+
+   // restrict scroll range (SR zaps some of these scrolls, so don't assume they exist)
+   
+   ACTION_FOR_EACH scroll IN WIZARD_SUMMON_FIEND_SCROLL WIZARD_CACOFIEND_SCROLL WIZARD_GATE_SCROLL BEGIN
+      ACTION_IF VARIABLE_IS_SET "%scroll%" BEGIN
+         OUTER_SPRINT item EVAL "%%scroll%%"
+		 COPY_EXISTING "%item%.itm" override
+			LPF ALTER_ITEM_HEADER INT_VAR target=5 END
+      END
+   END
+
+END
+
+DEFINE_ACTION_FUNCTION fiend_summons_spl_helper
+     INT_VAR desc=0
+	 STR_VAR spell_name=""
+             eff_l=""
+             eff_c=""
+             eff_n=""
+			 sr_npc_name=""
+BEGIN
+
+   LAF log_this INT_VAR repeat=0 STR_VAR file="scs_modified_spells.2da" input="%spell_name%" END
+
+
+   // get the spell names
+   
+   OUTER_SPRINT spell_main EVAL "%%spell_name%%"
+   OUTER_SPRINT spell_name_new "%spell_name%_SCS"
+
+
+    LAF ds_resolve_stat STR_VAR id=DW_SCS_CASTER RET stat_ind END
+
+   // edit the main spell 
+   
+
+	ACTION_IF !demivrgvs BEGIN
+
+		spl.edit[%spell_main%]
+		[
+			m_description:=(AT desc)
+		]
+   
+		ACTION_IF FILE_EXISTS_IN_GAME "%spell_main%a.spl" BEGIN
+			OUTER_SPRINT spell_main "%spell_main%a"
+		END 
+		PRINT "%spell_main%"
+		spl.edit[%spell_main%]
+		[
+			m.ab.alter{target=5|match="s_level=1"}
+			m.ab_fx.alter{s_parameter1=16 s_parameter2=8 s_resource:=%eff_l%|match="s_opcode=177 AND p_level=1"}
+			m.ab_fx.clone{s_parameter1=48 s_resource:=%eff_c%|match="s_opcode=177 AND p_level=1 AND s_parameter1=16"}
+			m.ab_fx.clone{s_parameter1=32 s_resource:=%eff_c%|match="s_opcode=177 AND p_level=1 AND s_parameter1=16"}
+		]
+ 
+ 
+  END ELSE BEGIN
+  
+  
+     spl.copy[%spell_main%=>%sr_npc_name%]
+	[
+		m.ab.alter{target=5|match="s_level=1"}
+		m.ab_fx.alter{s_parameter1=16 s_parameter2=8 s_resource:=%eff_l%|match="s_opcode=177 AND p_level=1"}
+		m.ab_fx.clone{s_parameter1=48 s_resource:=%eff_c%|match="s_opcode=177 AND p_level=1 AND s_parameter1=16"}
+		m.ab_fx.clone{s_parameter1=32 s_resource:=%eff_c%|match="s_opcode=177 AND p_level=1 AND s_parameter1=16"}
+		m_description:=(AT desc)
+	]
+  
+  END
+	
+
+END
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+/// Actually make the summons
+/// (scripting is very basic here, only covering the analog of vanilla scripting for the new creatures)
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION fiend_summons_cre
+BEGIN
+
+   // summoned bone fiend
+
+	cre.copy[gorbat5=>dw#bfsum]
+	[
+		m_allegiance:=GOODBUTRED
+		m_gender:=SUMMONED_DEMON
+		m_dv:=dw#bfsum
+		m_script_override:=dw#llbnf
+		m_xp_value=0
+	]
+   // summoned cornugon
+   
+   cre.copy[gorbat3=>dw#cosum]
+	[
+		m_allegiance:=GOODBUTRED
+		m_gender:=SUMMONED_DEMON
+		m_dv:=dw#cosum
+		m_script_override:=dw#llcor
+		m_script_default:=WTASIGHT
+		m_xp_value=0
+	]
+   
+   // summoned balor
+
+   cre.copy[dembal01=>dw#basum]
+	[
+		m_allegiance:=GOODBUTRED
+		m_gender:=SUMMONED_DEMON
+		m_dv:=dw#basum
+		m_script_override:=dw#llbal
+		m_script_class:=""
+		m_script_default:=WTASIGHT
+		m_xp_value=0
+	]
+
+   LAF check_label STR_VAR label=dw#fiend RET value END
+   ACTION_IF !value BEGIN
+		LAF install STR_VAR files="dw#llbnf.baf dw#llcor.baf dw#llbal.baf" location=resource END		
+   END
+
+   // eff
+
+	eff.copy[spcaco=>dw#hlbf][m_resource:=dw#bfsum]
+	eff.copy[spgate=>dw#hlba][m_resource:=dw#basum]
+	eff.copy[spfiend=>dw#hlco][m_resource:=dw#cosum]
+
+
+END
+
+////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION fiend_summons_iwd BEGIN
+
+	ACTION_FOR_EACH file IN
+		b1-12m4.itm 
+		bonefd.itm
+		cornugon.itm
+		dembal01.cre
+		gorbat3.cre
+		gorbat5.cre
+		helmnoan.itm
+	BEGIN
+		COPY "%MOD_FOLDER%/spell/resource/iwdfiend/%file%" override
+			PATCH_MATCH "%SOURCE_RES%" WITH
+			dembal01 BEGIN
+				SAY 0x8 @41005
+				SAY 0xc @41005
+			END
+			gorbat3 BEGIN
+				WRITE_LONG 0x8 26498
+				WRITE_LONG 0xc 26498
+			END
+			gorbat5 BEGIN
+				SAY 0x8 @41006
+				SAY 0xc @41006			
+			END
+			DEFAULT
+			END
+	END
+	LAF spl_resolve_ids STR_VAR ids=DEMON_FEAR type=innate RET resref END
+	ACTION_IF !FILE_EXISTS_IN_GAME "%resref%.spl" BEGIN
+		COPY "%MOD_FOLDER%/spell/resource/iwdfiend/SPIN890.SPL" "override/%resref%.spl"
+			SAY 0x8 @41007
+			SAY 0xc @41007
+	END
+END

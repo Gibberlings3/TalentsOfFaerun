@@ -1,0 +1,41 @@
+DEFINE_ACTION_FUNCTION druid_mage BEGIN
+
+	// make the core kit
+	OUTER_SPRINT kit DW_DRUID_MAGE
+	
+	kit.copy[CLERIC_MAGE=>%kit%]
+	[
+		k_name:=@1
+		k_description:=@2
+		k.kit_apply_powers{%spl_one_fewer_spell% 1|class=mage}
+		k.kit_apply_powers{%c_to_d_apply_string%|class=cleric}
+		k.kit_grant_powers{%c_to_d_grant_string%|class=cleric}
+		IF {is_iwd} 
+		{{k_bio:=19421}}
+		ELSE
+		{{ k_bio:=15885}}
+	]
+	
+	// impose class restrictions
+	
+	LAF impose_druid_class_features STR_VAR kit END
+
+	// add as a virtual class on the chargen screen
+	
+	LAF 2da_read STR_VAR file=clsrcreq.2da case=lower RET_ARRAY array END
+	ACTION_FOR_EACH column IN human elf dwarf gnome halfling half_elf halforc BEGIN
+		OUTER_SET "%column%"=$array("cleric_mage" "%column%")
+	END	
+	LAF add_virtual_class INT_VAR name=1 desc=2 multiclass=1 STR_VAR ident="druid_mage" human elf dwarf gnome halfling half_elf halforc all_races="false" parent=CLERIC_MAGE END
+	LAF assign_kit_to_virtual_class STR_VAR kit class=druid_mage END
+
+	// log the kit 
+
+	LAF set_multiclass_components STR_VAR kit components="DRUID" END
+	
+	// log for prof component
+	
+	LAF prof_redirect_kit_parent STR_VAR kit parent=DRUID_MAGE END
+
+
+END

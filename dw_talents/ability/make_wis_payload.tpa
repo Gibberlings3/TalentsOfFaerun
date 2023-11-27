@@ -1,0 +1,99 @@
+DEFINE_ACTION_FUNCTION make_wis_payload BEGIN
+
+
+	// get splprot entry
+	LAF resolve_splprot_entry INT_VAR stat=39 value="-1" STR_VAR relation=equal RET splprot_value=value END
+
+	// master spells
+
+	// spells (for shamans)
+	CREATE spl "dw3ewis"
+		LPF add_basic_spell_ability END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=318 target=2 timing=1 parameter1=favored_soul_stat parameter2=splprot_value_state STR_VAR resource=dw3ewis END
+		FOR (value=minimum_bonus_spell_abil;value<=25;value+=1) BEGIN
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 STR_VAR resource="dw3ep%value%" END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 parameter1=value parameter2=splprot_value STR_VAR resource="dw3ep%value%" END
+		END
+	
+	// Will saves
+	CREATE spl "dw3ewi2" 
+		LPF add_basic_spell_ability END
+		FOR (value=0;value<=25;value+=1) BEGIN
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 STR_VAR resource="dw3ew%value%" END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 parameter1=value parameter2=splprot_value STR_VAR resource="dw3ew%value%" END
+			INNER_ACTION BEGIN
+				LAF make_wis_secondary_spell INT_VAR wis=value END
+			END
+		END
+
+	// Monk AC bonus
+	CREATE spl "dw3ewi3" 
+		LPF add_basic_spell_ability END
+		FOR (value=12;value<=25;value+=1) BEGIN
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 STR_VAR resource="dw3mn%value%" END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 parameter1=value parameter2=splprot_value STR_VAR resource="dw3mn%value%" END
+			INNER_ACTION BEGIN
+				LAF make_wis_secondary_spell_monk INT_VAR wis=value END
+			END
+		END
+
+
+	// mxsplwis.2da
+	
+	LAF check_ini STR_VAR ini=use_original_priest_spell_table RET value END
+	ACTION_IF !value BEGIN
+		ACTION_IF hybrid_table BEGIN
+			OUTER_SPRINT file "hybrid_bonus_spells"
+		END ELSE BEGIN
+			OUTER_SPRINT file "3e_bonus_spells"
+		END
+	END
+	COPY "%MOD_FOLDER%/%component_loc%/data/%file%.2da" "override/mxsplwis.2da"
+		COUNT_2DA_ROWS 10 rowcount
+		FOR (row=0;row<rowcount;++row) BEGIN
+			SET_2DA_ENTRY row 8 10 null
+			SET_2DA_ENTRY row 9 10 null
+		END
+		SET_2DA_ENTRY row 7 9 null
+		SET_2DA_ENTRY row 8 9 null
+		REPLACE_TEXTUALLY null ""
+		
+END
+
+DEFINE_ACTION_FUNCTION make_wis_secondary_spell
+	INT_VAR wis=0
+BEGIN
+	CREATE spl "dw3ew%wis%"
+		LPF add_basic_spell_ability END
+		LPF 3e_abil_standard INT_VAR ability=wis RET modifier END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=37 target=2 timing=9 parameter1=modifier END // spells
+
+
+END
+
+
+
+
+DEFINE_ACTION_FUNCTION make_wis_secondary_spell_2
+	INT_VAR wis=0
+BEGIN
+	CREATE spl "dw3ew%wis%" 
+		LPF add_basic_spell_ability END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 STR_VAR resource="dw3ep%value%" END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 parameter1=value parameter2=splprot_value STR_VAR resource="dw3ep%value%" END
+
+
+
+END
+
+DEFINE_ACTION_FUNCTION make_wis_secondary_spell_monk
+	INT_VAR wis=0
+BEGIN
+	CREATE spl "dw3mn%wis%" 
+		LPF add_basic_spell_ability END
+		LPF 3e_abil_standard INT_VAR ability=wis RET modifier END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=0 target=2 timing=9 parameter1=modifier END // AC
+
+
+
+END

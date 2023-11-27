@@ -1,0 +1,22 @@
+@1="Base Attack Bonus"
+@2="Main Hand Attack Bonus"
+@3="Armor Bonus"
+@4="Off Hand Attack Bonus"
+@5="Attack Bonus"
+@6="Armor Class" // must exactly match the string used in description text for armor items
+@7="Armor Bonus to AC"
+@8="AC"
+@9="maximum Armor Bonus"
+@10="minimum base armor class" // match the local version of the string in Spell Revisions 'Armor' description
+@11="2 against missile weapons" // match the local version of the string in unmodded 'Shield' description
+@12="with an additional +2 against missile weapons"
+@13=": Set to"
+@14="Shield Bonus to AC"
+@15="Deflection Bonus to AC"
+@16="2 vs. missile attacks" // match the local version of the string in 'amul15'
+@17="a base Armor Bonus"
+@18="an Armor Bonus"
+@19="Attack Bonus Increased by"
+@20="Bracers of Defense" // must exactly match the name of the in-game items (e.g. BRAC01 in IWDEE)
+@21="You cannot equip more than one item that grants a Deflection bonus to Armor Class."
+

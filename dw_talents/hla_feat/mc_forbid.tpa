@@ -1,0 +1,112 @@
+DEFINE_ACTION_FUNCTION mc_forbid BEGIN
+
+	//read in feat data
+	
+	LAF 2da_read STR_VAR path="%data_loc_shared%" file=dw_feat_data.2da RET_ARRAY feat_data_array=array END
+	// read in lua map
+	
+	LAF 2da_read STR_VAR file=luabbr.2da RET_ARRAY abbr_array=array END
+	
+	// read in forbidden mc feats 
+	
+	LAF 2da_read STR_VAR file=hla_forbid.2da location=data RET_ARRAY hla_forbid_rows=rows hla_forbid_array=array END
+
+	// read in redundant feats
+	
+	LAF array_read STR_VAR file=hla_redundant.2da location=data RET_ARRAY redundant_array=array END
+
+	
+	// main processing - forbidden
+	
+	ACTION_CLEAR_ARRAY mc_hla_forbid
+	ACTION_PHP_EACH hla_forbid_rows AS row=>discard BEGIN
+		OUTER_SPRINT list $hla_forbid_array("%row%" "FORBID")
+		ACTION_CLEAR_ARRAY hla_forbid
+		OUTER_WHILE "%list%" STR_CMP "" BEGIN
+			LAF return_first_entry STR_VAR list separator="," RET entry list END
+			ACTION_TO_UPPER entry
+			OUTER_SPRINT resref $feat_data_array("%entry%" RESREF)
+			OUTER_SPRINT type $feat_data_array("%entry%" TYPE)
+			ACTION_IF "%type%" STR_EQ "grant" BEGIN
+				OUTER_SPRINT ref "GA_%resref%"
+			END ELSE BEGIN
+				OUTER_SPRINT ref "AP_%resref%"
+			END
+			OUTER_SPRINT $hla_forbid("%ref%") ""
+		END
+		ACTION_IF VARIABLE_IS_SET $abbr_array("%row%" ABBREV) BEGIN
+			OUTER_SPRINT lu_file $abbr_array("%row%" ABBREV)
+			PRINT "lu file is %lu_file%"
+			COPY_EXISTING "lu%lu_file%.2da" override
+				found_forbidden=0
+				COUNT_2DA_COLS colcount
+				READ_2DA_ENTRIES_NOW lua_data colcount
+				FOR (row=0;row<lua_data;++row) BEGIN
+					READ_2DA_ENTRY_FORMER lua_data row 1 hla
+					PATCH_IF VARIABLE_IS_SET $hla_forbid("%hla%") BEGIN
+						found_forbidden=1
+						SET_2DA_ENTRY row 1 colcount DW_FOR_DELETION
+					END
+				END
+				PATCH_IF found_forbidden BEGIN
+					REPLACE_TEXTUALLY ".*DW_FOR_DELETION.*[%WNL%%LNL%%MNL%]" ""
+					COUNT_2DA_ROWS colcount rowcount
+					FOR (row=0;row<rowcount;++row) BEGIN
+						SET_2DA_ENTRY row 0 colcount (row + 1)
+					END
+					PRETTY_PRINT_2DA
+				END
+			IF_EXISTS
+			BUT_ONLY
+		END
+	END
+	
+	// main processing - redundant
+	
+	ACTION_PHP_EACH redundant_array AS hla_1=>hla_2 BEGIN
+		ACTION_TO_UPPER hla_1
+		ACTION_TO_UPPER hla_2
+		OUTER_SPRINT resref_1 $feat_data_array("%hla_1%" RESREF)
+		OUTER_SPRINT type_1 $feat_data_array("%hla_1%" TYPE)
+		OUTER_SPRINT resref_2 $feat_data_array("%hla_2%" RESREF)
+		OUTER_SPRINT type_2 $feat_data_array("%hla_2%" TYPE)
+		ACTION_IF "%type_1%" STR_EQ "grant" BEGIN
+			OUTER_SPRINT ref_1 "GA_%resref_1%"
+		END ELSE BEGIN
+			OUTER_SPRINT ref_1 "AP_%resref_1%"
+		END
+		ACTION_IF "%type_2%" STR_EQ "grant" BEGIN
+			OUTER_SPRINT ref_2 "GA_%resref_2%"
+		END ELSE BEGIN
+			OUTER_SPRINT ref_2 "AP_%resref_2%"
+		END
+		OUTER_SPRINT $redundant_ref_array("%ref_1%") "%ref_2%"
+	END
+	
+	ACTION_PHP_EACH abbr_array AS kit=>lu BEGIN
+		COPY_EXISTING "lu%lu%.2da" override
+			found_redundancy=0
+			PHP_EACH redundant_ref_array AS ref_1=>ref_2 BEGIN
+				PATCH_IF INDEX_BUFFER ("%ref_1%")>=0 && INDEX_BUFFER ("%ref_2%")>=0 BEGIN
+					found_redundancy=1
+					REPLACE_TEXTUALLY ".*%ref_2%.*[%WNL%%MNL%%LNL%]" ""
+				END
+			END
+			PATCH_IF found_redundancy BEGIN
+				COUNT_2DA_COLS colcount
+				COUNT_2DA_ROWS colcount rowcount
+				FOR (row=0;row<rowcount;++row) BEGIN
+					SET_2DA_ENTRY row 0 colcount (row + 1)
+				END
+				PRETTY_PRINT_2DA			
+			END		
+		IF_EXISTS
+		BUT_ONLY
+	END
+
+
+
+
+
+
+END

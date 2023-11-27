@@ -1,0 +1,346 @@
+
+@2="Aasimar"
+@3="Tiefling"
+@4="Moon Elf"
+@5="Drow Elf"
+@6="Wild Elf"
+@7="Rock Gnome"
+@8="Deep Gnome"
+@9="Goblin"
+@10="Gray Dwarf"
+@11="Sun Elf"
+@12="Wood Elf"
+@13="Shield Dwarf"
+@14="Gold Dwarf"
+@15="Strongheart Halfling"
+@16="Lightfoot Halfling"
+@17="Ghostwise Halfling"
+@18="Half-Orc"
+@20="Air Genasi"
+@21="Earth Genasi"
+@22="Fire Genasi"
+@23="Water Genasi"
+@24="Genasi"
+@25="Winged Elf"
+
+
+@51="goblin"
+@52="gray dwarf"
+@53="deep gnome"
+@54="aasimar"
+@60="genasi"
+
+@70="Unavailable to drow and svirfneblin."
+@71="Disadvantages:" // must exactly match the string used in the 'Wizard Slayer' kit description
+
+
+@101="HUMANS: Humans are the predominant race in Faerûn, and rule most of the significant empires and kingdoms in the Realms. Compared to most of the nonhuman races, who tend to get along with others of their own race reasonably well, the humans of Faerûn are divided into innumerable competing nations, states, sects, religions, bandit kingdoms, and tribes. Humans argue about anything, fight about most things they argue about, and hold dear among their many deities quite a few who actively encourage that type of behavior.
+
+Traits:"
+@102="AASIMAR: Carrying the blood of a celestial, an aasimar is usually good-aligned and fights against evil in the world. Some have a minor physical trait suggesting their heritage, such as silver hair, golden eyes, or an unnaturally intense stare. Those descended from a celestial minion of a Faerûnian deity often carry a birthmark in the shape of the deity’s holy symbol or some other mark significant to that faith.
+
+Traits:
+- Infravision
+- +2 save bonus vs. enchantment spells
+- 10% resistance to fire and cold damage
+- Innate magic: Sunscorch 1/day"
+
+@103="TIEFLINGS: Because they are descended from evil outsiders, those who know of their ancestry immediately consider most tieflings evil and untrustworthy. Not all tieflings are evil or untrustworthy, but enough are that the prejudice tends to cling. Some tieflings have a minor physical trait suggesting their heritage, such as pointed teeth, red eyes, small horns, the odor of brimstone, cloven feet, or just an unnatural aura of wrongness. Those descended from an infernal minion of a Faerûnian deity often carry a birthmark of the deity’s holy symbol or another trait related to that evil faith.
+
+Traits:
+- Infravision
+- 15% resistance to fire, cold and acid damage
+- Innate magic: Blindness 1/day"
+@104="MOON ELVES: Moon elves tend to be slimmer than humans. Also called silver elves, they have fair skin (sometimes tinged with blue) and hair of silver-white, black, or blue. (Humanlike colors are rare, but possible.) Their eyes are blue or green, with gold flecks.  Moon elves are the most common elves in Faerûn, and the elven species most tolerant of humans (most half-elves are descended from moon elves). Many of them have a deep-seated hatred for their subterranean cousins, the drow elves.
+
+Traits:
+- 90% resistance against charm and sleep magics
+- Infravision
+- +1 attack bonus with bows, short swords, and long swords"
+@105="DROW ELVES: The drow are descended from the elves who retreated into the Underdark after the ancient Crown Wars. They are infamous for their cruelty, evil, and drive to dominate. Also called dark elves, the drow have skin that resembles charcoal or obsidian, as well as stark white or pale yellow hair. They commonly have very pale eyes in shades of lilac, silver, pink, and blue. They also tend to be smaller and thinner than most elves. It is very rare for drow to associate with humans and other surface races; those who do are feared and reviled by surfacers even as they are condemned as traitors by the drow themselves.
+
+Traits:
+- 90% resistance against charm and sleep magics
+- Magic resistance: 25% + 1% per level (in the underdark, drow are even more resistant to magic, but long exposure to the surface weakens their resilience)
+- Innate magic: Faerie Fire 3/day
+- Light sensitivity: Daylight blinds drow for the first round of exposure, and thereafter they suffer a- 2 penalty to attack rolls, saving throws and Dexterity as long as they remain in daylight
+-- 2 to initial Reputation: The fearsome reputation of the dark elves prejudices surface folk against them
+- Infravision
+- +1 attack bonus with bows, short swords, and long swords"
+
+@106="WILD ELVES: The very rare wild elves are rarely seen by others, because they live in the heart of thick forests and they have incredible skill at keeping hidden. Also called green elves, their skin tends to be dark brown, and their hair ranges from black to light brown, lightening to silvery white with age.
+
+Traits:
+- 90% resistance against charm and sleep magics
+- Infravision
+- +1 attack bonus with bows, short swords, and long swords"
+@107="ROCK GNOMES: Rock gnomes are the most common type of gnomes in Faerûn, and are usually just called gnomes, since they are the only sort that surface dwellers ever see. The rock gnomes of Faerûn are inquisitive, irrepressible, and at times insincere. Equipped by nature with keen curiosity and a knack for mechanical workings, gnomes excel at intricate crafts such as gemcutting, toymaking, and clockwork engineering. 
+
+Traits:
+- +2 saving throw bonus vs. Wands and Spells
+- +1 attack bonus vs. goblins, hobgoblins, and kobolds
+- Small size: +1 AC bonus
+- +4 AC bonus vs. ogres and giants
+- Infravision
+- +40 bonus to Lore (rock gnomes are inveterate tinkerers and have a knack for discovering the functioning of magic items)"
+@108="DEEP GNOMES: Also known as svirfneblin, the deep gnomes of the Realms are a secretive, mysterious race. Found in the deepest caverns of the Underdark, the svirfneblin live in constant fear of slavery or destruction at the hands or dark elves, mind flayers, and duergar. Deep gnomes are legendary for their ability to handle stone and gems. They have brown or gray skin and gray or white hair.
+
+Traits:
+- +2 saving throw bonus vs. Wands and Spells
+- Small size: +1 AC bonus
+- Infravision
+- Permanent Nondetection (as per the spell)
+- Innate magic: Blindness and Blur 1/day each
+- Magic resistance: 25% + 1% per level 
+- Light sensitivity: Daylight blinds deep gnomes for the first round of exposure, and thereafter they suffer a- 2 penalty to attack rolls, saving throws and Dexterity as long as they remain in daylight"
+
+
+@109="Goblin desc"
+@110="GRAY DWARVES: Also known as duergar, the gray dwarves of the Forgotten Realms live even deeper underground than their shield dwarf and gold dwarf cousins. The duergar share little in common with other dwarves and practice slavery in their monstrous subterranean cities. Often motivated by greed and a thirst for power, gray dwarves are known throughout the Realms as devious, efficient warriors. Duergar almost always have gray hair and skin.
+
+Traits:
+- +2 saving throw bonus vs Poison/Death, Wands, and Spells
+- Infravision
+- Innate magic: Invisibility 1/day
+- Immunity to paralysis (though not to stunning)
+- Light sensitivity: Daylight blinds duergar for the first round of exposure, and thereafter they suffer a- 2 penalty to attack rolls, saving throws and Dexterity as long as they remain in daylight" 
+
+
+@111="SUN ELVES: Sun elves are less common across Faerûn than moon elves, because most live on Evermeet, where nonelves are not allowed. Also called gold elves, they have bronze skin, golden blond, copper, or black hair, and green or gold eyes. They are seen as the most civilized and haughty elves, preferring to remain separate from nonelven races.
+
+Traits:
+- 90% resistance against charm and sleep magics
+- Infravision
+- +1 attack bonus with bows, short swords, and long swords"
+@112="WOOD ELVES: Wood elves are reclusive, but less so than the almost feral wild elves. Also called copper elves, they have coppery skin tinged with green, and brown, green, or hazel eyes. Their hair is usually brown or black, with blond and coppery-red occasionally found. Wood elves tend to be hardier than other elves, more solid and grounded than their cousins. This attitude is reflected in their culture and traditions: wood elves tend more towards physical pursuits than do other elves, and they view ancient elven history with a more critical eye. Wood elves seek a quiet harmony with the wider world.
+
+Traits:
+- 90% resistance against charm and sleep magics
+- Infravision
+- +1 attack bonus with bows, short swords, and long swords"
+
+@113="SHIELD DWARVES: Shield dwarves are short stocky fellows, easily identifiable by their size and shape. They have ruddy cheeks, dark eyes, and dark hair. Shield dwarves tend to be dour and taciturn. In large part, this demeanor has developed due to the slow erosion of shield dwarf kingdoms over the centuries. They are given to hard work, and care little for most humor. They typically enjoy beer, ale, and mead, but most of all, they love gold.
+
+Traits:
+- +2 saving throw bonus vs Poison/Death, Wands, and Spells
+- +1 attack bonus vs. goblins, hobgoblins, orcs, and half-orcs
+- +4 AC bonus vs. ogres and giants
+- Infravision" 
+@114="GOLD DWARVES: Unlike the shield dwarves, the gold dwarves maintained their great kingdom in the Great Rift and did not decline in terrible wars against evil humanoids. While they practiced some magic, they never acquired the hubris that caused the downfall of some human nations. Confident and secure in their remote home, the gold dwarves gained a reputation for haughtiness and pride.
+
+Traits:
+- +2 saving throw bonus vs Poison/Death, Wands, and Spells
+- +1 attack bonus vs. aberrations of the underdark: mind flayers, beholders, carrion crawlers, and slimes
+- +4 AC bonus vs. ogres and giants
+- Infravision" 
+@115="STRONGHEART HALFLINGS: While the lightfoot halflings value the experience of travel and the sight of new lands and peoples, the strongheart halflings are a more organized, orderly, and industrious race. Strongheart halflings often surprise those more familiar with their wandering lightfoot cousins with their confident and readily competitive nature.
+
+Traits:
+- +1 attack bonus with slings, darts, and throwing weapons
+- One extra proficiency at first level (stronghearts have a strong drive to compete and many opportunities to practice their skills)
+- Small size: +1 bonus to AC
+- +4 AC bonus vs. ogres and giants"
+
+@116="LIGHTFOOT HALFLINGS: Unlike the more segregated strongheart halflings, the lightfoots of the Forgotten Realms are a common sight in human, elven, and dwarven lands. Lightfoot halflings are known for their incredible luck and their love of travel. They tend to be more gregarious than even their strongheart kin.
+
+Traits:
+- +1 attack bonus with slings, darts, and throwing weapons
+- Halfling luck: +1 bonus to all saving throws
+- Small size: +1 bonus to AC
+- +4 AC bonus vs. ogres and giants"
+@117="GHOSTWISE HALFLINGS: Ghostwise halflings are the feral, reclusive cousins of lightfoot and strongheart halflings. They are found most often in the southern forests of the Realms living in small communities. Ghostwise halflings are rarely seen in large cities, but occasionally set out to explore the world for reasons known only to them. Visitors to ghostwise settlements often report that the halflings have kinship so tight with their fellows that they can communicate without speaking.
+
+Traits:
+- +1 attack bonus with slings, darts, and throwing weapons
+- one use per day of the barbarian's Rage power
+- Small size: +1 bonus to AC
+- +4 AC bonus vs. ogres and giants"
+@118="HALF-ORCS: Half-orcs are born from the union of human and orc parents. They are as tall as humans, but a little heavier due to their muscular builds. Their greenish pigmentation, sloping forehead, jutting jaw, prominent teeth, and coarse body hair make their lineage plain for all to see. Half-orcs are known for their great strength.
+
+Traits:
+- +3 hit points at first level, with an additional +1 at each subsequent level
+- Infravision"
+
+@119="HALF-ELVES: Half-elves are a mix of human and elven blood. They are handsome folk, with good features from each of their parent races. A half-elf has the curiosity, inventiveness, and ambition of their human ancestors and the refined senses, love of nature, and artistic tastes of their elven ancestors.
+
+Traits:
+- 30% resistance against charm and sleep magics.
+- Infravision."
+@120="AIR GENASI: Air genasi see themselves as the inheritors of the sky, the wind, and the very air of the world. They are most often neutral. They appear mostly human, with one or two unusual traits reflecting their quasi-elemental nature, such as a light blue color to their skin or hair, a slight breeze in their presence at all times, or flesh that is cool to the touch. They care little for their appearance and tend to have wind-tossed hair and much-mended clothes. Their emotions vary quickly between calm reserve and great intensity.
+
+Traits:
+- Infravision
+- No need to breathe: immune to Stinking Cloud and Suffocation spells
+- Innate magic: Zone of Sweet Air 1/day"
+
+@121="EARTH GENASI: Earth genasi are slow to act, ponderous in thought, and set in their  ways. They are most often neutral. They appear mostly human, with one or two unusual traits reflecting their quasi-elemental nature, such as earthlike skin, rough facial features, or eyes like black pits. They favor neutral colors and simple clothing, and while some appear to inadvertently collect dirt on their clothes, others keep a neat and polished appearance.
+
+Traits:
+- Infravision
+- +2 bonus to Armor Class
+- Immunity to petrification
+- Innate magic: Magical Stone 1/day"
+
+@122="FIRE GENASI: Fire genasi are hot-blooded and quick to anger, proud and unafraid to take action. They are most often neutral. They appear mostly human, with one or two unusual traits reflecting their quasi-elemental nature, such as skin the color of burnt coal, red hair that waves like flames, or eyes that glow when the genasi is angry. They prefer to dress simply and elegantly, although their fashions can be more flamboyant than the most outrageous trend.
+
+Traits:
+- Infravision
+- 30% resistance to fire
+- 30% vulnerability to cold
+- +20% bonus to any fire damage
+- Innate magic: Flame Blade 1/day"
+
+@123="WATER GENASI: Water genasi are patient and slow to change, preferring to wear away opposition slowly, but are capable of great violence in extreme situations. They are most often neutral. All have one or more traits that reflect their quasi-elemental nature, such as lightly scaled skin, clammy flesh, blue-green skin or hair, or hair that waves as if underwater. They dress sparsely, preferring clothing that won’t bind when in the water and ripples like waves when dry.
+
+Traits:
+- Infravision
+- 15% resistance to slashing, piercing and missile damage
+- Innate magic: Mist Ball 1/day"
+
+
+@301="Planetouched"
+@302="PLANETOUCHED: Faerûn is home to many native peoples and has many magic portals that lead to distant parts of the world as well as to other worlds. Through these portals come visitors from other planes, including outsiders of various sorts, some of whom dally or settle in Faerûn and have children with local humans. Eventually their extraplanar heritage gets diluted over several generations, resulting in a person with a slight bloodline of celestial, infernal, or elemental origin. These beings, known as the planetouched, have unusual abilities based on the nature of their distant ancestors, but in most ways appear completely human. The planetouched prefer to blend in with human society and rarely form communities of their own. 
+
+The most common sorts of planetouched are aasimar (descended from celestials), tieflings (descended from demons or devils), and genasi (descended from elemental-related outsiders, such as genies)."
+
+
+
+
+
+
+@500="She was a human from Silverymoon and a friend of his for many seasons." // must exactly match the sentence in BGEE string 15895 which describes the PC's mother
+@501="She was a dwarf from Mithral Hall and a friend of his for many seasons." // must exactly match the sentence in BGEE string 15890 which describes the PC's mother
+@502="She was an elf from the High Forest and a friend of his for many seasons." // must exactly match the sentence in BGEE string 15891 which describes the PC's mother
+@503="She was a gnome from the Thunder Peaks region and a friend of his for many seasons." // must exactly match the sentence in BGEE string 15984 which describes the PC's mother
+@504="She was a halfling from Luiren and a friend of his for many seasons." // must exactly match the sentence in BGEE string 15893 which describes the PC's mother
+
+
+@510="She was a dark elven priestess of Eilistraee in exile from the drow city of Menzoberranzan, and a friend of his for many seasons."
+@511="She was an elven traveller originally from the Forest of Shadows, and a friend of his for many seasons."
+@512="She was a dwarf from the faraway Great Rift and a friend of his for many seasons."
+@513="She was a gray dwarf exile from the duergar city of Gracklstugh, and a friend of his for many seasons."
+@514="She was a deep gnome traveller originally from the svirfneblin city of Blingdenstone, and a friend of his for many seasons."
+@515="She was a tiefling from Waterdeeep and a friend of his for many seasons."
+@516="She was an aasimar from Silverymoon and a friend of his for many seasons."
+@517="She was a genasi from Calimshan and a friend of his for many seasons."
+@518="She was a sun elf from Everaska and a friend of his for many seasons."
+@519="She was a ghostwise halfling from the Chondalwood and a friend of his for many seasons."
+
+@600="Elven resistance"
+@601="Dwarven resistance"
+@602="Halfling luck"
+@603="Small size"
+@604="No need to breathe"
+
+@700="Dazzled"
+@701="Faerie Fire"
+@702="Faerie Fire 
+(Alteration)
+
+Level: 1
+Sphere: Weather
+Range: Sight
+Duration: 4 rounds/level
+Casting Time: 4
+Area of Effect: single target
+Saving Throw: None
+
+This spell outlines its target with a pale violet glow, making positions and movements easily visible. Outlined creatures are easier to strike, giving them an Armor Class penalty of- 2. Faerie Fire has no effect in full daylight."
+@703="Having a drow in your party reduces others' trust in you."
+@704="Your drow nature reduces others' trust in you."
+@705="Faerie Fire is ineffective in daylight."
+@706="Invisibility
+(Illusion/Phantasm)
+
+Range: 0
+Duration: Special
+Casting Time: 1
+Area of Effect: The caster
+Saving Throw: None
+
+This spell turns a creature invisible and makes it undetectable by normal vision or infravision. Items dropped or put down by the invisible creature become visible; items picked up disappear if tucked into the clothing or pouches worn by the creature. The spell remains in effect until it is magically broken or dispelled, until the recipient talks to or attacks any creature, or until 24 hours have passed. Thus, the invisible being can open doors, eat, climb stairs, etc., but if <PRO_HESHE> attacks or casts a spell, <PRO_HESHE> immediately becomes visible (although the invisibility enables <PRO_HIMHER> to attack first)."
+
+@708="Blindness
+(Illusion/Phantasm)
+
+Range: Visual range of the caster
+Duration: 8 hours
+Casting Time: 1
+Area of Effect: 1 creature
+Saving Throw: Neg.
+
+This spell blinds its target. A Save vs. Spell is allowed and, if successful, there are no harmful effects. If a victim is blinded, <PRO_HESHE> receives a- 4 penalty to <PRO_HISHER> attack rolls and Armor Class. Blind creatures are immune to gaze attacks."
+@709="Blur
+(Illusion/Phantasm)
+
+Level: 2
+Range: 0
+Duration: 3 rounds + 1 round/level
+Casting Time: 1
+Area of Effect: The caster
+Saving Throw: None
+
+Blur causes the svirfneblin's body to become blurred, shifting and wavering. This distortion gives <PRO_HIMHER> +1 to all Saving Throws, and all missile and melee attacks have a- 3 penalty to hit <PRO_HIMHER>."
+@710="Sunscorch"
+@711="Sunscorch
+(Invocation)
+
+Range: Visual range of the caster
+Duration: Instant
+Casting Time: 1
+Area of Effect: 1 creature
+Saving Throw: Special
+
+When this spell is cast, a brilliant ray of scorching heat slants down from the sky and strikes one target of the caster's choice. Any creature struck by the ray takes 1d6 points of damage, plus 1 point per level of the caster; however, if the target is an undead creature or a monster vulnerable to bright light, the damage is 1d6, plus 2 points per level of the caster. In addition to sustaining damage, victims are also blinded for 3 rounds. The victim is allowed a Save vs. Spell for half damage and to avoid the blindness."
+@712="Zone of Sweet Air
+(Abjuration)
+
+Range: 0
+Duration: Instant
+Casting Time: 1
+Area of Effect: Current area
+Saving Throw: None
+
+Zone of Sweet Air repels all noxious elements from poisonous vapors, including magically created vapors such as Cloudkill. This spell will dismiss all clouds in the entire area that the caster is currently in. The spell offers no protection against poisonous vapors created by a dragon's breath weapon, such as the chlorine gas of a green dragon."
+
+@713="Magical Stone
+(Enchantment)
+
+Range: Visual range of the caster
+Duration: Instant
+Casting Time: 1
+Area of Effect: 1 creature
+Saving Throw: None
+
+By using this spell, the genasi can temporarily enchant a small pebble, which is then hurled or slung at an opponent. The stone deals 3d4 points of crushing damage to whomever it hits except undead creatures, who take 6d4 points of crushing damage instead. The stone is considered a magical weapon, although it does not have an attack or damage bonus."
+
+@714="Flame Blade
+(Evocation)
+
+Range: 0
+Duration: 4 rounds + 1 round/level
+Casting Time: 1
+Area of Effect: The caster
+Saving Throw: None
+
+With this spell, the caster causes a blazing ray of red-hot fire to spring forth from <PRO_HISHER> hand. This blade-like ray is wielded as if it were a scimitar (i.e. it uses the Scimitar proficiency). If the caster successfully hits with the flame blade in melee combat, the creature struck suffers 1d4 points of slashing damage plus 2 points of fire damage, with a further 2 fire damage if the creature is undead. However, it is not a magical weapon in the normal sense of the term, so creatures struck only by magical weapons are not harmed by it."
+
+
+@715="Mist Ball"
+@716="Mist Ball
+
+Range: sight
+Duration: Instant
+Casting Time: 1
+Area of Effect: 1 creature
+Saving Throw: Special
+
+This ability launches a ball of stinging mist to cloud the target's vision. The target suffers 1d4 damage unless it makes a Saving Throw vs. Breath Weapon. In addition, the target is blinded for 1 round (no save)."
+
+@800="ELVES: Elves tend to be shorter and slimmer than humans. Their features are finely chiseled and delicate, and they speak in melodic tones. Elves are looked upon as being frivolous and aloof. They concern themselves with natural beauty, dancing, frolicking, and other similar pursuits. Their humor is clever, as are their songs and poetry. There are seven racial divisions of elves within the realms: sun elves, moon elves, wood elves, wild elves, sea elves, dark elves (drow), and the rarely-seen winged elves (avariel)."
+
+@801="DWARVES: Dwarves are short and stocky, easily identifiable by their size and shape. They ruled vast kingdoms beneath hill and mountain long before humans wandered into Faerûn. The two main dwarven subraces are the shield dwarves of northern Faerûn and the gold dwarves of the far south. The gray dwarves, or duergar, are an Underdark race less common than their surface kindred; they are generally evil, though a few exiles defy this rule."
+
+@802="GNOMES: Kin to dwarves, gnomes are noticeably smaller than their distant cousins. Gnomes, as they proudly maintain, are also less rotund than dwarves. Most have dark tan or brown skin, white hair, and rather large noses. Gnomes have lively and sly senses of humor, especially for practical jokes. They have a love for nature that is only matched by their love for gems and jewelry. There are two racial divisions of gnomes within the realms: rock gnomes and deep gnomes (svirfneblin)."
+
+@803="HALFLINGS: Halflings stand about three feet tall, with florid skin and dark hair and eyes. Three major subraces of halfling dwell in Faerûn: the lightfoot halflings, the rare ghostwise halflings, and the strongheart halflings of Luiren in the south. Like the rock gnomes, many halflings live among the Big Folk in the human lands. They are resourceful and quick, perfectly at home among the sprawling human lands or living apart in their own settled communities. The halflings’ name for their race is the hin, although most accept “halfling” with a shrug and a smile."

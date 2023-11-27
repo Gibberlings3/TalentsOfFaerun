@@ -1,0 +1,186 @@
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+DEFINE_ACTION_FUNCTION prof_add_kit_weapons 
+	STR_VAR kit="" weapons=""
+BEGIN
+
+	LAF initialize_prof_component END
+	COPY_EXISTING "kitlist.2da" "%workspace%"
+		LPF kit_get_id STR_VAR kit RET kit_id END
+	BUT_ONLY
+	OUTER_SPRINT lua_line ""
+	OUTER_WHILE "%weapons%" STRING_COMPARE_CASE "" BEGIN
+		LAF return_first_entry STR_VAR list="%weapons%" RET entry weapons=list END
+		OUTER_SET prof_num=IDS_OF_SYMBOL (stats "PROFICIENCY%entry%")
+		ACTION_IF "%lua_line%" STRING_EQUAL "" BEGIN
+			OUTER_SPRINT lua_line "[%prof_num%]=true"
+		END ELSE BEGIN
+			OUTER_SPRINT lua_line "%lua_line%, [%prof_num%]=true"					
+		END		
+	END
+	APPEND "m_dw_prd.lua" ~dwKitWeapons[%kit_id%]={%lua_line%}~ KEEP_CRLF
+
+END
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION initialize_prof_component BEGIN	
+	ACTION_IF !FILE_EXISTS_IN_GAME "m_dw_prd.lua" BEGIN
+		COPY ".../stratagems-inline/m_dw_prd.lua" "override"
+	END
+END
+
+<<<<<<<< .../stratagems-inline/m_dw_prd.lua
+dwKitWeapons={}
+dwProfKitRedirect={}
+dwKitExtraProfs={}
+>>>>>>>>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///	change a kit's parent class for the purposes of choosing initial proficiencies
+/// (the new class should give the same number of profs as the old one; that means it's probably going to be a bespoke virtual class)
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION prof_redirect_kit_parent
+	STR_VAR kit=""
+			parent=""
+BEGIN
+	// initialize if necessary
+	LAF initialize_prof_component END
+
+	// get the kit number
+	LAF kit_get_id STR_VAR kit RET kit_id END
+	// get the parent number
+	OUTER_SET parent_number=IDS_OF_SYMBOL (class "%parent%")
+	ACTION_IF parent_number<0 BEGIN
+		LAF array_read STR_VAR file=prof_virtual_class.2da locbase=prof location=data RET_ARRAY virtual_class_array=array END
+		ACTION_TO_UPPER parent
+		OUTER_SET parent_number=$virtual_class_array("%parent%")
+	END
+	APPEND "m_dw_prd.lua" "dwProfKitRedirect[%kit_id%]=%parent_number%%WNL%"
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+DEFINE_ACTION_FUNCTION prof_add_kit_extra_slots
+	INT_VAR slots=0
+	STR_VAR kit="" 
+BEGIN
+
+	LAF initialize_prof_component END
+	LAF kit_get_id STR_VAR kit RET kit_id END
+	APPEND "m_dw_prd.lua" ~dwKitExtraProfs[%kit_id%]=%slots%~ KEEP_CRLF
+
+END
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// tweak weapprof.2da by class and kit
+// ('class' automatically alters any kit prof with that parent class and the same initial value as the parent)
+// 'function' should take as input an INT_VAR, 'value', and optionally also a STR_VAR 'class' and an INT_VAR 'prof_id', and return a new value 'value_new'
+//
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION alter_profs
+	STR_VAR class=""
+			kit=""
+			function=""
+BEGIN
+
+	// read in the original values (to compare with kits)
+	// & also get the array of column headers
+	LAF get_weapprof_path RET weapprof_path END
+	COPY "%weapprof_path%" "%weapprof_path%"
+		COUNT_2DA_COLS colcount
+		READ_2DA_ENTRIES_NOW weapprof_data colcount
+		FOR (row=0;row<weapprof_data;++row) BEGIN
+			READ_2DA_ENTRY_FORMER weapprof_data row 1 id
+			SET $weapprof_id("%row%")=id
+		END
+		FOR (col=4;col<colcount;++col) BEGIN
+			READ_2DA_ENTRY 0 (col - 1) (colcount - 1) header
+			SET $weapprof_cols("%header%")=col
+			FOR (row=0;row<weapprof_data;++row) BEGIN
+				READ_2DA_ENTRY_FORMER weapprof_data row col value
+				PATCH_IF !IS_AN_INT value BEGIN
+					value=0
+				END
+				SET $all_weapprof_entries("%header%" "%row%")=value
+			END
+		END
+
+	BUT_ONLY
+
+
+	// get the classes into an array indexed by their number
+	ACTION_CLEAR_ARRAY classes_used
+	OUTER_WHILE "%class%" STRING_COMPARE "" BEGIN
+		LAF return_first_entry STR_VAR list="%class%" RET entry class=list END
+		ACTION_TO_UPPER entry
+		OUTER_SET class_number=IDS_OF_SYMBOL (class "%entry%")
+		OUTER_SPRINT $classes_used("%class_number%") "%entry%"
+	END
+
+	// get the kits used into an array
+	ACTION_CLEAR_ARRAY kits_used
+	OUTER_WHILE "%kit%" STRING_COMPARE "" BEGIN
+		LAF return_first_entry STR_VAR list="%kit%" RET entry kit=list END
+		ACTION_TO_UPPER entry
+		OUTER_SPRINT $kits_used("%entry%") ""
+	END
+
+	// get the kit/parent-class map
+	ACTION_CLEAR_ARRAY kits_parents
+	ACTION_PHP_EACH classes_used AS discard=>class BEGIN
+		OUTER_SPRINT $kits_parents("%class%") "%class%" 
+	END
+	COPY_EXISTING "kitlist.2da" override
+		COUNT_2DA_COLS colcount
+		FOR (col=1;col<colcount;++col) BEGIN
+			READ_2DA_ENTRY 0 (col - 1) (colcount - 1) header
+			PATCH_IF "%header%" STRING_EQUAL_CASE "class" BEGIN
+				class_col=col
+			END
+		END
+		READ_2DA_ENTRIES_NOW kitlist_data colcount
+		FOR (row=0;row<kitlist_data;++row) BEGIN
+			READ_2DA_ENTRY_FORMER kitlist_data row class_col class_number_here
+			READ_2DA_ENTRY_FORMER kitlist_data row 1 kit_label
+			TO_UPPER kit_label
+			PATCH_IF VARIABLE_IS_SET $kits_used("%kit_label%") BEGIN
+				SPRINT $kits_parents("%kit_label%") "NONE"
+			END ELSE
+			PATCH_IF VARIABLE_IS_SET $classes_used("%class_number_here%") BEGIN
+				SPRINT parent_class $classes_used("%class_number_here%")
+				SPRINT $kits_parents("%kit_label%") "%parent_class%" 
+			END
+		END
+	BUT_ONLY
+
+	// make the updates
+	
+	COPY "%weapprof_path%" "%weapprof_path%"
+		COUNT_2DA_COLS colcount
+		PHP_EACH kits_parents AS kit=>parent BEGIN
+			SET col=$weapprof_cols("%kit%")
+			FOR (row=0;row<weapprof_data;++row) BEGIN
+				SET prof_id=$weapprof_id("%row%")
+				value=$all_weapprof_entries("%kit%" "%row%")
+				PATCH_IF "%parent%" STRING_EQUAL_CASE "none" BEGIN
+					val_kit=value
+					SPRINT parent "%kit%"
+				END ELSE BEGIN
+					val_kit=$all_weapprof_entries("%parent%" "%row%")
+				END
+				PATCH_IF val_kit=value BEGIN
+					LPF "%function%" INT_VAR value prof_id STR_VAR class="%parent%" RET value_new END
+					SET_2DA_ENTRY row col colcount value_new
+				END
+			END
+		END
+	BUT_ONLY
+
+
+
+END
+

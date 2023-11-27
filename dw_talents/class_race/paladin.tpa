@@ -1,0 +1,86 @@
+//// Convert BG2 paladin to (basically) IWD
+
+DEFINE_ACTION_FUNCTION paladin BEGIN
+
+	// Pro/evil becomes self-only, lasts 24 turns
+	
+	spl.edit["%PALADIN_PROTECTION_FROM_EVIL%"]
+	[
+		old1:=@700
+		new1:=@701
+		old2:=@702
+		new2:=@703
+		m_description=m_description.patch{ 
+			REPLACE_TEXTUALLY "%old1%" "%new1%"
+			REPLACE_TEXTUALLY "%old2%" "%new2%"
+		}
+		m.ab.alter{s_target=5}
+		m.ab_fx.alter{s_target=1;;s_duration=s_duration>0?1440:0}
+	]
+	
+	// Detect Evil becomes at-will
+
+	spl.edit["%PALADIN_DETECT_EVIL%"]
+	[
+		new:=@704
+		m_description:="%m_description% %new%"
+		m.ab_fx.add{s_opcode=172 s_target=1 s_timing=1 s_resource:=%PALADIN_DETECT_EVIL%}
+		m.ab_fx.add{s_opcode=171 s_target=1 s_timing=1 s_resource:=%PALADIN_DETECT_EVIL%}
+	]
+
+	// immunity to disease
+
+	spl.make["#paldise"]
+	[
+		m.ab.add{}
+		m.immunity_effect{diseased}
+	]
+
+	// immunity to fear
+
+	spl.make["#palfear"]
+	[
+		m.ab.add{}
+		m.immunity_effect{fear}
+	]
+
+	// cure disease by touch
+
+	PALADIN_CURE_DISEASE=spl.copy["%CLERIC_CURE_DISEASE%"=>PALADIN_CURE_DISEASE|standard_icons:i=0]
+	[
+		m_type:=innate
+		m.ab.alter{s_location:=innate s_casting_time=1}
+		LPF splconv_update_desc INT_VAR new_ct=1 STR_VAR old_type=cleric new_type=innate tra=sfo_lua old_desc="%m_description%" tra_path="%MOD_FOLDER%/%lua_loc%/lang" RET m_description=new_desc END
+	]
+
+	// smite evil
+	PALADIN_SMITE_EVIL=spl.copy[spcl122=>PALADIN_SMITE_EVIL|source_location=resource icon_location=resource icon_base_name=spcl122]
+	[
+		m_name:=@705
+		m_description:=@706
+	]
+	LAF install STR_VAR file="#eff_p15.wav" location=resource END
+
+	// fill in CLAB file
+	
+
+	kit.edit_all[PALADIN|filter=~"__" STRING_COMPARE_CASE BLACKGUARD~ clab_only:i=1]
+	[
+		k.kit_remove_powers{%PALADIN_PROTECTION_FROM_EVIL% %PALADIN_DETECT_EVIL%}
+		k.kit_grant_powers{%PALADIN_PROTECTION_FROM_EVIL% 1,%PALADIN_DETECT_EVIL% 1,%PALADIN_SMITE_EVIL% 1,%PALADIN_CURE_DISEASE% 1}
+		k.kit_apply_powers{#paldise 1,#palfear 3}	
+	]
+	
+	// new spell table
+
+	COPY "%MOD_FOLDER%/%component_loc%/resource/mxsplpal.2da" override
+		PRETTY_PRINT_2DA
+
+	// update description
+	
+	LAF 2daq_extract STR_VAR resref=clastext row=PALADIN column=DESCSTR RET desc_strref=value END
+	STRING_SET_EVALUATE desc_strref @707
+
+
+END
+

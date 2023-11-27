@@ -1,0 +1,19 @@
+@1="Force Mage"
+@2="FORCE MAGE: Force mages focus on spells that manipulate pure magical force, using it to protect themselves from harm, lash out with telekinetic or arcane energy, or immobilize or stun opponents. They scorn magic that manipulates the elements individually.
+
+Advantages:
+- May cast one additional spell per level.
+- Receives a +25% bonus when scribing scrolls of force-related spells.
+- Force Focus: +10% resistance to magic damage, and targets suffer +20% magic damage.
+
+Disadvantages:
+- May not learn or cast any spells related to elemental earth (including acid), water (including cold), fire, or air (including lightning). The complete list of such spells is: BLOCKED_SPELL_PLACEHOLDER."
+
+@3="one that utilises pure magical force"
+@4="Force"
+
+@21="Fighter/Force Mage"
+@22="Cleric/Force Mage"
+@23="Force Mage/Thief"
+@24="Fighter/Force Mage/Thief"
+@25="Fighter/Force Mage/Cleric"

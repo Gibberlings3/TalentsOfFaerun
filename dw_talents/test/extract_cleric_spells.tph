@@ -1,0 +1,114 @@
+DEFINE_ACTION_FUNCTION extract_cleric_spells BEGIN
+
+	// get the map from kit ID to kit name
+	LAF 2da_read STR_VAR file=kitlist.2da RET_ARRAY kit_array=array END
+	
+	// get data from m_dw_ssd
+	COPY_EXISTING - "m_dw_ssd.lua" nowhere
+
+		// get the contents of the spheres (and similar)
+		REPLACE_EVALUATE "dwSpellList\['\([^']*\)'\]={\([^}]*\)}" BEGIN
+			SPRINT sphere_id "%MATCH1%"
+			SPRINT $sphere_list("%sphere_id%") ""
+			INNER_PATCH "%MATCH2%" BEGIN
+				REPLACE_EVALUATE "\([A-Z0-9_]+\) *= *true" BEGIN
+					PATCH_IF !VARIABLE_IS_SET $spell_names("%MATCH1%") BEGIN
+						INNER_ACTION BEGIN
+							COPY_EXISTING - "%MATCH1%.spl" nowhere
+								READ_STRREF 0x8 name
+								SPRINT $spell_names("%MATCH1%") "%name%"
+								level=LONG_AT 0x34
+								SET $spell_levels("%MATCH1%")=level
+						END
+					END ELSE BEGIN
+						SPRINT name $spell_names("%MATCH1%")
+						level=$spell_levels("%MATCH1%")
+					END
+					SET $"sphere_contents_%sphere_id%_%level%"("%name%")=1
+				END
+				""
+			END
+		END
+		""
+		// get the spheres for each kit
+		REPLACE_EVALUATE "dwPriestKitSpellAllow\[\([0-9]+\)\]={\([^}]*\)}" BEGIN
+			PATCH_IF "%MATCH2%" STR_CMP "'every_spell'" BEGIN
+				SET $kit_with_spheres_defined("%MATCH1%")=1
+				INNER_PATCH_SAVE string "%MATCH2%" BEGIN
+					REPLACE_TEXTUALLY "'" ""
+				END
+				LPF array_keys_from_string STR_VAR string separator="," RET_ARRAY "sphere_list_%MATCH1%"=array END
+			END
+		END
+		""	
+
+	// get the HLA table
+	
+	LAF 2da_read STR_VAR file=hla_table_divine.2da type=table_header location=data locbase=hla_feat RET_ARRAY hla_rows=rows hla_array=array END
+	ACTION_PHP_EACH hla_rows AS row=>discard BEGIN
+		ACTION_FOR_EACH req IN require_1 require_2 require_3 require_4 require_5 BEGIN
+			OUTER_SPRINT sphere_here $hla_array("%row%" require_1)
+			ACTION_TO_LOWER sphere_here
+			ACTION_IF VARIABLE_IS_SET $sphere_list("%sphere_here%") BEGIN
+				OUTER_SPRINT id_here $hla_array("%row%" id)
+				OUTER_SPRINT $divine_hla_list("%id_here%") ""
+				OUTER_SET $hla_sphere_map("%id_here%" "%sphere_here%")=1
+			END
+		END
+	END
+	
+
+
+	// generate the output
+	
+	ACTION_PHP_EACH kit_with_spheres_defined AS id=>discard0 BEGIN
+		OUTER_SPRINT output ""
+		OUTER_SPRINT kitname $kit_array("%id%" ROWNAME)
+		ACTION_PHP_EACH spells_here AS k=>v BEGIN
+			OUTER_SPRINT $spells_here("%k%") ""
+		END
+		OUTER_FOR (level=1;level<=9;++level) BEGIN
+			OUTER_SET anything_here=0
+			ACTION_CLEAR_ARRAY working_array
+			ACTION_PHP_EACH "sphere_list_%id%" AS sphere=>discard BEGIN
+				ACTION_PHP_EACH "sphere_contents_%sphere%_%level%" AS spell=>discard2 BEGIN
+					OUTER_SET $working_array("%spell%")=1
+					OUTER_SET anything_here=1
+				END				
+			END
+			ACTION_IF anything_here BEGIN
+				OUTER_SPRINT output "%output%Level %level%%WNL%"
+				ACTION_SORT_ARRAY_INDICES working_array LEXICOGRAPHICALLY
+				ACTION_PHP_EACH working_array AS name=>discard BEGIN
+					OUTER_SPRINT output "%output%%name%%WNL%"
+				END
+				OUTER_SPRINT output "%output%%WNL%"
+			END
+		END
+		ACTION_CLEAR_ARRAY working_array
+		ACTION_PHP_EACH divine_hla_list AS hla_id=>discard BEGIN
+			ACTION_PHP_EACH "sphere_list_%id%" AS sphere=>discard2 BEGIN
+				ACTION_IF VARIABLE_IS_SET $hla_sphere_map("%hla_id%" "%sphere%") BEGIN
+					OUTER_SPRINT $working_array("%hla_id%") ""
+				END
+			END			
+		END
+		OUTER_SPRINT output "%output%Quest spells%WNL%"
+		ACTION_SORT_ARRAY_INDICES working_array LEXICOGRAPHICALLY
+		ACTION_PHP_EACH working_array AS name=>discard BEGIN
+			OUTER_SPRINT output "%output%%name%%WNL%"
+		END
+		OUTER_SPRINT output "%output%%WNL%"
+		LAF new_file INT_VAR no_log=1 STR_VAR arguments="%output%" file="%kitname%.txt" path="%data_loc_shared%/cleric_spells" END
+	END
+	
+
+
+
+
+
+
+
+
+
+END

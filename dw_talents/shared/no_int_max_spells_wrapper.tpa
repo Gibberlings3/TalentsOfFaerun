@@ -1,0 +1,5 @@
+DEFINE_ACTION_FUNCTION no_int_max_spells_wrapper BEGIN
+
+	LAF no_int_max_spells END
+	
+END

@@ -1,0 +1,7 @@
+kivan		elf_wood
+viconia		elf_drow
+baeloth		elf_drow
+aerie		elf_winged
+c#solaufein	elf_drow
+sola		elf_drow
+gv#vynd		elf_drow

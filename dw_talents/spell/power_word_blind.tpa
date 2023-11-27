@@ -1,0 +1,11 @@
+DEFINE_ACTION_FUNCTION ~power_word_blind~ BEGIN
+    LAF log_this INT_VAR repeat=0 STR_VAR file="scs_modified_spells.2da" input=WIZARD_POWER_WORD_BLIND END
+
+	spl.edit[%WIZARD_POWER_WORD_BLIND%|edit_strrefs_in_place:i=1]
+	[
+		m_description:=@216
+		m.ab.alter{s_projectile=1}
+	]
+
+
+END

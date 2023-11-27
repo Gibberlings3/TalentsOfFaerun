@@ -1,0 +1,20 @@
+DEFINE_ACTION_FUNCTION one_fewer_spell BEGIN
+
+	ACTION_IF !FILE_EXISTS_IN_GAME "%spl_one_fewer_spell%.spl" BEGIN
+
+		spl.make[%spl_one_fewer_spell%]
+		[
+			m.ab.add{}
+			m.ab_fx.add{s_opcode=321 s_target=2 s_timing=1 s_resource:="%sfo_filename%"}
+			m.ab_fx.add{s_opcode=42 s_target=2 s_timing=9 s_parameter1="-1" s_parameter2=511}	
+		]
+		
+		spl.copy[%spl_one_fewer_spell%=>%spl_two_fewer_spells%]
+		[
+			m.ab_fx.alter{s_parameter1="-2"|match="s_opcode=42"}
+			m.ab_fx.alter{s_resource:="%sfo_filename%"|match="s_opcode=321"}
+		]
+
+	END
+
+END

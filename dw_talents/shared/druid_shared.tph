@@ -1,0 +1,189 @@
+// strings to setup a MC kit as a druid kit
+
+DEFINE_ACTION_FUNCTION get_cleric_to_druid_string RET c_to_d_apply_string c_to_d_grant_string avenger_c_to_d_apply_string avenger_c_to_d_grant_string BEGIN
+
+	// apply bit first first
+	ACTION_IF is_iwd BEGIN
+		OUTER_SPRINT c_to_d_apply_string "%spl_druid_unusability_flag% 1,%spl_druid_marker% 1,spcl924 9,spcl939 15"
+	END ELSE BEGIN
+		OUTER_SPRINT c_to_d_apply_string "%spl_druid_unusability_flag% 1,%spl_druid_marker% 1,spcl924 15,spcl925 18,spcl926 21,spcl927 24"
+	END
+	OUTER_SPRINT avenger_c_to_d_apply_string ""
+	OUTER_SPRINT avenger_c_to_d_grant_string "spdr101 1,spdr201 3,spdr301 5,spdr401 7,spdr501 9,spdr601 11"
+	
+	// grant bit
+	ACTION_IF FILE_EXISTS_IN_GAME "%spl_druid_shapeshift_base%.spl" BEGIN
+		OUTER_SPRINT c_to_d_grant_string "%spl_druid_shapeshift_base% 3 3"
+		OUTER_SPRINT avenger_c_to_d_grant_string "spdr101 1,spdr201 3,spdr301 5,spdr401 7,spdr501 9,spdr601 11,%spl_avenger_shapeshift_base% 3 2"
+	END ELSE BEGIN
+		ACTION_IF is_iwd BEGIN
+			OUTER_SPRINT c_to_d_grant_string "spcl107 5,spcl108 7,spcl101 9,spcl112 11,spcl113 13,spcl114 15"
+		END ELSE BEGIN
+			OUTER_SPRINT c_to_d_grant_string "spcl611 7,spcl612 7,spcl613 7"
+		END
+		OUTER_SPRINT avenger_c_to_d_grant_string "spdr101 1,spdr201 3,spdr301 5,spdr401 7,spdr501 9,spdr601 11,spcl632 7,spcl633 7,spcl634 7"
+	END
+	
+END
+
+DEFINE_ACTION_FUNCTION impose_druid_class_features INT_VAR enforce_alignment=1 update_description=1 STR_VAR kit="" parent_class="" BEGIN
+
+	// ability restrictions
+	
+	ACTION_FOR_EACH resref IN abclasrq BEGIN
+		COPY_EXISTING "%resref%.2da" override
+			LPF 2da_read RET_ARRAY array columns END
+			PHP_EACH columns AS col=>discard BEGIN
+				SET $array("%kit%" "%col%")=$array("DRUID" "%col%")
+			END
+			LPF 2da_write STR_VAR array default="0" END
+		BUT_ONLY
+	END
+	
+	// alignment unless disabled
+	
+	ACTION_IF enforce_alignment BEGIN
+		COPY_EXISTING "alignmnt.2da" override
+			LPF 2da_read RET_ARRAY array columns END
+			PHP_EACH columns AS col=>discard BEGIN
+				SET $array("%kit%" "%col%")=$array("DRUID" "%col%")
+			END
+			LPF 2da_write STR_VAR array default="0" END
+		BUT_ONLY	
+	END
+	
+	// weapon proficiencies, colors
+	
+
+	COPY_EXISTING "clascolr.2da" override
+		LPF 2da_read RET_ARRAY rows array END
+			PHP_EACH rows AS row=>discard BEGIN
+				SET $array("%row%" "%kit%")=$array("%row%" "DRUID")
+			END
+		LPF 2da_write STR_VAR array default="54" END
+	BUT_ONLY
+
+	
+	LAF get_weapprof_path RET weapprof_path END
+
+	COPY "%weapprof_path%" "%weapprof_path%"
+		LPF 2da_read RET_ARRAY rows array END
+			PHP_EACH rows AS row=>discard BEGIN
+				SET $array("%row%" "%kit%")=$array("%row%" "DRUID")
+			END
+		LPF 2da_write STR_VAR array default="0" END
+	BUT_ONLY
+
+	
+	// 	remove cleric weapon/armor restrictions
+	
+	LAF kit_get_id STR_VAR kit RET kit_id END
+	COPY_EXISTING "%spl_cleric_unusability_flag%.spl" override
+		LPF ADD_SPELL_EFFECT INT_VAR insert_point=0 opcode=318 target=1 timing=0 duration=1 parameter1=kit_id parameter2=109 STR_VAR resource="%spl_cleric_unusability_flag%" END
+	BUT_ONLY
+	
+	// mark as having druid spells
+
+	LAF assign_spheres INT_VAR update_description STR_VAR kit default=druid END
+
+	// turn off turn undead
+	
+	ACTION_MATCH "%kit%" WITH
+	DW_DRUID_MAGE DW_DRUID_RANGER BEGIN
+		OUTER_SET button=3
+	END
+	DW_DRUID_THIEF BEGIN
+		OUTER_SET button=4
+	END
+	DEFAULT
+		ACTION_MATCH "%parent_class%" WITH
+		DRUID_MAGE DRUID_RANGER BEGIN
+			OUTER_SET button=3
+		END
+		DRUID_THIEF BEGIN
+			OUTER_SET button=4
+		END
+		DEFAULT
+			WARN "Unrecognized parent-class %parent_class% for multiclassed druid kit %kit%"
+			OUTER_SET button=3 // fail gracefully
+		END
+			
+	END
+
+	LAF hide_ability_button_for_kit STR_VAR buttons="%button%=>TURNUNDEAD" kit=DW_DRUID_MAGE END
+
+
+
+END
+
+
+
+
+
+DEFINE_ACTION_FUNCTION druid_elementalists 
+BEGIN
+
+	OUTER_SPRINT component_loc kit
+	LAF include STR_VAR file=elementalist_shared.tph END
+	WITH_TRA "%scs_tra_loc%/english/elementalist.tra" "%scs_tra_loc%/%LANGUAGE%/elementalist.tra" BEGIN
+
+		// a map for kit-description overrides on the chargen screen
+		
+		OUTER_SET override_AIR=38
+		OUTER_SET override_EARTH=39
+		OUTER_SET override_FIRE=40
+		OUTER_SET override_WATER=41
+
+
+		// make the actual kits
+
+		LAF 2da_read STR_VAR file=clastext.2da case=lower RET_ARRAY clastext_array=array END
+		ACTION_FOR_EACH version IN earth air fire water BEGIN
+			OUTER_SPRINT parent_kit "dw_elementalist_%version%"
+			OUTER_SPRINT desc $clastext_array("%parent_kit%" "descstr")
+			LAF run STR_VAR file=druid_elementalist location=kits version END
+		END
+	
+		// assign spell lists
+	
+		LAF set_elem_spells INT_VAR is_druid=1 school_tra=9 school_tra2=10 STR_VAR kit=DW_DRUID_ELEMENTALIST_FIRE elem_spec=fire elem_block=water END
+		LAF set_elem_spells INT_VAR is_druid=1 school_tra=11 school_tra2=12 STR_VAR kit=DW_DRUID_ELEMENTALIST_WATER elem_spec=water elem_block=fire END
+		LAF set_elem_spells INT_VAR is_druid=1 school_tra=13 school_tra2=14 STR_VAR kit=DW_DRUID_ELEMENTALIST_AIR elem_spec=air elem_block=earth END
+		LAF set_elem_spells INT_VAR is_druid=1 school_tra=15 school_tra2=16 STR_VAR kit=DW_DRUID_ELEMENTALIST_EARTH elem_spec=earth elem_block=air END
+
+		// assign learning modifiers
+	
+		LAF set_spell_learn_modifiers STR_VAR kit=DW_DRUID_ELEMENTALIST_FIRE modifiers="mage_fire=25, mage_fire_shared=25, mage_air=15, mage_earth=15, default=-15" END
+		LAF set_spell_learn_modifiers STR_VAR kit=DW_DRUID_ELEMENTALIST_WATER modifiers="mage_water=25, mage_water_shared=25, mage_air=15, mage_earth=15, default=-15" END
+		LAF set_spell_learn_modifiers STR_VAR kit=DW_DRUID_ELEMENTALIST_EARTH modifiers="mage_earth=25, mage_earth_shared=25, mage_fire=15, mage_water=15, default=-15" END
+		LAF set_spell_learn_modifiers STR_VAR kit=DW_DRUID_ELEMENTALIST_AIR modifiers="mage_air=25, mage_air_shared=25, mage_fire=15, mage_water=15, default=-15" END
+
+		// assign bonus spells
+
+		ACTION_FOR_EACH element IN earth air fire water BEGIN
+			OUTER_SPRINT kit "DW_DRUID_ELEMENTALIST_%element%"
+			ACTION_TO_UPPER kit
+			LAF bonus_spells_from_list INT_VAR update_description=0 STR_VAR kit class=MAGE path="%MOD_FOLDER%/class_race/bonus_spell_lists/%element%.txt" END
+		END
+
+		
+		// make a menu
+	
+		LAF add_kit_menu INT_VAR name=36 desc=37 title=20 STR_VAR id=druid_elem kits="DW_DRUID_ELEMENTALIST_FIRE DW_DRUID_ELEMENTALIST_WATER DW_DRUID_ELEMENTALIST_EARTH DW_DRUID_ELEMENTALIST_AIR" class=CLERIC_MAGE END
+
+		// virtual names for druid/elementalist multiclass kits
+	
+		ACTION_FOR_EACH element IN EARTH AIR FIRE WATER BEGIN
+			LAF override_chargen_kit_name INT_VAR override="override_%element%" STR_VAR kit="DW_DRUID_ELEMENTALIST_%element%" class=CLERIC_MAGE END
+		END	
+		
+		// exclude item use
+		
+		ACTION_FOR_EACH element IN EARTH AIR FIRE WATER BEGIN
+			LAF exclude_elemental_items STR_VAR kit="DW_DRUID_ELEMENTALIST_%element%" element END
+		END	
+	
+	
+	END
+
+END

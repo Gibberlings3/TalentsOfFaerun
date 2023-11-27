@@ -1,0 +1,221 @@
+DEFINE_PATCH_FUNCTION WIZARD_THUNDERSTORM BEGIN
+
+END
+
+DEFINE_PATCH_FUNCTION WIZARD_ABYSSAL_FURY BEGIN
+
+	INNER_ACTION BEGIN
+		ACTION_FOR_EACH bam IN S077CRVS S077SCRT  BEGIN
+			COPY "%MOD_FOLDER%/%component_loc%/resource/%bam%.bam" override
+		END
+		
+		COPY "%MOD_FOLDER%/%component_loc%/resource/abyssal_fury_icon.bam" "override/%resref%.bam"
+
+		COPY "%MOD_FOLDER%/%component_loc%/resource/abyssal_fury_2.bam" "override/dw-abf2.bam"
+		COPY "%MOD_FOLDER%/%component_loc%/resource/abyssal_fury_3.bam" "override/dw-abf3.bam"
+
+		COPY "%MOD_FOLDER%/%component_loc%/resource/abyss02.wav" "override/dw-abf1.wav"
+		COPY "%MOD_FOLDER%/%component_loc%/resource/abyss03.wav" "override/dw-abf2.wav"
+		COPY "%MOD_FOLDER%/%component_loc%/resource/abyss04.wav" "override/dw-abf3.wav"
+		COPY "%MOD_FOLDER%/%component_loc%/resource/abyss05.wav" "override/dw-abf4.wav"
+		COPY "%MOD_FOLDER%/%component_loc%/resource/abyss06.wav" "override/dw-abf5.wav"
+		COPY "%MOD_FOLDER%/%component_loc%/resource/abyss07.wav" "override/dw-abf6.wav"
+
+		COPY_EXISTING "ccdamah.vvc" "override/dw-abf1.vvc"
+			WRITE_ASCII 0x8 S077SCRT
+
+		<<<<<<<<.../stratagems-inline/blank
+		>>>>>>>>
+
+	
+		OUTER_SET time_in_abyss=5
+		COPY ".../stratagems-inline/blank" "override/dw-abys.vef"
+			number_1=0
+			number_2=0
+			DELETE_BYTES 0x0 BUFFER_LENGTH
+			INSERT_BYTES 0x0 0x18
+			WRITE_ASCII 0x0 "VEF "
+			WRITE_LONG 0x8 0x18
+			INSERT_BYTES 0x18 0xe0
+			++number_1
+			offset=0x18
+			WRITE_LONG (offset+0xc) 1 // vvc/bam
+			WRITE_ASCII (offset+0x10) "s077crvs"
+			
+			INSERT_BYTES 0x18 0xe0
+			++number_1
+			offset=0x18
+			WRITE_LONG (offset+0xc) 0 // wav
+			WRITE_ASCII (offset+0x10) "dw-abf1"
+
+			INSERT_BYTES offset+0xe0 0xe0
+			++number_1
+			offset +=0xe0
+			WRITE_LONG (offset+0xc) 1 
+			WRITE_ASCII (offset+0x10) "dw-abf2"
+			WRITE_LONG offset 0x20
+			INSERT_BYTES offset+0xe0 0xe0
+			++number_1
+			offset +=0xe0
+			WRITE_LONG (offset+0xc) 1 
+			WRITE_ASCII (offset+0x10) "dw-abf3"
+			WRITE_LONG offset 0x40
+			INSERT_BYTES offset+0xe0 0xe0
+			++number_1
+			offset +=0xe0
+			WRITE_LONG (offset+0xc) 1 // vvc/bam
+			WRITE_ASCII (offset+0x10) "s077crvs"
+			WRITE_LONG offset 0x80+40
+
+			INSERT_BYTES 0x18 0xe0
+			++number_1
+			offset=0x18
+			WRITE_LONG (offset+0xc) 0 // wav
+			WRITE_ASCII (offset+0x10) "dw-abf1"
+			WRITE_LONG offset 0x80+45
+
+			INSERT_BYTES offset+0xe0 0xe0
+			++number_1
+			offset +=0xe0
+			WRITE_LONG (offset+0xc) 1 // vvc/bam
+			WRITE_ASCII (offset+0x10) "dw-abf3"
+			WRITE_LONG offset 0xa0+45
+			WRITE_LONG 0xc number_1
+			WRITE_LONG 0x10 (0x18+0xe0*number_1)
+			WRITE_LONG 0x14 number_2
+
+			
+		COPY_EXISTING "SPWI912.SPL" "override/%spl_hla_abyssal_fury%b.spl"
+			LPF DELETE_SPELL_HEADER INT_VAR header_type="-1" min_level=100 END
+			LPF DELETE_EFFECT END
+			WRITE_LONG 0x8 "-1"
+			WRITE_BYTE 0x25 6
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=213 target=2 timing=0 duration=time_in_abyss parameter2=1 END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=174 target=2 timing=1 STR_VAR resource=dw-abf2 END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=13 target=2 timing=4 duration=time_in_abyss parameter2=8 save_vs_spell=1 END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=215 target=2 parameter2=1 timing=4 duration=time_in_abyss+1 STR_VAR resource=dw-abf1 END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=174 target=2 timing=4 duration=time_in_abyss+1 STR_VAR resource=dw-abf3  END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=215 target=2 parameter2=1 timing=4 duration=time_in_abyss+2 STR_VAR resource=dw-abf1  END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=215 target=2 parameter2=1 timing=4 duration=time_in_abyss+3 STR_VAR resource=dw-abf1  END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=174 target=2 timing=4 duration=time_in_abyss+3 STR_VAR resource=dw-abf4  END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=215 target=2 parameter2=1 timing=4 duration=time_in_abyss+4 STR_VAR resource=dw-abf1  END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=215 target=2 parameter2=1 timing=4 duration=time_in_abyss+5 STR_VAR resource=dw-abf1  END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=174 target=2 timing=4 duration=time_in_abyss+5 STR_VAR resource=dw-abf5  END
+			LPF CLONE_EFFECT INT_VAR match_opcode=215 opcode=12 dicesize=10 dicenumber=2 parameter2=0x100*0x10000 STR_VAR  resource="" END
+			
+
+	END
+
+	LPF DELETE_SPELL_HEADER INT_VAR header_type="-1" min_level=100 END
+	LPF ALTER_SPELL_HEADER INT_VAR speed=3 STR_VAR icon="%resref%" END
+	LPF DELETE_EFFECT END
+	LPF resolve_splprot_entry INT_VAR stat=0x102 val="-1" STR_VAR relation=greater_equal RET splprot_num=value END // circle size>=N
+	LPF ADD_SPELL_EFFECT INT_VAR target=2 opcode=324 duration=1 parameter1=10 parameter2=splprot_num STR_VAR resource="%resref%" END // dragons
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=215 target=2 parameter2=2 timing=1 STR_VAR resource=dw-abys  END
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=185 target=2 parameter2=2 timing=0 duration=6 END
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 timing=4 duration=2 STR_VAR resource=dw-abysb  END
+
+
+
+END
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION WIZARD_BLOOD_TO_ICE BEGIN
+
+	savebonus="-2"
+
+	LPF scs_style_hla END
+	// change school to necromancy
+	WRITE_SHORT 0x22 9 // casting type
+	WRITE_BYTE 0x25 7 // school
+	WRITE_ASCII 0x10 CAS_M07 (8) // casting sound
+	
+	
+	SPRINT resref "%SOURCE_RES%"
+	
+	// power=10
+	
+	LPF ALTER_EFFECT INT_VAR power=10 END
+	
+	// new icon (pro tem, from IWD2), longer casting time 
+	
+	LPF ALTER_SPELL_HEADER INT_VAR speed=3 STR_VAR icon="%resref%" END
+	
+	INNER_ACTION BEGIN
+		COPY "%MOD_FOLDER%/%component_loc%/resource/iwd2_spwi318b.bam" "override/%resref%.bam"
+	END
+
+	//remove extant payload
+	
+	LPF DELETE_EFFECT END
+	
+	// immunity for dragons, undead, elementals, golems
+
+	LPF ADD_SPELL_EFFECT INT_VAR target=2 opcode=324 duration=1 parameter2=1 STR_VAR resource="%resref%" END // undead
+	LPF ADD_SPELL_EFFECT INT_VAR target=2 opcode=324 duration=1 parameter2=9 STR_VAR resource="%resref%" END // elementals
+	LPF ADD_SPELL_EFFECT INT_VAR target=2 opcode=324 duration=1 parameter2=27 STR_VAR resource="%resref%" END // golems
+
+	LPF resolve_splprot_entry INT_VAR stat=0x102 val="-1" STR_VAR relation=greater_equal RET splprot_num=value END // circle size>=N
+	LPF ADD_SPELL_EFFECT INT_VAR target=2 opcode=324 duration=1 parameter1=10 parameter2=splprot_num STR_VAR resource="%resref%" END // golems
+	// hold 6 seconds, save for 1/2
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=185 target=2 power=10 resist_dispel=3 duration=3 parameter2=2 END 
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=185 target=2 power=10 timing=4 resist_dispel=3 duration=3 parameter2=2 savebonus save_vs_spell=1 END 
+	// cold damage (no save)
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=12 target=2 power=10 resist_dispel=3 parameter1=17 timing=0 parameter2b=2 END
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=12 target=2 power=10 resist_dispel=3 parameter1=16 timing=4 duration=1 parameter2b=2 END
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=12 target=2 power=10 resist_dispel=3 parameter1=17 timing=4 duration=2 parameter2b=2 END
+	// cold damage (save to avoid)
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=12 target=2 power=10 resist_dispel=3 parameter1=17 timing=4 duration=3 parameter2b=2 savebonus save_vs_spell=1 END
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=12 target=2 power=10 resist_dispel=3 parameter1=16 timing=4 duration=4 parameter2b=2 savebonus save_vs_spell=1 END
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=12 target=2 power=10 resist_dispel=3 parameter1=17 timing=4 duration=5 parameter2b=2 savebonus save_vs_spell=1 END
+	//sparkle
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=141 target=2 power=10 resist_dispel=0 parameter2=2 timing=1 END
+	// sound effect (icelance travel)
+	INNER_ACTION BEGIN
+		COPY "%MOD_FOLDER%/%component_loc%/resource/icelance_tra.wav" "override/%resref%.wav"	
+	END
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=174 target=2 power=10 resist_dispel=0 timing=1 STR_VAR resource="%resref%" END
+	//color
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=8 target=2 power=10 resist_dispel=3 parameter1=93*0x100+155*0x10000+255*0x1000000 parameter2=255 duration=3 END
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=8 target=2 power=10 resist_dispel=3 parameter1=93*0x100+155*0x10000+255*0x1000000 parameter2=255 duration=3 timing=4 save_vs_spell=1 savebonus END
+	// remove effect, ending second hold
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 power=10 duration=6 timing=4 STR_VAR resource="%resref%" END
+END
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION WIZARD_GAZE_OF_THE_MEDUSA BEGIN
+
+	savebonus="-2"
+
+	LPF ALTER_SPELL_HEADER INT_VAR target=5 speed=4 projectile=159 STR_VAR icon="%resref%" END // INAREANP
+	LPF ALTER_EFFECT INT_VAR savebonus END
+
+
+	INNER_ACTION BEGIN
+		COPY "%MOD_FOLDER%/%component_loc%/resource/spwi615b_iwd2.bam" "override/%resref%.bam"
+	END
+
+
+END
+
+
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION scs_style_hla BEGIN
+
+	WRITE_SHORT 0x1c 4
+	SPRINT resref "%SOURCE_RES%"
+	INNER_ACTION BEGIN
+        ACTION_FOR_EACH copy_spell IN projimag simualcr BEGIN
+            ACTION_IF FILE_EXISTS_IN_GAME "%copy_spell%.spl" BEGIN
+               COPY_EXISTING "%copy_spell%.spl" override
+                   LPF ADD_SPELL_EFFECT INT_VAR opcode=172 target=1 timing=1 STR_VAR resource="%resref%" END
+               BUT_ONLY
+            END
+        END	
+	END
+
+END

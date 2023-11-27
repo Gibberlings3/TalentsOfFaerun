@@ -1,0 +1,207 @@
+DEFINE_ACTION_FUNCTION bhaal_cyric_cleric BEGIN
+
+    LAF bhaal_cyric_shared END
+	
+	LAF splconv_get_name STR_VAR spell="%CLERIC_FINGER_OF_DEATH%" type=innate RET spl_bhaal_finger_of_death=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_INVISIBLE_STALKER%" type=innate RET spl_cyric_invisible_stalker=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_CHAOS%" type=innate RET spl_cyric_chaos=new_resref END
+
+	
+	OUTER_SPRINT kit DW_BHAAL_CYRIC_CLERIC
+	
+	
+
+	kit.copy[CLERIC=>%kit%]
+	[
+		k.kit_grant_powers{%ASSASSIN_POISON% 1 6,%spl_cyric_dread_blast% 7 5,%spl_cyric_invisible_stalker% 10}
+		k_color_metal=35
+		k_color_minor_cloth=131
+		k_color_main_cloth=21
+		k_color_leather=25
+		k_color_armor=80
+		IF {is_iwd}
+		{{
+			k_bio:=@1030
+			k_name:=@76
+			k_description:=@77
+			k.kit_grant_powers{%spl_bhaal_finger_of_death% 12}
+			k.kit_set_alignment{le ne ce}
+		}}
+		ELSE
+		{{
+			k_name:=@74
+			k_description:=@75
+			k.kit_grant_powers{%%spl_cyric_chaos% 12 6}		
+			k.kit_set_alignment{cn le ne ce}
+		}}
+	]
+
+	LAF cleric_kit_substitutions STR_VAR kit god=bhaal_cyric END
+
+	LAF assign_spheres STR_VAR kit default=cleric subtract="good healing" END
+	LAF holy_symbol INT_VAR name=2023 follower=2024 STR_VAR kit desc_bam=imisc85 inv_bam=cmisc85 kit END
+	LAF adjust_cleric_stronghold STR_VAR talos="all" kit END
+	LAF assign_bonus_spells STR_VAR kit spells="VAMPIRIC_TOUCH DEATH_SPELL" END  
+
+END
+
+DEFINE_ACTION_FUNCTION assassin_of_bhaal_cyric BEGIN
+
+
+    LAF bhaal_cyric_shared END
+
+	LAF splconv_get_name STR_VAR spell="%CLERIC_FINGER_OF_DEATH%" type=innate RET spl_bhaal_finger_of_death=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_INVISIBLE_STALKER%" type=innate RET spl_cyric_invisible_stalker=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_CHAOS%" type=innate RET spl_cyric_chaos=new_resref END
+
+
+	OUTER_SPRINT kit DW_BHAAL_CYRIC_ASSASSIN
+
+	kit.copy[CLERIC_THIEF=>%kit%]
+	[
+		tra_ref=is_iwd? 170 : 168
+		LPF adjust_assassin_descriptions INT_VAR tra_ref RET k_desc=desc END
+		k.kit_grant_powers{%spl_cyric_dread_blast% 7 5,%spl_cyric_invisible_stalker% 10|class=cleric}
+		k.kit_grant_powers{%ASSASSIN_POISON% 1 4|class=thief}
+		k.kit_apply_powers{SPCL421 1|class=thief} // +1 hit/damage
+		k_color_metal=35
+		k_color_minor_cloth=131
+		k_color_main_cloth=21
+		k_color_leather=25
+		k_color_armor=80	
+		k.kit_copy_from{thiefskl|source=ASSASIN}
+		IF {is_iwd}
+		{{
+			k_bio:=@1030
+			k_name:=@169
+			k.kit_grant_powers{%spl_bhaal_finger_of_death% 12|class=cleric}
+			k.kit_set_alignment{le ne ce}
+		}}
+		ELSE
+		{{
+			k_name:=@167
+			k.kit_grant_powers{%spl_cyric_chaos% 10 6|class=cleric}	
+			k.kit_set_alignment{cn le ne ce}	
+		}}
+	]
+
+	LAF cleric_kit_substitutions STR_VAR kit god=bhaal_cyric END
+	LAF copy_backstab STR_VAR kit copy_from=ASSASIN END
+
+	LAF assign_spheres STR_VAR kit default=cleric subtract="good healing" END
+	LAF holy_symbol INT_VAR name=2023 follower=2024 STR_VAR kit desc_bam=imisc85 inv_bam=cmisc85 kit END
+	LAF adjust_cleric_stronghold STR_VAR talos="all" kit END
+	LAF assign_bonus_spells STR_VAR kit spells="VAMPIRIC_TOUCH DEATH_SPELL" END 
+	LAF set_multiclass_components STR_VAR kit components="assasin dw_bhaal_cyric_cleric"  END
+
+END
+
+DEFINE_ACTION_FUNCTION enchanter_of_bhaal_cyric BEGIN // really Cyric only
+
+    LAF bhaal_cyric_shared END
+
+	LAF splconv_get_name STR_VAR spell="%CLERIC_FINGER_OF_DEATH%" type=innate RET spl_bhaal_finger_of_death=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_INVISIBLE_STALKER%" type=innate RET spl_cyric_invisible_stalker=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_CHAOS%" type=innate RET spl_cyric_chaos=new_resref END
+
+	OUTER_SPRINT kit DW_CYRIC_ENCHANTER
+
+	kit.copy[CLERIC_MAGE=>%kit%]
+	[
+		k_name:=@128
+		k_desc:=@129
+		k.kit_grant_powers{ASSASSIN_POISON 1 6,%spl_cyric_dread_blast% 7 5,%spl_cyric_invisible_stalker% 10,%spl_cyric_chaos% 10 6|class=cleric}
+		k_color_minor_cloth=131
+		k_color_main_cloth=21
+		k.kit_set_alignment{cn le ne ce}	
+	]
+	
+	LAF cleric_kit_substitutions STR_VAR kit god=bhaal_cyric END
+
+	LAF assign_spheres INT_VAR update_scroll_usability=0 STR_VAR kit default=cleric subtract="good healing" END
+	LAF holy_symbol INT_VAR name=2023 follower=2024 STR_VAR kit desc_bam=imisc85 inv_bam=cmisc85 kit END
+	LAF adjust_cleric_stronghold STR_VAR talos="all" kit END
+	LAF assign_bonus_spells STR_VAR kit spells="VAMPIRIC_TOUCH DEATH_SPELL" class=cleric END  
+
+ 	LAF make_multiclass_specialist STR_VAR kit school=enchantment END
+	LAF set_multiclass_components STR_VAR kit components="DW_BHAAL_CYRIC_CLERIC ENCHANTER"  END
+
+ 
+END
+
+DEFINE_ACTION_FUNCTION bhaal_cyric_favored_soul BEGIN
+
+	LAF bhaal_cyric_shared END
+
+	LAF splconv_get_name STR_VAR spell="%CLERIC_FINGER_OF_DEATH%" type=innate RET spl_bhaal_finger_of_death=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_INVISIBLE_STALKER%" type=innate RET spl_cyric_invisible_stalker=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_CHAOS%" type=innate RET spl_cyric_chaos=new_resref END
+
+	
+	// make the main kit
+	
+	OUTER_SPRINT kit "DW_BHAAL_CYRIC_FAVORED"
+	ACTION_IF is_iwd BEGIN
+		OUTER_SET name=4051
+		OUTER_SET desc=4052
+		OUTER_SET god=4053
+	END ELSE BEGIN
+		OUTER_SET name=4062
+		OUTER_SET desc=4063
+		OUTER_SET god=4065
+	END
+	
+	LAF build_favored_soul_kit INT_VAR name desc god god_gender=4005 god_temple=4074 STR_VAR kit copy_from=DW_BHAAL_CYRIC_CLERIC END
+	LAF cleric_kit_substitutions STR_VAR kit god=bhaal_cyric END
+
+	kit.edit[%kit%|edit_strrefs_in_place:i=1]
+	[
+		k.kit_grant_powers{%spl_cyric_poison% 1 6,%spl_cyric_dread_blast% 7 5,%spl_cyric_invisible_stalker% 10}
+		IF {is_iwd}
+		{{
+			k.kit_grant_powers{%spl_bhaal_finger_of_death% 12}
+		}}
+		ELSE
+		{{
+			k.kit_grant_powers{%%spl_cyric_chaos% 10 6}	
+		}}
+	]
+	
+
+	// spell choices
+
+	LAF assign_bonus_spells STR_VAR kit spells="CLERIC_DOOM CLERIC_CAUSE_MODERATE_WOUNDS WIZARD_VAMPIRIC_TOUCH CLERIC_POISON CLERIC_SLAY_LIVING WIZARD_DEATH_SPELL CLERIC_DESTRUCTION" END // should have Create Boneguard here
+
+END
+
+
+DEFINE_ACTION_FUNCTION bhaal_cyric_shared BEGIN
+
+		LAF include STR_VAR file=log_favored_weapon.tph locbase=shared END
+		ACTION_IF is_iwd BEGIN
+			OUTER_SPRINT weapon dagger
+		END ELSE BEGIN
+			OUTER_SPRINT weapon longsword	
+		END
+		LAF log_favored_weapon STR_VAR god=BHAAL_CYRIC weapon END
+
+	LAF check_label STR_VAR label=dw#bhaal_cyric_shared RET value END
+	ACTION_IF !value BEGIN
+		LAF make_label STR_VAR label=dw#bhaal_cyric_shared END
+		
+
+		// dread blast
+		
+		spl.copy[a#cyr07=>%spl_cyric_dread_blast%|source_location=dr]
+		[
+			m_name:=@1027
+			m_description:=@1028
+		]
+
+		LAF splconv STR_VAR spell="%CLERIC_FINGER_OF_DEATH%" new_type=innate  RET_ARRAY splconv_array END
+		LAF splconv STR_VAR spell="%WIZARD_INVISIBLE_STALKER%" new_type=innate RET_ARRAY splconv_array END
+		LAF splconv STR_VAR spell="%WIZARD_CHAOS%" new_type=innate RET_ARRAY splconv_array END
+
+	END
+
+END

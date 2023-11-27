@@ -1,0 +1,748 @@
+DEFINE_ACTION_FUNCTION install_feats INT_VAR is_epic=0 STR_VAR feat_table="" location="" path="" locbase="" BEGIN
+
+	LAM data_spells_by_level
+
+	// externalize (this is idempotent)
+	
+	LAF ui_externalize_hlas END
+
+	/////////////////////////////////////////////////////////////////
+
+	
+	// get class/kit mappings
+	
+	LAM read_kitlist_for_hlas
+	
+	// get school exclusions
+	
+	LAF include STR_VAR file=make_feats.tph END
+	LAF read_in_school_exclusions_map RET_ARRAY school_exclusions_map sorcerer_hla_map END
+	
+	// get sphere data
+	
+	LAF ui_read_all_spell_lists RET_ARRAY allow_learn allow_priest list_names kit_names END
+	// set unspecified classes to the default
+	ACTION_FOR_EACH class IN CLERIC DRUID SHAMAN BEGIN
+		ACTION_PHP_EACH "child_kits_%class%" AS kit=>discard BEGIN
+			ACTION_IF !VARIABLE_IS_SET $kit_names("%kit%") BEGIN
+				ACTION_PHP_EACH list_names AS list=>discard2 BEGIN
+					ACTION_IF VARIABLE_IS_SET $allow_learn("%class%" "%list%") BEGIN
+						OUTER_SPRINT $allow_learn("%kit%" "%list%") ""
+					END
+					ACTION_IF VARIABLE_IS_SET $allow_priest("%class%" "%list%") BEGIN
+						OUTER_SPRINT $allow_priest("%kit%" "%list%") ""
+					END
+				END
+			END
+		END
+	END
+	
+
+	// get multiclass components
+	
+	LAF read_kit_component_table RET_ARRAY kit_component_1 kit_component_2 kit_component_3 kits_with_component END
+		
+	// pass through feat table
+	
+	LAF sfo_path STR_VAR location locbase path RET directory=path END
+	LAF install_feats_core INT_VAR is_epic STR_VAR feat_table="%directory%/%feat_table%" RET_ARRAY assign_array END
+	
+
+	
+	// allocate multiclass kits their HLAs
+	
+	ACTION_PHP_EACH kit_component_1 AS mc_kit=>kit1 BEGIN
+		OUTER_SPRINT k1 $assign_array("%kit1%")
+		OUTER_SPRINT kit2 $kit_component_2("%mc_kit%")
+		OUTER_SPRINT k2 $assign_array("%kit2%")
+		ACTION_IF VARIABLE_IS_SET $assign_array("%kit3%") BEGIN
+			OUTER_SPRINT k3 $assign_array("%kit3%")
+		END ELSE BEGIN
+			OUTER_SPRINT k3 ""
+		END
+		OUTER_SPRINT temp $assign_array("%mc_kit%") 
+		OUTER_SPRINT temp "%temp%%k1%%k2%%k3%"
+		OUTER_SPRINT $assign_array("%mc_kit%") "%temp%"
+	END
+	
+	// allocate the 'all' block 
+	
+	OUTER_SPRINT all_assign $assign_array("ALL")
+	ACTION_PHP_EACH assign_array AS kit=>array BEGIN
+		ACTION_IF "%kit%" STRING_COMPARE_CASE "all" BEGIN
+			OUTER_SPRINT temp $assign_array("%kit%")
+			OUTER_SPRINT $assign_array("%kit%") "%temp%%all_assign%"
+		END
+	END
+
+	// insert into LU files
+	
+	
+	COPY_EXISTING "luabbr.2da" "%workspace%"
+		READ_2DA_ENTRIES_NOW luabbr_data 2
+		FOR (row=0;row<luabbr_data;++row) BEGIN
+			READ_2DA_ENTRY_FORMER luabbr_data row 0 kit
+			TO_UPPER kit
+			PATCH_MATCH "%kit%" WITH 
+			DW_DUMMY 2DA BEGIN		
+			END
+			DEFAULT
+				READ_2DA_ENTRY_FORMER luabbr_data row 1 abbr
+				PATCH_IF FILE_EXISTS_IN_GAME "lu%abbr%.2da" BEGIN
+					INNER_ACTION BEGIN
+						COPY_EXISTING "lu%abbr%.2da" override
+							COUNT_2DA_COLS colcount
+							COUNT_2DA_ROWS colcount count
+							PATCH_IF count=1 BEGIN // distinguish between 1 and 0 entries
+								COUNT_2DA_ROWS (colcount - 1) count2
+								PATCH_IF count2=1 BEGIN // in this case, the one row we found was the header row
+									count=0
+								END
+							END
+							SPRINT assign $assign_array("%kit%")
+							INNER_PATCH_SAVE assign "%assign%" BEGIN
+								REPLACE_EVALUATE "\(.*\)%WNL%" BEGIN
+									++count
+								END
+								"%count%%TAB%%MATCH1%%WNL%"
+							END
+							index=BUFFER_LENGTH
+							INSERT_BYTES index (STRING_LENGTH "%assign%")
+							WRITE_ASCIIE index "%assign%"
+							PRETTY_PRINT_2DA
+						BUT_ONLY	
+						LAF deduplicate_hla_list STR_VAR file="lu%abbr%" kit END // also handles explicitly-forbidden HLAs
+					END
+				END ELSE BEGIN
+					PATCH_MATCH "%kit%" WITH
+					"DW_DUMMY.*" BEGIN
+					END
+					DEFAULT
+						LPF warning STR_VAR warning="LUA file lu%abbr%.2da for kit %kit% does not exist" END
+					END
+				END
+			END
+		END
+	BUT_ONLY
+END
+
+
+DEFINE_ACTION_FUNCTION deduplicate_hla_list STR_VAR file="" kit="" BEGIN
+
+
+	COPY_EXISTING "%file%.2da" override
+		found_duplicates=0
+		COUNT_2DA_COLS colcount
+		READ_2DA_ENTRIES_NOW lua_data colcount
+		SET $hla_deduplicate_check("*")=1
+		FOR (row=0;row<lua_data;++row) BEGIN
+			READ_2DA_ENTRY_FORMER lua_data row 1 hla
+			PATCH_IF !VARIABLE_IS_SET $hla_deduplicate_check("%hla%") BEGIN
+				SET $hla_deduplicate_check("%hla%")=1			
+			END ELSE BEGIN
+				found_duplicates=1
+				SET_2DA_ENTRY row 1 colcount DW_FOR_DELETION
+			END		
+		END
+		PATCH_IF found_duplicates BEGIN
+			REPLACE_TEXTUALLY ".*DW_FOR_DELETION.*[%WNL%%LNL%%MNL%]" ""
+			COUNT_2DA_ROWS colcount rowcount
+			FOR (row=0;row<rowcount;++row) BEGIN
+				SET_2DA_ENTRY row 0 colcount (row + 1)
+			END
+			PRETTY_PRINT_2DA
+		END
+	
+	BUT_ONLY
+
+
+
+END
+
+DEFINE_PATCH_FUNCTION assign_hla_core 
+	INT_VAR is_epic=0
+	STR_VAR lua_append=""
+			req_1=""
+			req_2=""
+			req_3=""
+			req_4=""
+			req_5=""
+			id=""
+			resref=""
+			checks=""
+	RET lua_append
+	RET_ARRAY assign_array_here
+BEGIN
+  PATCH_CLEAR_ARRAY assign_array_here
+  LPF evaluate_feat_checks STR_VAR id resref checks RET proceed END
+  PATCH_IF proceed BEGIN
+	SPRINT lua_append_class ""
+	SPRINT lua_append_kit ""
+	FOR (n=1;n<=5;++n) BEGIN
+		SPRINT req EVAL "%req_%n%%"
+		INNER_PATCH_SAVE req "%req%" BEGIN
+			REPLACE_EVALUATE "_\([0-9]+\)$" BEGIN
+				SPRINT number "%MATCH1%"
+			END
+			""
+		END
+		TO_UPPER req
+		PATCH_MATCH "%req%" WITH
+		"*" BEGIN END
+		"NONE" BEGIN
+			SPRINT $assign_array_here("ALL") ""
+		END
+		"STEALTH" BEGIN
+			SPRINT $assign_array_here("THIEF") ""
+			SPRINT $assign_array_here("RANGER") ""
+			SPRINT $assign_array_here("MONK") ""
+		END
+		"DETECT_ILLUSION" BEGIN
+			SPRINT $assign_array_here("THIEF") ""
+			SPRINT $assign_array_here("SHAMAN") ""
+			SPRINT $assign_array_here("DARK_MOON") ""
+		END
+		"FIND_TRAPS" BEGIN
+			SPRINT $assign_array_here("THIEF") ""
+			SPRINT $assign_array_here("MONK") ""
+		END
+		"SET_TRAPS" BEGIN
+			SPRINT $assign_array_here("THIEF") ""
+		END
+		"PICK_POCKETS" BEGIN
+			SPRINT $assign_array_here("THIEF") ""
+			SPRINT $assign_array_here("BARD") ""
+		END
+		"TURN_UNDEAD" BEGIN END // this is epiphenomenal (just for descriptions); you need to set the class manually
+		"CASTER" BEGIN
+			SPRINT $assign_array_here("PALADIN") ""
+			SPRINT $assign_array_here("RANGER") ""
+			SPRINT $assign_array_here("BARD") ""
+			SPRINT $assign_array_here("MAGE") ""
+			SPRINT $assign_array_here("SORCERER") ""
+			SPRINT $assign_array_here("CLERIC") ""
+			SPRINT $assign_array_here("DRUID") ""
+			SPRINT $assign_array_here("SHAMAN") ""
+			SPRINT $assign_array_here("FAVORED_SOUL") ""
+		END
+		"FULL_CASTER" BEGIN
+			SPRINT $assign_array_here("BARD") ""
+			SPRINT $assign_array_here("MAGE") ""
+			SPRINT $assign_array_here("SORCERER") ""
+			SPRINT $assign_array_here("CLERIC") ""
+			SPRINT $assign_array_here("DRUID") ""
+			SPRINT $assign_array_here("SHAMAN") ""
+			SPRINT $assign_array_here("FAVORED_SOUL") ""
+		END
+		"ARCANE" BEGIN
+			PATCH_FOR_EACH caster IN BARD MAGE SORCERER BEGIN
+				SPRINT caster_lc "%caster%"
+				TO_LOWER caster_lc
+				TO_UPPER caster
+				level=$sfo_spell_level_sl_to_cl("%caster_lc%" "%number%")
+				PATCH_IF level<99 BEGIN
+					caster_number=IDS_OF_SYMBOL (class "%caster%")
+					SPRINT lua_append_class ~%lua_append_class%%TAB%[%caster_number%]=%level%,%WNL%~	
+					SPRINT $assign_array_here("%caster%") ""
+				END
+			END
+		END
+		"DIVINE" BEGIN
+			PATCH_FOR_EACH caster IN PALADIN RANGER CLERIC DRUID SHAMAN BEGIN
+				SPRINT caster_lc "%caster%"
+				TO_LOWER caster_lc
+				TO_UPPER caster
+				level=$sfo_spell_level_sl_to_cl("%caster_lc%" "%number%")
+				PATCH_IF level<99 BEGIN
+					caster_number=IDS_OF_SYMBOL (class "%caster%")
+					SPRINT lua_append_class ~%lua_append_class%%TAB%[%caster_number%]=%level%,%WNL%~	
+					SPRINT $assign_array_here("%caster%") ""
+					PATCH_IF "%caster%" STRING_EQUAL_CASE "SHAMAN" BEGIN
+						SPRINT $assign_array_here("FAVORED_SOUL") ""
+					END
+				END
+			END
+		END
+		"FAVORED_SOUL" BEGIN
+			SPRINT $assign_array_here("FAVORED_SOUL") ""
+			PATCH_IF IS_AN_INT number && number>1 BEGIN
+				parent_number=IDS_OF_SYMBOL (class SHAMAN)
+				SPRINT lua_append_class ~%lua_append_class%%TAB%[%parent_number%]=%number%,%WNL%~
+			END
+		END
+		"WARRIOR" BEGIN
+			PATCH_FOR_EACH class IN FIGHTER RANGER PALADIN BEGIN
+				SPRINT $assign_array_here("%class%") ""
+				PATCH_IF IS_AN_INT number && number>1 BEGIN
+					parent_number=IDS_OF_SYMBOL (class class)
+					SPRINT lua_append_class ~%lua_append_class%%TAB%[%parent_number%]=%number%,%WNL%~
+				END
+			END
+		END
+		"SH_OR_FS" BEGIN
+			SPRINT $assign_array_here("SHAMAN") ""
+			SPRINT $assign_array_here("FAVORED_SOUL") ""
+			PATCH_IF IS_AN_INT number && number>1 BEGIN
+				parent_number=IDS_OF_SYMBOL (class SHAMAN)
+				SPRINT lua_append_class ~%lua_append_class%%TAB%[%parent_number%]=%number%,%WNL%~
+			END
+		END
+		"DRAGON_DISCIPLE" BEGIN
+			PATCH_FOR_EACH kit IN
+			DRAGON_DISCIPLE
+			DW_DRAGON_DISCIPLE_BLACK
+			DW_DRAGON_DISCIPLE_BLUE
+			DW_DRAGON_DISCIPLE_GREEN
+			DW_DRAGON_DISCIPLE_WHITE
+			BEGIN
+				PATCH_IF VARIABLE_IS_SET $kit_number("%kit%") BEGIN
+					kit_number=$kit_number("%kit%")
+					parent_number=IDS_OF_SYMBOL (class sorcerer)
+					SPRINT $assign_array_here("%kit%") ""
+				END
+			END
+		END
+		DEFAULT
+			// check for a spell list - we're assuming this has to be a max-level divine caster
+			SPRINT list "%req%"
+			TO_LOWER list
+			PATCH_IF VARIABLE_IS_SET $list_names("%list%") BEGIN
+				PATCH_FOR_EACH array IN allow_learn allow_priest BEGIN
+					PHP_EACH "%array%" AS k=>v BEGIN
+						PATCH_IF "%k_1%" STR_EQ "%list%" BEGIN
+							SPRINT kit "%k_0%"
+							PATCH_IF VARIABLE_IS_SET $kit_number("%kit%") BEGIN // it's a kit
+								kit_number=$kit_number("%kit%")
+								parent_number=$parent_number("%kit%")
+								is_kit=1
+							END ELSE BEGIN // it's a class
+								parent_number=$parent_number("%kit%")
+								is_kit=0							
+							END
+							PATCH_MATCH "%parent_number%" WITH
+							3 BEGIN // single-class clerics
+								number=$sfo_spell_level_sl_to_cl(cleric 7)
+								append_lua_if_class=1
+								proceed=1
+							END
+							8 14 15 17 18 BEGIN // multi-class clerics
+								parent_number=3
+								number=$sfo_spell_level_sl_to_cl(cleric 7)
+								append_lua_if_class=0
+								proceed=1
+							END
+							11 BEGIN // single-class druids
+								number=$sfo_spell_level_sl_to_cl(druid 7)	
+								proceed=1
+								append_lua_if_class=1
+							END							
+							16 BEGIN // multiclass druids
+								parent_number=11
+								number=$sfo_spell_level_sl_to_cl(druid 7)	
+								proceed=1
+								append_lua_if_class=0
+							END
+							21 BEGIN // shamans
+								parent_number=21
+								number=$sfo_spell_level_sl_to_cl(shaman 7)	
+								proceed=1			
+								append_lua_if_class=1				
+							END
+							DEFAULT
+								proceed=0
+							END			
+							PATCH_IF proceed BEGIN
+								PATCH_IF is_kit BEGIN
+									SPRINT $assign_array_here("%kit%") ""
+									SPRINT lua_append_kit "%lua_append_kit%[%kit_number%]={[%parent_number%]=%number%},"
+								END ELSE BEGIN
+									PATCH_IF append_lua_if_class BEGIN
+										SPRINT $assign_array_here("%kit%:TRUECLASS") ""
+										SPRINT lua_append_class ~%lua_append_class%%TAB%[%parent_number%]=%number%,%WNL%~
+									END
+								END
+							END
+						END
+					END
+				
+				END
+			END ELSE BEGIN
+				SPRINT $assign_array_here("%req%") ""
+				PATCH_IF IS_AN_INT number && number>1 BEGIN
+					 PATCH_IF VARIABLE_IS_SET $kit_number("%req%") BEGIN // it's a kit
+						parent_number=$parent_number("%req%")
+						PATCH_IF VARIABLE_IS_SET $kits_with_component("%req%") BEGIN
+							SPRINT list $kits_with_component("%req%") 
+							SPRINT list "%list% %req%"
+						END ELSE BEGIN
+							SPRINT list "%req%"
+						END
+						WHILE "%list%" STRING_COMPARE "" BEGIN
+							LPF return_first_entry STR_VAR list RET entry list END
+							kit_number=$kit_number("%entry%")
+							SPRINT lua_append_kit "%lua_append_kit%[%kit_number%]={[%parent_number%]=%number%},"
+						END
+					 END ELSE 			
+					 PATCH_IF VARIABLE_IS_SET $parent_number("%req%") BEGIN // it's a class
+						parent_number=$parent_number("%req%")
+						SPRINT lua_append_class ~%lua_append_class%%TAB%[%parent_number%]=%number%,%WNL%~
+					 END ELSE BEGIN
+						LPF warning STR_VAR warning="unable to process requirement %req% for ability %resref%" END
+					 END
+				END
+			END
+		END
+	END
+	PATCH_IF "%lua_append_class%" STRING_COMPARE "" || "%lua_append_kit%" STRING_COMPARE "" BEGIN
+		SPRINT lua_append "%lua_append%dwHLAClassLevel['%resref%']={%WNL%%lua_append_class%%TAB%['kit']={%lua_append_kit%}%WNL%}%WNL%"
+	END
+	PATCH_IF !is_epic BEGIN
+		SPRINT lua_append "%lua_append%dwHLANotEpic['%resref%']=true%WNL%"
+	END
+  END // end of outer 'proceed' loop
+END
+
+DEFINE_ACTION_MACRO read_kitlist_for_hlas BEGIN
+
+	LOCAL_SET colcount=0
+	LOCAL_SET row=0
+	LOCAL_SET class_number=0
+	LOCAL_SET kit_number=0
+	LOCAL_SPRINT kit_label ""
+	LOCAL_SPRINT class ""
+	COPY_EXISTING "kitlist.2da" "%workspace%"
+		COUNT_2DA_COLS colcount
+		READ_2DA_ENTRIES_NOW kitlist_data colcount
+		FOR (row=0;row<kitlist_data;++row) BEGIN
+			READ_2DA_ENTRY_FORMER kitlist_data row 0 kit_number
+			READ_2DA_ENTRY_FORMER kitlist_data row 1 kit_label
+			READ_2DA_ENTRY_FORMER kitlist_data row 8 class_number
+			PATCH_IF IS_AN_INT class_number BEGIN
+				TO_UPPER kit_label
+				SET $exclude_kit("%kit_label%")=0
+				SPRINT $assign_array("%kit_label%") ""
+				SET $kit_number("%kit_label%")=kit_number
+				SET $parent_number("%kit_label%")=class_number
+				LOOKUP_IDS_SYMBOL_OF_INT class class class_number
+				TO_UPPER class
+				PATCH_MATCH "%class%" WITH
+				SHAMAN BEGIN
+					PATCH_IF INDEX ("DW_.*_FAVORED" "%kit_label%")>=0 BEGIN
+						SPRINT $"child_kits_FAVORED_SOUL"("%kit_label%") ""	
+					END ELSE BEGIN
+						SPRINT $"child_kits_%class%"("%kit_label%") ""
+					END
+				END
+				DEFAULT
+					SPRINT $"child_kits_%class%"("%kit_label%") ""
+				END
+				/*
+				// check for mage speciality ... not sure we need this
+				INNER_PATCH "%kit_label%" BEGIN
+					REPLACE_EVALUATE ".*\(ABJURER\|CONJURER\|DIVINER\|ENCHANTER\|ILLUSIONIST\|INVOKER\|NECROMANCER\|TRANSMUTER\|WILDMAGE\).*" BEGIN
+						SPRINT $"speciality_kits_%MATCH1%"("%kit_label%") ""
+					END
+				END
+				*/
+				
+			END
+		END
+		PATCH_FOR_EACH class IN FIGHTER MAGE THIEF CLERIC BARD SORCERER PALADIN RANGER DRUID MONK SHAMAN FIGHTER_MAGE FIGHTER_CLERIC FIGHTER_DRUID FIGHTER_THIEF CLERIC_RANGER CLERIC_MAGE CLERIC_THIEF MAGE_THIEF FIGHTER_MAGE_CLERIC FIGHTER_MAGE_THIEF BEGIN
+			SPRINT $"child_kits_%class%"("%class%") ""
+			SET $exclude_kit("%class%")=0
+			SPRINT $assign_array("%class%") ""
+			SET $parent_number("%class%")=IDS_OF_SYMBOL (class "%class%")
+		END
+		SPRINT $assign_array("ALL") ""
+	BUT_ONLY
+END
+
+DEFINE_ACTION_FUNCTION read_kit_component_table
+	RET_ARRAY kit_component_1 kit_component_2 kit_component_3 kits_with_component
+BEGIN
+	ACTION_FOR_EACH array IN kit_component_1 kit_component_2 kit_component_3 kits_with_component BEGIN
+		ACTION_CLEAR_ARRAY "%array%"
+	END
+	ACTION_IF FILE_EXISTS "%data_loc_shared%/multiclass_kit_components.2da" BEGIN
+		COPY "%data_loc_shared%/multiclass_kit_components.2da" "%workspace%"
+			READ_2DA_ENTRIES_NOW component_data 4
+			FOR (row=0;row<component_data;++row) BEGIN
+				READ_2DA_ENTRY_FORMER component_data row 0 main
+				TO_UPPER main
+				FOR (col=1;col<=3;++col) BEGIN
+					READ_2DA_ENTRY_FORMER component_data row col c
+					PATCH_IF "%c%" STRING_COMPARE_CASE "*" BEGIN
+						TO_UPPER c
+						SPRINT $"kit_component_%col%"("%main%") "%c%"
+						PATCH_IF !VARIABLE_IS_SET $kits_with_component("%c%") BEGIN
+							SPRINT $kits_with_component("%c%") ""
+						END
+						SPRINT temp $kits_with_component("%c%")
+						SPRINT $kits_with_component("%c%") "%temp% %main%"
+					END
+				END
+				
+			END
+		BUT_ONLY
+		ACTION_FOR_EACH mc IN FIGHTER_MAGE FIGHTER_CLERIC FIGHTER_DRUID FIGHTER_THIEF CLERIC_MAGE CLERIC_THIEF MAGE_THIEF CLERIC_RANGER BEGIN
+			LAF return_first_entry STR_VAR list="%mc%" separator="_" RET k1=entry k2=list END
+			OUTER_SPRINT $kit_component_1("%mc%") "%k1%"
+			OUTER_SPRINT $kit_component_2("%mc%") "%k2%"
+		END
+		ACTION_FOR_EACH mc IN FIGHTER_MAGE_CLERIC FIGHTER_MAGE_THIEF BEGIN
+			LAF return_first_entry STR_VAR list="%mc%" separator="_" RET k1=entry list END
+			LAF return_first_entry STR_VAR list separator="_" RET k2=entry k3=list END
+			OUTER_SPRINT $kit_component_1("%mc%") "%k1%"
+			OUTER_SPRINT $kit_component_2("%mc%") "%k2%"
+			OUTER_SPRINT $kit_component_3("%mc%") "%k3%"
+		
+		END
+	
+	END
+
+
+
+END
+
+DEFINE_ACTION_FUNCTION install_feats_core INT_VAR is_epic=0 STR_VAR feat_table="" RET_ARRAY assign_array BEGIN
+
+	// get the existing table of resref assignments
+	
+	ACTION_IF FILE_EXISTS "%data_loc_shared%/dw_feat_data.2da" BEGIN
+		LAF 2da_read STR_VAR case=mixed file=dw_feat_data.2da path="%data_loc_shared%" RET_ARRAY feat_data=array END
+	END ELSE BEGIN
+		ACTION_CLEAR_ARRAY feat_data
+	END
+
+	OUTER_SPRINT lua_append ""
+	COPY - "%feat_table%" nowhere
+		LPF 2da_read STR_VAR case=mixed type=table_header RET_ARRAY feat_array=array feat_rows=rows END
+		// get the resrefs associated to each feat (for prereq/restrict purposes)
+		PHP_EACH feat_rows AS row=>discard BEGIN
+			SPRINT label $feat_array("%row%" "id")
+			SPRINT resref $feat_array("%row%" "resref")
+			SPRINT type $feat_array("%row%" "type") 
+			PATCH_IF VARIABLE_IS_SET "%resref%" BEGIN
+				SPRINT resref EVAL "%%resref%%"
+			END
+			TO_UPPER resref
+			PATCH_IF FILE_EXISTS_IN_GAME "%resref%.spl" BEGIN
+				SPRINT $feat_data("%label%" "RESREF") "%resref%" // & we return this table for later use
+				SPRINT $feat_data("%label%" "TYPE") "%type%"
+			END			
+
+		END
+		// go through the file and do each feat
+		PHP_EACH feat_rows AS row=>discard BEGIN
+			// get the data for the file entry and other core data
+			SPRINT id $feat_array("%row%" "id")
+			SPRINT checks $feat_array("%row%" "checks")
+			SPRINT resref $feat_array("%row%" "resref")
+			PATCH_IF VARIABLE_IS_SET "%resref%" BEGIN
+				SPRINT resref EVAL "%%resref%%"
+			END
+			TO_UPPER resref
+			PATCH_IF FILE_EXISTS_IN_GAME "%resref%.spl" BEGIN
+				SPRINT type $feat_array("%row%" "type")
+				PATCH_IF "%type%" STRING_EQUAL_CASE grant BEGIN
+					SPRINT type_prefix GA
+				END ELSE BEGIN
+					SPRINT type_prefix AP
+				END
+				SPRINT prereq_label $feat_array("%row%" "prerequisite")
+				TO_UPPER prereq_label
+				INNER_PATCH_SAVE prereq_label "%prereq_label%" BEGIN
+					REPLACE_EVALUATE "\[\(.*\)\]" BEGIN
+						SPRINT list "%MATCH1%"
+						WHILE "%list%" STR_CMP "" BEGIN
+							LPF return_first_entry STR_VAR list separator="|" RET entry list END
+							TO_UPPER entry
+							SET $exempt_array("%entry%" "%resref%")=1
+						END				
+					END
+					""
+				END
+				PATCH_IF "%prereq_label%" STRING_EQUAL "*" BEGIN
+					SPRINT prereq "*"
+				END ELSE BEGIN
+					SPRINT prereq $feat_data("%prereq_label%" "RESREF")
+					SPRINT type $feat_data("%prereq_label%" "TYPE")
+					PATCH_MATCH "%type%" WITH
+					grant BEGIN
+						SPRINT prereq "GA_%prereq%"
+					END
+					apply BEGIN
+						SPRINT prereq "AP_%prereq%"				
+					END
+					DEFAULT
+						PATCH_FAIL "illegal type %type% for HLA %prereq_label% in the prerequisites for hla/feat %label%"
+					END
+				END
+				SPRINT exclude_label $feat_array("%row%" "exclude_hla")
+				TO_UPPER exclude_label
+				PATCH_IF "%exclude_label%" STRING_EQUAL "*" BEGIN
+					SPRINT exclude "*"
+				END ELSE BEGIN
+					PATCH_MATCH "%exclude_label%" WITH "literal.*" BEGIN
+						INNER_PATCH_SAVE exclude "%exclude_label%" BEGIN
+							REPLACE_TEXTUALLY "literal:" ""
+						END
+					END
+					DEFAULT
+					SPRINT exclude $feat_data("%exclude_label%" "RESREF")
+					END
+				END
+				SPRINT alignment $feat_array("%row%" "alignment")
+				PATCH_IF "%alignment%" STR_CMP "*" BEGIN
+					DEFINE_ASSOCIATIVE_ARRAY align_abbrev BEGIN
+						lawful=>"l_e|l_n|l_g"
+						chaotic=>"c_e|c_g|c_n"
+						good=>"l_g|n_g|c_g"
+						evil=>"l_e|n_e|c_e"
+						not_lawful=>"c_e|c_g|c_n|n_g|n_e|n_n"
+						not_chaotic=>"l_e|l_n|l_g|n_e|n_n|n_g"
+						not_good=>"l_n|n_n|c_n|l_e|n_e|c_e"
+						not_evil=>"l_g|n_g|c_g|l_n|n_n|c_n"
+					END
+					PATCH_IF VARIABLE_IS_SET $align_abbrev("%alignment%") BEGIN
+						SPRINT alignment $align_abbrev("%alignment%")
+					END	
+					SPRINT lua_align ""
+					TO_UPPER alignment
+					WHILE "%alignment%" STR_CMP "" BEGIN
+						LPF return_first_entry STR_VAR list="%alignment%" separator="|" RET entry alignment=list END
+						SPRINT lua_align "%lua_align%['%entry%']=true,"
+					END
+					SPRINT lua_align "dwHLAAlignmentRequirement['%resref%']={%lua_align%}"
+					SPRINT lua_append "%lua_append%%lua_align%%WNL%"
+				END
+				SET max_count=$feat_array("%row%" "max_count:i")
+				// generate the file-entry line
+				SPRINT $lua_lines("%resref%") "%type_prefix%_%resref% * * 1 99 %max_count% %prereq% %exclude% *"
+				SPRINT $lua_lines_no_prereq("%resref%") "%type_prefix%_%resref% * * 1 99 %max_count% * %exclude% *"
+				// get the requirements
+				FOR (num=1;num<=5;++num) BEGIN
+					SPRINT "req_%num%" $feat_array("%row%" "require_%num%")
+				END
+				// get kit exclusions
+				PHP_EACH exclude_kit AS label=>value BEGIN
+					SET $exclude_kit("%label%")=0
+				END
+				SPRINT exclude_kit $feat_array("%row%" "exclude_kit")
+				parent_exclude=0
+				PATCH_IF "%exclude_kit%" STRING_COMPARE "*" BEGIN
+					WHILE "%exclude_kit%" STRING_COMPARE "" BEGIN
+						LPF return_first_entry STR_VAR list="%exclude_kit%" separator="|" RET entry exclude_kit=list END
+						TO_UPPER entry
+						PATCH_MATCH "%entry%" WITH
+						"PARENT_.*" BEGIN
+							PATCH_IF parent_exclude=0 BEGIN
+								LPF exclude_mc_parent STR_VAR lua_append exclude="%entry%" RET lua_append END
+							END ELSE BEGIN
+								LPF warning STR_VAR warning="More than one exclude_parent command for HLA %id%; right now the parser/LUA can't handle that" END
+							END
+						END
+						"NOT_SCHOOL.*" BEGIN
+							INNER_PATCH "%entry%" BEGIN
+								REPLACE_EVALUATE ".*(\(.*\))" BEGIN
+									SPRINT school_list "%MATCH1%"
+									TO_LOWER school_list
+									WHILE "%school_list%" STR_CMP "" BEGIN
+										LPF return_first_entry STR_VAR list="%school_list%" separator="," RET school_list=list entry END
+										PHP_EACH school_exclusions_map AS k=>discard BEGIN
+											PATCH_IF "%k_0%" STR_EQ "%entry%" BEGIN
+												SET $exclude_kit("%k_1%")=1
+											END
+										END
+									END
+								END
+								""
+							END
+						
+						END
+						BLACKGUARDVISIBLE BEGIN
+							SET $exclude_kit("BLACKGUARD")=1
+						END
+						DEFAULT
+							SET $exclude_kit("%entry%")=1
+						END
+					END
+				END
+				// process requirements
+				PATCH_CLEAR_ARRAY assign_array_here
+				LPF assign_hla_core INT_VAR is_epic STR_VAR lua_append id checks resref req_1 req_2 req_3 req_4 req_5 RET lua_append RET_ARRAY assign_array_here END			
+				// process additions to kit lists
+				PHP_EACH assign_array_here AS class=>discard BEGIN
+					TO_UPPER class
+					INNER_PATCH_SAVE class "%class%" BEGIN
+						trueclass_only=0
+						REPLACE_EVALUATE ":TRUECLASS" BEGIN
+							trueclass_only=1
+						END
+						""
+					END
+					PATCH_MATCH "%class%" WITH
+					ALL BEGIN
+						SPRINT temp $assign_array("ALL")
+						SPRINT $assign_array_ALL("%resref%") ""
+						SPRINT $HLAs_assigned_to("ALL") ""
+					END	
+					FIGHTER MAGE THIEF CLERIC RANGER DRUID BARD SORCERER SHAMAN PALADIN RANGER FAVORED_SOUL MONK FIGHTER_CLERIC FIGHTER_MAGE FIGHTER_THIEF CLERIC_MAGE CLERIC_THIEF MAGE_THIEF FIGHTER_DRUID CLERIC_RANGER FIGHTER_MAGE_CLERIC FIGHTER_MAGE_THIEF BEGIN
+						PHP_EACH "child_kits_%class%" AS kit=>discard BEGIN
+							PATCH_IF $exclude_kit("%kit%")=0  && (INDEX (DW_DUMMY "%kit%") <0) && (!trueclass_only || "%kit%" STR_EQ "%class%") BEGIN
+								SPRINT $"assign_array_%kit%"("%resref%") "" 
+								SPRINT $HLAs_assigned_to("%kit%") ""
+							END
+						END
+					END
+					DEFAULT
+						SPRINT $"assign_array_%class%"("%resref%") ""
+						SPRINT $HLAs_assigned_to("%class%") ""
+					END
+				END
+			END
+		END
+	BUT_ONLY
+	// put the lua code output into the lua file
+	ACTION_IF "%lua_append%" STRING_COMPARE "" BEGIN
+		APPEND "m_dw_hld.lua" "%lua_append%" KEEP_CRLF
+	END
+	// work out the table (making sure to deduplicate)
+	ACTION_PHP_EACH HLAs_assigned_to AS kit=>discard BEGIN
+		OUTER_SPRINT this_array "assign_array_%kit%"
+		OUTER_SPRINT table_data ""
+		ACTION_PHP_EACH "%this_array%" AS resref=>discard BEGIN
+			ACTION_IF IS_AN_INT $exempt_array("%kit%" "%resref%") && $exempt_array("%kit%" "%resref%") BEGIN
+				OUTER_SPRINT line $lua_lines_no_prereq("%resref%")			
+			END ELSE BEGIN
+				OUTER_SPRINT line $lua_lines("%resref%")
+			END
+			OUTER_SPRINT table_data "%table_data%%line%%WNL%"
+		END
+		OUTER_SPRINT $assign_array("%kit%") "%table_data%"
+	END
+
+	// update the feat resref table
+	
+	LAF 2da_write STR_VAR array=feat_data file=dw_feat_data.2da path="%data_loc_shared%" END
+
+
+
+END
+
+//////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION exclude_mc_parent
+	STR_VAR exclude="" lua_append=""
+	RET lua_append
+BEGIN
+	INNER_PATCH_SAVE parent "%exclude%" BEGIN
+		REPLACE_TEXTUALLY "PARENT_" ""
+	END
+	class_num=IDS_OF_SYMBOL (class "%parent%")
+	SPRINT lua_append "%lua_append%dwHLAExcludeByClass['%resref%']=%class_num%%WNL%"
+
+END
+
+
+

@@ -1,0 +1,10 @@
+DEFINE_ACTION_FUNCTION log_favored_weapon
+	STR_VAR god=""
+			weapon=""
+BEGIN
+	ACTION_IF !FILE_EXISTS "%data_loc%/favored_weapons.2da" BEGIN
+		COPY ".../stratagems-inline/blank" "%data_loc%/favored_weapons.2da"
+	END
+	APPEND_OUTER "%data_loc%/favored_weapons.2da" "%god% %weapon%" UNLESS "%god% %weapon%"
+
+END

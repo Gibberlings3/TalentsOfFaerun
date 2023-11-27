@@ -1,0 +1,37 @@
+DEFINE_ACTION_FUNCTION wrap_spell_setup BEGIN
+
+ ACTION_IF !FILE_EXISTS_IN_GAME "dw3ewrp.spl" BEGIN
+
+		CREATE spl dw3ewrp 
+			LPF add_basic_spell_ability END
+		
+	
+		<<<<<<<< .../stratagems-inline/ab_install.baf
+	IF
+		!GlobalTimerNotExpired("dw_wrap_spell","GLOBAL")
+	THEN
+		RESPONSE #100
+			SetGlobalTimer("dw_wrap_spell","GLOBAL",1)
+			ApplySpellRES("dw3ewrp",Player1)
+			ApplySpellRES("dw3ewrp",Player2)
+			ApplySpellRES("dw3ewrp",Player3)
+			ApplySpellRES("dw3ewrp",Player4)
+			ApplySpellRES("dw3ewrp",Player5)
+			ApplySpellRES("dw3ewrp",Player6)
+			Continue()
+	END	
+	>>>>>>>>
+
+	ACTION_FOR_EACH script IN baldur baldur25 BEGIN
+		ACTION_IF FILE_EXISTS_IN_GAME "%script%.bcs" BEGIN
+			EXTEND_TOP "%script%.bcs" ".../stratagems-inline/ab_install.baf"
+		END
+	END
+	
+	
+	
+	
+ END
+	
+	
+END

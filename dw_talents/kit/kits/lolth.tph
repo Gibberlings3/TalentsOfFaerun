@@ -1,0 +1,146 @@
+DEFINE_ACTION_FUNCTION lolth_cleric BEGIN
+
+    LAF lolth_shared END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_REMOVE_MAGIC%" new_type=innate RET spl_lolth_remove_magic=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_TRUE_SIGHT%" new_type=innate RET spl_lolth_true_sight=new_resref END
+	OUTER_SPRINT kit DW_LOLTH_CLERIC
+
+	kit.copy[CLERIC=>%kit%]
+	[
+		k_name:=@96
+		k_desc:=@97
+		k.kit_grant_powers{%spl_lolth_remove_magic% 5 6,%spl_lolth_true_sight% 8 8,%spl_lolth_domination% 10,%spl_lolth_summon_spiders% 5,%spl_lolth_spider_swarm% 9,%spl_web_of_lolth% 3}
+		k.kit_apply_powers{%spl_web_of_lolth_immune% 1}
+		k_color_metal=35
+		k_color_minor_cloth=63
+		k_color_main_cloth=182
+		k_color_leather=25
+		k_color_armor=80	
+		k_any_race=0
+		k_elf=1
+		k_half_elf=1
+		k.kit_set_alignment{le ne ce}
+		IF {is_iwd} {{k_bio:=@1045}}
+	]
+
+	LAF cleric_kit_substitutions STR_VAR kit god=lolth END
+	LAF require_gender STR_VAR kit gender=female END
+
+	LAF assign_spheres STR_VAR kit default=cleric subtract="good summoning" add="earth lolth_allow" END
+	LAF holy_symbol INT_VAR name=2038 follower=2039 STR_VAR kit desc_bam=cmisc3e inv_bam=imisc3e END
+	LAF adjust_cleric_stronghold STR_VAR talos="all" kit END
+ 	LAF assign_bonus_spells STR_VAR kit spells="SPIDER_SPAWN" END
+ 
+END
+
+DEFINE_ACTION_FUNCTION lolth_favored_soul BEGIN
+
+
+	LAF lolth_shared END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_REMOVE_MAGIC%" new_type=innate RET spl_lolth_remove_magic=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_TRUE_SIGHT%" new_type=innate RET spl_lolth_true_sight=new_resref END
+
+	// make the main kit
+	
+	OUTER_SPRINT kit "DW_LOLTH_FAVORED"
+	
+	LAF build_favored_soul_kit INT_VAR name=4103 desc=4104 god=4106 override_bio=1045 STR_VAR kit copy_from=DW_LOLTH_CLERIC END
+	LAF cleric_kit_substitutions STR_VAR kit god=lolth END
+	LAF require_gender STR_VAR kit gender=female END
+
+	kit.edit[%kit%|edit_strrefs_in_place:i=1]
+	[
+		k.kit_grant_powers{%spl_lolth_remove_magic% 5 6,%spl_lolth_true_sight% 8 8,%spl_lolth_domination% 10}
+		k.kit_apply_powers{%spl_web_of_lolth_immune% 1}
+	]
+
+	// spell choices
+
+	LAF assign_bonus_spells STR_VAR kit spells="CLERIC_COMMAND %spl_web_of_lolth% %spl_lolth_summon_spiders% WIZARD_SPIDER_SPAWN %spl_lolth_spider_swarm% CLERIC_HARM CLERIC_GATE" END
+
+END
+
+
+
+
+DEFINE_ACTION_FUNCTION lolth_shared BEGIN
+
+	LAF include STR_VAR file=log_favored_weapon.tph locbase=shared END
+	LAF log_favored_weapon STR_VAR god=LOLTH weapon=dagger END
+
+	
+   LAF check_label STR_VAR label=dw#lolth_shared RET value END
+   ACTION_IF !value BEGIN
+   
+		LAF make_label STR_VAR label=dw#lolth_shared END
+		
+		/// Web of Lolth
+		
+		LAF splconv STR_VAR spell="%WIZARD_WEB%" new_type=priest new_resref="%spl_web_of_lolth%" END
+
+		spl.edit[%spl_web_of_lolth%]
+		[
+			m_name:=@1049
+			m_description:=@1048
+			m.ab_fx.add{s_opcode=324 s_target=2 s_duration=1 s_parameter1=116 s_parameter2=104 s_resource:="%sfo_filename%"} // immunity for spiders
+		]
+		
+		// drow immunity - heuristic is: are you an elf with MR>=40%
+		
+		COPY_EXISTING_REGEXP ".*\.cre" override
+			PATCH_IF (BYTE_AT 0x272) = 2 && (BYTE_AT 0x5d) >= 40 BEGIN
+				LPF ADD_CRE_EFFECT INT_VAR target=1 timing=9 opcode=318 STR_VAR resource="%spl_web_of_lolth%" END
+			END
+		BUT_ONLY
+		
+		// we handle immunity for the drow subrace in the subrace component
+		
+		spl.make[%spl_web_of_lolth_immune%]
+		[
+			m.ab.add{}
+			m.ab_fx.add{s_opcode=318 s_target=2 s_timing=9 s_resource:="%spl_web_of_lolth%"}
+		]
+		
+		// spider-named versions of insect plague/summon insects
+		spl.copy[%CLERIC_SUMMON_INSECTS%=>%spl_lolth_summon_spiders%][m_name:=@1051 m_description:=@1052]
+		spl.copy[%CLERIC_INSECT_PLAGUE%=>%spl_lolth_spider_swarm%][m_name:=@1047 m_description:=@1046]
+		
+		// domination variant
+		
+		spl.make[%spl_lolth_domination_male_save_penalty%]
+		[
+			m.ab.add{}
+			m.ab_fx.add{s_opcode=325 s_target=2 s_duration=1 s_parameter1="-4" s_parameter2=3}
+		]
+		
+		LAF splconv STR_VAR spell="%CLERIC_MENTAL_DOMINATION%" new_type=innate new_resref="%spl_lolth_domination%" END
+		
+
+		spl.edit[%spl_lolth_domination%]
+		[
+			extra_string:=@1050
+			k_description:="%k_description%%extra_string%"
+			m.ab_fx.add{s_opcode=326 s_target=2 s_timing=1 s_parameter1=1 s_parameter2=107 s_resource:="%spl_lolth_domination_male_save_penalty%"}
+			m.ab_fx.add{s_opcode=321 s_target=2 s_timing=1 s_resource:="%spl_lolth_domination_male_save_penalty%"}	
+		]
+		
+		// other innate spells
+		
+		LAF splconv STR_VAR spell="%WIZARD_REMOVE_MAGIC%" new_type=innate RET_ARRAY splconv_array END
+		LAF splconv STR_VAR spell="%CLERIC_TRUE_SIGHT%" new_type=innate RET_ARRAY splconv_array END
+
+
+
+		// extra priest spells
+		
+		LAF define_spell_list STR_VAR key="lolth_allow" spells="CLERIC_CREEPING_DOOM" END
+
+		// make granted extra spells, in case kit not installed
+		
+		ACTION_FOR_EACH spell IN SPIDER_SPAWN BEGIN
+			LAF splconv STR_VAR spell new_type=priest RET_ARRAY splconv_array END
+		END
+
+   END	
+
+END

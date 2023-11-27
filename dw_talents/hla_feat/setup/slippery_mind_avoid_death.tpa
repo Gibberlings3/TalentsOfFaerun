@@ -1,0 +1,102 @@
+DEFINE_ACTION_FUNCTION slippery_mind_avoid_death BEGIN
+
+	// get the variables
+	
+	LAF ds_resolve_stat STR_VAR id=SLIPPERY_MIND RET slippery_mind_stat=stat_ind END
+	LAF ds_resolve_stat STR_VAR id=AVOID_DEATH RET avoid_death_stat=stat_ind END
+	OUTER_SET disintegrate_stat=IDS_OF_SYMBOL (splstate DISINTEGRATE_IMMUNITY)
+	OUTER_SET petrify_stat=IDS_OF_SYMBOL (splstate PETRIFY_IMMUNITY)
+	OUTER_SET death_stat=IDS_OF_SYMBOL (splstate DEATH_IMMUNITY)
+	OUTER_SET charm_stat=IDS_OF_SYMBOL (splstate CHARM_IMMUNITY)
+
+	// make the spells
+	spl.make[%spl_slippery_mind_payload%]
+	[
+		m.ab.add{}
+		m.ab_fx.add{s_opcode=328 s_target=1 s_timing=9 s_special=1 s_parameter2=charm_stat}
+		m.ab_fx.add{s_opcode=328 s_target=1 s_timing=9 s_special=1 s_parameter2=slippery_mind_stat}
+	]
+	spl.make[%spl_avoid_death_payload%]
+	[
+		m.ab.add{}
+		m.ab_fx.add{s_opcode=328 s_target=1 s_timing=9 s_special=1 s_parameter2=death_stat}
+		m.ab_fx.add{s_opcode=328 s_target=1 s_timing=9 s_special=1 s_parameter2=petrify_stat}
+		m.ab_fx.add{s_opcode=328 s_target=1 s_timing=9 s_special=1 s_parameter2=disintegrate_stat}
+		m.ab_fx.add{s_opcode=328 s_target=1 s_timing=9 s_special=1 s_parameter2=avoid_death_stat}
+	]
+
+	spl.make[%spl_remove_reapply_slippery_mind%]
+	[
+		m_name:=@3111
+		m.ab.add{}
+		m.ab_fx.add{s_opcode=321 s_target=1 s_timing=1 s_resource:=%spl_slippery_mind_payload%}
+		m.ab_fx.add{s_opcode=146 s_target=1 s_timing=4 s_duration=360 s_resource:=%spl_slippery_mind_payload%}
+	]
+
+	spl.make[%spl_remove_reapply_avoid_death%]
+	[
+		m_name:=@3113
+		m.ab.add{}
+		m.ab_fx.add{s_opcode=321 s_target=1 s_timing=1 s_resource:=%spl_avoid_death_payload%}
+		m.ab_fx.add{s_opcode=146 s_target=1 s_timing=4 s_duration=2400 s_resource:=%spl_avoid_death_payload%}
+	]
+
+	// edit resources
+
+	COPY_EXISTING_REGEXP ".*\.\(\spl\|itm\)" override
+		death_effect=0
+		charm_effect=0
+		petrify_effect=0
+		disintegrate_effect=0
+		PATCH_IF SHORT_AT 0x68>0 BEGIN
+			READ_LONG 0x64 ab_off
+			PATCH_IF "%SOURCE_EXT%" STR_EQ "SPL" BEGIN
+				GET_OFFSET_ARRAY2 fx_arr ab_off SPL_V10_HEAD_EFFECTS
+			END ELSE BEGIN
+				GET_OFFSET_ARRAY2 fx_arr ab_off ITM_V10_HEAD_EFFECTS		
+			END
+			PHP_EACH fx_arr AS fx_ind=>fx_off BEGIN
+				PATCH_IF SHORT_AT fx_off=324 BEGIN
+					READ_LONG 0x4+fx_off parameter1
+					READ_LONG 0x8+fx_off parameter2
+					PATCH_IF parameter2=110  BEGIN
+						READ_ASCII 0x14+fx_off resref
+						PATCH_IF "%resref%" STR_EQ "%SOURCE_RES%" BEGIN
+							PATCH_MATCH "%parameter1%" WITH
+							"%disintegrate_stat%" BEGIN
+								disintegrate_effect=1
+							END
+							"%petrify_stat%" BEGIN
+								petrify_effect=1
+							END
+							"%death_stat%" BEGIN
+								death_effect=1
+							END
+							"%charm_stat%" BEGIN
+								charm_effect=1
+							END
+							DEFAULT
+							END
+						END
+					
+					END
+				END
+			
+			END
+		END
+		PATCH_IF death_effect BEGIN
+			LPF CLONE_EFFECT INT_VAR match_opcode=324 match_parameter1=death_stat opcode=326 parameter1=avoid_death_stat parameter2=110 timing=4 duration=0 STR_VAR resource="%spl_remove_reapply_avoid_death%" END
+		END
+		PATCH_IF petrify_effect BEGIN
+			LPF CLONE_EFFECT INT_VAR match_opcode=324 match_parameter1=petrify_stat opcode=326 parameter1=avoid_death_stat parameter2=110 timing=4 duration=0 STR_VAR resource="%spl_remove_reapply_avoid_death%" END
+		END
+		PATCH_IF disintegrate_effect BEGIN
+			LPF CLONE_EFFECT INT_VAR match_opcode=324 match_parameter1=disintegrate_stat opcode=326 parameter1=avoid_death_stat parameter2=110 timing=4 duration=0 STR_VAR resource="%spl_remove_reapply_avoid_death%" END
+		END
+		PATCH_IF charm_effect BEGIN
+			LPF CLONE_EFFECT INT_VAR match_opcode=324 match_parameter1=charm_stat opcode=326 parameter1=avoid_death_stat parameter2=110 timing=4 duration=0 STR_VAR resource="%spl_remove_reapply_slippery_mind%" END
+		END
+	BUT_ONLY
+
+
+END

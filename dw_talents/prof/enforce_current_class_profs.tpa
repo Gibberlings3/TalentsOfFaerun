@@ -1,0 +1,9 @@
+DEFINE_ACTION_FUNCTION enforce_current_class_profs BEGIN
+
+	ACTION_IF !FILE_EXISTS "%data_loc_shared%/weapprof.2da" BEGIN
+		LAF externalize_weapprof END
+	END
+	APPEND "m_dw_epd.lua" "dwDisableOCProficiencies=true" KEEP_CRLF
+
+
+END

@@ -1,0 +1,113 @@
+DEFINE_ACTION_FUNCTION azuth_cleric BEGIN
+
+    LAF azuth_shared END
+	OUTER_SPRINT kit DW_AZUTH_CLERIC
+	LAF splconv_get_name STR_VAR resref="%WIZARD_MAGIC_MISSILE%" type=innate RET spl_azuth_magic_missile=new_resref END
+	LAF splconv_get_name STR_VAR resref="%WIZARD_LIGHTNING_BOLT%" type=innate RET spl_azuth_lightning_bolt=new_resref END
+	LAF splconv_get_name STR_VAR resref="%WIZARD_FIREBALL%" type=innate RET spl_azuth_fireball=new_resref END
+	LAF splconv_get_name STR_VAR resref="%WIZARD_MORDENKAINENS_FORCE_MISSILES%" type=innate RET spl_azuth_force_missiles=new_resref END
+
+	kit.copy[CLERIC=>%kit%]
+	[
+		k_name:=@82
+		k_desc:=@83
+		k.kit_grant_powers{%spl_azuth_magic_missile% 3 4,%spl_azuth_lightning_bolt% 5 6,%spl_azuth_fireball% 7 6,%spl_azuth_force_missiles% 9 6}
+		k_color_metal=35
+		k_color_minor_cloth=25
+		k_color_main_cloth=28
+		k_color_leather=25
+		k_color_armor=80
+		k.kit_set_alignment{lg ln nn cn le}
+		IF {is_iwd}	{{k_bio:=@1037}}
+	]
+	
+	LAF cleric_kit_substitutions STR_VAR kit god=azuth END
+
+	LAF assign_spheres STR_VAR kit default=cleric subtract="evil good summoning" add="earth air fire water" END
+	LAF holy_symbol INT_VAR name=2015 follower=2016 STR_VAR kit desc_bam=dwazuphl inv_bam=dwazuihl bam_path=resource kit END
+	LAF adjust_cleric_stronghold STR_VAR lathander="l_g c_n" helm="l_n n_n l_e" kit END
+ 
+ 
+END
+
+DEFINE_ACTION_FUNCTION illusionist_of_azuth BEGIN
+
+    LAF azuth_shared END
+	OUTER_SPRINT kit DW_AZUTH_ILLUSIONIST
+	LAF splconv_get_name STR_VAR resref="%WIZARD_MAGIC_MISSILE%" type=innate RET spl_azuth_magic_missile=new_resref END
+	LAF splconv_get_name STR_VAR resref="%WIZARD_LIGHTNING_BOLT%" type=innate RET spl_azuth_lightning_bolt=new_resref END
+	LAF splconv_get_name STR_VAR resref="%WIZARD_FIREBALL%" type=innate RET spl_azuth_fireball=new_resref END
+	LAF splconv_get_name STR_VAR resref="%WIZARD_MORDENKAINENS_FORCE_MISSILES%" type=innate RET spl_azuth_force_missiles=new_resref END
+
+	kit.copy[CLERIC_MAGE=>%kit%]
+	[
+		k_name:=@132
+		k_desc:=@133
+		k.kit_grant_powers{%spl_azuth_magic_missile% 3 4,%spl_azuth_lightning_bolt% 5 6,%spl_azuth_fireball% 7 6,%spl_azuth_force_missiles% 9 6|class=cleric}
+		k_color_minor_cloth=25
+		k_color_main_cloth=28
+		k.kit_set_alignment{lg ln nn cn le}
+		IF {is_iwd}	{{k_bio:=@1037}}
+	]
+
+	LAF cleric_kit_substitutions STR_VAR kit god=azuth END
+
+	LAF assign_spheres INT_VAR update_scroll_usability=0 STR_VAR kit default=cleric subtract="evil good summoning" add="earth air fire water" END
+	LAF holy_symbol INT_VAR name=2015 follower=2016 STR_VAR kit desc_bam=dwazuphl inv_bam=dwazuihl bam_path=resource kit END
+ 
+ 	LAF make_multiclass_specialist STR_VAR kit school=illusion END
+	LAF set_multiclass_components STR_VAR kit components="DW_AZUTH_CLERIC ILLUSIONIST"  END
+ 
+END
+
+DEFINE_ACTION_FUNCTION conjurer_of_azuth BEGIN
+
+    LAF azuth_shared END
+	OUTER_SPRINT kit DW_AZUTH_CONJURER
+	LAF splconv_get_name STR_VAR resref="%WIZARD_MAGIC_MISSILE%" type=innate RET spl_azuth_magic_missile=new_resref END
+	LAF splconv_get_name STR_VAR resref="%WIZARD_LIGHTNING_BOLT%" type=innate RET spl_azuth_lightning_bolt=new_resref END
+	LAF splconv_get_name STR_VAR resref="%WIZARD_FIREBALL%" type=innate RET spl_azuth_fireball=new_resref END
+	LAF splconv_get_name STR_VAR resref="%WIZARD_MORDENKAINENS_FORCE_MISSILES%" type=innate RET spl_azuth_force_missiles=new_resref END
+
+	kit.copy[CLERIC_MAGE=>%kit%]
+	[
+		k_name:=@86
+		k_desc:=@87
+		k.kit_grant_powers{%spl_azuth_magic_missile% 3 4,%spl_azuth_lightning_bolt% 5 6,%spl_azuth_fireball% 7 6,%spl_azuth_force_missiles% 9 6|class=cleric}
+		k_color_minor_cloth=25
+		k_color_main_cloth=28
+		k.kit_set_alignment{lg ln nn cn le}
+		IF {is_iwd}	{{k_bio:=@1037}}
+	]
+	
+	LAF cleric_kit_substitutions STR_VAR kit god=azuth END
+
+	LAF assign_spheres INT_VAR update_scroll_usability=0 STR_VAR kit default=cleric subtract="evil good summoning" add="earth air fire water" END
+	LAF holy_symbol INT_VAR name=2015 follower=2016 STR_VAR kit desc_bam=dwazuphl inv_bam=dwazuihl bam_path=resource kit END
+ 
+ 	LAF make_multiclass_specialist STR_VAR kit school=conjuration END
+	LAF set_multiclass_components STR_VAR kit components="DW_AZUTH_CLERIC CONJURER"  END
+
+ 
+END
+
+DEFINE_ACTION_FUNCTION azuth_shared BEGIN
+	
+   LAF check_label STR_VAR label=dw#azuth_shared RET value END
+   ACTION_IF !value BEGIN
+   
+		LAF make_label STR_VAR label=dw#azuth_shared END
+		
+		LAF include STR_VAR file=log_favored_weapon.tph locbase=shared END
+		LAF log_favored_weapon STR_VAR god=AZUTH weapon=quarterstaff END
+		
+		LAF splconv STR_VAR spell="%WIZARD_MAGIC_MISSILE%" new_type=innate RET_ARRAY splconv_array END
+		LAF splconv STR_VAR spell="%WIZARD_FIREBALL%" new_type=innate RET_ARRAY splconv_array END
+		LAF splconv STR_VAR spell="%WIZARD_LIGHTNING_BOLT%" new_type=innate RET_ARRAY splconv_array END
+		LAF splconv STR_VAR spell="%WIZARD_MORDENKAINENS_FORCE_MISSILES%" new_type=innate RET_ARRAY splconv_array END
+
+
+	
+	END
+
+END

@@ -1,0 +1,62 @@
+WITH_TRA "%scs_tra_loc%/english/hla_feat.tra" BEGIN
+		
+
+	OUTER_SPRINT component_loc hla_feat
+	
+	
+	ACTION_IF version=2 BEGIN
+	
+	
+	MAKE_PATCH
+		delete_ability=>"ability_min_level=100"
+		patch_ability_inline=>"casting_time=>4"
+		patch_effect_inline=>"power=>4"
+		clone_ability_inline=>"match=>~ability_min_level=10~ number_to_add=>10 ability_min_level=>entry_index+11"
+		patch_effect_inline=>"match=>~ability_min_level>10~ dicenum=>ability_min_level"		
+	END
+	ACTION_TIME timer BEGIN
+	LAF clone_spell STR_VAR spell="spwi304=>spwi304q" edits=patch_data END
+	END
+	
+	
+	
+	
+	END ELSE
+	ACTION_IF version=0 BEGIN
+	
+	// externalize proficiencies
+	LAF include STR_VAR file=externalize_proficiencies.tph locbase=lua END
+	LAF externalize_weapprof END
+
+	/*
+	LAF run STR_VAR file=poison location=setup END
+	LAF run STR_VAR file=empowered_healing location=setup END
+	LAF run STR_VAR file=item_crafting location=setup END
+	LAF run STR_VAR file=paladin_touch location=setup END
+	LAF run STR_VAR file=externalize_hlas locbase=lua END
+	LAF include STR_VAR file=make_feats.tph END
+	LAF include STR_VAR file=feat_spec.tph END
+	LAF read_in_class_names RET_ARRAY class_names END
+	LAF read_in_kit_names RET_ARRAY kit_names END
+	LAF read_in_feats STR_VAR location=data table=feat_table.2da RET_ARRAY feat_names END
+	LAF read_in_basic_requirements_map RET_ARRAY basic_requirements_map END
+	LAF process_table INT_VAR STR_VAR table=feat_table.2da location=data function=make_feats_core END
+	LAF run STR_VAR file=ranger_favored_enemy END
+	LAF include STR_VAR file=install_feats.tpa END
+	LAF install_feats STR_VAR feat_table=feat_table.2da location=data END
+	LAF install_feats STR_VAR feat_table=ranger_feat_table.2da locabs="%workspace%" END
+	*/
+	
+	
+	END ELSE BEGIN
+	
+	LAF run STR_VAR file=empowered_healing location=setup END
+	LAF run STR_VAR file=item_crafting location=setup END
+	LAF run STR_VAR file=paladin_touch location=setup END
+	LAF run STR_VAR file=externalize_hlas locbase=lua END
+	
+	
+	
+	
+	END
+END

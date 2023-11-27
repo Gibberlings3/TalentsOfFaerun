@@ -1,0 +1,67 @@
+DEFINE_ACTION_FUNCTION silent_sword BEGIN
+
+	OUTER_SPRINT kit DW_SILENT_SWORD
+
+	kit.copy[FIGHTER_THIEF=>%kit%]
+	[
+		k_name:=@203
+		k_desc:=@204		
+		k.kit_grant_powers{spcl144 1 4|class=fighter}
+		k.kit_apply_powers{spcl143 1,spcl143 4 4,spcl141 3 3,spcl142 1|class=fighter}
+		k.kit_match_usability{kensai}
+		k_ranged=0
+		k_swordandshield=0
+	]
+
+	LAF set_multiclass_components STR_VAR kit components="kensai"  END
+
+END
+
+DEFINE_ACTION_FUNCTION fighter_assassin BEGIN
+
+	OUTER_SPRINT kit DW_FIGHTER_ASSASSIN
+
+	kit.copy[FIGHTER_THIEF=>%kit%]
+	[
+		k_name:=@205
+		LPF adjust_assassin_descriptions INT_VAR tra_ref=206 RET k_desc=desc END
+		k.kit_grant_powers{%ASSASSIN_POISON% 1 4|class=thief}
+		k.kit_copy_from{clascolr thiefskl|source=ASSASIN}
+	]
+
+	LAF copy_backstab STR_VAR kit copy_from=ASSASIN END
+	LAF set_multiclass_components STR_VAR kit components="assasin"  END
+
+END
+
+DEFINE_ACTION_FUNCTION magetracker BEGIN
+
+	OUTER_SPRINT kit DW_MAGETRACKER
+	kit.copy[FIGHTER_THIEF=>%kit%]
+	[
+		k_name:=@214
+		LPF adjust_bounty_hunter_descriptions INT_VAR tra_ref=213 RET desc END
+		LPF adjust_wizard_slayer_descriptions STR_VAR desc RET k_desc=desc END
+		k.kit_match_usability{wizard_slayer}
+		k.kit_apply_powers{spcl133 1|class=fighter}
+		k.kit_grant_powers{%SET_SPECIAL_SNARE_TRAP% 1 5|class=thief}
+		k.kit_copy_from{clascolr thiefskl|source=BOUNTY_HUNTER}
+		k_initial_skill_set_traps=15
+		LPF check_label STR_VAR label="dw#rebalance_wizard_slayer" RET rebalanced_wizard_slayer=value END
+		IF {rebalanced_wizard_slayer}
+		{{
+			k.kit_apply_powers{%spl_wizard_slayer_base_resistance% 1,%spl_wizard_slayer_incremental_resistance% 2 1|class=fighter}	
+		}}
+		ELSE
+		{{
+			k.kit_apply_powers{spcl131 1 1|class=fighter}
+		}}
+
+	]
+
+	LAF set_multiclass_components STR_VAR kit components="bounty_hunter wizard_slayer"  END
+
+
+
+
+END

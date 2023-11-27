@@ -1,0 +1,180 @@
+
+
+DEFINE_ACTION_FUNCTION malar_cleric BEGIN
+
+    LAF malar_shared END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_ANIMAL_RAGE%" new_type=innate RET spl_malar_animal_rage=new_resref END
+	OUTER_SPRINT kit DW_MALAR_CLERIC
+	kit.copy[CLERIC=>%kit%]
+	[
+		k_name:=@108
+		k_desc:=@109
+		k.kit_grant_powers{%spl_malar_beast_claw% 3 5,%spl_malar_animal_rage% 9 6}
+		k.kit_apply_powers{%spl_malar_innate% 5}
+		k_color_metal=35
+		k_color_minor_cloth=41
+		k_color_main_cloth=19
+		k_color_leather=25
+		k_color_armor=80	
+		k.kit_set_alignment{cn le ne ce}
+		IF {is_iwd} {{k_bio:=@1064}}
+	]
+	LAF cleric_kit_substitutions STR_VAR kit god=malar END
+
+	LAF assign_spheres STR_VAR kit default=cleric subtract="good necromantic evil summoning" add="animal plant sun" END
+	LAF holy_symbol INT_VAR name=2050 follower=2051 category=1 STR_VAR kit desc_bam=cmisc72 inv_bam=imisc72 END
+	LAF adjust_cleric_stronghold STR_VAR talos="all" kit END
+
+	LAF malar_claw STR_VAR kit END
+	
+
+	
+END
+
+DEFINE_ACTION_FUNCTION nightstalker_of_malar BEGIN
+
+    LAF malar_shared END
+	LAF build_ranger_charm_remover END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_ANIMAL_RAGE%" new_type=innate RET spl_malar_animal_rage=new_resref END
+	
+	OUTER_SPRINT kit DW_MALAR_NIGHTSTALKER
+	ACTION_TIME main_build BEGIN
+	kit.copy[CLERIC_RANGER=>%kit%]
+	[
+		PATCH_TIME core_bit BEGIN
+		k_name:=@215
+		k_desc:=@216
+		k.kit_grant_powers{%spl_malar_beast_claw% 3 5,%spl_malar_animal_rage% 9 6|class=cleric}
+		k.kit_apply_powers{%spl_malar_innate% 5,spcl331 1|class=cleric}
+		k.kit_apply_powers{%spl_ranger_charm_remover% 1 1|class=ranger}
+		END
+		k_color_metal=35
+		k_color_minor_cloth=41
+		k_color_main_cloth=19
+		k_color_leather=25
+		k_color_armor=80	
+		k.kit_match_usability{stalker}
+		k.kit_set_alignment{cn le ne ce}
+		IF {is_iwd} {{k_bio:=@1064}}
+	]
+	END
+	LAF cleric_kit_substitutions STR_VAR kit god=malar END
+	LAF assign_spheres STR_VAR kit default=cleric subtract="good necromantic evil summoning" add="animal plant sun" END
+	LAF holy_symbol INT_VAR name=2050 follower=2051 category=1 STR_VAR kit desc_bam=cmisc72 inv_bam=imisc72 END
+	LAF adjust_cleric_stronghold STR_VAR talos="all" kit END
+
+	LAF malar_claw STR_VAR kit END
+	LAF set_multiclass_components STR_VAR kit components="stalker dw_malar_cleric"  END
+	LAF copy_backstab STR_VAR kit copy_from=stalker class=ranger END
+	LAF assign_bonus_spells STR_VAR kit spells="HASTE MINOR_SPELL_DEFLECTION IMPROVED_INVISIBILITY" END
+	
+END
+
+DEFINE_ACTION_FUNCTION bounty_hunter_of_malar BEGIN
+
+    LAF malar_shared END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_ANIMAL_RAGE%" new_type=innate RET spl_malar_animal_rage=new_resref END
+	OUTER_SPRINT kit DW_MALAR_BOUNTY_HUNTER
+	LAF adjust_bounty_hunter_descriptions INT_VAR tra_ref=176 RET desc END
+	
+	kit.copy[CLERIC_THIEF=>%kit%]
+	[
+		k_name:=@175
+		k_desc:="%desc%"
+		k.kit_grant_powers{%spl_malar_beast_claw% 3 5,%spl_malar_animal_rage% 9 6|class=cleric}
+		k.kit_grant_powers{%SET_SPECIAL_SNARE_TRAP% 1 5|class=thief}
+		k.kit_apply_powers{%spl_malar_innate% 5|class=cleric}
+		k_color_metal=35
+		k_color_minor_cloth=41
+		k_color_main_cloth=19
+		k_color_leather=25
+		k_color_armor=80	
+		k.kit_set_alignment{cn le ne ce}
+		IF {is_iwd} {{k_bio:=@1064}}
+		k.kit_copy_from{thiefskl|source=BOUNTY_HUNTER}
+		k_initial_skill_set_traps=15
+	]	
+	
+	LAF cleric_kit_substitutions STR_VAR kit god=malar END
+
+	LAF assign_spheres STR_VAR kit default=cleric subtract="good necromantic evil summoning" add="animal plant sun" END
+	LAF holy_symbol INT_VAR name=2050 follower=2051 category=1 STR_VAR kit desc_bam=cmisc72 inv_bam=imisc72 END
+	LAF adjust_cleric_stronghold STR_VAR talos="all" kit END
+
+	LAF malar_claw STR_VAR kit END
+	LAF set_multiclass_components STR_VAR kit components="bounty_hunter dw_malar_cleric"  END
+
+	
+END
+
+DEFINE_ACTION_FUNCTION malar_shared BEGIN
+	
+    LAF check_label STR_VAR label=dw#malar_shared RET value END
+    ACTION_IF !value BEGIN
+   
+		LAF make_label STR_VAR label=dw#malar_shared END
+		
+		LAF include STR_VAR file=log_favored_weapon.tph locbase=shared END
+		LAF log_favored_weapon STR_VAR god=MALAR weapon=spear END
+
+		
+		// immunity to charm and sleep
+		
+		spl.make[%spl_malar_innate%]
+		[
+			m.ab.add{}
+			m.immunity_effect{charm sleep}
+			m_name:=@1071
+		]
+		
+		// innate spells
+		
+		LAF splconv STR_VAR spell="%CLERIC_BEAST_CLAW%" new_type=innate new_resref="%spl_malar_beast_claw%" RET_ARRAY splconv_array END
+		LAF splconv STR_VAR spell="%CLERIC_ANIMAL_RAGE%" new_type=innate RET_ARRAY splconv_array END
+
+		// malarite fixes to Beast Claw
+		
+		LAF resolve_splprot_entry INT_VAR stat=152 value="-1" STR_VAR relation=not_equal RET splprot_num_kit=value END
+		LAF resolve_splprot_entry INT_VAR stat=34 value="-1" STR_VAR relation=less_than RET splprot_num_level=value END
+		
+		itm.edit[bclaw]
+		[
+			m.fx.add{s_opcode=318 s_target=1 s_timing=0 s_duration=1 s_parameter1=999 s_parameter2=splprot_num_kit s_resource:=bclaw}
+			m.fx.add{s_opcode=318 s_target=1 s_timing=0 s_duration=1 s_parameter1=7 s_parameter2=splprot_num_level s_resource:=bclaw}
+			m.fx.add{s_opcode=1 s_target=1 s_timing=2 s_parameter1=8 s_parameter2=1} // 5/2 APR
+			m.fx.add{s_opcode=97 s_target=1 s_timing=2 s_parameter1=100 s_parameter2=1} // x/100 str
+			m.fx.add{s_opcode=318 s_target=1 s_timing=0 s_duration=1 s_parameter1=11 s_parameter2=splprot_num_level s_resource:=bclaw}
+			m.fx.add{s_opcode=1 s_target=1 s_timing=2 s_parameter1=3 s_parameter2=1} // 3 APR
+			m.fx.add{s_opcode=44 s_target=1 s_timing=2 s_parameter1=19 s_parameter2=1} // 19 str
+		]
+	
+   END
+
+END
+
+DEFINE_ACTION_FUNCTION malar_claw STR_VAR kit="" BEGIN
+
+	LAF resolve_splprot_entry INT_VAR stat=152 value="-1" STR_VAR relation=not_equal RET match_parameter2=value END
+	LAF check_label STR_VAR label=dw#malar_claw RET value END
+	ACTION_IF !value BEGIN // not done yet
+		LAF make_label STR_VAR label=dw#malar_claw END
+		CLEAR_IDS_MAP
+		OUTER_SET parameter1=IDS_OF_SYMBOL (kit "%kit%")
+		COPY_EXISTING "bclaw.itm" override
+			LPF ALTER_EFFECT INT_VAR match_parameter1=999 parameter1 END
+		BUT_ONLY	
+	END ELSE BEGIN
+		CLEAR_IDS_MAP
+		OUTER_SET parameter1=IDS_OF_SYMBOL (kit "%kit%")
+		COPY_EXISTING "bclaw.itm" override
+			LPF CLONE_EFFECT INT_VAR multi_match=1 match_opcode=318 match_parameter2 parameter1 END
+		BUT_ONLY	
+	
+	
+	
+	END
+
+
+
+
+END

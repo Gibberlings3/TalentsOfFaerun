@@ -1,0 +1,4 @@
+@1="May only use weapons available to the Thief class (except two-handed)."  // must exactly match the appropriate string in BGEE strref 24234
+@2="May only use weapons available to the Thief class (except two-handed)."  // must exactly match the appropriate string in IWDEE strref 37256
+@3="May only use weapons available to the Thief class (except two-handed)."  // must exactly match the appropriate string in BG2EE strref 45867
+@4="May only use weapons available to the Thief class."

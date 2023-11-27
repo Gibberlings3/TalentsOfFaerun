@@ -1,0 +1,691 @@
+DEFINE_ACTION_FUNCTION druid_shapeshift BEGIN
+
+
+
+	LAF include STR_VAR file=lib_shapeshift.tph locbase=lib END
+	
+	LAF include STR_VAR file=elemental_cre_shared.tph locbase=elemental_cre END
+	LAF make_shared_elemental_resources END
+
+	
+	// initialise
+	
+	LAF initialise_shapeshift END
+	
+	// sort out naming
+	
+	ACTION_IF is_iwd BEGIN
+		OUTER_SPRINT spl_druid_shapeshift_bear_improved "%DRUID_SHAPESHIFT_POLAR_BEAR%"
+		OUTER_SPRINT spl_druid_shapeshift_beetle "%DRUID_SHAPESHIFT_BORING_BEETLE%"
+	
+	END
+	
+	// main components
+	
+	// druid 
+	
+	LAF druid_shapeshift_build_forms END
+
+	ACTION_DEFINE_ASSOCIATIVE_ARRAY druid_ss_arr BEGIN
+		3=>"%DRUID_SHAPESHIFT_WOLF%"
+		5=>"%DRUID_SHAPESHIFT_BLACKBEAR% %DRUID_SHAPESHIFT_WOLF%"
+		7=>"%DRUID_SHAPESHIFT_BLACKBEAR% %spl_druid_shapeshift_wolf_improved% %spl_druid_shapeshift_beetle%"
+		9=>"%spl_druid_shapeshift_bear_improved% %spl_druid_shapeshift_wolf_improved% %spl_druid_shapeshift_beetle%"
+		12=>"%spl_druid_shapeshift_air_elemental_small% %spl_druid_shapeshift_earth_elemental_small% %spl_druid_shapeshift_fire_elemental_small% %spl_druid_shapeshift_water_elemental_small% %spl_druid_shapeshift_bear_improved% %spl_druid_shapeshift_wolf_improved% %spl_druid_shapeshift_beetle%"
+		15=>"%spl_druid_shapeshift_air_elemental% %spl_druid_shapeshift_earth_elemental% %spl_druid_shapeshift_fire_elemental% %spl_druid_shapeshift_water_elemental% %spl_druid_shapeshift_bear_improved% %spl_druid_shapeshift_wolf_improved% %spl_druid_shapeshift_beetle%"
+	END
+	ACTION_IF is_iwd BEGIN
+		OUTER_SET description=10
+	END ELSE BEGIN
+		OUTER_SET description=9
+	END
+	LAF make_shapeshift_wrap_spell INT_VAR name=8 description duration=2400 STR_VAR icon=spwi916b spell="%spl_druid_shapeshift_base%" copy_spell="%DRUID_SHAPESHIFT_WOLF%" shapeshift_list=druid_ss_arr END
+
+	// elementalist variants
+	
+	// no air
+	
+	OUTER_SPRINT $druid_ss_arr("12") "%spl_druid_shapeshift_earth_elemental_small% %spl_druid_shapeshift_fire_elemental_small% %spl_druid_shapeshift_water_elemental_small% %spl_druid_shapeshift_bear_improved% %spl_druid_shapeshift_wolf_improved% %spl_druid_shapeshift_beetle%"
+	OUTER_SPRINT $druid_ss_arr("15") "%spl_druid_shapeshift_earth_elemental% %spl_druid_shapeshift_fire_elemental% %spl_druid_shapeshift_water_elemental% %spl_druid_shapeshift_bear_improved% %spl_druid_shapeshift_wolf_improved% %spl_druid_shapeshift_beetle%"
+	LAF make_shapeshift_wrap_spell INT_VAR name=8 description duration=2400 STR_VAR icon=spwi916b spell="%spl_druid_shapeshift_base_no_air%" copy_spell="%DRUID_SHAPESHIFT_WOLF%" shapeshift_list=druid_ss_arr END
+
+	// no earth
+
+	OUTER_SPRINT $druid_ss_arr("12") "%spl_druid_shapeshift_air_elemental_small% %spl_druid_shapeshift_fire_elemental_small% %spl_druid_shapeshift_water_elemental_small% %spl_druid_shapeshift_bear_improved% %spl_druid_shapeshift_wolf_improved% %spl_druid_shapeshift_beetle%"
+	OUTER_SPRINT $druid_ss_arr("15") "%spl_druid_shapeshift_air_elemental% %spl_druid_shapeshift_fire_elemental% %spl_druid_shapeshift_water_elemental% %spl_druid_shapeshift_bear_improved% %spl_druid_shapeshift_wolf_improved% %spl_druid_shapeshift_beetle%"
+	LAF make_shapeshift_wrap_spell INT_VAR name=8 description duration=2400 STR_VAR icon=spwi916b spell="%spl_druid_shapeshift_base_no_earth%" copy_spell="%DRUID_SHAPESHIFT_WOLF%" shapeshift_list=druid_ss_arr END
+
+	// no fire
+
+	OUTER_SPRINT $druid_ss_arr("12") "%spl_druid_shapeshift_air_elemental_small% %spl_druid_shapeshift_earth_elemental_small% %spl_druid_shapeshift_water_elemental_small% %spl_druid_shapeshift_bear_improved% %spl_druid_shapeshift_wolf_improved% %spl_druid_shapeshift_beetle%"
+	OUTER_SPRINT $druid_ss_arr("15") "%spl_druid_shapeshift_air_elemental% %spl_druid_shapeshift_earth_elemental% %spl_druid_shapeshift_water_elemental% %spl_druid_shapeshift_bear_improved% %spl_druid_shapeshift_wolf_improved% %spl_druid_shapeshift_beetle%"
+	LAF make_shapeshift_wrap_spell INT_VAR name=8 description duration=2400 STR_VAR icon=spwi916b spell="%spl_druid_shapeshift_base_no_fire%" copy_spell="%DRUID_SHAPESHIFT_WOLF%" shapeshift_list=druid_ss_arr END
+
+	// no water
+
+	OUTER_SPRINT $druid_ss_arr("12") "%spl_druid_shapeshift_air_elemental_small% %spl_druid_shapeshift_earth_elemental_small% %spl_druid_shapeshift_fire_elemental_small% %spl_druid_shapeshift_bear_improved% %spl_druid_shapeshift_wolf_improved% %spl_druid_shapeshift_beetle%"
+	OUTER_SPRINT $druid_ss_arr("15") "%spl_druid_shapeshift_air_elemental% %spl_druid_shapeshift_earth_elemental% %spl_druid_shapeshift_fire_elemental% %spl_druid_shapeshift_bear_improved% %spl_druid_shapeshift_wolf_improved% %spl_druid_shapeshift_beetle%"
+	LAF make_shapeshift_wrap_spell INT_VAR name=8 description duration=2400 STR_VAR icon=spwi916b spell="%spl_druid_shapeshift_base_no_water%" copy_spell="%DRUID_SHAPESHIFT_WOLF%" shapeshift_list=druid_ss_arr END
+
+
+
+	LAF avenger_shapeshift_build_forms END
+
+	// avenger
+	ACTION_DEFINE_ASSOCIATIVE_ARRAY avenger_ss_arr BEGIN
+		3=>"%DRUID_SHAPESHIFT_WOLF%"
+		4=>"%DRUID_SHAPESHIFT_WOLF% %spl_avenger_shapeshift_hunting_spider%"
+		5=>"%DRUID_SHAPESHIFT_BLACKBEAR% %DRUID_SHAPESHIFT_WOLF% %spl_avenger_shapeshift_hunting_spider%"
+		6=>"%DRUID_SHAPESHIFT_BLACKBEAR% %DRUID_SHAPESHIFT_WOLF% %spl_avenger_shapeshift_hunting_spider% %AVENGER_SHAPESHIFT_BABYWYVERN%"
+		7=>"%DRUID_SHAPESHIFT_BLACKBEAR% %spl_avenger_shapeshift_winter_wolf% %spl_avenger_shapeshift_hunting_spider%  %AVENGER_SHAPESHIFT_BABYWYVERN% %spl_druid_shapeshift_beetle%"
+		8=>"%DRUID_SHAPESHIFT_BLACKBEAR% %spl_avenger_shapeshift_winter_wolf% %AVENGER_SHAPESHIFT_SWORDSPIDER%  %AVENGER_SHAPESHIFT_BABYWYVERN% %spl_druid_shapeshift_beetle%"
+		9=>"%spl_druid_shapeshift_bear_improved% %spl_avenger_shapeshift_winter_wolf% %AVENGER_SHAPESHIFT_SWORDSPIDER%  %AVENGER_SHAPESHIFT_BABYWYVERN% %spl_druid_shapeshift_beetle%"
+		10=>"%spl_druid_shapeshift_bear_improved% %spl_avenger_shapeshift_winter_wolf% %AVENGER_SHAPESHIFT_SWORDSPIDER%   %spl_avenger_shapeshift_wyvern% %spl_druid_shapeshift_beetle%"
+
+		12=>"%spl_druid_shapeshift_air_elemental_small% %spl_druid_shapeshift_earth_elemental_small% %spl_druid_shapeshift_fire_elemental_small% %spl_druid_shapeshift_water_elemental_small% %spl_druid_shapeshift_bear_improved% %spl_avenger_shapeshift_winter_wolf% %spl_druid_shapeshift_beetle% %AVENGER_SHAPESHIFT_SWORDSPIDER%   %spl_avenger_shapeshift_wyvern% "
+		15=>"%spl_druid_shapeshift_air_elemental% %spl_druid_shapeshift_earth_elemental% %spl_druid_shapeshift_fire_elemental% %spl_druid_shapeshift_water_elemental% %spl_druid_shapeshift_bear_improved% %spl_avenger_shapeshift_winter_wolf% %spl_druid_shapeshift_beetle% %AVENGER_SHAPESHIFT_SWORDSPIDER%  %spl_avenger_shapeshift_wyvern% "
+	END
+	ACTION_IF is_iwd BEGIN
+		OUTER_SET description=42
+	END ELSE BEGIN
+		OUTER_SET description=41
+	END
+	LAF make_shapeshift_wrap_spell INT_VAR name=40 description duration=2400 STR_VAR icon=spwi916b spell="%spl_avenger_shapeshift_base%" copy_spell="%DRUID_SHAPESHIFT_WOLF%" shapeshift_list=avenger_ss_arr END
+	
+	// hand out powers
+	
+	OUTER_SPRINT general_shapeshifts "%DRUID_SHAPESHIFT_POLAR_BEAR% %DRUID_SHAPESHIFT_WINTER_WOLF% %DRUID_SHAPESHIFT_BORING_BEETLE% %DRUID_SHAPESHIFT_ELEMENTAL_WATER% %DRUID_SHAPESHIFT_ELEMENTAL_FIRE %DRUID_SHAPESHIFT_ELEMENTAL_EARTH% %DRUID_SHAPESHIFT_WOLF% %DRUID_SHAPESHIFT_BLACKBEAR% %DRUID_SHAPESHIFT_BROWNBEAR%"
+	OUTER_SPRINT avenger_shapeshifts "%AVENGER_SHAPESHIFT_SWORDSPIDER% %AVENGER_SHAPESHIFT_FIRESALAMANDER% %AVENGER_SHAPESHIFT_BABYWYVERN%"
+	
+	 
+	kit.edit_all[DRUID|filter=filter_for_druid_shapeshifting]
+	[
+		k.kit_remove_powers{%general_shapeshifts%}
+		k.kit_grant_powers{%spl_druid_shapeshift_base% 3 3}
+	]
+	
+	class.edit[DRUID|edit_strrefs_in_place:i=1]
+	[
+		k_clastext_descstr:=@80
+	]
+	
+	kit.edit[BEAST_FRIEND|edit_strrefs_in_place:i=1]
+	[
+		k.kit_remove_powers{%general_shapeshifts% %avenger_shapeshifts%}
+		k.kit_grant_powers{%spl_avenger_shapeshift_base% 3 2}
+		k_clastext_descstr:=@81	
+	]
+	
+	LAF build_shapeshift_ability_remover END
+
+END
+
+DEFINE_PATCH_FUNCTION filter_for_druid_shapeshifting STR_VAR arguments="" RET value BEGIN
+
+	value=0
+	SPRINT kit "%arguments%"
+	TO_UPPER kit
+	PATCH_IF !("%kit%" STRING_EQUAL_CASE beast_friend || "%kit%" STRING_EQUAL_CASE druid) BEGIN
+		INNER_ACTION BEGIN
+			LAF 2daq_extract INT_VAR rowname_column=1 STR_VAR resref=kitlist column=ABILITIES row="%kit%" RET clab=value END
+		END
+		PATCH_IF FILE_EXISTS_IN_GAME "%clab%.2da" BEGIN
+			PATCH_IF RESOURCE_CONTAINS "%clab%.2da" "SPCL107" || RESOURCE_CONTAINS "%clab%.2da" "SPCL611" BEGIN
+				value=1
+			END
+		END	
+	END
+	PATCH_IF "%kit%" STRING_EQUAL_CASE druid BEGIN
+		value=1
+	END
+END
+
+DEFINE_ACTION_FUNCTION druid_shapeshift_build_forms BEGIN
+
+	// wolf
+	
+	LAF make_shapeshift_spell
+		INT_VAR str=18
+				str_ex=01
+				dex=15
+				ac=6
+				apr=2
+				enchantment=1
+				dicenumber=1
+				dicesize=6
+				description=6
+				timing=1
+				healing=1
+		STR_VAR weapon=wolfm
+				spell="%DRUID_SHAPESHIFT_WOLF%"
+				damagetype=piercing
+				play_sound="#wolff04"
+	END
+	
+	// black bear
+	
+	LAF make_shapeshift_spell
+		INT_VAR str=18
+				str_ex=100
+				dex=10
+				ac=7
+				apr=3
+				enchantment=1
+				dicenumber=1
+				dicesize=6
+				description=7
+				timing=1
+				healing=1
+		STR_VAR weapon=brblp
+				spell="%DRUID_SHAPESHIFT_BLACKBEAR%"
+				damagetype=slashing
+	END
+	
+	// dire wolf
+	
+		LAF make_shapeshift_spell
+			INT_VAR str=18
+					str_ex=76
+					dex=16
+					apr=2
+					enchantment=1
+					dicenumber=1
+					dicesize=8
+					description=5
+					name=83
+				timing=1
+				healing=1
+			STR_VAR weapon="%itm_shapeshift_dire_wolf%"
+					copy_weapon=wolfm
+					spell="%spl_druid_shapeshift_wolf_improved%"
+					damagetype=piercing
+					anim=wolf_dire
+					icon=spin110
+					ability_icon=spin110
+					play_sound="#wolff04"
+		END
+	
+
+	// upgraded bear; beetle
+	
+	ACTION_IF is_iwd BEGIN
+	
+	// polar bear, beetle (IWD)
+	
+		LAF make_shapeshift_spell
+			INT_VAR str=19
+					dex=10
+					ac=4
+					apr=3
+					enchantment=1
+					dicenumber=1
+					dicesize=12
+					name=87
+					description=2
+					resistcold=50
+				timing=1
+				healing=1
+			STR_VAR weapon=plypbear
+					spell="%spl_druid_shapeshift_bear_improved%"
+					damagetype=slashing
+					play_sound="#pbear01"
+		END
+				
+		LAF make_shapeshift_spell
+			INT_VAR str=18
+					str_ex=51
+					dex=8
+					ac="-2"
+					apr=1
+					enchantment=1
+					dicenumber=5
+					dicesize=4
+					resistslashing=25
+					resistpiercing=25
+					resistmissile=50
+					name=86
+					description=1
+				timing=1
+				healing=1
+			STR_VAR weapon=plybeetl
+					spell="%spl_druid_shapeshift_beetle%"
+					damagetype=piercing
+		END
+	
+	
+	END ELSE BEGIN
+
+	// cave bear, beetle (BG2)
+
+		LAF make_shapeshift_spell
+			INT_VAR str=19
+					dex=10
+					ac=4
+					apr=3
+					enchantment=1
+					dicenumber=1
+					dicesize=12
+					name=88
+					description=3
+				timing=1
+				healing=1
+			STR_VAR weapon=plypbear
+					copy_weapon=brblp
+					spell="%spl_druid_shapeshift_bear_improved%"
+					damagetype=slashing
+		END
+		
+		LAF make_shapeshift_spell
+			INT_VAR str=18
+					str_ex=51
+					dex=8
+					ac="-2"
+					apr=1
+					enchantment=1
+					dicenumber=5
+					dicesize=4
+					resistslashing=25
+					resistpiercing=25
+					resistmissile=50
+					name=86
+					description=1
+				timing=1
+				healing=1
+			STR_VAR weapon=plybeetl
+					copy_weapon=brblp
+					spell="%spl_druid_shapeshift_beetle%"
+					copy_spell="%DRUID_SHAPESHIFT_BLACKBEAR%"
+					damagetype=piercing
+					icon="dw-btl1"
+					ability_icon="dw-btl2"
+					weapon_icon=pincers
+					icon_path="%MOD_FOLDER%/%component_loc%/resource"
+					anim=BEETLE_BOMBARDIER
+		END
+		
+		// beetle animation
+		ACTION_BASH_FOR "%MOD_FOLDER%/%component_loc%/resource/E220" ".*\..*" BEGIN
+			ACTION_IF !FILE_EXISTS_IN_GAME "%BASH_FOR_FILE%" BEGIN
+				COPY "%BASH_FOR_FILESPEC%" override
+			END
+		END
+	
+	
+	END
+	
+	// elemental forms
+	
+	// fire
+	ACTION_IF is_iwd BEGIN
+		OUTER_SPRINT anim elemental_fire_iwd
+	END ELSE BEGIN
+		OUTER_SPRINT anim elemental_fire_small	
+	END
+	
+	LAF make_shapeshift_spell
+		INT_VAR str=18
+				str_ex=100
+				dex=10
+				ac=2
+				apr=1
+				enchantment=2
+				name=20
+				description=21
+				timing=1
+				healing=1
+				resistfire=125
+				resistcold="-50"
+		STR_VAR weapon="%itm_shapeshifter_fire_elemental_lesser%"
+				copy_weapon="%itm_fire_elemental_weapon_8hd%"
+				spell="%spl_druid_shapeshift_fire_elemental_small%"
+				copy_spell="%DRUID_SHAPESHIFT_BLACKBEAR%"
+				icon=dw-sfel
+				ability_icon=dw-sfel
+				icon_path="%MOD_FOLDER%/%component_loc%/resource"
+				apply_spells="%spl_fire_elemental_aura_lesser%"
+				anim
+	END
+
+	ACTION_IF is_iwd BEGIN
+		OUTER_SPRINT anim elemental_fire_iwd
+	END ELSE BEGIN
+		OUTER_SPRINT anim elemental_fire	
+	END
+
+
+	LAF make_shapeshift_spell
+		INT_VAR str=20
+				dex=10
+				ac=0
+				apr=1
+				enchantment=2
+				name=22
+				description=23
+				timing=1
+				healing=1
+				resistcold="-50"
+				resistfire=125
+		STR_VAR weapon="%itm_shapeshifter_fire_elemental%"
+				copy_weapon="%itm_fire_elemental_weapon_12hd%"
+				spell="%spl_druid_shapeshift_fire_elemental%"
+				copy_spell="%DRUID_SHAPESHIFT_BLACKBEAR%"
+				icon=dw-sfel
+				ability_icon=dw-sfel
+				icon_path="%MOD_FOLDER%/%component_loc%/resource"
+				apply_spells="%spl_fire_elemental_aura%"
+				anim
+	END
+	
+	// air
+	
+	LAF make_shapeshift_spell
+		INT_VAR str=18
+				str_ex=100
+				dex=10
+				ac=2
+				apr=1
+				enchantment=2
+				name=24
+				description=25
+				timing=1
+				healing=1
+				resistmissile=75
+				resistelectricity=100
+		STR_VAR weapon="%itm_shapeshifter_air_elemental_lesser%"
+				copy_weapon="%itm_air_elemental_weapon_8hd%"
+				spell="%spl_druid_shapeshift_air_elemental_small%"
+				copy_spell="%DRUID_SHAPESHIFT_BLACKBEAR%"
+				icon=dw-sfel // non-ideal, to be sure
+				ability_icon=dw-sfel
+				icon_path="%MOD_FOLDER%/%component_loc%/resource"
+				apply_spells="%spl_air_elemental_aura_lesser%"
+				anim=elemental_air_small
+	END
+
+	LAF make_shapeshift_spell
+		INT_VAR str=20
+				dex=10
+				ac=0
+				apr=1
+				enchantment=2
+				name=26
+				description=27
+				timing=1
+				healing=1
+				resistmissile=75
+				resistelectricity=100
+		STR_VAR weapon="%itm_shapeshifter_air_elemental%"
+				copy_weapon="%itm_air_elemental_weapon_12hd%"
+				spell="%spl_druid_shapeshift_air_elemental%"
+				copy_spell="%DRUID_SHAPESHIFT_BLACKBEAR%"
+				icon=dw-sfel // non-ideal, to be sure
+				ability_icon=dw-sfel
+				icon_path="%MOD_FOLDER%/%component_loc%/resource"
+				apply_spells="%spl_air_elemental_aura%"
+				anim=elemental_air
+	END
+	
+	// earth
+	
+	ACTION_IF is_iwd BEGIN
+		OUTER_SPRINT anim elemental_earth_iwd
+	END ELSE BEGIN
+		OUTER_SPRINT anim elemental_earth_small	
+	END
+	
+	LAF make_shapeshift_spell
+		INT_VAR str=18
+				str_ex=100
+				dex=10
+				ac=2
+				apr=1
+				enchantment=2
+				name=28
+				description=29
+				timing=1
+				healing=1
+				resistslashing=50
+				resistpiercing=50
+				resistmissile=50
+				resistcrushing="-25"
+		STR_VAR weapon="%itm_shapeshifter_earth_elemental_lesser%"
+				copy_weapon="%itm_earth_elemental_weapon_8hd%"
+				spell="%spl_druid_shapeshift_earth_elemental_small%"
+				copy_spell="%DRUID_SHAPESHIFT_BLACKBEAR%"
+				icon=dw-seel 
+				ability_icon=dw-seel
+				icon_path="%MOD_FOLDER%/%component_loc%/resource"
+				anim
+	END
+
+	ACTION_IF is_iwd BEGIN
+		OUTER_SPRINT anim elemental_earth_iwd
+	END ELSE BEGIN
+		OUTER_SPRINT anim elemental_earth	
+	END
+	
+
+	LAF make_shapeshift_spell
+		INT_VAR str=20
+				dex=10
+				ac=0
+				apr=1
+				enchantment=2
+				name=30
+				description=31
+				timing=1
+				healing=1
+				resistslashing=50
+				resistpiercing=50
+				resistmissile=50
+				resistcrushing="-25"
+		STR_VAR weapon="%itm_shapeshifter_earth_elemental%"
+				copy_weapon="%itm_earth_elemental_weapon_12hd%"
+				spell="%spl_druid_shapeshift_earth_elemental%"
+				copy_spell="%DRUID_SHAPESHIFT_BLACKBEAR%"
+				icon=dw-seel
+				ability_icon=dw-seel
+				icon_path="%MOD_FOLDER%/%component_loc%/resource"
+				anim
+	END
+	
+	// water
+
+	ACTION_IF is_iwd BEGIN
+		OUTER_SPRINT anim elemental_water
+	END ELSE BEGIN
+		OUTER_SPRINT anim water_weird
+	END
+	
+	LAF make_shapeshift_spell
+		INT_VAR str=18
+				str_ex=100
+				dex=10
+				ac=2
+				apr=1
+				enchantment=2
+				name=32
+				description=33
+				timing=1
+				healing=1
+				resistslashing=25
+				resistpiercing=25
+				resistmissile=25
+				resistcrushing=75
+		STR_VAR weapon="%itm_shapeshifter_water_elemental_lesser%"
+				copy_weapon="%itm_water_elemental_weapon_8hd%"
+				spell="%spl_druid_shapeshift_water_elemental_small%"
+				copy_spell="%DRUID_SHAPESHIFT_BLACKBEAR%"
+				icon=dw-swel 
+				ability_icon=dw-swel
+				icon_path="%MOD_FOLDER%/%component_loc%/resource"
+				apply_spells="%spl_water_elemental_aura%"
+				anim
+	END
+
+	LAF make_shapeshift_spell
+		INT_VAR str=20
+				dex=10
+				ac=0
+				apr=1
+				enchantment=2
+				name=34
+				description=35
+				timing=1
+				healing=1
+				resistslashing=25
+				resistpiercing=25
+				resistmissile=25
+				resistcrushing=75
+		STR_VAR weapon="%itm_shapeshifter_water_elemental%"
+				copy_weapon="%itm_water_elemental_weapon_12hd%"
+				spell="%spl_druid_shapeshift_water_elemental%"
+				copy_spell="%DRUID_SHAPESHIFT_BLACKBEAR%"
+				icon=dw-swel 
+				ability_icon=dw-swel
+				icon_path="%MOD_FOLDER%/%component_loc%/resource"
+				apply_spells="%spl_air_elemental_aura%"
+				anim
+	END
+
+
+END
+
+DEFINE_ACTION_FUNCTION avenger_shapeshift_build_forms BEGIN
+
+	// hunting spider (lesser sword spider)
+	
+	LAF make_shapeshift_spell
+		INT_VAR str=15
+				dex=15
+				ac=5
+				apr=2
+				enchantment=1
+					dicenumber=2
+					dicesize=4
+				name=36
+				description=37
+				timing=1
+				casting_time=0
+				healing=1
+		STR_VAR weapon="%itm_avenger_hunting_spider%"
+				copy_weapon=plyspid
+				spell="%spl_avenger_shapeshift_hunting_spider%"
+				copy_spell="%DRUID_SHAPESHIFT_BLACKBEAR%"
+				ability_icon=dw-assp
+				icon_path="%MOD_FOLDER%/%component_loc%/resource"
+				anim=SPIDER_SMALL
+	END
+	
+	COPY_EXISTING "%itm_avenger_hunting_spider%.itm" override
+		LPF DELETE_EFFECT INT_VAR match_opcode=16 END
+
+	// sword spider (all we're doing is changing the icons)
+	
+	LAF make_shapeshift_spell
+		INT_VAR use_template=1
+				timing=1
+				casting_time=0
+				healing=1
+				description=84
+		STR_VAR spell="%AVENGER_SHAPESHIFT_SWORDSPIDER%"
+				ability_icon=dw-assp
+				icon_path="%MOD_FOLDER%/%component_loc%/resource"
+	END
+
+
+	// full wyvern
+	
+	LAF make_shapeshift_spell
+		INT_VAR str=18
+				dex=17
+				ac=1
+				apr=3
+				enchantment=2
+				dicenumber=2
+				dicesize=8
+				name=38
+				description=39
+				timing=1
+				healing=1
+		STR_VAR weapon="%itm_avenger_wyvern%"
+				copy_weapon=plywyvrn
+				spell="%spl_avenger_shapeshift_wyvern%"
+				copy_spell="%DRUID_SHAPESHIFT_BLACKBEAR%"
+				icon=dw-aswy
+				ability_icon=dw-aswy
+				icon_path="%MOD_FOLDER%/%component_loc%/resource"
+				anim=wyvern_big
+	END
+
+	COPY_EXISTING "%itm_avenger_wyvern%.itm" override
+		LPF ALTER_EFFECT INT_VAR match_opcode=25 parameter1=3 duration=12 END
+	BUT_ONLY
+	
+	// baby wyvern (icon change)
+	
+	LAF make_shapeshift_spell
+		INT_VAR use_template=1
+				timing=1
+				casting_time=0
+				healing=1
+				description=85
+		STR_VAR spell="%AVENGER_SHAPESHIFT_BABYWYVERN%"
+				ability_icon=dw-aswy
+				icon_path="%MOD_FOLDER%/%component_loc%/resource"
+	END
+
+	
+	// winter wolf
+	
+	LAF make_shapeshift_spell
+			INT_VAR str=18
+					str_ex=76
+					dex=16
+					apr=2
+					enchantment=1
+					dicenumber=1
+					dicesize=8
+					name=82
+					description=4
+					resistcold=75
+					resistfire="-25"
+				timing=1
+				healing=1
+			STR_VAR weapon="%itm_shapeshift_winter_wolf%"
+					copy_weapon=wolfm
+					spell="%spl_avenger_shapeshift_winter_wolf%"
+					copy_spell="%DRUID_SHAPESHIFT_WOLF%"
+					grant_spells="%spl_shapeshift_winter_wolf_breath%"
+					damagetype=piercing
+					anim=wolf_winter
+		END
+		
+	// winter wolf bite
+	
+	itm.edit[%itm_shapeshift_winter_wolf%]
+	[
+		m.ab_fx.add{s_opcode=12 s_target=2 s_timing=1 s_dicenumber=1 s_dicesize=6 s_parameter2b=2}
+	]
+	
+	// winter wolf breath
+	
+	winter_wolf_pro=pro.copy[winterwolf=>%pro_shapeshift_winter_wolf_breath%|source_location=resource missile_entry=Druid_Winterwolf_Breath][]
+
+	LAF install INT_VAR overwrite=0 STR_VAR file="cocoldt.bam #tra_08.wav" location=resource END
+	
+	spl.copy[spin169=>%spl_shapeshift_winter_wolf_breath%|source_location=resource]
+	[
+		m_name:=@78
+		m_description:=@79
+		m.ab.alter{s_target=1 s_projectile=winter_wolf_pro s_icon:=spwi503b}
+		m.ab_fx.alter{s_resource:="%spl_shapeshift_winter_wolf_breath%"|match="s_opcode=324"}
+	]
+
+	LAF spl_make_innate_repeating_spell INT_VAR overwrite=1 delete_casting=1 cooldown=18 patch_description=0 new_is_ids=0 STR_VAR arguments="%spl_shapeshift_winter_wolf_breath%" END 
+	
+
+
+
+
+END

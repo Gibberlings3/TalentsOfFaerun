@@ -1,0 +1,9 @@
+id								resref						type			name:i	desc:i	select_desc	prerequisite		max_count:i	require_1		require_2		require_3	require_4	require_5	exclude_kit							alignment		exclude_hla 			special			special_string		checks
+AMBIDEXTERITY					dw-ftamb					apply			124		125		*			*					1			RANGER			BLADE			SWASHBUCKLER	*		*			FERALAN								*				*						*				*					!feats
+EVASION							spl_hla_evasion				apply			3028	3029	*			*					1			BARBARIAN		MONK			*			*			*			*									*				*						*				*					evasion
+ALCHEMY_WARRIOR					dwhpt1						grant			-1		-1		overlay		*					1			MAGE			BARD			SORCERER	*			*			*									*				*						*				*					!feats
+ALCHEMY_CLERICAL				dwhpt2						grant			-1		-1		overlay		*					1			CLERIC			DRUID			SHAMAN		FAVORED_SOUL *			*									*				*						*				*					!feats
+ALCHEMY_PROTECTIVE				dwhpt3						grant			-1		-1		overlay		*					1			MAGE			BARD			SORCERER	*			*			*									*				*						*				*					!feats
+ALCHEMY_ENHANCEMENT				dwhpt4						grant			-1		-1		overlay		*					1			MAGE			BARD			SORCERER	*			*			*									*				*						*				*					!feats
+ALCHEMY_ROGUE					dwhpt5						grant			-1		-1		overlay		*					1			THIEF			BARD			*			*			*			*									*				*						*				*					!feats
+ROGUE_SET_TIME_TRAP				ROGUE_SET_TIME_TRAP			grant			-1		-1		overlay		*					16			MAGE_THIEF		FIGHTER_MAGE_THIEF *		*			*			*									*				*						*				*					*

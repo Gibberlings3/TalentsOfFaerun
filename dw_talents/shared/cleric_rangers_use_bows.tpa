@@ -1,0 +1,32 @@
+DEFINE_ACTION_FUNCTION cleric_rangers_use_bows BEGIN
+
+	// proficiency setting
+	
+	COPY_EXISTING "weapprof.2da" override
+		LPF 2da_read RET_ARRAY weapprof_array=array END
+		SET $weapprof_array("LONGBOW" "CLERIC_RANGER")=2
+		SET $weapprof_array("SHORTBOW" "CLERIC_RANGER")=2
+		LPF 2da_write STR_VAR array=weapprof_array default="0" END
+
+	// usability flags
+
+	COPY_EXISTING_REGEXP ".*\.itm" override
+		PATCH_IF (SHORT_AT 0x1c) = 15 BEGIN // is a bow
+			WRITE_BYTE 0x1f ( THIS BAND (BNOT BIT2))
+		END
+	BUT_ONLY
+
+	// description
+	
+	WITH_TRA "%scs_tra_loc%/english/cleric_rangers_use_bows.tra" "%scs_tra_loc%/%LANGUAGE%/cleric_rangers_use_bows.tra" BEGIN
+		OUTER_SET arguments=RESOLVE_STR_REF (@1)
+	END
+	COPY_EXISTING clastext.2da override
+		LPF 2da_read RET_ARRAY clastext_array=array END
+		SET $clastext_array("CLERIC_RANGER" "DESCSTR")=arguments
+		SET $clastext_array("CLERIC_RANGER" "BRIEFDESC")=arguments
+		LPF 2da_write STR_VAR array=clastext_array default="-1" END
+
+
+
+END

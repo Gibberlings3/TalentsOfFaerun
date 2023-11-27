@@ -1,0 +1,175 @@
+DEFINE_ACTION_FUNCTION cleric_strongholds BEGIN
+
+  LAF check_label STR_VAR label="dw#cleric_strongholds_initialised" RET value END
+  ACTION_IF !value BEGIN
+  
+    LAF make_label STR_VAR label="dw#cleric_strongholds_initialised" END
+  
+    OUTER_SPRINT component_loc kit
+
+	// compile dialog
+	WITH_TRA "%scs_tra_loc%/english/cleric_strongholds.tra" "%scs_tra_loc%/%LANGUAGE%/cleric_strongholds.tra" BEGIN
+	   LAF install STR_VAR file="cleric_strongholds.d" location=stronghold END
+	END
+
+	// create questgivers
+	
+	cre.copy[bharval=>%cre_priest_finale_questgiver_lathander%]
+	[
+		m_dialog:="%dlg_priest_finale_lathander_questgiver%"
+		m.cre_strip_scripts{shoutinv}
+	]
+	cre.copy[bhoisig=>%cre_priest_finale_questgiver_helm%]
+	[
+		m_dialog:="%dlg_priest_finale_helm_questgiver%"
+		m.cre_strip_scripts{shoutinv}
+	]
+	cre.copy[bhnalla=>%cre_priest_finale_questgiver_talos%]
+	[
+		m_dialog:="%dlg_priest_finale_talos_questgiver%"
+		m.cre_strip_scripts{shoutinv}
+	]
+	
+	// spawn questgivers
+	
+	<<<<<<<< .../stratagems-inline/temp1a.baf
+	IF
+		Global("%var_priest_finale_quest%","GLOBAL",2)
+		Global("%var_priest_finale_allegiance%","GLOBAL",1)
+	THEN
+		RESPONSE #100
+			SetGlobal("%var_priest_finale_quest%","GLOBAL",3)
+			ActionOverride("arval",DestroySelf())
+			SmallWait(2)
+			CreateCreature("%cre_priest_finale_questgiver_lathander%",[577.650],SE)
+			Continue()
+	END	
+	>>>>>>>>
+
+	LAF extend_area_script INT_VAR inline=1 STR_VAR area=ar0902 top=temp1a END
+
+	<<<<<<<< .../stratagems-inline/temp1b.baf
+	IF
+		Global("%var_priest_finale_quest%","GLOBAL",2)
+		Global("%var_priest_finale_allegiance%","GLOBAL",2)
+	THEN
+		RESPONSE #100
+			SetGlobal("%var_priest_finale_quest%","GLOBAL",3)
+			ActionOverride("oisig",DestroySelf())
+			SmallWait(2)
+			CreateCreature("%cre_priest_finale_questgiver_helm%",[690.565],SW)
+			Continue()
+	END	
+	>>>>>>>>
+
+	LAF extend_area_script INT_VAR inline=1 STR_VAR area=ar0901 top=temp1b END
+
+	<<<<<<<< .../stratagems-inline/temp1c.baf
+	IF
+		Global("%var_priest_finale_quest%","GLOBAL",2)
+		Global("%var_priest_finale_allegiance%","GLOBAL",3)
+	THEN
+		RESPONSE #100
+			SetGlobal("%var_priest_finale_quest%","GLOBAL",3)
+			ActionOverride("nallabir",DestroySelf())
+			SmallWait(2)
+			CreateCreature("%cre_priest_finale_questgiver_talos%",[338.378],SE)
+			Continue()
+	END	
+	>>>>>>>>
+
+	LAF extend_area_script INT_VAR inline=1 STR_VAR area=ar0904 top=temp1c END
+
+	// create messenger
+	
+	<<<<<<<< .../stratagems-inline/baf_messenger_self_destruct.baf
+	IF
+		GlobalGT("%var_priest_finale_quest%","GLOBAL",1)
+	THEN
+		RESPONSE #100
+			DestroySelf()
+	END
+	>>>>>>>>
+	LAF install_script INT_VAR inline=1 STR_VAR script=baf_messenger_self_destruct END
+	
+	cre.copy[naliames=>%cre_priest_finale_messenger%]
+	[
+		m_dv:="%cre_priest_finale_messenger%"
+		m_script_override:=initdlg
+		m_script_class:="%baf_messenger_self_destruct%"
+		m_dialog:="%dlg_priest_finale_messenger%"
+	]
+	
+	// spawn messenger
+	
+	<<<<<<<< .../stratagems-inline/temp2.baf
+	IF
+		AreaType(OUTDOOR)
+		Global("%var_priest_finale_quest%","GLOBAL",0)
+		GlobalGT("%var_priest_finale_allegiance%","GLOBAL",0)
+		OR(3)
+			GlobalTimerExpired("%var_priest_finale_quest_timer%","GLOBAL")
+			!Global("BodhiDead","GLOBAL",0)
+			GlobalGT("chapter","GLOBAL",5)
+		OR(3)
+			GlobalTimerExpired("%var_priest_finale_quest_timer%","GLOBAL")
+			!Global("BodhiDead","GLOBAL",0)
+			Global("%var_beholder_quest_early%","GLOBAL",1)
+		CombatCounter(0)
+	THEN
+	RESPONSE #100
+		SetGlobal("%var_priest_finale_quest%","GLOBAL",1)
+		SetGlobalTimer("%var_priest_finale_quest_safety%","GLOBAL",120)
+		CreateCreatureObject("bdoffscr",Player1,0,0,0)  // No such index
+		ApplySpellRES("bdoffscr","bdoffscr")  // No such index
+		SmallWait(1)
+		CreateCreatureObject("%cre_priest_finale_messenger%","bdoffscr",0,0,0)  
+		Continue()
+	END
+	
+	// this next block covers glitchiness where the messenger doesn't spawn
+	
+	IF 
+		Global("%var_priest_finale_quest%","GLOBAL",1)
+		GlobalTimerExpired("%var_priest_finale_quest_safety%","GLOBAL")
+	THEN
+		RESPONSE #100
+			SetGlobal("%var_priest_finale_quest%","GLOBAL",0)
+			Continue()
+	END
+	>>>>>>>>
+	
+	LAF extend_area_script INT_VAR inline=1 STR_VAR area="ar0300 ar0400 ar0500 ar0700 ar0800 ar0900" top=temp2 END
+	
+	// spawn Acolyte Lara on the Helm route
+	
+	cre.copy[latlara=>%cre_priest_finale_lara%]
+	[
+		m_dialog:="%dlg_priest_finale_latlara%"
+	]
+
+	
+	<<<<<<<< .../stratagems-inline/spawn_lara.baf
+	
+	IF
+	Global("Talonwar","GLOBAL",1)
+	NumDeadGT("talkni02",3)  // Storm Knight
+	Global("JoinHelm","GLOBAL",0)
+	Global("%var_priest_finale_allegiance%","GLOBAL",2)
+	!Exists("latlara")  // Acolyte Lara
+	!Dead("latlara")  // Acolyte Lara
+THEN
+	RESPONSE #100
+		CreateCreature("%cre_priest_finale_lara%",[2966.1620],W)  // Acolyte Lara
+		ActionOverride("latlara",SetNumTimesTalkedTo(1))
+		ActionOverride("latlara",StartDialogNoSet([PC]))
+END
+
+	
+	>>>>>>>>
+	
+	LAF extend_area_script INT_VAR inline=1 STR_VAR area=ar0900 top=spawn_lara END
+	
+   END
+
+END

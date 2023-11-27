@@ -1,0 +1,94 @@
+DEFINE_ACTION_FUNCTION tyr_cleric BEGIN
+
+	LAF tyr_shared END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_HOLY_WORD%" type=innate RET spl_tyr_holy_word=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_HOLD_PERSON%" type=innate RET spl_tyr_hold_person=new_resref END
+
+	OUTER_SPRINT kit OHTYR
+	LAF cleric_kit_substitutions STR_VAR kit god=tyr END
+	kit.edit[%kit%|edit_strrefs_in_place:i=1]
+	[
+		k_name:=@19
+		k_desc:=@20
+		k.kit_remove_powers{OHTYR1 OHTYR2}
+		k.kit_grant_powers{OHTYR2 1 5,OHTYR1 5 5,%spl_tyr_hold_person% 3 4,%spl_tyr_holy_word% 11}
+		k.kit_set_alignment{lg ng ln}
+	]
+	LAF assign_spheres STR_VAR kit default=cleric subtract="evil necromantic" END
+	LAF assign_bonus_spells STR_VAR kit spells="DETECT_INVISIBILITY" END
+
+
+END
+
+DEFINE_ACTION_FUNCTION crusader_of_tyr BEGIN
+
+	LAF tyr_shared END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_HOLY_WORD%" type=innate RET spl_tyr_holy_word=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_HOLD_PERSON%" type=innate RET spl_tyr_hold_person=new_resref END
+
+	OUTER_SPRINT kit DW_TYR_CRUSADER
+	kit.copy[FIGHTER_CLERIC=>%kit%]
+	[
+		k_name:=@62
+		k_desc:=@63
+		k.kit_grant_powers{OHTYR2 1 5,OHTYR1 5 5,%spl_tyr_hold_person% 3 4,%spl_tyr_holy_word% 11|class=cleric}
+		k.kit_set_alignment{lg ng ln}
+		k_colors:="30,44,57,23,30"
+	]
+	LAF cleric_kit_substitutions STR_VAR kit god=tyr END
+	LAF assign_spheres STR_VAR kit default=cleric subtract="evil necromantic" END
+	LAF assign_bonus_spells STR_VAR kit spells="DETECT_INVISIBILITY" END
+	LAF holy_symbol INT_VAR name=2054 follower=2055 STR_VAR kit desc_bam=pbelt14 inv_bam=ibelt14 kit END
+	LAF set_multiclass_components STR_VAR kit components="ohtyr"  END
+
+
+END
+
+
+
+
+
+
+DEFINE_ACTION_FUNCTION tyr_favored_soul BEGIN
+
+	LAF tyr_shared END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_HOLY_WORD%" type=innate RET spl_tyr_holy_word=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_HOLD_PERSON%" type=innate RET spl_tyr_hold_person=new_resref END
+
+	// make the main kit
+	
+	OUTER_SPRINT kit "DW_TYR_FAVORED"
+	
+	LAF build_favored_soul_kit INT_VAR name=4022 desc=4023 god=4024 god_gender=4005 god_temple=4025 STR_VAR kit copy_from=OHTYR END
+	LAF cleric_kit_substitutions STR_VAR kit god=tyr END
+	kit.edit[%kit%|edit_strrefs_in_place:i=1]
+	[
+		k.kit_grant_powers{OHTYR2 1 5,OHTYR1 5 5,%spl_tyr_hold_person% 3 4,%spl_tyr_holy_word% 11}
+	]
+
+	// spell choices
+
+	LAF assign_bonus_spells STR_VAR kit spells="CLERIC_DETECT_EVIL WIZARD_DETECT_INVISIBILITY CLERIC_STRENGTH_OF_ONE CLERIC_PROTECTION_FROM_EVIL_10_FOOT CLERIC_TRUE_SIGHT CLERIC_SPIRITUAL_WRATH CLERIC_IMPERVIOUS_SANCTITY_OF_MIND" END
+
+
+
+END
+
+DEFINE_ACTION_FUNCTION tyr_shared BEGIN
+
+	LAF include STR_VAR file=log_favored_weapon.tph locbase=shared END
+	LAF log_favored_weapon STR_VAR god=TYR weapon=longsword END
+
+
+	LAF check_label STR_VAR label=dw#tyr_shared RET value END
+	ACTION_IF !value BEGIN
+	
+		LAF make_label STR_VAR label=dw#tyr_shared END
+
+		// innate Holy Word, Hold Person
+		
+		LAF splconv STR_VAR spell="%CLERIC_HOLY_WORD%" new_type=innate RET_ARRAY splconv_array END
+		LAF splconv STR_VAR spell="%CLERIC_HOLD_PERSON%" new_type=innate RET_ARRAY splconv_array END
+
+	END
+END

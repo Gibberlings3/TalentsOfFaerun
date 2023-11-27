@@ -1,0 +1,83 @@
+DEFINE_ACTION_FUNCTION illusionist_assassin BEGIN
+
+	OUTER_SPRINT kit DW_ILLUSIONIST_ASSASSIN
+	kit.copy[MAGE_THIEF=>%kit%]
+	[
+		k_name:=@207
+		LPF adjust_assassin_descriptions INT_VAR tra_ref=208 RET k_desc=desc END
+		k.kit_apply_powers{SPCL421 1|class=thief}
+		k.kit_grant_powers{%ASSASSIN_POISON% 1 4|class=thief}
+		k.kit_copy_from{clascolr thiefskl|source=ASSASIN}
+	]
+	LAF copy_backstab STR_VAR kit copy_from=ASSASIN END
+	LAF set_multiclass_components STR_VAR kit components="illusionist assasin"  END
+	LAF make_multiclass_specialist STR_VAR kit school=illusion END
+
+END
+
+DEFINE_ACTION_FUNCTION invoker_assassin BEGIN
+
+	OUTER_SPRINT kit DW_INVOKER_ASSASSIN
+	kit.copy[MAGE_THIEF=>%kit%]
+	[
+		k_name:=@209
+		LPF adjust_assassin_descriptions INT_VAR tra_ref=210 RET k_desc=desc END
+		k.kit_apply_powers{SPCL421 1|class=thief}
+		k.kit_grant_powers{%ASSASSIN_POISON% 1 4|class=thief}
+		k.kit_copy_from{clascolr thiefskl|source=ASSASIN}
+	]
+	LAF copy_backstab STR_VAR kit copy_from=ASSASIN END
+	LAF set_multiclass_components STR_VAR kit components="invoker assasin"  END
+	LAF make_multiclass_specialist STR_VAR kit school=invocation END
+
+END
+
+DEFINE_ACTION_FUNCTION enchanter_swashbuckler BEGIN
+
+	OUTER_SPRINT kit DW_ENCHANTER_SWASHBUCKLER
+	kit.copy[MAGE_THIEF=>%kit%]
+	[
+		k_name:=@211
+		k_desc:=@212
+		k.kit_apply_powers{splcl441 1,splcl441 5 5,splcl141 5 5|class=thief}
+		k_longsword=2
+		k_shortsword=2
+		k_scimitarwakisashininjato=2
+		k_dagger=2
+		k_club=2
+		k_quarterstaff=2
+		k_crossbow=2
+		k_shortbow=2
+		k_dart=2
+		k_sling=2
+		k_2weapon=3
+		k.kit_copy_from{clascolr|source=SWASHBUCKLER}
+	]
+	LAF set_multiclass_components STR_VAR kit components="enchanter swashbuckler"  END
+	LAF make_multiclass_specialist STR_VAR kit school=enchantment END
+	LAF copy_backstab STR_VAR kit copy_from=swashbuckler END
+
+	// log extra weapons for prof
+	
+	LAF include STR_VAR file=prof_tools.tph locbase=prof END
+	LAF prof_add_kit_weapons STR_VAR kit weapons="2weapon" END
+
+END
+
+DEFINE_ACTION_FUNCTION diviner_bounty_hunter BEGIN
+
+	OUTER_SPRINT kit DW_DIVINER_BOUNTY_HUNTER
+	kit.copy[MAGE_THIEF=>%kit%]
+	[
+		k_name:=@226
+		LPF adjust_bounty_hunter_descriptions INT_VAR tra_ref=227 RET k_desc=desc END
+		k.kit_grant_powers{%SET_SPECIAL_SNARE_TRAP% 1 5|class=thief}
+		k.kit_copy_from{thiefskl|source=BOUNTY_HUNTER}
+		k_initial_skill_set_traps=15
+	]
+	LAF make_multiclass_specialist STR_VAR kit school=divination END
+	LAF set_multiclass_components STR_VAR kit components="diviner bounty_hunter"  END
+	
+
+END
+

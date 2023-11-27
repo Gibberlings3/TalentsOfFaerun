@@ -1,0 +1,185 @@
+DEFINE_ACTION_FUNCTION corellon_cleric BEGIN
+
+    LAF corellon_shared END
+	OUTER_SPRINT kit DW_CORELLON_CLERIC
+	LAF splconv_get_name STR_VAR spell="%WIZARD_CHROMATIC_ORB%" new_type=innate RET spl_corellon_chromatic_orb=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_FLAME_ARROW%" new_type=innate RET spl_corellon_flame_arrow=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_PRISMATIC_SPRAY%" new_type=innate RET spl_corellon_prismatic_spray=new_resref END
+
+
+	kit.copy[CLERIC=>%kit%]
+	[
+		k_name:=@94
+		k_desc:=@95
+		k.kit_apply_powers{%spl_corellon_innate% 1}
+		k.kit_grant_powers{%spl_corellon_chromatic_orb% 3 6,%spl_corellon_flame_arrow% 7 6,%spl_corellon_prismatic_spray% 11}
+		k_color_metal=35
+		k_color_minor_cloth=21
+		k_color_main_cloth=57
+		k_color_leather=25
+		k_color_armor=80	
+		if {is_iwd} {{k_bio:=@1043}}
+		k_any_race=0
+		k_elf=1
+		k_half_elf=1
+		k.kit_set_alignment{lg ng cg}
+	]
+	LAF cleric_kit_substitutions STR_VAR kit god=corellon END
+
+	LAF assign_spheres STR_VAR kit default=cleric subtract="evil necromantic summoning" add="water air fey sun" END
+	LAF holy_symbol INT_VAR name=2036 follower=2037 STR_VAR kit desc_bam=a#feyhly inv_bam=cring10 bam_path=dr kit END
+	LAF adjust_cleric_stronghold STR_VAR lathander="all" kit END
+ 
+ 
+END
+
+DEFINE_ACTION_FUNCTION guardian_of_corellon BEGIN
+
+	LAF splconv_get_name STR_VAR spell="%WIZARD_CHROMATIC_ORB%" new_type=innate RET spl_corellon_chromatic_orb=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_FLAME_ARROW%" new_type=innate RET spl_corellon_flame_arrow=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_PRISMATIC_SPRAY%" new_type=innate RET spl_corellon_prismatic_spray=new_resref END
+
+
+    LAF corellon_shared END
+	OUTER_SPRINT kit DW_CORELLON_GUARDIAN
+	kit.copy[FIGHTER_MAGE_CLERIC=>%kit%]
+	[
+		k_name:=@232
+		k_desc:=@233
+		k.kit_apply_powers{%spl_corellon_innate% 1|class=cleric}
+		k.kit_apply_powers{spcl143 1,spcl143 4 4,spcl141 3 3,spcl142 1|class=fighter}
+		k.kit_grant_powers{%spl_corellon_chromatic_orb% 3 6,%spl_corellon_flame_arrow% 7 6,%spl_corellon_prismatic_spray% 11|class=cleric}
+		k.kit_grant_powers{spcl144 1 4|class=fighter}
+		k.kit_match_usability{kensai}
+		k_crossbow=0
+		k_longbow=0
+		k_shortbow=0
+		k_dart=0
+		k_sling=0
+		k_swordandshield=0
+		k_color_metal=35
+		k_color_minor_cloth=21
+		k_color_main_cloth=57
+		k_color_leather=25
+		k_color_armor=80
+		if {is_iwd} {{k_bio:=@1043}}
+		k_any_race=0
+		k_elf=1
+		k_half_elf=1	
+		k.kit_set_alignment{lg ng cg}
+	]
+	
+	LAF cleric_kit_substitutions STR_VAR kit god=corellon END
+
+	LAF assign_spheres STR_VAR kit default=cleric subtract="evil necromantic summoning" add="water air fey sun" END
+	LAF holy_symbol INT_VAR name=2036 follower=2037 STR_VAR kit desc_bam=a#feyhly inv_bam=cring10 bam_path=dr kit END
+	LAF adjust_cleric_stronghold STR_VAR lathander="all" kit END
+	LAF set_multiclass_components STR_VAR kit components="kensai dw_corellon_cleric"  END
+ 
+ 
+END
+
+DEFINE_ACTION_FUNCTION scout_of_corellon BEGIN
+
+	LAF splconv_get_name STR_VAR spell="%WIZARD_CHROMATIC_ORB%" new_type=innate RET spl_corellon_chromatic_orb=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_FLAME_ARROW%" new_type=innate RET spl_corellon_flame_arrow=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_PRISMATIC_SPRAY%" new_type=innate RET spl_corellon_prismatic_spray=new_resref END
+
+
+	LAF corellon_shared END
+	OUTER_SPRINT kit DW_CORELLON_SCOUT
+	kit.copy[CLERIC_RANGER=>%kit%]
+	[
+		k_name:=@219
+		k_desc:=@220
+		k.kit_apply_powers{%spl_corellon_innate% 1|class=cleric}
+		k.kit_apply_powers{spcl331 1|class=ranger}
+		k.kit_grant_powers{%spl_corellon_chromatic_orb% 3 6,%spl_corellon_flame_arrow% 7 6,%spl_corellon_prismatic_spray% 11|class=ranger}
+		k_color_metal=35
+		k_color_minor_cloth=21
+		k_color_main_cloth=57
+		k_color_leather=25
+		k_color_armor=80	
+		k.kit_match_usability{stalker}
+		if {is_iwd} {{k_bio:=@1043}}
+		k_any_race=0
+		k_elf=1
+		k_half_elf=1	
+		k.kit_set_alignment{lg ng cg}
+	]
+	
+	LAF cleric_kit_substitutions STR_VAR kit god=corellon END
+
+	LAF assign_spheres STR_VAR kit default=cleric subtract="evil necromantic summoning" add="water air fey sun" END
+	LAF holy_symbol INT_VAR name=2036 follower=2037 STR_VAR kit desc_bam=a#feyhly inv_bam=cring10 bam_path=dr kit END
+	LAF adjust_cleric_stronghold STR_VAR lathander="all" kit END
+	LAF set_multiclass_components STR_VAR kit components="stalker dw_corellon_cleric"  END
+	LAF copy_backstab STR_VAR kit copy_from=stalker class=ranger END
+	LAF assign_bonus_spells STR_VAR kit spells="HASTE MINOR_SPELL_DEFLECTION IMPROVED_INVISIBILITY" END
+
+END
+
+
+
+
+DEFINE_ACTION_FUNCTION corellon_favored_soul BEGIN
+
+	LAF splconv_get_name STR_VAR spell="%WIZARD_CHROMATIC_ORB%" new_type=innate RET spl_corellon_chromatic_orb=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_FLAME_ARROW%" new_type=innate RET spl_corellon_flame_arrow=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_PRISMATIC_SPRAY%" new_type=innate RET spl_corellon_prismatic_spray=new_resref END
+
+
+	LAF corellon_shared END
+
+	// make the main kit
+	
+	OUTER_SPRINT kit "DW_CORELLON_FAVORED"
+	
+	LAF build_favored_soul_kit INT_VAR name=4099 desc=4100 god=4102 god_gender=4005 god_temple=4101 STR_VAR kit copy_from=DW_CORELLON_CLERIC END
+	LAF cleric_kit_substitutions STR_VAR kit god=corellon END
+
+	kit.edit[%kit%|edit_strrefs_in_place:i=1]
+	[
+		k.kit_apply_powers{%spl_corellon_innate% 1}
+		k.kit_grant_powers{%spl_corellon_chromatic_orb% 3 6,%spl_corellon_flame_arrow% 7 6,%spl_corellon_prismatic_spray% 11}
+	]
+
+	// spell choices
+
+	LAF assign_bonus_spells STR_VAR kit spells="CLERIC_SUNSCORCH CLERIC_SLOW_POISON CLERIC_MOONBLADE CLERIC_FREE_ACTION CLERIC_TRUE_SIGHT CLERIC_PHYSICAL_MIRROR CLERIC_RESTORATION" END
+
+END
+
+
+
+
+DEFINE_ACTION_FUNCTION corellon_shared BEGIN
+
+	LAF include STR_VAR file=log_favored_weapon.tph locbase=shared END
+	LAF log_favored_weapon STR_VAR god=CORELLON weapon=longsword END
+
+	
+   LAF check_label STR_VAR label=dw#corellon_shared RET value END
+   ACTION_IF !value BEGIN
+   
+		LAF make_label STR_VAR label=dw#corellon_shared END
+		
+		/// AC bonus vs spiders
+		
+		spl.make[%spl_corellon_innate%]
+		[
+				m.ab.add{}
+				m.ab_fx.add{s_opcode=219 s_target=2 s_timing=9 s_parameter1=IDS_OF_SYMBOL (race spider) s_parameter2=4}
+		]
+
+		// other innates
+		
+		LAF splconv STR_VAR spell="%WIZARD_CHROMATIC_ORB%" new_type=innate RET_ARRAY splconv_array END
+		LAF splconv STR_VAR spell="%WIZARD_FLAME_ARROW%" new_type=innate RET_ARRAY splconv_array END
+		LAF splconv STR_VAR spell="%WIZARD_PRISMATIC_SPRAY%" new_type=innate RET_ARRAY splconv_array END
+
+
+
+   END	
+
+END

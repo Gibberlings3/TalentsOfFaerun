@@ -1,0 +1,496 @@
+
+
+DEFINE_ACTION_FUNCTION copy_backstab STR_VAR kit="" copy_from="" class=thief BEGIN
+
+	ACTION_TO_LOWER copy_from 
+	// get the backstab data
+	
+	COPY_EXISTING backstab.2da override
+		COUNT_2DA_COLS colcount
+		READ_2DA_ENTRIES_NOW backstab_data colcount
+		FOR (row=0;row<backstab_data;++row) BEGIN
+			READ_2DA_ENTRY_FORMER backstab_data row 0 kit_here
+			SPRINT base_name "backstab_data_%kit_here%"
+			TO_LOWER base_name
+			FOR (col=1;col<colcount;++col) BEGIN
+				level=col - 1
+				READ_2DA_ENTRY_FORMER backstab_data row col mult
+				SET $"%base_name%"("%level%") = mult
+			END
+		END
+	BUT_ONLY
+	OUTER_SET level_max=level
+	OUTER_FOR (level=1;level<=level_max;++level) BEGIN
+		OUTER_SET $backstab_data_swashbuckler("%level%")=1
+	END
+
+	// if not already done, make the spells that set backstab multiplier
+
+	ACTION_IF !FILE_EXISTS_IN_GAME "%spl_backstab_multiplier%1.spl" BEGIN
+	
+		spl.make[%spl_backstab_multiplier%1]
+		[
+			m.ab.add{}
+			m.ab_fx.add{s_opcode=263 s_target=2 s_timing=9 s_parameter1=1 s_parameter2=1}
+		]
+		
+		OUTER_FOR (ind=2;ind<=9;++ind) BEGIN
+			COPY_EXISTING "%spl_backstab_multiplier%1.spl" "override/%spl_backstab_multiplier%%ind%.spl" 
+				LPF ALTER_EFFECT INT_VAR parameter1=ind END
+		END
+	END
+	
+	// implement
+	
+	kit.edit[%kit%]
+	[
+		basename:="backstab_data_%copy_from%"
+		FOR (level=1;level<=level_max;++level) BEGIN
+			mult=$"%basename%"("%level%")
+			k.kit_apply_powers{%spl_backstab_multiplier%%mult% %level%|class=%class%}
+		END
+	]
+
+END
+
+
+DEFINE_DIMORPHIC_FUNCTION adjust_wizard_slayer_descriptions INT_VAR tra_ref=0 STR_VAR desc="" RET desc BEGIN
+
+	ACTION_IF "%desc%" STRING_EQUAL "" BEGIN
+		OUTER_SPRINT desc (AT tra_ref)
+	END 
+	LAF check_label STR_VAR label="dw#rebalance_wizard_slayer" RET rebalanced=value END
+	WITH_TRA "%scs_tra_loc%/english/kit_rebalance.tra" "%scs_tra_loc%/%LANGUAGE%/kit_rebalance.tra" BEGIN
+		ACTION_IF rebalanced BEGIN
+			OUTER_SPRINT placeholder @105
+			LAF check_ini STR_VAR ini=wizard_slayer_base_resistance RET resist_base=value END
+			LAF check_ini STR_VAR ini=wizard_slayer_bonus_resistance RET resist_bonus=value END
+			OUTER_PATCH_SAVE placeholder "%placeholder%" BEGIN
+				REPLACE_TEXTUALLY BASE_PLACEHOLDER "%resist_base%"
+				REPLACE_TEXTUALLY INCREMENT_PLACEHOLDER "%resist_bonus%"
+			END
+		END ELSE BEGIN
+			OUTER_SPRINT placeholder @104
+		END
+	END
+	OUTER_PATCH_SAVE desc "%desc%" BEGIN
+		REPLACE_TEXTUALLY WIZARD_SLAYER_PLACEHOLDER "%placeholder%"
+	END
+
+
+
+END
+
+DEFINE_DIMORPHIC_FUNCTION adjust_bounty_hunter_descriptions INT_VAR tra_ref=0 STR_VAR desc="" RET desc BEGIN
+
+	ACTION_IF "%desc%" STRING_EQUAL "" BEGIN
+		OUTER_SPRINT desc (AT tra_ref)
+	END 
+	LAF check_label STR_VAR label="dw#rebalance_traps" RET rebalanced=value END
+	WITH_TRA "%scs_tra_loc%/english/kit_rebalance.tra" "%scs_tra_loc%/%LANGUAGE%/kit_rebalance.tra" BEGIN
+	 ACTION_IF rebalanced BEGIN
+		OUTER_SPRINT placeholder @42
+	 END ELSE BEGIN
+		OUTER_SPRINT placeholder @48
+	 END
+	END
+	OUTER_PATCH_SAVE desc "%desc%" BEGIN
+		REPLACE_TEXTUALLY "SET_SNARE_PLACEHOLDER" "%placeholder%"
+	END
+	
+
+
+
+END
+
+DEFINE_DIMORPHIC_FUNCTION adjust_assassin_descriptions INT_VAR tra_ref=0 STR_VAR desc="" RET desc BEGIN
+
+	ACTION_IF "%desc%" STRING_EQUAL "" BEGIN
+		OUTER_SPRINT desc (AT tra_ref)
+	END 
+	LAF check_label STR_VAR label="dw#rebalance_assassin" RET rebalanced=value END
+	WITH_TRA "%scs_tra_loc%/english/kit_rebalance.tra" "%scs_tra_loc%/%LANGUAGE%/kit_rebalance.tra" BEGIN
+	 ACTION_IF rebalanced BEGIN
+		OUTER_SPRINT placeholder_backstab @51
+		OUTER_SPRINT placeholder_poison @55
+	 END ELSE BEGIN
+		OUTER_SPRINT placeholder_backstab @50
+		ACTION_IF is_iwd BEGIN
+			OUTER_SPRINT placeholder_poison @57
+		END ELSE BEGIN
+			OUTER_SPRINT placeholder_poison @55
+		END
+	 END
+	END
+	OUTER_PATCH_SAVE desc "%desc%" BEGIN
+		REPLACE_TEXTUALLY "ASSASSIN_BACKSTAB_PLACEHOLDER" "%placeholder_backstab%"
+		REPLACE_TEXTUALLY "POISON_WEAPON_PLACEHOLDER" "%placeholder_poison%"
+	END
+END
+
+DEFINE_DIMORPHIC_FUNCTION adjust_shapeshifter_descriptions INT_VAR tra_ref=0 STR_VAR desc="" RET desc BEGIN
+
+	ACTION_IF "%desc%" STRING_EQUAL "" BEGIN
+		OUTER_SPRINT desc (AT tra_ref)
+	END 
+	LAF check_label STR_VAR label="dw#rebalance_shapeshifter"  RET rebalanced=value END
+	WITH_TRA "%scs_tra_loc%/english/kit_rebalance.tra" "%scs_tra_loc%/%LANGUAGE%/kit_rebalance.tra" BEGIN
+
+		ACTION_IF rebalanced BEGIN
+			OUTER_SPRINT placeholder @58
+		END ELSE BEGIN
+			OUTER_SPRINT placeholder @102		
+		END
+	
+	END
+	OUTER_PATCH_SAVE desc "%desc%" BEGIN
+		REPLACE_TEXTUALLY "SHAPESHIFTER_PLACEHOLDER" "%placeholder%"
+	END
+END
+
+DEFINE_DIMORPHIC_FUNCTION adjust_avenger_descriptions INT_VAR tra_ref=0 STR_VAR desc="" RET desc BEGIN
+
+	ACTION_IF "%desc%" STRING_EQUAL "" BEGIN
+		OUTER_SPRINT desc (AT tra_ref)
+	END 
+	LAF check_label STR_VAR label="dw#rebalance_shapeshifter"  RET rebalanced=value END
+	WITH_TRA "%scs_tra_loc%/english/kit_rebalance.tra" "%scs_tra_loc%/%LANGUAGE%/kit_rebalance.tra" BEGIN
+
+		ACTION_IF rebalanced BEGIN
+			OUTER_SPRINT placeholder @107
+		END ELSE BEGIN
+			OUTER_SPRINT placeholder @106		
+		END
+	
+	END
+	OUTER_PATCH_SAVE desc "%desc%" BEGIN
+		REPLACE_TEXTUALLY "AVENGER_SHAPESHIFT_PLACEHOLDER" "%placeholder%"
+	END
+END
+
+DEFINE_DIMORPHIC_FUNCTION adjust_rage_descriptions INT_VAR tra_ref=0 STR_VAR desc="" RET desc BEGIN
+
+	ACTION_IF "%desc%" STRING_EQUAL "" BEGIN
+		OUTER_SPRINT desc (AT tra_ref)
+	END 
+	LAF check_label STR_VAR label="dw#rebalance_berserker" RET rebalance_berserker=value END
+	LAF check_label STR_VAR label="dw#rebalance_barbarian" RET rebalance_barbarian=value END
+	WITH_TRA "%scs_tra_loc%/english/kit_rebalance.tra" "%scs_tra_loc%/%LANGUAGE%/kit_rebalance.tra" BEGIN
+	  ACTION_IF rebalance_berserker BEGIN
+		OUTER_SPRINT placeholder_berserker @5
+	  END ELSE BEGIN
+		OUTER_SPRINT placeholder_berserker @100
+	  END
+	  ACTION_IF rebalance_barbarian BEGIN
+		OUTER_SPRINT placeholder_barbarian @9
+	  END ELSE BEGIN
+		OUTER_SPRINT placeholder_barbarian @101
+	  END
+	END
+	OUTER_PATCH_SAVE desc "%desc%" BEGIN
+			REPLACE_TEXTUALLY BARBARIAN_RAGE_PLACEHOLDER "%placeholder_barbarian%"
+			REPLACE_TEXTUALLY BERSERKER_RAGE_PLACEHOLDER "%placeholder_berserker%"
+	END
+END
+
+DEFINE_ACTION_FUNCTION make_multiclass_specialist
+	INT_VAR enforce_ability_minimum=1
+	STR_VAR kit=""
+			school=""
+			tra="mageschool"
+BEGIN
+	LAF include STR_VAR file=mageschools_shared.tph locbase=shared END
+	LAF run STR_VAR file=school_save_bonuses locbase=shared END
+	ACTION_CLEAR_ARRAY barred_school
+	ACTION_IF !FILE_EXISTS "%data_loc%/mageschools.2da" BEGIN
+		ACTION_IF is_iwd BEGIN
+			COPY "%MOD_FOLDER%/shared/mageschools/mageschools_iwd.2da" "%data_loc%/mageschools.2da"
+		END ELSE BEGIN
+			COPY "%MOD_FOLDER%/kit/shared/mageschools/mageschools_bg.2da" "%data_loc%/mageschools.2da"		
+		END
+	END
+	LAF array_read STR_VAR file=mageschools.2da path="%data_loc%" RET_ARRAY barred_school=array END
+
+	ACTION_MATCH "%school%" WITH
+	abjuration abjurer BEGIN
+		OUTER_SET schoolnum=1
+		OUTER_SPRINT usability_marker " 0x00000040"
+		OUTER_SPRINT barred_schools $barred_school("ABJURER")
+		OUTER_SPRINT spell "%spl_save_bonus_abjuration%"
+		OUTER_SET name_strref=502
+		OUTER_SPRINT kit_name ABJURER
+		OUTER_SPRINT spell_list "abjuration abjuration_alteration"
+	END
+	conjuration conjurer BEGIN
+		OUTER_SET schoolnum=2
+		OUTER_SPRINT barred_schools $barred_school("CONJURER")
+		OUTER_SPRINT usability_marker " 0x00000080"
+		OUTER_SPRINT spell "%spl_save_bonus_conjuration%"
+		OUTER_SET name_strref=504
+		OUTER_SPRINT kit_name CONJURER
+		OUTER_SPRINT spell_list "conjuration conjuration_invocation conjuration_necromancy"
+	END
+	divination diviner BEGIN
+		OUTER_SET schoolnum=3
+		OUTER_SPRINT barred_schools $barred_school("DIVINER")
+		OUTER_SPRINT usability_marker " 0x00000100"
+		OUTER_SPRINT spell "%spl_save_bonus_divination%"
+		OUTER_SET name_strref=2012
+		OUTER_SPRINT kit_name DIVINER
+		OUTER_SPRINT spell_list "divination divination_alteration"
+	END
+	enchantment enchanter BEGIN
+		OUTER_SET schoolnum=4
+		OUTER_SPRINT barred_schools $barred_school("ENCHANTER")
+		OUTER_SPRINT usability_marker " 0x00000200"
+		OUTER_SPRINT spell "%spl_save_bonus_enchantment%"
+		OUTER_SET name_strref=2022
+		OUTER_SPRINT kit_name ENCHANTER
+		OUTER_SPRINT spell_list enchantment
+	END
+	illusion illusionist BEGIN
+		OUTER_SET schoolnum=5
+		OUTER_SPRINT barred_schools $barred_school("ILLUSIONIST")
+		OUTER_SPRINT usability_marker " 0x00000400"
+		OUTER_SPRINT spell "%spl_save_bonus_illusion%"
+		OUTER_SET name_strref=12785
+		OUTER_SPRINT kit_name ILLUSIONIST
+		OUTER_SPRINT spell_list illusion
+	END
+	invocation evocation invoker BEGIN
+		OUTER_SET schoolnum=6
+		OUTER_SPRINT barred_schools $barred_school("INVOKER")
+		OUTER_SPRINT usability_marker " 0x00000800"
+		OUTER_SPRINT spell "%spl_save_bonus_invocation%"
+		OUTER_SET name_strref=12786
+		OUTER_SPRINT kit_name INVOKER
+		OUTER_SPRINT spell_list "invocation conjuration_invocation invocation_alteration"
+	END
+	necromancy necromancer BEGIN
+		OUTER_SET schoolnum=7
+		OUTER_SPRINT barred_schools $barred_school("NECROMANCER")
+		OUTER_SPRINT usability_marker " 0x00001000"
+		OUTER_SPRINT spell "%spl_save_bonus_necromancy%"
+		OUTER_SET name_strref=12787
+		OUTER_SPRINT kit_name NECROMANCER
+		OUTER_SPRINT spell_list "necromancy conjuration_necromancy"
+	END
+	alteration transmutation transmuter BEGIN
+		OUTER_SET schoolnum=8
+		OUTER_SPRINT barred_schools $barred_school("TRANSMUTER")
+		OUTER_SPRINT usability_marker " 0x00002000"
+		OUTER_SPRINT spell "%spl_save_bonus_alteration%"
+		OUTER_SET name_strref=12788
+		OUTER_SPRINT kit_name TRANSMUTER
+		OUTER_SPRINT spell_list "alteration abjuration_alteration divination_alteration invocation_alteration"
+	END
+	DEFAULT
+		FAIL "Unrecognised school %school% in make_multiclass_specialist"
+	END
+	OUTER_SET save_bonus_string_tra=10220+schoolnum
+	OUTER_SPRINT save_bonus_string (AT save_bonus_string_tra)
+	OUTER_SPRINT extra_spell_string @10220
+	LAF kit_edit INT_VAR clab_only=1 STR_VAR edits="k.kit_apply_powers{%spell% 1|class=mage}" END
+	OUTER_SPRINT "sfo_multiclass_spec_%kit%_UNUSABLE" "%usability_marker%"
+	LAF 2daq_inject INT_VAR rowname_column=1 STR_VAR resref=kitlist array=sfo_multiclass_spec END
+	ACTION_IF enforce_ability_minimum BEGIN		
+		OUTER_SPRINT ability_min_string ""
+		ACTION_CLEAR_ARRAY patch_data
+		ACTION_DEFINE_ASSOCIATIVE_ARRAY patch_data BEGIN
+			str=>10231
+			dex=>10232
+			con=>10233
+			wis=>10234
+			chr=>10235
+		END
+		COPY_EXISTING abclasrq.2da override
+			LPF 2da_read RET_ARRAY ab_array=array END
+			PHP_EACH patch_data AS abil=>tra_ref BEGIN
+				SPRINT label "MIN_%abil%"
+				TO_UPPER label
+				value=$ab_array("%kit_name%" "%label%")
+				PATCH_IF value>0 BEGIN
+					SET $ab_array("%kit%" "%label%")=value
+					SPRINT ability_min_string "%ability_min_string%%temp%%WNL%"
+				END
+			END
+			LPF 2da_write STR_VAR array=ab_array default="0" END
+		BUT_ONLY
+	END 
+	LAF set_spell_list INT_VAR update_scrolls_later=1 STR_VAR kit block_learn="%barred_schools%" END
+
+	LAF 2daq_extract INT_VAR rowname_column=1 STR_VAR resref=kitlist row="%kit%" column=help RET desc_strref=value END
+	ACTION_GET_STRREF desc_strref desc
+	LAF make_barred_school_string STR_VAR barred_schools tra RET barred_string END
+	OUTER_PATCH_SAVE desc "%desc%" BEGIN
+		REPLACE_TEXTUALLY "BARRED_SCHOOL_PLACEHOLDER" "%barred_string%"
+		REPLACE_TEXTUALLY "BONUS_SCHOOL_PLACEHOLDER" "%extra_spell_string%%WNL%%save_bonus_string%"
+	END
+	ACTION_IF enforce_ability_minimum BEGIN
+		OUTER_SPRINT desc "%desc%%WNL%%WNL%%ability_min_string%"
+	END
+	STRING_SET_EVALUATE desc_strref "%desc%"
+	
+	// if appropriate, enforce specialist learning
+	
+	LAF check_label STR_VAR label="dw#enforce_specialists" RET value END
+	ACTION_IF value BEGIN
+		LAF check_ini STR_VAR ini=number_of_required_specialist_spells RET number_required=value END
+		LAF check_ini STR_VAR ini=list_specialist_spells RET list_spells=value END
+		WITH_TRA "%scs_tra_loc%/english/mageschool.tra" "%scs_tra_loc%/%LANGUAGE%/mageschool.tra" BEGIN			
+			OUTER_SPRINT string_school2 (AT schoolnum)
+			OUTER_SPRINT string_school @9
+			OUTER_PATCH_SAVE string_school "%string_school%" BEGIN
+				REPLACE_TEXTUALLY SCHOOL_PLACEHOLDER "%string_school2%"
+			END
+		END
+		LAF set_specialist_spells INT_VAR number_required list_spells update_description=1 STR_VAR kit spell_list END	
+	END
+	
+	// if appropriate, add bonus spells
+	
+	LAF check_label STR_VAR label="dw-bonus_specialist_spells" RET value END
+	ACTION_IF value BEGIN
+		OUTER_SPRINT path "%MOD_FOLDER%/class_race/bonus_spell_lists/%kit_name%.txt"
+		ACTION_TO_LOWER path
+		LAF bonus_spells_from_list STR_VAR kit path class=mage END
+	END
+
+END
+
+DEFINE_ACTION_FUNCTION build_ranger_charm_remover BEGIN
+
+	ACTION_IF !FILE_EXISTS_IN_GAME "%spl_ranger_charm_remover%.spl" BEGIN
+	
+		spl.make[%spl_ranger_charm_remover%]
+		[
+			m.ab.add{}
+			m.ab_fx.add{s_opcode=172 s_target=2 s_timing=1 s_resource:=%RANGER_CHARM_ANIMAL%}
+		]
+	END
+END
+
+DEFINE_ACTION_FUNCTION set_multiclass_components 
+	INT_VAR is_dualclass=1 // this should mostly be detected automatically and can be left set to 1; 0 is to manually deactivate
+	STR_VAR kit=""
+			components=""
+BEGIN
+	ACTION_TO_UPPER kit
+	ACTION_TO_UPPER components
+	// load an array of parent classes
+	LAF 2daq_extract INT_VAR rowname_column=1 STR_VAR resref=kitlist column=CLASS RET_ARRAY parent_classes=array END
+	
+	// find the parent class of the main kit
+	
+	OUTER_SET class_num=$parent_classes("%kit%")
+	OUTER_PATCH "" BEGIN
+		LOOKUP_IDS_SYMBOL_OF_INT parent_class class class_num
+	END
+	ACTION_TO_UPPER parent_class
+	// update dualclass status
+	ACTION_MATCH "%parent_class%" WITH
+	FIGHTER_MAGE_CLERIC FIGHTER_MAGE_THIEF BEGIN
+		OUTER_SET is_dualclass=0
+	END
+	CLERIC_MAGE CLERIC_RANGER CLERIC_THIEF BEGIN
+		ACTION_IF !("%kit%" STRING_MATCHES_REGEXP ".*_DRUID.*") BEGIN
+			OUTER_SET is_dualclass=0
+		END
+	END
+	DEFAULT
+	END
+	// find the parent classes of the component kits; get them into an array
+	ACTION_CLEAR_ARRAY component_array
+	OUTER_SPRINT list "%components%"
+	OUTER_WHILE "%list%" STRING_COMPARE "" BEGIN
+		LAF return_first_entry STR_VAR list RET this_kit=entry list END
+		ACTION_MATCH "%this_kit%" WITH
+		avenger BEGIN
+			OUTER_SPRINT this_kit BEAST_FRIEND
+		END
+		archer BEGIN
+			OUTER_SPRINT this_kit FERALAN
+		END
+		DEFAULT
+		END		
+		ACTION_IF "%this_kit%" STRING_EQUAL_CASE DRUID BEGIN
+			OUTER_SPRINT this_parent CLERIC
+		END ELSE BEGIN
+			OUTER_SET this_class_num=$parent_classes("%this_kit%")
+			OUTER_PATCH "" BEGIN
+				LOOKUP_IDS_SYMBOL_OF_INT this_parent class this_class_num
+			END
+		END
+		ACTION_TO_UPPER this_parent
+		OUTER_SPRINT $component_array("%this_parent%") "%this_kit%"	
+	END
+	// fill in any other pieces
+	OUTER_SPRINT list "%parent_class%"
+	OUTER_WHILE "%list%" STRING_COMPARE "" BEGIN
+		LAF return_first_entry STR_VAR list separator="_" RET entry list END
+		ACTION_IF !VARIABLE_IS_SET $component_array("%entry%") BEGIN
+			ACTION_IF !("%entry%" STRING_EQUAL_CASE CLERIC && VARIABLE_IS_SET $component_array("DRUID")) BEGIN
+				OUTER_SPRINT $component_array("%entry%") "%entry%"
+			END
+		END
+	END
+	// do the rename string
+	OUTER_SPRINT swap ""
+	ACTION_PHP_EACH component_array AS this_parent=>this_kit BEGIN
+		ACTION_IF !("%this_parent%" STRING_EQUAL "%this_kit%") BEGIN
+			OUTER_SPRINT swap "%swap% %this_parent%=>%this_kit%"
+		END
+	END
+	
+	ACTION_IF "%swap%" STRING_COMPARE "" BEGIN
+		LAF override_kit_desc_data STR_VAR kit swap END
+	END
+
+	// log the kits
+	ACTION_IF !FILE_EXISTS "%data_loc_shared%/multiclass_kit_components.2da" BEGIN
+		
+<<<<<<<< .../stratagems-inline/multiclass_kit_components.2da
+2DA V1.0
+*
+		class1			class2			class3
+>>>>>>>>
+		COPY ".../stratagems-inline/multiclass_kit_components.2da" "%data_loc_shared%"	
+	END
+	OUTER_SPRINT line ""
+	OUTER_SET count=0
+	ACTION_PHP_EACH component_array AS discard=>this_kit BEGIN
+		OUTER_SET count+=1
+		OUTER_SPRINT line "%line%%this_kit% "
+	END
+	ACTION_IF count=2 BEGIN
+		OUTER_SPRINT line "%line% *"
+	END
+	APPEND_OUTER "%data_loc_shared%/multiclass_kit_components.2da" "%kit% %line%" KEEP_CRLF
+	COPY "%data_loc_shared%/multiclass_kit_components.2da" "%data_loc_shared%" PRETTY_PRINT_2DA
+	
+	// dualclass bit
+	// do the externalized proficiencies
+	ACTION_IF is_dualclass BEGIN
+		LAF dual_class_kits END
+		LAF set_dual_class_kit_components_for_proficiencies STR_VAR kit components END	
+		// work out dual-class possibilities
+		LAF return_first_entry STR_VAR list="%parent_class%" separator="_" RET class1=entry class2=list END
+		ACTION_TO_UPPER class1
+		ACTION_TO_UPPER class2
+		ACTION_IF VARIABLE_IS_SET $component_array("%class1%") BEGIN
+			OUTER_SPRINT oldkit $component_array("%class1%")
+		END ELSE BEGIN
+			OUTER_SPRINT oldkit TRUECLASS
+		END
+		LAF add_dual_class_kit_option STR_VAR oldclass="%class1%" newclass="%class2%" oldkit kit END	
+		ACTION_IF VARIABLE_IS_SET $component_array("%class2%") BEGIN
+			OUTER_SPRINT oldkit $component_array("%class2%")
+		END ELSE BEGIN
+			OUTER_SPRINT oldkit TRUECLASS
+		END
+		LAF add_dual_class_kit_option STR_VAR oldclass="%class2%" newclass="%class1%" oldkit kit END	
+	END
+
+
+
+END

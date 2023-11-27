@@ -1,0 +1,80 @@
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION empowered_healing BEGIN
+
+
+   // get stats
+   LAF ds_resolve_stat STR_VAR id=DW_POWER_UPGRADE_C1 RET stat_ind_low=stat_ind END
+   LAF ds_resolve_stat STR_VAR id=DW_POWER_UPGRADE_C2 RET stat_ind_high=stat_ind END
+   // clone spells and add abilities
+
+
+  ACTION_FOR_EACH spell IN CLERIC_CURE_LIGHT_WOUNDS CLERIC_CURE_MODERATE_WOUNDS CLERIC_CURE_SERIOUS_WOUNDS CLERIC_CURE_MEDIUM_WOUNDS CLERIC_CURE_CRITICAL_WOUNDS INNATE_CURE_LIGHT_WOUNDS PALADIN_LAY_ON_HANDS BEGIN
+
+
+	ACTION_IF FILE_EXISTS_IN_GAME "%%spell%%.spl" BEGIN
+
+	// make clones of the spell that do the extra effect
+
+
+		spell_here:==EVAL "%%spell%%"
+		spl.copy[%spell_here%=>%spell_here%B] //unmodified
+		[
+			m_name="-1"
+		]
+		OUTER_SET mult=125
+		spl.copy[%spell_here%=>%spell_here%C] // 3/2 x
+		[
+			m_name="-1"
+			m.ab_fx.alter{s_parameter1=(s_parameter1*mult +(mult - 100)*s_dicenumber*(s_dicesize - 1)/2)/100|match="s_opcode=17"} 
+		]
+		OUTER_SET mult=150
+		spl.copy[%spell_here%=>%spell_here%D] // 2 x
+		[
+			m_name="-1"
+			m.ab_fx.alter{s_parameter1=(s_parameter1*mult +(mult - 100)*s_dicenumber*(s_dicesize - 1)/2)/100|match="s_opcode=17"} 
+		]
+
+		// make a new spell that just casts B, C or D, dependent on level
+	
+		spl.make[%spell_here%A]
+		[
+			m_type:=priest
+			m.ab.add{}
+			m.ab.alter{s_level=1}
+			m.ab_fx.add{s_target=2 s_opcode=146 s_parameter2=1 s_resource:="%spell_here%B"}
+			m.ab.clone{s_level=(entry_index+1)*100|number:i=2}
+			m.ab_fx.alter{s_resource:="%spell_here%C"|match="p_level=100"}
+			m.ab_fx.alter{s_resource:="%spell_here%D"|match="p_level=200"}
+		]
+
+		// core the original spell to apply the level boosts and cast the shell spell
+	
+		spl.edit[%spell_here%]
+		[
+			m.ab.delete{s_level>1}
+			m.ab_fx.delete{}
+			m.ab_fx.add{s_target=2 s_opcode=146 s_parameter2=1 s_resource:="%spell_here%A"}
+			m.fx.add{s_target=1 s_opcode=326 s_parameter2=110 s_timing=1 s_parameter1=stat_ind_low s_resource:=dwemph1}
+			m.fx.add{s_target=1 s_opcode=326 s_parameter2=110 s_timing=1 s_parameter1=stat_ind_high s_resource:=dwemph2}
+		]
+
+	END
+  END
+  
+  spl.make[dwemph1]
+  [
+	m.ab.add{}
+	m.ab_fx.add{s_opcode=318 s_target=1 s_duration=1 s_parameter1=stat_ind_high s_parameter2=110}
+	m.ab_fx.add{s_opcode=191 s_target=1 s_parameter1=100 s_duration=9 s_parameter2=1}
+  ]
+
+  spl.make[dwemph2]
+  [
+	m.ab.add{}
+	m.ab_fx.add{s_opcode=318 s_target=1 s_duration=1 s_parameter1=stat_ind_low s_parameter2=111}
+	m.ab_fx.add{s_opcode=191 s_target=1 s_parameter1=200 s_duration=9 s_parameter2=1}
+  ]
+
+END

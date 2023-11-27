@@ -1,0 +1,36 @@
+DEFINE_ACTION_FUNCTION npc_kits BEGIN
+
+	ACTION_IF !FILE_EXISTS "%data_loc%/npc_kit_alloc.2da" BEGIN
+	
+		ACTION_CLEAR_ARRAY npc_array_out
+		LAF array_read STR_VAR file=npc_kits.txt location=data RET_ARRAY npc_array=array END
+		COPY_EXISTING_REGEXP - ".*\.cre" nowhere
+			READ_ASCII 0x280 dv (0x20) NULL
+			TO_UPPER dv
+			PATCH_IF VARIABLE_IS_SET $npc_array("%dv%") BEGIN
+				SPRINT $npc_array_out("%SOURCE_RES%" KIT) $npc_array("%dv%")
+				SET $npc_array_out("%SOURCE_RES%" "DONE_YET")=0
+			END
+		BUT_ONLY
+		LAF 2da_write STR_VAR file=npc_kit_alloc.2da path="%data_loc%" array=npc_array_out END
+	
+	
+	END
+	LAF 2da_read STR_VAR file=npc_kit_alloc.2da path="%data_loc%" RET_ARRAY npc_alloc_array=array npc_rows=rows END
+
+	ACTION_PHP_EACH npc_rows AS resref=>discard BEGIN
+		OUTER_SPRINT kit $npc_alloc_array("%resref%" KIT)
+		ACTION_IF $npc_alloc_array("%resref%" DONE_YET)=0 BEGIN
+			OUTER_SPRINT kit $npc_alloc_array("%resref%" KIT)
+			ACTION_IF IDS_OF_SYMBOL (kit "%kit%")>=0 BEGIN
+				COPY_EXISTING "%resref%.cre" override
+					WRITE_SHORT 0x246 IDS_OF_SYMBOL (kit "%kit%")
+					BUT_ONLY
+				OUTER_SET $npc_alloc_array("%resref%" DONE_YET)=1
+			END
+		END
+	END
+	LAF 2da_write STR_VAR file=npc_kit_alloc.2da path="%data_loc%" array=npc_alloc_array END
+	
+
+END

@@ -1,0 +1,2 @@
+id								resref						type			name:i	desc:i	select_desc	prerequisite	max_count:i	require_1		require_2		require_3	require_4	require_5	exclude_kit							alignment		exclude_hla 	special			special_string		checks
+FORCE_OF_PERSONALITY			dw-ftfop					apply			3326	3327	*			*				1			NONE			*				*			*			*			PALADIN|BLACKGUARDVISIBLE			*				*				* 				*					*

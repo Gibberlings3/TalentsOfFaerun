@@ -1,0 +1,62 @@
+DEFINE_ACTION_FUNCTION arcane_knowledge BEGIN
+
+	ACTION_DEFINE_ASSOCIATIVE_ARRAY school_map BEGIN
+		1=>abjuration
+		2=>conjuration
+		3=>divination
+		4=>enchantment
+		5=>illusion
+		6=>invocation
+		7=>necromancy
+		8=>alteration
+	END
+	
+	// make template
+	
+	spl.make[%spl_hla_arcane_knowledge_alteration%]
+	[
+		m.ab.add{}
+		m.ab_fx.add{s_opcode=21 s_target=2 s_timing=9 s_parameter1=15} // lore bonus
+		m.ab_fx.add{s_opcode=346 s_target=2 s_parameter1=2 s_timing=9} // save bonus
+	]
+
+
+	// get the placeholder string
+	
+	OUTER_SPRINT placeholder_name @3217
+	OUTER_SPRINT placeholder_desc @3218
+	
+	// load the tra entries
+	
+	WITH_TRA "%scs_tra_loc%/english/mageschool.tra" "%scs_tra_loc%/%LANGUAGE%/mageschool.tra" BEGIN
+		OUTER_FOR (n=1;n<=8;++n) BEGIN
+			OUTER_SPRINT $school_name_string("%n%") (AT n)
+		END
+	END
+	
+	// make the spells
+	
+	OUTER_FOR (school_num=1;school_num<=8;++school_num) BEGIN
+	
+		OUTER_SPRINT name $school_map("%school_num%")
+		OUTER_SPRINT name_string $school_name_string("%school_num%")
+		OUTER_SPRINT resref EVAL "%spl_hla_arcane_knowledge_%name%%"
+		COPY_EXISTING "%spl_hla_arcane_knowledge_alteration%.spl" "override/%resref%.spl"
+			INNER_PATCH_SAVE hla_name "%placeholder_name%" BEGIN
+				REPLACE_TEXTUALLY PLACEHOLDER "%name_string%"
+			END
+			INNER_PATCH_SAVE hla_desc "%placeholder_desc%" BEGIN
+				REPLACE_TEXTUALLY PLACEHOLDER "%name_string%"
+			END	
+			SAY 0x8 "%hla_name%"
+			SAY 0x50 "%hla_desc%"
+			LPF ALTER_EFFECT INT_VAR match_opcode=346 special=school_num END
+	END
+	
+	// label all kits
+	
+	INCLUDE "%MOD_FOLDER%/shared/mageschools_shared.tph"
+	
+	LAF label_kits_with_arcane_knowledge END
+
+END

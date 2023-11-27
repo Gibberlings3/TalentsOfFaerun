@@ -1,0 +1,403 @@
+DEFINE_ACTION_FUNCTION 3e_ac BEGIN
+
+
+
+// make substitutions into main UI.MENU, replacing calls to get AC and THAC0 with my functions
+
+COPY_EXISTING "ui.menu" override
+
+// isolate the calls to TempStat
+
+	REPLACE_TEXTUALLY EXACT_MATCH "getTempStat(characters[id].THAC0.current,'THAC0',-1)" "DW_TEMP_STAT_THAC0"
+	REPLACE_TEXTUALLY EXACT_MATCH "getTempStat(characters[id].AC.current,'AC',-1)" "DW_TEMP_STAT_AC"
+
+// main swaps
+
+	REPLACE_TEXTUALLY "\(characters\[[a-z0-9]*\]\.proficiencies\.details\)" "dwCharacterDetailsFullSwap(\1)"
+	REPLACE_TEXTUALLY "\(characterDetails\[[a-z0-9]*\]\.data\)" "dwCharacterDetails(\1)"
+	REPLACE_TEXTUALLY "\(characters\[[a-z0-9]*\]\.proficiencies\.[a-z0-9]*ACMod\.current\)" ~dwSwapPlusMinus(\1,"")~
+	REPLACE_TEXTUALLY "\(characters\[[a-z0-9]*\]\.THAC0\.detailsOffhand\)" "dwTHAC0Details(\1)"
+	REPLACE_TEXTUALLY "detailsOffhand" "ookblook"
+	REPLACE_TEXTUALLY "\(characters\[[a-z0-9]*\]\.THAC0\.details\)" "dwTHAC0Details(\1)"
+	REPLACE_TEXTUALLY "ookblook" "detailsOffhand"
+
+	REPLACE_TEXTUALLY "\(characters\[[a-z0-9]*\]\.proficiencies\.THAC0Left\.current\)" "dwTHAC0(\1)"
+	REPLACE_TEXTUALLY "\(characters\[[a-z0-9]*\]\.proficiencies\.THAC0Right\.current\)" "dwTHAC0(\1)"
+	REPLACE_TEXTUALLY "\(characters\[[a-z0-9]*\]\.proficiencies\.BaseTHAC0\.current\)" "dwTHAC0(\1)"	
+	REPLACE_TEXTUALLY "\(characters\[[a-z0-9]*\]\.proficiencies\.THAC0\.current\)" "dwTHAC0(\1)"
+	REPLACE_TEXTUALLY "\(characters\[[a-z0-9]*\]\.THAC0\.offhand\)" "dwTHAC0(\1)"
+	REPLACE_TEXTUALLY "\(characters\[[a-z0-9]*\]\.THAC0\.current\)" "dwTHAC0(\1)"
+	REPLACE_TEXTUALLY "\(characters\[[a-z0-9]*\]\.AC\.current\)" "dwAC(\1)"
+	REPLACE_TEXTUALLY "\(characters\[[a-z0-9]*\]\.AC\.details\)" "dwACDetails(\1)"
+	
+	REPLACE_TEXTUALLY "\(characters\[currentID\]\.AC\.crushing\)" "dwMinus(\1)"
+	REPLACE_TEXTUALLY "\(characters\[currentID\]\.AC\.slashing\)" "dwMinus(\1)"
+	REPLACE_TEXTUALLY "\(characters\[currentID\]\.AC\.piercing\)" "dwMinus(\1)"
+	REPLACE_TEXTUALLY "\(characters\[currentID\]\.AC\.missile\)" "dwMinus(\1)"
+	
+// now go back to TempStat
+
+	REPLACE_TEXTUALLY "DW_TEMP_STAT_THAC0" "dwTempStatTHAC0(characters[id].THAC0.current)"
+	REPLACE_TEXTUALLY "DW_TEMP_STAT_AC" "dwTempStatAC(characters[id].AC.current)"
+
+BUT_ONLY
+
+// collect relevant strings used by the engine, for variable substitution
+
+COPY_EXISTING "enginest.2da" "%workspace%"
+	PATCH_FOR_EACH string IN STRREF_GUI_TOOLTIP_ARMOR_CLASS STRREF_GUI_MIXED_BASE_THAC0 STRREF_GUI_MIXED_THAC0_LEFT STRREF_GUI_MIXED_THAC0_RIGHT STRREF_GUI_MIXED_THAC0
+	STRREF_GUI_MIXED_ACSLASHING STRREF_GUI_MIXED_ACMISSILE STRREF_GUI_MIXED_ACPIERCING STRREF_GUI_MIXED_ACCRUSHING STRREF_GUI_MIXED_THACOREDUCEDBY
+	BEGIN
+		REPLACE_EVALUATE "%string%[^0-9]+\([0-9]*\)" BEGIN
+			GET_STRREF "%MATCH1%" "%string%" 
+			SET $engine_string("%string%")="%MATCH1%"
+		END
+		""
+	END
+BUT_ONLY	
+// load in some replacement strings
+	
+	OUTER_SPRINT bab @1
+	OUTER_SPRINT mhab @2
+	OUTER_SPRINT armor @3
+	OUTER_SPRINT ohab @4
+	OUTER_SPRINT ab @5
+	OUTER_SPRINT reduced @19
+	
+// replace some of them with new versions
+
+STRING_SET_EVALUATE engine_string_STRREF_GUI_MIXED_BASE_THAC0 "%bab%"
+STRING_SET_EVALUATE "%engine_string_STRREF_GUI_MIXED_THAC0_RIGHT%" "%mhab%"
+STRING_SET_EVALUATE "%engine_string_STRREF_GUI_MIXED_THAC0_LEFT%" "%ohab%"
+STRING_SET_EVALUATE "%engine_string_STRREF_GUI_MIXED_THAC0%" "%ab%"
+STRING_SET_EVALUATE "%engine_string_STRREF_GUI_MIXED_THACOREDUCEDBY%" "%reduced%"
+
+// also replace the equivalent strings in the language lua
+
+ACTION_DEFINE_ASSOCIATIVE_ARRAY lua_swap BEGIN
+	MAIN_HAND_THAC0=>"%mhab%"
+	OFF_HAND_THAC0=>"%ohab%"
+	THAC0_LABEL=>"%ab%"
+	
+END
+
+COPY_EXISTING "L_%EE_LANGUAGE%.LUA" "override"
+	PHP_EACH lua_swap AS string=>new BEGIN
+		REPLACE_TEXTUALLY ~%string% *= *"[^"]+"~ ~%string% = "%new%"~
+	END
+
+// install the new functions
+
+	LAF UI_install_function STR_VAR new_function_path="%MOD_FOLDER%/%component_loc%/lua/thac0_functions.lua" lua_file="m_dw_shr" search_string=dwUnwurble END
+
+// patch the description text
+
+	OUTER_SPRINT ac_string @6
+	OUTER_SPRINT ac_string_short @8
+	OUTER_SPRINT ac_string_3e @7
+	OUTER_SPRINT ac_string_min @10
+	OUTER_SPRINT ac_string_3e_max @9
+	OUTER_SPRINT shield_string_old @11
+	OUTER_SPRINT shield_string_new @12
+	OUTER_SPRINT set_to_string @13
+	OUTER_SPRINT shield_string_old_alt @16
+	OUTER_SPRINT base_armor @17
+	OUTER_SPRINT no_base_armor @18
+LAF 3e_ac_item_descriptions END
+LAF 3e_ac_spell_descriptions END
+
+// bespoke case
+
+ACTION_GET_STRREF 9990 desc_string
+OUTER_INNER_PATCH "" BEGIN
+	LPF 3e_spell_ac_desc_patch STR_VAR desc_string RET new_string END
+END
+STRING_SET_EVALUATE 9990 "%new_string%"
+
+END
+
+
+/////////////////////////////////////////////////////////////////////////////////////////
+/// Patch resources
+/////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION 3e_ac_item_descriptions BEGIN
+
+	COPY_EXISTING_REGEXP ".*\.itm" override
+	  SPRINT item_name "%SOURCE_RES%"
+	  TO_UPPER item_name
+	  PATCH_IF ((BYTE_AT 0x18) BAND BIT2) || SHORT_AT 0x1c=38 BEGIN		
+		found=0
+		armor_item=0
+		is_familiar=0
+		GET_OFFSET_ARRAY fx_arr ITM_V10_GEN_EFFECTS
+		PHP_EACH fx_arr AS fx_ind=>fx_off BEGIN
+			  PATCH_IF (SHORT_AT fx_off)=0 BEGIN
+				found=1
+				PATCH_IF (LONG_AT (0x8+fx_off) BAND BIT4) BEGIN
+					armor_item=1
+					READ_LONG (0x4+fx_off) ac_value
+				END 
+			  END
+		END	
+		GET_OFFSET_ARRAY ab_arr ITM_V10_HEADERS
+		PHP_EACH ab_arr AS ab_ind=>ab_off BEGIN
+			GET_OFFSET_ARRAY2 fx_arr ab_off ITM_V10_HEAD_EFFECTS
+			PHP_EACH fx_arr AS fx_ind=>fx_off BEGIN
+			  READ_SHORT fx_off opcode
+			  PATCH_IF opcode=0 BEGIN
+				found=1
+				READ_LONG (0x4+fx_off) ac_value
+				READ_LONG (0x8+fx_off) param2
+				PATCH_IF param2=16 BEGIN
+					armor_item=1
+				END ELSE BEGIN
+					armor_item=0
+				END
+			  END
+			
+			END
+		END	
+		PATCH_IF SHORT_AT 0x1c=38 BEGIN
+			SET found=1
+			SET is_familiar=1
+		END ELSE BEGIN
+			SET is_familiar=0
+		END
+
+		PATCH_IF found BEGIN
+			// get desc string
+			READ_LONG 0x54 desc
+			PATCH_IF desc<0 BEGIN
+				READ_LONG 0x50 desc
+			END
+			PATCH_IF !VARIABLE_IS_SET $item_desc_patch("%desc%") && desc>=0 && desc<999999 BEGIN // only patch if we haven't done this string yet
+				SET $item_desc_patch("%desc%")=1
+				GET_STRREF desc desc_string
+				SPRINT new_string null
+				// is it armor?
+				PATCH_IF armor_item || is_familiar BEGIN
+					LPF 3e_armor_name_patch INT_VAR ac_value END
+					LPF 3e_armor_desc_patch STR_VAR desc_string RET new_string END
+				END ELSE
+				// is it a shield?
+				PATCH_IF SHORT_AT 0x1c=12 BEGIN
+					LPF 3e_shield_desc_patch STR_VAR desc_string RET new_string END
+				END ELSE
+				// is it in itemexcl?
+				PATCH_IF RESOURCE_CONTAINS "itemexcl.2da" "%SOURCE_RES%" BEGIN
+					LPF 3e_deflect_desc_patch STR_VAR desc_string RET new_string END				
+				END
+				// write the outcome
+				PATCH_IF "%new_string%" STRING_COMPARE null BEGIN
+					INNER_ACTION BEGIN
+						STRING_SET_EVALUATE desc "%new_string%"
+					END
+				END
+			END
+		END
+	  END
+	BUT_ONLY
+	
+
+
+END
+
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
+
+DEFINE_ACTION_FUNCTION 3e_ac_spell_descriptions BEGIN
+
+
+	COPY_EXISTING_REGEXP ".*\.spl" override
+		found=0
+		GET_OFFSET_ARRAY ab_arr SPL_V10_HEADERS
+		PHP_EACH ab_arr AS ab_ind=>ab_off BEGIN
+			GET_OFFSET_ARRAY2 fx_arr ab_off SPL_V10_HEAD_EFFECTS
+			PHP_EACH fx_arr AS fx_ind=>fx_off BEGIN
+				READ_SHORT fx_off opcode
+				PATCH_IF opcode=0 BEGIN
+					// READ_SHORT (fx_off+0x8) param2
+					PATCH_IF (BYTE_AT (fx_off+0x8)) BAND BIT4 BEGIN
+						found=1
+					END
+				END
+			END
+		END
+		PATCH_IF found BEGIN
+			READ_LONG 0x50 desc
+			PATCH_IF !VARIABLE_IS_SET $item_desc_patch("%desc%") && desc>=0 && desc<999999 BEGIN
+				SET $item_desc_patch("%desc%")=1
+				GET_STRREF desc desc_string
+				LPF 3e_spell_ac_desc_patch STR_VAR desc_string RET new_string END
+				INNER_ACTION BEGIN
+					STRING_SET_EVALUATE desc "%new_string%"
+				END
+			END
+		END
+	BUT_ONLY
+	
+
+
+END
+
+//////////////////////////////////////////////////////////////////////////////////
+/// 	Make any item-name changes required for armor (this specifically catches
+///		Bracers of Defense)
+//////////////////////////////////////////////////////////////////////////////////
+
+
+DEFINE_PATCH_FUNCTION 3e_armor_name_patch INT_VAR ac_value=0
+BEGIN
+	READ_LONG 0xc name_strref
+	GET_STRREF name_strref name
+	SPRINT bracer_name @20
+	PATCH_MATCH "%name%" WITH
+	"%bracer_name%.*" BEGIN
+		plus = 10 - ac_value
+		SPRINT newname "%bracer_name% +%plus%"
+		SAY 0xc "%newname%"
+	END
+	DEFAULT END
+	
+END
+
+
+//////////////////////////////////////////////////////////////////////////////////
+/// 	swap the armor string in an item description
+//////////////////////////////////////////////////////////////////////////////////
+
+
+DEFINE_PATCH_FUNCTION 3e_armor_desc_patch
+STR_VAR desc_string=""
+RET new_string
+BEGIN
+	INNER_PATCH_SAVE new_string "%desc_string%" BEGIN
+			REPLACE_EVALUATE "\(%ac_string%:.*[0-9].*\)" BEGIN
+				INNER_PATCH_SAVE new_ac_string "%MATCH1%" BEGIN
+					REPLACE_TEXTUALLY "%ac_string%" "%ac_string_3e%"
+					REPLACE_EVALUATE "\(-?[0-9]+\)" BEGIN
+						LPF ac_2e_to_3e INT_VAR ac_old="%MATCH1%" RET ac_new END
+					END
+					"%ac_new%"
+					REPLACE_TEXTUALLY "%set_to_string%" ": "
+				END			
+			END
+			"%new_ac_string%"
+	END
+END
+
+//////////////////////////////////////////////////////////////////////////////////
+/// 	label item as using Shield AC boost category
+//////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION 3e_shield_desc_patch
+STR_VAR desc_string=""
+RET new_string
+BEGIN
+	SPRINT old @6
+	SPRINT new @14
+	INNER_PATCH_SAVE new_string "%desc_string%" BEGIN
+		REPLACE_TEXTUALLY "%old%:" "%new%:"
+	END
+END
+
+//////////////////////////////////////////////////////////////////////////////////
+/// 	label item as using Deflection AC boost category
+//////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION 3e_deflect_desc_patch
+STR_VAR desc_string=""
+RET new_string
+BEGIN
+	SPRINT old @6
+	SPRINT new @15
+	INNER_PATCH_SAVE new_string "%desc_string%" BEGIN
+		REPLACE_TEXTUALLY "%old%:" "%new%:"
+	END
+END
+
+
+//////////////////////////////////////////////////////////////////////////////////
+/// 	swap the armor string in a spell description
+///
+///		This is unavoidably a bit heuristic. We assume that the next integer after 
+///		the strings 'Armor Class ' or 'AC ' is the AC. We also assume ACs lie in the
+///		range -9-9, i.e. single digits.
+//////////////////////////////////////////////////////////////////////////////////
+
+
+DEFINE_PATCH_FUNCTION 3e_spell_ac_desc_patch
+STR_VAR desc_string=""
+RET new_string
+BEGIN
+	INNER_PATCH_SAVE new_string "%desc_string%" BEGIN
+		index=0
+		WHILE index>=0 BEGIN
+			index+=1
+			index1=INDEX_BUFFER ("%ac_string% " index)
+			index2=INDEX_BUFFER ("%ac_string_short% " index)
+			PATCH_IF index1<0 BEGIN
+				index=index2
+			END ELSE
+			PATCH_IF index2<0 BEGIN
+				index=index1
+			END ELSE BEGIN
+				index= (index1<index2? index1: index2)
+			END
+			index_int=INDEX_BUFFER ("[0-9]" index)
+			index_period=INDEX_BUFFER ("\." index)
+			index_next_1=INDEX_BUFFER ("%ac_string% " index+1)
+			index_next_2=INDEX_BUFFER ("%ac_string_short% " index+1)
+			PATCH_IF index_period<0 BEGIN
+				index_period=99999999
+			END
+			PATCH_IF index_next_1<0 BEGIN
+				index_next_1=99999999
+			END
+			PATCH_IF index_next_2<0 BEGIN
+				index_next_2=99999999
+			END
+			PATCH_IF index_int<index_period && index_int<index_next_1 && index_int<index_next_2 && index_int>=0 BEGIN
+				READ_ASCII index_int ac_old (1)
+				READ_ASCII (index_int - 1) plus_minus_check (1)
+				
+				PATCH_IF "%plus_minus_check%" STRING_EQUAL "\+" BEGIN
+					noplus=1
+				END ELSE BEGIN
+					noplus=0
+				END
+				PATCH_IF "%plus_minus_check%" STRING_EQUAL "-" BEGIN
+					old_length=2
+					index_int -=1
+					READ_ASCII index_int ac_old (2)
+				END ELSE BEGIN
+					old_length=1
+				END
+				LPF ac_2e_to_3e INT_VAR ac_old noplus RET ac_new END
+				length=STRING_LENGTH "%ac_new%"
+				INSERT_BYTES index_int (length - old_length)
+				WRITE_ASCIIE index_int "%ac_new%"
+			END	
+		END
+		REPLACE_TEXTUALLY "%ac_string_min%" "%ac_string_3e_max%"
+		REPLACE_TEXTUALLY " %ac_string_short% " " %ac_string_3e% " // space to avoid substring problems
+		REPLACE_TEXTUALLY "%ac_string%" "%ac_string_3e%"
+		REPLACE_TEXTUALLY "%shield_string_old%" "%shield_string_new%"
+		REPLACE_TEXTUALLY "%shield_string_old_alt%" "%shield_string_new%"
+		REPLACE_TEXTUALLY "%set_to_string%" ": "
+		REPLACE_TEXTUALLY "%base_armor%" "%no_base_armor%"
+	END
+END
+
+DEFINE_PATCH_FUNCTION ac_2e_to_3e
+	INT_VAR ac_old=0
+			noplus=0
+	RET ac_new
+BEGIN
+	ac_new = 10 - ac_old
+	PATCH_IF !noplus BEGIN
+		SPRINT ac_new "+%ac_new%"
+	END
+END

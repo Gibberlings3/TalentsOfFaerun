@@ -1,0 +1,41 @@
+DEFINE_ACTION_FUNCTION monk_2handed BEGIN
+	
+	// label
+	
+	COPY_EXISTING "misc01.itm" "%marker_loc%/dw_monk_2handed.mrk"
+	
+	
+	//find slot for new animations; install them
+	
+	OUTER_SET male_monk_anim=6550
+	OUTER_WHILE FILE_EXISTS_IN_GAME "%male_monk_anim%.ini" BEGIN
+		OUTER_SET male_monk_anim=male_monk_anim + 1
+	END
+	COPY_EXISTING "6500.ini" "override/%male_monk_anim%.ini"
+		REPLACE_TEXTUALLY "resref=chmm" "resref=CHMB"
+		
+	OUTER_SET female_monk_anim=6560
+	OUTER_WHILE FILE_EXISTS_IN_GAME "%female_monk_anim%.ini" BEGIN
+		OUTER_SET female_monk_anim=female_monk_anim + 1
+	END
+	COPY_EXISTING "6510.ini" "override/%female_monk_anim%.ini"
+		REPLACE_TEXTUALLY "resref=chfm" "resref=CHFB"
+
+	APPEND "animate.ids" "0x%male_monk_anim% DW_MALE_MONK_2HANDED"
+	APPEND "animate.ids" "0x%female_monk_anim% DW_FEMALE_MONK_2HANDED"
+
+	// handle weapons
+	
+	COPY_EXISTING_REGEXP ".*\.itm" override
+		SPRINT resref "%SOURCE_RES%"
+		READ_BYTE 0x18 flags
+		PATCH_IF (flags BAND 0b00000110) = 0b00000110 BEGIN // droppable and 2-handed
+			LPF ADD_ITEM_EQEFFECT INT_VAR insert_point="-1" opcode=318 target=1 timing=2 parameter1=1 parameter2=114 STR_VAR resource="%resref%" END // block if not human
+			LPF ADD_ITEM_EQEFFECT INT_VAR insert_point="-1" opcode=318 target=1 timing=2 parameter1=20 parameter2=115 STR_VAR resource="%resref%" END // block if not monk
+			LPF ADD_ITEM_EQEFFECT INT_VAR insert_point="-1" opcode=53 target=1 timing=2 parameter1="0x%male_monk_anim%" END
+			LPF ADD_ITEM_EQEFFECT INT_VAR insert_point="-1" opcode=318 target=1 timing=2 parameter1=1 parameter2=107 STR_VAR resource="%resref%" END // block if male
+			LPF ADD_ITEM_EQEFFECT INT_VAR insert_point="-1" opcode=53 target=1 timing=2 parameter1="0x%female_monk_anim%" END // female fighter
+		END
+	BUT_ONLY
+
+END

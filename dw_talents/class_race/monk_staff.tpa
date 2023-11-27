@@ -1,0 +1,56 @@
+DEFINE_ACTION_FUNCTION monk_staff BEGIN
+
+	// core animation shift
+
+	LAF run STR_VAR file=monk_2handed locbase=shared END
+	
+	// get a list of monk kits
+	
+	LAF 2da_read STR_VAR file=kitlist.2da RET_ARRAY kitlist_array=array kitlist_rows=rows END
+	ACTION_PHP_EACH kitlist_rows AS row=>discard BEGIN
+		ACTION_IF $kitlist_array("%row%" "CLASS") STR_EQ "20" BEGIN
+			OUTER_SPRINT name $kitlist_array("%row%" "ROWNAME")
+			ACTION_TO_UPPER name
+			OUTER_SPRINT $monk_kits("%name%") ""
+		END
+	END
+	
+	// update proficiencies
+	
+	LAF 2da_read STR_VAR file=weapprof.2da RET_ARRAY weapprof_array=array weapprof_cols=columns END
+	ACTION_PHP_EACH weapprof_cols AS col=>discard BEGIN
+		ACTION_IF VARIABLE_IS_SET $monk_kits("%col%") || "%col%" STR_EQ "MONK" BEGIN
+			OUTER_SET $weapprof_array("QUARTERSTAFF" "%col%")=1
+			OUTER_SET $weapprof_array("2HANDED" "%col%")=1
+		END
+	END
+	LAF 2da_write STR_VAR file=weapprof.2da array=weapprof_array default="0" END
+		
+	// update the description
+	
+	ACTION_IF is_iwd BEGIN
+		OUTER_SET desc=37256
+		OUTER_SPRINT desc_str_old @2
+	END ELSE
+	ACTION_IF is_bg2 BEGIN
+		OUTER_SET desc=45867
+		OUTER_SPRINT desc_str_old @3
+	END ELSE BEGIN
+		OUTER_SET desc=24234
+		OUTER_SPRINT desc_str_old @1
+	END
+	OUTER_SPRINT desc_str_new @4
+	strref.patch[%desc%]
+	[
+		REPLACE_TEXTUALLY "%desc_str_old%" "%desc_str_new%"
+	]
+
+	// shift usability flags
+	
+	COPY_EXISTING_REGEXP ".*\.itm" override
+		PATCH_IF (SHORT_AT 0x1c)=26 BEGIN
+			WRITE_BYTE 0x21 (THIS BAND 0b11011111)
+		END
+	BUT_ONLY
+
+END

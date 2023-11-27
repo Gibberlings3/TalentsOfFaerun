@@ -1,0 +1,137 @@
+DEFINE_ACTION_FUNCTION ranger_favored_enemy BEGIN
+
+	ACTION_IF !FILE_EXISTS "%data_loc%/ranger_hate_table.2da" BEGIN
+
+		OUTER_SPRINT intro_string @600
+		OUTER_SPRINT extra_string @601
+		OUTER_SPRINT intro_string_epic @602
+		OUTER_SPRINT extra_string_epic @603
+		OUTER_SPRINT table_data "resref type	name:i desc:i select_desc prerequisite max_count:i require_1		require_2	require_3	require_4	require_5	exclude_kit	alignment exclude_hla 	special	special_string checks%WNL%"
+		OUTER_SPRINT table_data_epic "%table_data%"
+		LAF resolve_splprot_entry INT_VAR stat=49 value="-1" STR_VAR relation=equal RET splprot_value=value END
+
+		LAF 2da_read STR_VAR file=haterace.2da RET_ARRAY haterace_array=array haterace_rows=rows END
+		ACTION_PHP_EACH haterace_rows AS row=>discard BEGIN
+			OUTER_SET name_strref=$haterace_array("%row%" STRREF)
+			OUTER_SET id=$haterace_array("%row%" IDS)
+			OUTER_SET $hated_id("%id%")=1
+			OUTER_SET desc_strref=$haterace_array("%row%" "STRREF_HELP")
+			ACTION_GET_STRREF desc_strref desc
+			ACTION_GET_STRREF name_strref name
+			LAF hated_enemies_core INT_VAR id STR_VAR row name desc RET table_line table_line_epic END
+			OUTER_SPRINT table_data "%table_data%%table_line%%WNL%"
+			OUTER_SPRINT table_data_epic "%table_data_epic%%table_line_epic%%WNL%"
+		END
+		
+	<<<<<<<< .../stratagems-inline/ranger_hate_table.2da
+	TO_BE_DELETED
+	TO_BE_DELETED
+	%table_data%
+	>>>>>>>>
+	<<<<<<<< .../stratagems-inline/ranger_hate_table_epic.2da
+	TO_BE_DELETED
+	TO_BE_DELETED
+	%table_data_epic%
+	>>>>>>>>
+		
+		COPY 
+		".../stratagems-inline/ranger_hate_table.2da" "%data_loc%"
+		".../stratagems-inline/ranger_hate_table_epic.2da" "%data_loc%"
+			EVALUATE_BUFFER
+			PRETTY_PRINT_2DA 
+			REPLACE_TEXTUALLY "[ %TAB%]*resref" "id	              resref"
+			REPLACE_TEXTUALLY "TO_BE_DELETED.*" ""
+
+		LAF build_ranger_clab_spell END
+
+	END
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION hated_enemies_core
+     INT_VAR id=0 STR_VAR row="" name="" desc="" name_epic="" desc_epic=""
+	 RET table_line table_line_epic
+BEGIN
+     // make eff files
+
+	eff.copy[demhit3=>dwhah%id% demdam3=>dwhad%id%]
+	[
+		m_parameter1=id
+		m_parameter3=4
+	]
+
+	// capitalize start of name
+	OUTER_PATCH_SAVE name "%name%" BEGIN
+		REPLACE_EVALUATE "^\([a-z]\)\([a-z]*\)" BEGIN
+			SPRINT head "%MATCH1%"
+			SPRINT rest "%MATCH2%"
+			TO_UPPER head
+		END
+		"%head%%rest%"
+	
+	END
+
+     // work out name / description
+
+     OUTER_SET abil_name=RESOLVE_STR_REF ("%intro_string%%name%")
+	 OUTER_SET abil_name_epic=RESOLVE_STR_REF ( "%intro_string_epic%%name%")
+     OUTER_SET abil_desc=RESOLVE_STR_REF ( "%desc%%WNL%%WNL%%extra_string%")
+	 OUTER_SET abil_desc_epic=RESOLVE_STR_REF ( "%extra_string_epic%")
+	
+
+
+     // make spell
+	 
+	spl.make[dwham%id%]
+	[
+		m_name=abil_name
+		m_description=abil_desc
+		m.ab.add{s_target=5}
+		m.ab_fx.add{s_opcode=177 s_timing=9 s_target=1 s_parameter2=2 s_resource:=dwhah%id%}
+		m.ab_fx.add{s_opcode=177 s_timing=9 s_target=1 s_parameter2=2 s_resource:=dwhad%id%}
+	]
+	
+	spl.make[dwhnm%id%]
+	[
+		m_name=abil_name_epic
+		m_description=abil_desc_epic
+		m.ab.add{s_target=5}
+		m.ab_fx.add{s_opcode=177 s_timing=9 s_target=1 s_parameter2=2 s_resource:=dwhah%id%}
+		m.ab_fx.add{s_opcode=177 s_timing=9 s_target=1 s_parameter2=2 s_resource:=dwhad%id%}
+	]
+
+	// generate line for table
+	ACTION_TO_UPPER row
+	OUTER_SPRINT table_line "FAVORED_ENEMY_%row% dwham%id% apply -1 -1 * * 1 RANGER_1 * * * * * * * * * *"
+	OUTER_SPRINT table_line_epic "NEMESIS_%row% dwhnm%id% apply -1 -1 * FAVORED_ENEMY_%row% 1 RANGER_1 * * * * * * * * * *"
+	
+
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION build_ranger_clab_spell BEGIN
+
+	spl.make[dwhaa00]
+	[
+		m.ab.add{}
+		m.ab_fx.add{s_opcode=313 s_target=1 s_timing=9 s_resource:=DWHAM00}
+	]
+	CREATE spl "%spl_ranger_initial_enemy%" 
+		LPF add_basic_spell_ability END
+		PHP_EACH hated_id AS id=>discard BEGIN
+			LPF ADD_SPELL_EFFECT INT_VAR timing=9 target=1 opcode=326 parameter1=id parameter2=splprot_value STR_VAR resource="dwhaa%id%" END
+			INNER_ACTION BEGIN
+				COPY_EXISTING "dwhaa00.spl" "override/dwhaa%id%.spl"
+					REPLACE_TEXTUALLY DWHAM00 "DWHAM%id%" (8)
+			END
+		END
+
+	kit.edit_all[RANGER]
+	[
+		k.kit_apply_powers{%spl_ranger_initial_enemy% 1}
+	]
+
+
+END

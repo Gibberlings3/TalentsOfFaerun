@@ -1,0 +1,51 @@
+DEFINE_ACTION_FUNCTION find_string_refs INT_VAR ceiling=200000 STR_VAR words="" exclusion_function="" BEGIN
+
+// exclusion_function, if used, is a patch_function that runs on the strref line as if it were a file, and returns
+// 1 if we should EXCLUDE the line
+
+	MKDIR "%workspace%/strings"
+	ACTION_CLEAR_ASSOCIATIVE_ARRAY word_array
+	OUTER_WHILE "%words%" STRING_COMPARE "" BEGIN
+	
+		LAF return_first_entry STR_VAR list="%words%" RET entry words=list END
+		OUTER_SPRINT $word_array("%entry%") ""
+	
+	END
+	
+	OUTER_FOR (strref=1;strref<ceiling;++strref) BEGIN
+		ACTION_IF strref MODULO 1000 = 0 BEGIN
+			PRINT "Processed tlk line %strref%"
+		END
+		ACTION_GET_STRREF strref line
+		ACTION_PHP_EACH word_array AS word=>data BEGIN
+			ACTION_IF INDEX ("%word%" "%line%")>=0 BEGIN
+				ACTION_IF "%exclusion_function%" STRING_COMPARE "" BEGIN
+					OUTER_PATCH "%line%" BEGIN
+						LPF "%exclusion_function%" RET value END
+						proceed=!value
+					END
+				END ELSE BEGIN
+					OUTER_SET proceed=1
+				END
+				ACTION_IF proceed BEGIN
+					OUTER_SPRINT $word_array("%word%") "%data%%WNL%%WNL%#%strref%=~%line%~"
+				END
+			END
+		END
+	END
+
+	ACTION_PHP_EACH word_array AS word=>data BEGIN
+		COPY ".../stratagems-inline/template.txt" "%workspace%/strings/%word%.txt"
+			REPLACE_TEXTUALLY PLACEHOLDER "%data%"
+	END
+
+
+
+
+
+
+END
+
+<<<<<<<< .../stratagems-inline/template.txt
+PLACEHOLDER
+>>>>>>>>

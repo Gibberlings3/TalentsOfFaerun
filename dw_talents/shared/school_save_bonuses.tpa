@@ -1,0 +1,31 @@
+DEFINE_ACTION_FUNCTION school_save_bonuses BEGIN
+
+	LAF check_label STR_VAR label=dw#school_save_bonuses RET value END
+	ACTION_IF !value BEGIN
+	
+		LAF make_label STR_VAR label=dw#school_save_bonuses END
+		array.new[school_table]
+		[
+			abjuration=>1
+			conjuration=>2
+			divination=>3
+			enchantment=>4
+			illusion=>5
+			invocation=>6
+			necromancy=>7
+			alteration=>8
+		]
+		ACTION_PHP_EACH school_table AS name=>number BEGIN
+			OUTER_SPRINT spell EVAL "%spl_save_bonus_%name%%"
+			spl.make[%spell%]
+			[
+				m.ab.add{}
+				m.ab_fx.add{s_opcode=346 s_target=2 s_timing=9 s_parameter1=2 s_special=number}
+			]
+		END
+	
+	
+	
+	END
+
+END

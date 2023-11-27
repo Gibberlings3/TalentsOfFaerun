@@ -1,0 +1,288 @@
+DEFINE_PATCH_FUNCTION UI_alter_object
+    STR_VAR object="" 
+            object_type=""
+            object_name_field="name"
+            patch=""
+BEGIN
+   LPF UI_patch_object_master STR_VAR object object_type object_name_field patch type=alter END
+END
+
+DEFINE_PATCH_FUNCTION UI_analyze_object
+    STR_VAR object=""
+            object_type=""
+            object_name_field="name"
+            patch=""
+    RET_ARRAY patch_output
+BEGIN
+   LPF UI_patch_object_master STR_VAR object object_type object_name_field patch type=analyze RET_ARRAY patch_output END
+END
+
+DEFINE_PATCH_FUNCTION UI_return_object // for secondary analysis
+    STR_VAR object=""
+            object_type=""
+            object_name_field="name"
+            patch=""
+    RET object_data
+BEGIN
+   LPF UI_patch_object_master STR_VAR object object_type object_name_field patch type=return RET object_data END
+END
+
+DEFINE_PATCH_FUNCTION UI_replace_object
+    STR_VAR object=""
+            object_type=""
+            object_name_field="name"
+            replace=""
+BEGIN
+   INNER_ACTION BEGIN
+      COPY - "%replace%" "%workspace%" EVALUATE_BUFFER
+        READ_ASCII 0x0 insert_data (BUFFER_LENGTH)
+        SPRINT insert_data "%WNL%%insert_data%%WNL%"
+      BUT_ONLY
+   END
+   LPF UI_patch_object_master STR_VAR object object_type object_name_field type=replace insert_data END
+END
+
+DEFINE_PATCH_FUNCTION UI_insert_into_object
+    STR_VAR object=""
+            object_type=""
+            object_name_field="name"
+            insert=""
+BEGIN
+   INNER_ACTION BEGIN
+      COPY - "%insert%" "%workspace%" EVALUATE_BUFFER
+        READ_ASCII 0x0 insert_data (BUFFER_LENGTH)
+        SPRINT insert_data "%WNL%%insert_data%%WNL%"
+      BUT_ONLY
+   END
+   LPF UI_patch_object_master STR_VAR object object_type object_name_field type=insert_into insert_data END
+END
+
+DEFINE_PATCH_FUNCTION UI_patch_object_master
+    STR_VAR object=""
+            object_type=""
+            object_name_field="name"
+            patch=""
+            type=""
+            insert_data=""
+    RET object_data
+    RET_ARRAY patch_output
+BEGIN
+   SPRINT object_data ""
+   SPRINT $patch_output("NULL") ""
+   SET index=0
+   WHILE index>=0 BEGIN
+      SET index=INDEX_BUFFER ("%object_type%" index)
+      PATCH_IF index>=0 BEGIN
+          LPF find_parenthesis_range STR_VAR left="{" right="}" index RET start end END
+          PATCH_IF start<0 BEGIN
+             SET index = "-1"
+          END ELSE BEGIN
+             READ_ASCII start+1 data (end - start - 1)
+             SET change=0
+             INNER_PATCH_SAVE data "%data%" BEGIN
+                PATCH_IF ( INDEX_BUFFER (~%object_name_field%\( \|%TAB%\)*['"]%object%['"]~) > 0 || "%object%" STRING_EQUAL "") BEGIN
+                   PATCH_MATCH "%type%" WITH
+                   alter BEGIN
+                       SET change=1
+                       LPF "%patch%" END
+                   END
+                   analyze BEGIN
+                      LPF "%patch%" RET_ARRAY patch_output END
+                   END
+                   insert_into BEGIN
+                      SET change=1
+                      SET end_here = BUFFER_LENGTH - 1
+                      INSERT_BYTES end_here (STRING_LENGTH "%insert_data%")
+                      WRITE_ASCIIE end_here "%insert_data%"
+                   END
+                   replace BEGIN
+                       SET change=1
+                       DELETE_BYTES 0x0 BUFFER_LENGTH
+                       INSERT_BYTES 0x0 (STRING_LENGTH "%insert_data%")
+                       WRITE_ASCIIE 0x0 "%insert_data%"
+                   END
+                   return BEGIN
+                      READ_ASCII 0x0 object_data (BUFFER_LENGTH)
+                   END
+                   DEFAULT
+                      PATCH_FAIL "internal error in UI_patch_object_master: undefined type %type%"
+                   END 
+                END
+             END
+             PATCH_IF change BEGIN
+                  READ_ASCII start+1 info_here (end - start - 1)
+                  DELETE_BYTES (start+1) ((end - start) - 1)
+                  INSERT_BYTES (start+1) (STRING_LENGTH "%data%")
+                  WRITE_ASCIIE (start+1) "%data%"
+             END
+             PATCH_IF change BEGIN
+                SET index="-1"
+             END ELSE BEGIN
+             SET index=start + STRING_LENGTH "%data%"+2
+             END
+          END
+      END
+   END
+END
+
+DEFINE_PATCH_FUNCTION UI_add_function
+   STR_VAR function=""
+BEGIN
+   INNER_ACTION BEGIN
+      COPY - "%function%" "%workspace%" EVALUATE_BUFFER
+           READ_ASCII 0x0 function_data (BUFFER_LENGTH)
+           SPRINT function_data "%WNL%%function_data%%WNL%"
+      BUT_ONLY
+   END
+   SET insert_point = INDEX_BUFFER ("function ")
+   INSERT_BYTES insert_point STRING_LENGTH "%function_data%"
+   WRITE_ASCIIE insert_point "%function_data%"
+
+END
+
+DEFINE_ACTION_FUNCTION UI_add_string
+    INT_VAR tra_entry=0
+    STR_VAR string_id=""
+            string=""
+BEGIN
+   ACTION_IF "%string%" STRING_EQUAL "" BEGIN
+       OUTER_SPRINT string (AT tra_entry)
+   END
+   COPY_EXISTING "L_%EE_LANGUAGE%.lua" override
+        REPLACE_TEXTUALLY ~uiStrings *= *{~ ~uiStrings = {%WNL%    %string_id% = "%string%",~
+   BUT_ONLY
+END
+
+
+DEFINE_PATCH_FUNCTION UI_get_coordinates
+        RET_ARRAY patch_output
+BEGIN
+              REPLACE_EVALUATE "bam\(%WNL%\|%LNL%\|%MNL%\|%TAB%\| \)+\([^\(%WNL%\|%LNL%\|%MNL%\|%TAB%\| \)]*\)\(%WNL%\|%LNL%\|%MNL%\)" BEGIN
+                SPRINT $patch_output("bam") "%MATCH2%"
+              END
+              "bam %MATCH2%%WNM"
+              REPLACE_EVALUATE "[^0-9]*\([0-9]+\)\( \|%TAB%\)+\([0-9]+\)\( \|%TAB%\)+\([0-9]+\)\( \|%TAB%\)+\([0-9]+\)[^0-9]*"
+              BEGIN
+                SET $patch_output("xloc")="%MATCH1%"
+                SET $patch_output("yloc")="%MATCH3%"
+                SET $patch_output("width")="%MATCH5%"
+                SET $patch_output("height")="%MATCH7%"
+              END
+              ""
+
+END
+
+DEFINE_PATCH_FUNCTION UI_alter_function
+	STR_VAR function=""
+			patch=""
+BEGIN
+		start=INDEX_BUFFER ("function %function%([^)]*)")
+		end=INDEX_BUFFER ("[%WNL%%LNL%%MNL%]end" start)
+		length_old=end + 4 - start
+		PATCH_IF start<0 BEGIN
+			PATCH_WARN "Unable to find function %function%() for patching"
+		END ELSE BEGIN
+		READ_ASCII start data (length_old)
+		INNER_PATCH_SAVE new_data "%data%" BEGIN
+			LPF "%patch%" END
+			length_new=BUFFER_LENGTH
+		END
+		DELETE_BYTES start length_old
+		INSERT_BYTES start length_new
+		WRITE_ASCIIE start "%new_data%"
+		END
+END
+
+DEFINE_PATCH_FUNCTION UI_replace_function
+	INT_VAR inline=0
+	STR_VAR function=""
+			new_function_path=""
+BEGIN
+	INNER_ACTION BEGIN
+		ACTION_IF inline || FILE_EXISTS "%new_function_path%" BEGIN
+		  COPY "%new_function_path%" "%workspace%"
+			READ_ASCII 0x0 new_data (BUFFER_LENGTH)
+			SET length_new=STRING_LENGTH "%new_data%"
+			SET proceed=1
+		  BUT_ONLY
+		 END ELSE BEGIN
+			WARN "Unable to swap out function %function%: no file found at %new_function_path%"
+			OUTER_SET proceed=0
+		 END
+	END
+	PATCH_IF proceed BEGIN
+		start=INDEX_BUFFER ("function %function%([^)]*)")
+		end=INDEX_BUFFER ("[%WNL%%LNL%%MNL%]end" start)
+		length_old=end + 4 - start
+		PATCH_IF start<0 BEGIN
+			PATCH_WARN "Unable to find function %function%() for patching"
+		END ELSE BEGIN
+			READ_ASCII start data (length_old)
+			DELETE_BYTES start length_old
+			INSERT_BYTES start length_new
+			WRITE_ASCIIE start "%new_data%"
+		END
+	END
+END
+
+DEFINE_ACTION_FUNCTION UI_install_function 
+	STR_VAR lua_file=""
+			new_function_path=""
+			search_string=""
+BEGIN
+
+	ACTION_IF !FILE_EXISTS_IN_GAME "%lua_file%.lua" BEGIN
+		COPY "%new_function_path%" "override/%lua_file%.lua"
+	END ELSE BEGIN
+		COPY_EXISTING "%lua_file%.lua" override
+		ACTION_IF !FILE_CONTAINS "override/%lua_file%.lua" "%search_string%" BEGIN
+			COPY_EXISTING "%lua_file%.lua" override
+				APPEND_FILE TEXT "%new_function_path%" EVALUATE_BUFFER
+		END
+	
+	END
+END
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////    given an index in a file, a left character, and a right character, extract the
+////////////    index number of the left character and the matching right character
+////////////	 
+/////////////	this is a verbatim copy of the one in sfo/lib_tools - it's here for self-containedness
+////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION find_parenthesis_range
+     STR_VAR left="{"
+             right="}"
+             index=0
+     RET     start
+             end
+BEGIN
+     SET next_right="-1"
+     SET start=INDEX_BUFFER("%left%" index)
+     PATCH_IF start>=0 BEGIN
+        SET indent=1
+        SET loc=start + 1
+        WHILE indent>0 BEGIN
+           SET next_left = INDEX_BUFFER ("%left%" loc)
+           SET next_right = INDEX_BUFFER ("%right%" loc)
+           PATCH_IF next_right<0 BEGIN
+              SET indent=0
+              LPF warning STR_VAR warning="Failed to properly extract next %left%---%right% section from file %SOURCE_RES%, starting at %index%" END
+           END ELSE 
+           PATCH_IF next_left<0 BEGIN
+              SET indent -=1
+              SET loc=next_right + 1
+           END ELSE
+           PATCH_IF (next_left<next_right && next_left>=0) BEGIN
+              SET indent +=1
+              SET loc=next_left + 1
+           END ELSE BEGIN
+              SET indent -=1
+              SET loc=next_right + 1
+           END
+        END
+        SET end=next_right
+     END
+END

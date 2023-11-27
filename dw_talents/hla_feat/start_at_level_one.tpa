@@ -1,0 +1,57 @@
+DEFINE_ACTION_FUNCTION start_at_level_one BEGIN
+
+	ACTION_CLEAR_ARRAY startare2das 
+	OUTER_SPRINT $startare2das("STARTARE") ""
+	OUTER_SPRINT $startare2das("STARTBP") ""
+	LAF 2da_read STR_VAR file=campaign.2da RET_ARRAY campaign_rows=rows campaign_array=array END
+	ACTION_PHP_EACH campaign_rows AS row=>discard BEGIN
+		OUTER_SPRINT 2da $campaign_array("%row%" STARTARE)
+		ACTION_TO_UPPER 2da
+		OUTER_SPRINT $startare2das("%2da%") ""
+	END
+	
+	ACTION_PHP_EACH startare2das AS file=>discard BEGIN
+		LAF start_at_level_one_core STR_VAR file END
+	END
+
+
+
+END
+
+DEFINE_ACTION_FUNCTION start_at_level_one_core
+	STR_VAR file=""
+BEGIN
+	COPY_EXISTING "%file%.2da" override
+		LPF 2da_read RET_ARRAY start_array=array END
+		SPRINT area $start_array(START_AREA VALUE)
+		xpstart=$start_array(START_XP VALUE) - 1
+		LPF extend_area_script INT_VAR inline=1 STR_VAR area top=xpstart END
+		SET $start_array(START_XP VALUE)=1
+		PATCH_IF VARIABLE_IS_SET $start_array(START_MP_XP VALUE) && VARIABLE_IS_SET $start_array(START_AREA_MP VALUE) BEGIN
+			SPRINT area $start_array(START_AREA_MP VALUE)
+			xpstart=$start_array(START_MP_XP VALUE) - 1
+			LPF extend_area_script INT_VAR inline=1 STR_VAR area top=xpstart END
+			SET $start_array(START_MP_XP VALUE)=1
+		END
+		LPF 2da_write STR_VAR array=start_array default="BADVAL" END
+	BUT_ONLY
+	IF_EXISTS
+
+END
+
+<<<<<<<<.../stratagems-inline/xpstart.baf
+IF
+	Global("DW_start_area_xp","GLOBAL",0)
+	XPLT(Player1,1000)
+THEN
+	RESPONSE #100
+		SetGlobal("DW_start_area_xp","GLOBAL",1)
+		AddXPObject(Player1,%xpstart%)
+		AddXPObject(Player2,%xpstart%)
+		AddXPObject(Player3,%xpstart%)
+		AddXPObject(Player4,%xpstart%)
+		AddXPObject(Player5,%xpstart%)
+		AddXPObject(Player6,%xpstart%)
+		Continue()
+END
+>>>>>>>>

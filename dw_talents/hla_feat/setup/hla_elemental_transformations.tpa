@@ -1,0 +1,108 @@
+DEFINE_ACTION_FUNCTION hla_elemental_transformations BEGIN
+
+
+	LAF include STR_VAR file=lib_shapeshift.tph locbase=lib END
+	
+	LAF include STR_VAR file=elemental_cre_shared.tph locbase=elemental_cre END
+	LAF make_shared_elemental_resources END
+
+	// earth
+	LAF make_shapeshift_spell
+		INT_VAR force_copy=1
+				str=23
+				dex=14
+				ac="-5"
+				apr=2
+				enchantment=4
+				thac0=2
+				timing=0
+				description=3294
+				duration=360
+				healing=1
+				resistslashing=50
+				resistpiercing=50
+				resistmissile=50
+				resistcrushing="-25"
+				grant_natural_form_spell=1
+		STR_VAR weapon=DRUEAR
+				copy_weapon="%itm_earth_elemental_weapon_16hd%"
+				spell="%CLERIC_ELEMENTAL_TRANSFORMATION_EARTH%"
+				anim=elemental_earth
+	END
+	
+	// fire
+	LAF make_shapeshift_spell
+		INT_VAR force_copy=1
+				str=23
+				dex=14
+				ac="-5"
+				apr=2
+				enchantment=4
+				thac0=2
+				timing=0
+				description=3295
+				duration=360
+				healing=1
+				resistcold="-50"
+				resistfire=125
+				grant_natural_form_spell=1
+		STR_VAR weapon=DRUFIR
+				copy_weapon="%itm_fire_elemental_weapon_16hd%"
+				spell="%CLERIC_ELEMENTAL_TRANSFORMATION_FIRE%"
+				anim=elemental_fire
+				apply_spells="%spl_fire_elemental_aura_greater%"
+	END
+	
+	// air
+	LAF make_shapeshift_spell
+		INT_VAR force_copy=1
+				str=23
+				dex=14
+				ac="-5"
+				apr=2
+				enchantment=4
+				thac0=2
+				timing=0
+				name=3296
+				description=3297
+				duration=360
+				healing=1
+				resistmissile=75
+				resistelectricity=100
+				grant_natural_form_spell=1
+		STR_VAR weapon="%itm_air_elemental_transformation%"
+				copy_weapon="%itm_air_elemental_weapon_16hd%"
+				spell="%spl_hla_elemental_transformation_air%"
+				copy_spell="%CLERIC_ELEMENTAL_TRANSFORMATION_FIRE%"
+				anim=elemental_air
+				apply_spells="%spl_air_elemental_aura_greater%"
+	END
+
+	// water
+	LAF make_shapeshift_spell
+		INT_VAR force_copy=1
+				str=23
+				dex=14
+				ac="-5"
+				apr=2
+				enchantment=4
+				thac0=2
+				timing=0
+				name=3298
+				description=3299
+				duration=360
+				healing=1
+				resistslashing=25
+				resistpiercing=25
+				resistmissile=25
+				resistcrushing=75
+				grant_natural_form_spell=1
+		STR_VAR weapon="%itm_water_elemental_transformation%"
+				copy_weapon="%itm_water_elemental_weapon_16hd%"
+				spell="%spl_hla_elemental_transformation_water%"
+				copy_spell="%CLERIC_ELEMENTAL_TRANSFORMATION_EARTH%"
+				anim=elemental_water
+				apply_spells="%spl_water_elemental_aurar%"
+	END	
+	
+END

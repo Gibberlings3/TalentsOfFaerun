@@ -1,0 +1,152 @@
+DEFINE_ACTION_FUNCTION shar_cleric BEGIN
+
+    LAF shar_shared END
+	OUTER_SPRINT kit DW_SHAR_CLERIC
+	LAF splconv_get_name STR_VAR spell="%WIZARD_BLINDNESS%" new_type=innate RET spl_shar_blindness=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_CONFUSION%" new_type=innate RET spl_shar_confusion=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_POWER_WORD_BLIND%" new_type=innate RET spl_shar_power_word_blind=new_resref END
+
+	kit.copy[CLERIC=>%kit%]
+	[
+		k_name:=@84
+		k_desc:=@85
+		k.kit_apply_powers{%spl_shar_innate% 1}
+		k.kit_grant_powers{%spl_shar_blindness% 3 6,%spl_shar_dark_bolt% 6,%spl_shar_confusion% 9 8,%spl_shar_power_word_blind% 13}
+		k_color_metal=35
+		k_color_minor_cloth=66
+		k_color_main_cloth=60
+		k_color_leather=25
+		k_color_armor=80	
+		k.kit_set_alignment{nn le ne ce}
+		IF {is_iwd} {{k_bio:=@1038}}
+	]
+	
+	LAF cleric_kit_substitutions STR_VAR kit god=shar END
+
+	LAF assign_spheres STR_VAR kit default=cleric subtract="good" END
+	LAF holy_symbol INT_VAR name=2032 follower=2033 STR_VAR kit desc_bam=cbeltsh inv_bam=ibeltsh kit END
+	LAF adjust_cleric_stronghold STR_VAR talos=all kit END
+	LAF assign_bonus_spells STR_VAR kit spells="DISPEL_MAGIC SHADOW_DOOR POWER_WORD_SILENCE POWER_WORD_STUN" END
+ 
+ 
+END
+
+DEFINE_ACTION_FUNCTION illusionist_of_shar BEGIN
+
+    LAF shar_shared END
+	OUTER_SPRINT kit DW_SHAR_ILLUSIONIST
+	LAF splconv_get_name STR_VAR spell="%WIZARD_BLINDNESS%" new_type=innate RET spl_shar_blindness=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_CONFUSION%" new_type=innate RET spl_shar_confusion=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_POWER_WORD_BLIND%" new_type=innate RET spl_shar_power_word_blind=new_resref END
+
+	kit.copy[CLERIC_MAGE=>%kit%]
+	[
+		k_name:=@112
+		k_desc:=@113
+		k.kit_apply_powers{%spl_shar_innate% 1|class=cleric}
+		k.kit_grant_powers{%spl_shar_blindness% 3 6,%spl_shar_dark_bolt% 6,%spl_shar_confusion% 9 8,%spl_shar_power_word_blind% 13|class=cleric}
+		k_color_minor_cloth=66
+		k_color_main_cloth=60
+		k.kit_set_alignment{nn le ne ce}
+		IF {is_iwd} {{k_bio:=@1038}}
+	]
+	
+	LAF cleric_kit_substitutions STR_VAR kit god=shar END
+
+	LAF assign_spheres INT_VAR update_scroll_usability=0 STR_VAR kit default=cleric subtract="good" END
+	LAF holy_symbol INT_VAR name=2032 follower=2033 STR_VAR kit desc_bam=cbeltsh inv_bam=ibeltsh kit END
+	LAF adjust_cleric_stronghold STR_VAR talos=all kit END
+	LAF assign_bonus_spells STR_VAR kit spells="DISPEL_MAGIC SHADOW_DOOR POWER_WORD_SILENCE POWER_WORD_STUN" class=cleric END
+ 
+ 
+ 	LAF make_multiclass_specialist STR_VAR kit school=illusion END
+	LAF set_multiclass_components STR_VAR kit components="DW_SHAR_CLERIC ILLUSIONIST"  END
+
+END
+
+
+DEFINE_ACTION_FUNCTION shar_favored_soul BEGIN
+
+
+	LAF shar_shared END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_BLINDNESS%" new_type=innate RET spl_shar_blindness=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_CONFUSION%" new_type=innate RET spl_shar_confusion=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_POWER_WORD_BLIND%" new_type=innate RET spl_shar_power_word_blind=new_resref END
+
+	// make the main kit
+	
+	OUTER_SPRINT kit "DW_SHAR_FAVORED"
+	
+	LAF build_favored_soul_kit INT_VAR name=4091 desc=4092 god=4094 god_gender=4029 god_temple=4093 STR_VAR kit copy_from=DW_SHAR_CLERIC END
+	LAF cleric_kit_substitutions STR_VAR kit god=shar END
+
+	kit.edit[%kit%|edit_strrefs_in_place:i=1]
+	[
+		k.kit_apply_powers{%spl_shar_innate% 1}
+		k.kit_grant_powers{%spl_shar_blindness% 3 6,%spl_shar_dark_bolt% 6,%spl_shar_confusion% 9 8,%spl_shar_power_word_blind% 13}
+	]
+
+	// spell choices
+
+	LAF assign_bonus_spells STR_VAR kit spells="CLERIC_CURSE CLERIC_SILENCE_15_FOOT WIZARD_DISPEL_MAGIC CLERIC_CLOAK_OF_FEAR WIZARD_SHADOW_DOOR WIZARD_POWER_WORD_SILENCE WIZARD_POWER_WORD_STUN" END
+
+END
+
+
+
+DEFINE_ACTION_FUNCTION shar_shared BEGIN
+
+	LAF include STR_VAR file=log_favored_weapon.tph locbase=shared END
+	LAF log_favored_weapon STR_VAR god=SHAR weapon=dart END
+
+	
+   LAF check_label STR_VAR label=dw#shar_shared RET value END
+   ACTION_IF !value BEGIN
+   
+    LAF make_label STR_VAR label=dw#shar_shared END
+	
+        // immunity to blindness
+        
+        spl.make[%spl_shar_innate%]
+        [
+            m.ab.add{}
+			m.immunity_effect{blinded}
+        ]
+
+		// dark bolt - start with DR version, but lots to fix
+		
+		spl.copy[cdshar2=>%spl_shar_dark_bolt%|source_location=dr]
+		[
+			m_name:=@1039
+			m_description:=@1040
+			m_icon:="A#SHA01"
+			m.ab.alter{s_icon:=A#SHA01}
+			m.ab_fx.delete{s_opcode=215}
+			m.ab_fx.add{s_opcode=141 s_target=1 s_power=0 s_parameter2=22 s_timing=1}
+			m.ab_fx.add{s_opcode=174 s_target=1 s_power=0 s_timing=1 s_resource:=EFF_M58}
+		]
+		
+		LAF install STR_VAR files="a#sha01.bam a#sha02.bam cdshar2.itm" location=dr END
+		
+		itm.edit[cdshar2]
+		[
+			m_identified_name:=@1039
+			m_identified_description:=@1040
+			m_max_in_stack=80
+			m_droppable=0
+			m_forbid_offhand=1
+			m.ab.alter{s_number_charges=1 s_secondary_type=10}
+		]
+		
+
+		// other innates
+		
+		LAF splconv STR_VAR spell="%WIZARD_BLINDNESS%" new_type=innate RET_ARRAY splconv_array END
+		LAF splconv STR_VAR spell="%WIZARD_CONFUSION%" new_type=innate RET_ARRAY splconv_array END
+		LAF splconv STR_VAR spell="%WIZARD_POWER_WORD_BLIND%" new_type=innate RET_ARRAY splconv_array END
+
+
+
+    END
+
+END

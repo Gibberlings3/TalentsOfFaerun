@@ -1,0 +1,987 @@
+DEFINE_ACTION_FUNCTION subrace BEGIN
+
+	INCLUDE "%MOD_FOLDER%/%lua_loc%/ui_virtual_class.tph"
+	OUTER_SPRINT table_path "%MOD_FOLDER%/%component_loc%/data"
+
+	//include required libraries
+	INCLUDE "%MOD_FOLDER%/%lua_loc%/ui_add_subraces.tph"
+	INCLUDE "%MOD_FOLDER%/%lua_loc%/ui_virtual_class.tph"
+	INCLUDE "%MOD_FOLDER%/%lua_loc%/ui_shared_code.tph"
+	INCLUDE "%MOD_FOLDER%/%lua_loc%/ui_dual_class_kits.tph"
+	
+	// once-and-for-all, get the descriptions associated with the main races
+	
+	COPY_EXISTING "racetext.2da" "%workspace%"
+		COUNT_2DA_COLS colcount
+		READ_2DA_ENTRIES_NOW racetext_data colcount
+		FOR (row=0;row<racetext_data;++row) BEGIN
+			READ_2DA_ENTRY_FORMER racetext_data row 0 race
+			READ_2DA_ENTRY_FORMER racetext_data row 3 desc
+			SET $race_desc("%race%")=desc
+		END
+	BUT_ONLY
+	
+	// build required resources
+	
+	LAF subrace_resources_shared END
+	LAF subrace_resources_underdark END
+	
+	ACTION_FOR_EACH type IN planetouched_subraces human_subraces elf_subraces dwarf_halfling_subraces gnome_subraces half-orc_subraces half-elf_subraces  BEGIN
+		LAF check_ini STR_VAR ini="install_%type%" RET value END
+		ACTION_IF value BEGIN
+			LAF "%type%" END
+		END	
+	END
+	
+	// check for blocked classes
+	
+	LAF check_ini STR_VAR ini=disable_drow_on_bg RET value END
+	ACTION_IF value && !is_iwd BEGIN
+		LAF add_to_subrace_tables
+			STR_VAR disabled=ELF_DROW
+				table_path
+		END
+	END
+	LAF check_ini STR_VAR ini=disable_aasimar_on_bg RET value END
+	ACTION_IF value && !is_iwd BEGIN
+		LAF add_to_subrace_tables
+			STR_VAR disabled=AASIMAR
+				table_path
+		END
+	END
+
+
+	// install
+	
+	LAF build_subraces STR_VAR locbase="subrace/lib_subrace" END
+
+	LAF assign_npc_subraces END
+	
+	// prohibit MR-having classes from the Wizard Slayer kit
+	
+	LAF wizard_slayer_restrictions END
+
+	// let scripts and dialogs recognise the new races
+	
+	LAF update_race_recognition END
+	
+	
+END
+
+
+DEFINE_ACTION_FUNCTION subrace_resources_shared BEGIN
+
+	// shared icons
+
+	COPY "%MOD_FOLDER%/subrace/icon" override
+	
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION planetouched_subraces BEGIN
+
+	// add 'aasimar' to race.ids (only present on SoD atm)
+	
+	COPY_EXISTING "race.ids" override
+	ACTION_IF !FILE_CONTAINS "override/race.ids" "aasimar" BEGIN
+		APPEND "race.ids" "185 AASIMAR"
+		COPY_EXISTING "race.ids" override
+			PRETTY_PRINT_2DA
+		CLEAR_IDS_MAP
+	END
+	
+	////////////////////////////
+	// resources: Aasimar
+	////////////////////////////
+	
+	// copy of the Sunscorch spell (IWD-only, so we need to install it manually)
+	
+	ACTION_FOR_EACH resource IN
+	"#eff_p39.wav" "sppr115.spl" "sppr115a.bam" "sppr115b.bam" "sppr115c.bam" "sppr115d.spl" "sunscoh.bam" BEGIN
+		OUTER_INNER_PATCH_SAVE resource_new "%resource%" BEGIN
+			REPLACE_TEXTUALLY "sppr115" "%spl_aasimar_sunscorch%" 
+		END
+		ACTION_IF !FILE_EXISTS_IN_GAME "%resource_new%" BEGIN
+		  ACTION_IF FILE_EXISTS_IN_GAME "%resource%" BEGIN
+			COPY_EXISTING "%resource%" "override/%resource_new%"
+				REPLACE_TEXTUALLY "sppr115" "%spl_aasimar_sunscorch%" (8)		  
+		  END ELSE BEGIN
+			COPY "%MOD_FOLDER%/iwdspells/copyover/cleric_sunscorch/%resource%" "override/%resource_new%"
+				REPLACE_TEXTUALLY "sppr115" "%spl_aasimar_sunscorch%" (8)
+		  END
+		END
+	END
+
+	
+	ACTION_IF IDS_OF_SYMBOL (projectl sunscoh)<=0 BEGIN
+		ADD_PROJECTILE "%MOD_FOLDER%/iwdspells/copyover/cleric_sunscorch/sunscoh.pro"
+	END ELSE BEGIN
+		OUTER_SET sunscoh=IDS_OF_SYMBOL (projectl sunscoh)
+	END
+	
+	COPY_EXISTING "%spl_aasimar_sunscorch%.spl" override
+		SAY 0x8 @710
+		SAY 0x50 @711
+		WRITE_SHORT 0x1c 4
+		LPF ALTER_SPELL_HEADER INT_VAR projectile=sunscoh speed=1 location=4 END
+	
+	// payload
+	
+	CREATE spl "%spl_subrace_aasimar%"
+		LPF add_basic_spell_ability END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 timing=1 STR_VAR resource="%spl_subrace_aasimar%" END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=63 target=2 timing=9 END // infravision
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=171 target=2 timing=9 STR_VAR resource="%spl_aasimar_sunscorch%" END // sunscorch
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=346 target=2 timing=9 special=4 END // +2 vs enchantment
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=30 target=2 timing=9 parameter1=10 END // fire resistance
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=28 target=2 timing=9 parameter1=10 END // cold resistance
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=142 target=2 timing=9 parameter2=26 END // resist fire/cold icon
+
+	////////////////////////////
+	// resources: Tiefling
+	////////////////////////////		
+	
+	// copy of the Blindness spell 
+
+	COPY_EXISTING "%WIZARD_BLINDNESS%.spl" "override/%spl_tiefling_blindness%.spl" 
+		WRITE_SHORT 0x1c 4
+		SAY 0x50 @708
+		LPF ALTER_SPELL_HEADER INT_VAR location=4 speed=1 END
+		
+	// payload
+
+	CREATE spl "%spl_subrace_tiefling%"
+		LPF add_basic_spell_ability END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 timing=1 STR_VAR resource="%spl_subrace_tiefling%" END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=63 target=2 timing=9 END // infravision
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=171 target=2 timing=9 STR_VAR resource="%spl_tiefling_blindness%" END // sunscorch
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=30 target=2 timing=9 parameter1=15 END // fire resistance
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=28 target=2 timing=9 parameter1=15 END // cold resistance
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=142 target=2 timing=9 parameter2=26 END // resist fire/cold icon
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=27 target=2 timing=9 parameter1=15 END // cold resistance
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=142 target=2 timing=9 parameter2=24 END // resist acid icon
+
+	////////////////////////////
+	// resources: air genasi
+	////////////////////////////	
+	
+	// copy of the Zone of Sweet Air spell
+	
+	COPY_EXISTING "%CLERIC_ZONE_OF_SWEET_AIR%.spl" "override/%spl_genasi_sweet_air%.spl"
+		WRITE_SHORT 0x1c 4
+		SAY 0x50 @712
+		LPF ALTER_SPELL_HEADER INT_VAR location=4 speed=1 END
+		
+	//payload
+	
+	CREATE spl "%spl_subrace_genasi_air%"
+		LPF add_basic_spell_ability END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 timing=1 STR_VAR resource="%spl_subrace_genasi_air%" END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=63 target=2 timing=9 END // infravision
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=171 target=2 timing=9 STR_VAR resource="%spl_genasi_sweet_air%" END // zone of sweet air
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=324 target=2 timing=9 STR_VAR resource="%WIZARD_STINKING_CLOUD%" END
+		PATCH_IF VARIABLE_IS_SET "WIZARD_SUFFOCATION" BEGIN
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=324 target=2 timing=9 STR_VAR resource="%WIZARD_SUFFOCATION%" END		
+		END
+
+	////////////////////////////
+	// resources: earth genasi
+	////////////////////////////	
+	
+	// copy of the Magical Stone spell
+	
+	COPY_EXISTING "%CLERIC_MAGIC_STONE%.spl" "override/%spl_genasi_magic_stone%.spl"
+		WRITE_SHORT 0x1c 4
+		SAY 0x50 @713
+		LPF ALTER_SPELL_HEADER INT_VAR location=4 speed=1 END
+	
+	// payload
+
+	CREATE spl "%spl_subrace_genasi_earth%"
+		LPF add_basic_spell_ability END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 timing=1 STR_VAR resource="%spl_subrace_genasi_earth%" END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=63 target=2 timing=9 END // infravision
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=171 target=2 timing=9 STR_VAR resource="%spl_genasi_magic_stone%" END // magical stone
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=169 target=2 timing=9 parameter2=171 END // immunity to petrification
+		PATCH_IF GAME_IS iwdee BEGIN
+			parameter1=38043
+		END ELSE BEGIN
+			parameter1=14665
+		END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=267 target=2 timing=9 parameter1 END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=101 target=2 timing=9 parameter2=134 END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=0 target=2 timing=9 parameter1=2 END // AC bonus
+		
+	///////////////////////////////
+	/// Resources: fire genasi
+	///////////////////////////////
+
+	// copy of the Flame Blade spell
+	
+	COPY_EXISTING "%CLERIC_FLAME_BLADE%.spl" "override/%spl_genasi_flame_blade%.spl"
+		WRITE_SHORT 0x1c 4
+		SAY 0x50 @714
+		LPF ALTER_SPELL_HEADER INT_VAR location=4 speed=1 END
+	
+	// payload
+	
+	CREATE spl "%spl_subrace_genasi_fire%"
+		LPF add_basic_spell_ability END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 timing=1 STR_VAR resource="%spl_subrace_genasi_fire%" END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=63 target=2 timing=9 END // infravision
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=171 target=2 timing=9 STR_VAR resource="%spl_genasi_flame_blade%" END // flame blade
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=30 target=2 timing=9 parameter2=1 parameter1=30 END // fire resistance
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=28 target=2 timing=9 parameter2=1 parameter1="-30" END // cold vulnerability
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=332 target=2 timing=9 parameter1=20 parameter2=1 END // extra fire damage
+	
+	///////////////////////////////
+	/// Resources: water genasi
+	///////////////////////////////
+
+	// copy of the Mist Ball spell (not present on all games, install manually - fortunately, no real resources needed)
+	
+	COPY "%MOD_FOLDER%/%component_loc%/resource/spin929.spl" "override/%spl_genasi_mist_ball%.spl"
+		WRITE_SHORT 0x1c 4
+		SAY 0x8 @715
+		SAY 0x50 @716
+		LPF ALTER_SPELL_HEADER INT_VAR location=4 speed=1 END
+
+
+	// payload
+	
+	CREATE spl "%spl_subrace_genasi_water%"
+		LPF add_basic_spell_ability END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 timing=1 STR_VAR resource="%spl_subrace_genasi_water%" END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=63 target=2 timing=9 END // infravision
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=171 target=2 timing=9 STR_VAR resource="%spl_genasi_mist_ball%" END // mist ball
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=86 target=2 timing=9 parameter2=1 parameter1=15 END // damage resistance
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=88 target=2 timing=9 parameter2=1 parameter1=15 END // damage resistance
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=89 target=2 timing=9 parameter2=1 parameter1=15 END // damage resistance
+	
+	
+	
+	
+	// install the tables
+	
+	LAF add_to_subrace_tables
+		STR_VAR subrace_table=planetouched
+				race_table=planetouched_race
+				pseudorace_table=planetouched_pseudorace
+				table_path
+	END
+
+
+
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION half-elf_subraces BEGIN
+
+
+	
+	// install the tables
+	
+	LAF add_to_subrace_tables
+		STR_VAR subrace_table=half-elves
+				table_path
+	END
+
+
+
+END
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION human_subraces BEGIN
+
+
+	
+	// install the tables
+	
+	LAF add_to_subrace_tables
+		STR_VAR subrace_table=humans
+				table_path
+	END
+
+
+
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION half-orc_subraces BEGIN
+
+
+	LAF check_ini STR_VAR ini=halforc_hp_base RET base=value END
+	LAF check_ini STR_VAR ini=halforc_hp_increment RET inc=value END
+
+	// build applicator spells
+	
+	CREATE spl "%spl_subrace_halforc%"
+		LPF add_basic_spell_ability END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 timing=1 STR_VAR resource="%spl_subrace_halforc%" END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=18 parameter1=base+inc END
+
+
+	CREATE spl "%spl_subrace_halforc_recurring%"
+		LPF add_basic_spell_ability END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=18 parameter1=inc END
+
+
+
+	
+	// install the tables
+	
+	LAF add_to_subrace_tables
+		STR_VAR subrace_table=half-orcs
+				table_path
+	END
+
+
+
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION elf_subraces BEGIN
+
+	// swap out the main elf-description string
+	
+	STRING_SET_EVALUATE race_desc_ELF @800
+
+	/////////////////////////////////////
+	// resources - drow
+	/////////////////////////////////////
+	
+	LAF check_ini STR_VAR ini=Drow_MR_base RET base=value END
+	LAF check_ini STR_VAR ini=Drow_MR_inc RET inc=value END
+
+	// faerie fire
+
+	LAF run STR_VAR file=faerie_fire locbase=shared END
+
+	// reputation penalty for drow
+	
+	ACTION_IF GAME_IS "iwdee" BEGIN
+		OUTER_SET drow_rep_strref=RESOLVE_STR_REF (@703)
+	END ELSE BEGIN	
+		OUTER_SET drow_rep_strref=RESOLVE_STR_REF (@704)
+	END
+	
+	<<<<<<<< .../stratagems-inline/rep_penalty.baf
+	IF
+		!Global("dw-rep-2","GLOBAL",0)
+		ReputationGT(Player1,10)
+	THEN
+		RESPONSE #100
+			IncrementGlobal("dw-rep-2","GLOBAL",-1)
+			ReputationInc(-2)
+			DisplayStringNoName(Player1,%drow_rep_strref%)
+			Continue()
+	END
+
+	IF
+		!Global("dw-rep-2","GLOBAL",0) // we only want this to happen once, not least because paladins fall below 8
+		!ReputationGT(Player1,10)
+	THEN
+		RESPONSE #100
+			IncrementGlobal("dw-rep-2","GLOBAL",-1)
+			Continue()
+	END
+	>>>>>>>>
+	
+	ACTION_IF GAME_IS iwdee BEGIN
+		EXTEND_TOP "ar1006.bcs" ".../stratagems-inline/rep_penalty.baf" EVALUATE_BUFFER
+		EXTEND_TOP "ar9100.bcs" ".../stratagems-inline/rep_penalty.baf" EVALUATE_BUFFER
+	END ELSE
+	ACTION_IF GAME_IS bgee BEGIN
+		EXTEND_TOP "ar2600.bcs" ".../stratagems-inline/rep_penalty.baf" EVALUATE_BUFFER
+	END ELSE BEGIN
+		EXTEND_TOP "ar0702.bcs" ".../stratagems-inline/rep_penalty.baf" EVALUATE_BUFFER
+		EXTEND_TOP "ar4000.bcs" ".../stratagems-inline/rep_penalty.baf" EVALUATE_BUFFER
+	
+	END
+	
+	// main payload
+
+	CREATE spl "%spl_subrace_drow%"
+		LPF add_basic_spell_ability END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 timing=1 STR_VAR resource="%spl_subrace_drow%" END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=166 target=2 parameter1=base+inc parameter2=1 timing=9 END // MR
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 timing=9 STR_VAR resource="%spl_light_sensitivity%" END	// light sensitivity
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=265 target=2 timing=9 parameter1="1" parameter2=1 STR_VAR resource=dw-rep-2 END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=171 target=2 timing=9 STR_VAR resource="%spl_faerie_fire%" END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=318 target=2 timing=9 STR_VAR resource="%spl_web_of_lolth%" END // for Lolth cleric kit
+		LPF CLONE_EFFECT INT_VAR multi_match=1 match_opcode=171 END
+		LPF CLONE_EFFECT INT_VAR multi_match=1 match_opcode=171 END
+
+
+	CREATE spl "%spl_subrace_drow_recurring%"
+		LPF add_basic_spell_ability END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=166 target=2 parameter1=inc parameter2=0 timing=9 END
+
+
+	
+	// install the tables
+	
+	LAF add_to_subrace_tables
+		STR_VAR subrace_table=elves
+				disabled=ELF_WINGED
+				table_path
+	END
+
+
+
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+DEFINE_ACTION_FUNCTION gnome_subraces BEGIN
+
+	// set existing gnome resistances to a flat +2
+	
+	COPY_EXISTING "savecng.2da" override
+		COUNT_2DA_COLS colcount
+		COUNT_2DA_ROWS colcount rowcount 
+		FOR (row=0;row<rowcount;++row) BEGIN
+			READ_2DA_ENTRY row 0 colcount savetype
+			PATCH_MATCH "%savetype%" WITH
+				WANDS SPELL BEGIN
+					FOR (col=1;col<colcount;++col) BEGIN
+						SET_2DA_ENTRY row col colcount 2
+					END
+				END
+				DEFAULT
+				END
+		END
+	BUT_ONLY
+	
+	// add 'svirfneblin' to race.ids (only present on IWDEE atm)
+	
+	COPY_EXISTING "race.ids" override
+	ACTION_IF !FILE_CONTAINS "override/race.ids" "svirfneblin" BEGIN
+		APPEND "race.ids" "163 SVIRFNEBLIN"
+		COPY_EXISTING "race.ids" override
+			PRETTY_PRINT_2DA
+		CLEAR_IDS_MAP
+	END
+
+	// attack bonuses against various creature types
+	
+	ACTION_FOR_EACH race IN 
+	goblin kobold hobgoblin BEGIN
+		OUTER_SPRINT $gnome_attack_bonus("%race%") EVAL "%eff_gnome_attack_bonus_%race%%"
+	END
+		ACTION_PHP_EACH gnome_attack_bonus AS race=>effect BEGIN
+		CREATE eff "%effect%"
+			WRITE_LONG 0x10 178
+			WRITE_LONG 0x14 2
+			WRITE_LONG 0x1c IDS_OF_SYMBOL (race "%race%")
+			WRITE_LONG 0x20 4
+			WRITE_LONG 0x24 9
+			WRITE_LONG 0x60 1
+	END
+
+	// on IWDEE, impose gnomish AC advantages vs giants
+	
+	ACTION_IF GAME_IS iwdee BEGIN
+		COPY_EXISTING_REGEXP ".*\.cre" override
+			READ_BYTE 0x272 race
+			PATCH_MATCH "%race%" WITH
+			199 142 113 BEGIN
+				LPF ADD_CRE_EFFECT INT_VAR opcode=177 target=2 timing=9 STR_VAR resource=giant3 END
+			END
+			DEFAULT
+			END
+		BUT_ONLY
+	END
+	COPY "%MOD_FOLDER%/%component_loc%/resource/giant3.eff" override
+
+	// applicator spell
+
+	LAF resolve_statdesc INT_VAR strref=RESOLVE_STR_REF (@603) STR_VAR bam="dwicosm" location=icon RET stat_num END
+
+	
+	CREATE spl "%spl_subrace_rock_gnome%"
+		LPF add_basic_spell_ability END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 timing=1 STR_VAR resource="%spl_subrace_rock_gnome%" END
+		// +1 to hit vs goblins and kobolds
+		PATCH_FOR_EACH race IN goblin hobgoblin kobold BEGIN
+			SPRINT resource $gnome_attack_bonus("%race%")
+			LPF ADD_SPELL_EFFECT INT_VAR target=2 opcode=177 timing=1 STR_VAR resource END
+		END
+		// small-size AC modifier
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=0 target=2 timing=9 parameter1=1 END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=142 target=2 timing=9 parameter2=stat_num END
+		// lore bonus
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=21 target=2 timing=9 parameter1=40 END
+
+	
+	
+
+	////////////////////////////////////
+	// Resources - svirfneblin
+	////////////////////////////////////
+
+	LAF check_ini STR_VAR ini=Svirf_MR_base RET base=value END
+	LAF check_ini STR_VAR ini=Svirf_MR_inc RET inc=value END
+	LAF check_ini STR_VAR ini=svirf_light_sensitivity RET sens=value END
+
+	// svirfneblin spells
+
+	COPY_EXISTING "%WIZARD_BLINDNESS%.spl" "override/%spl_svirfneblin_blindness%.spl" 
+		WRITE_SHORT 0x1c 4
+		SAY 0x50 @708
+		LPF ALTER_SPELL_HEADER INT_VAR location=4 speed=1 END
+
+	COPY_EXISTING "%WIZARD_BLUR%.spl" "override/%spl_svirfneblin_blur%.spl" 
+		WRITE_SHORT 0x1c 4
+		SAY 0x50 @709
+		LPF ALTER_SPELL_HEADER INT_VAR location=4 speed=1 END
+
+	// svirfneblin payload spell (light sensitivity, magic resistance, nondetection, innate spells, small size, save bonus)
+	
+	LAF resolve_statdesc INT_VAR strref=RESOLVE_STR_REF (@603) STR_VAR bam="dwicosm" location=icon RET stat_num END
+	
+	CREATE spl "%spl_subrace_svirfneblin%"
+		LPF add_basic_spell_ability END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 timing=1 STR_VAR resource="%spl_subrace_svirfneblin%" END
+		PATCH_IF sens BEGIN
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 timing=9 STR_VAR resource="%spl_light_sensitivity%" END	// light sensitivity
+		END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=171 target=2 timing=9 STR_VAR resource="%spl_svirfneblin_blindness%" END // blindness
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=171 target=2 timing=9 STR_VAR resource="%spl_svirfneblin_blur%" END // blindness
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=34 target=2 parameter1=2 timing=9 END // save bonuses
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=37 target=2 parameter1=2 timing=9 END 
+		// small-size AC modifier
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=0 target=2 timing=9 parameter1=1 END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=142 target=2 timing=9 parameter2=stat_num END
+		// nondetection
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=69 target=2 timing=9 END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=142 target=2 timing=9 parameter2=31 END
+		// magic resistance
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=166 target=2 parameter1=base+inc parameter2=1 timing=9 END // MR	
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=142 target=2 timing=9 parameter2=63 END
+
+	CREATE spl "%spl_subrace_svirfneblin_recurring%"
+		LPF add_basic_spell_ability END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=166 target=2 parameter1=inc parameter2=0 timing=9 END
+	
+
+	
+	// swap out the main gnome description string 
+	
+	STRING_SET_EVALUATE race_desc_GNOME @802
+	
+	// install the tables
+	
+	LAF add_to_subrace_tables
+		STR_VAR subrace_table=gnomes
+				table_path
+	END
+
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION dwarf_halfling_subraces BEGIN
+
+	// set existing dwarf/halfling resistances to a flat +2
+	
+	COPY_EXISTING "savecndh.2da" override
+		COUNT_2DA_COLS colcount
+		COUNT_2DA_ROWS colcount rowcount 
+		FOR (row=0;row<rowcount;++row) BEGIN
+			READ_2DA_ENTRY row 0 colcount savetype
+			PATCH_MATCH "%savetype%" WITH
+				DEATH WANDS SPELL BEGIN
+					FOR (col=1;col<colcount;++col) BEGIN
+						SET_2DA_ENTRY row col colcount 2
+					END
+				END
+				DEFAULT
+				END
+		END
+	BUT_ONLY
+	
+	// on IWDEE, impose dwarven/halfling AC advantages vs giants
+	
+	ACTION_IF GAME_IS iwdee BEGIN
+		COPY_EXISTING_REGEXP ".*\.cre" override
+			READ_BYTE 0x272 race
+			PATCH_MATCH "%race%" WITH
+			199 142 113 BEGIN
+				LPF ADD_CRE_EFFECT INT_VAR opcode=177 target=2 timing=9 STR_VAR resource=giant1 END
+				LPF ADD_CRE_EFFECT INT_VAR opcode=177 target=2 timing=9 STR_VAR resource=giant2 END
+			END
+			DEFAULT
+			END
+		BUT_ONLY
+	END
+	COPY "%MOD_FOLDER%/%component_loc%/resource/giant1.eff" override
+		 "%MOD_FOLDER%/%component_loc%/resource/giant2.eff" override
+	
+	////////////////////////////////////
+	// effects to give +1 to hit against various creature types
+	////////////////////////////////////
+	
+	ACTION_FOR_EACH race IN 
+	goblin orc hobgoblin beholder mind_flayer carrioncrawler slime BEGIN
+		OUTER_SPRINT $dwarf_attack_bonus("%race%") EVAL "%eff_dwarf_attack_bonus_%race%%"
+	END
+	ACTION_PHP_EACH dwarf_attack_bonus AS race=>effect BEGIN
+		CREATE eff "%effect%"
+			WRITE_LONG 0x10 178
+			WRITE_LONG 0x14 2
+			WRITE_LONG 0x1c IDS_OF_SYMBOL (race "%race%")
+			WRITE_LONG 0x20 4
+			WRITE_LONG 0x24 9
+			WRITE_LONG 0x60 1
+	END
+	
+	////////////////////////////////////
+	// the applicator spell - shield dwarves
+	////////////////////////////////////
+	
+	CREATE spl "%spl_subrace_shield_dwarf%"
+		LPF add_basic_spell_ability END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 timing=1 STR_VAR resource="%spl_subrace_shield_dwarf%" END
+		// +1 to hit vs orcs, goblins, hobgoblins
+		PATCH_FOR_EACH race IN goblin orc hobgoblin BEGIN
+			SPRINT resource $dwarf_attack_bonus("%race%")
+			LPF ADD_SPELL_EFFECT INT_VAR target=2 opcode=177 timing=1 STR_VAR resource END
+		END
+	
+	////////////////////////////////////
+	// gold dwarves
+	////////////////////////////////////
+	
+	CREATE spl "%spl_subrace_gold_dwarf%"
+		LPF add_basic_spell_ability END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 timing=1 STR_VAR resource="%spl_subrace_gold_dwarf%" END
+		// +1 to hit vs aberrations
+		PATCH_FOR_EACH race IN beholder mind_flayer slime carrioncrawler BEGIN
+			SPRINT resource $dwarf_attack_bonus("%race%")
+			LPF ADD_SPELL_EFFECT INT_VAR target=2 opcode=177 timing=1 STR_VAR resource END
+		END		
+
+	////////////////////////////////////
+	// Resources- duergar
+	////////////////////////////////////
+
+	// Duergar invisibility spell
+	
+	COPY_EXISTING "%WIZARD_INVISIBILITY%.spl" "override/%spl_duergar_invisibility%.spl" 
+		WRITE_SHORT 0x1c 4
+		SAY 0x50 @706
+		LPF ALTER_SPELL_HEADER INT_VAR location=4 speed=0 target=5 END
+		LPF ALTER_EFFECT INT_VAR target=1 END
+
+	LAF resolve_statdesc INT_VAR strref=RESOLVE_STR_REF (@601) STR_VAR bam="dwico23" location=icon RET stat_num END	
+
+	// Duergar payload spell (light sensitivity, save bonus, grant spell, immune to paralysis)
+	
+	CREATE spl "%spl_subrace_duergar%"
+		LPF add_basic_spell_ability END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 timing=1 STR_VAR resource="%spl_subrace_duergar%" END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 timing=9 STR_VAR resource="%spl_light_sensitivity%" END	// light sensitivity
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=171 target=2 timing=9 STR_VAR resource="%spl_duergar_invisibility%" END // invisibility
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=33 target=2 parameter1=2 timing=9 END // save bonuses
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=34 target=2 parameter1=2 timing=9 END 
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=37 target=2 parameter1=2 timing=9 END 
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=142 target=2 timing=9 parameter2=stat_num END	// save-bonus icon
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=101 target=2 timing=9 parameter2=109 END // 'hold' opcode
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=101 target=2 timing=9 parameter2=175 END // paralysis opcode
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=169 target=2 timing=9 parameter2=13 END // 'held' icon
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=296 target=2 timing=9 STR_VAR resource=paralh END // 'paralysed' animation
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=267 target=2 timing=9 parameter1=14102 END // 'held' string
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=267 target=2 timing=9 parameter1=14650 END // 'paralysed' string
+		PATCH_IF is_iwd BEGIN
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=267 target=2 timing=9 parameter1=35542 END // IWDEE 'held' string
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=267 target=2 timing=9 parameter1=35606 END // IWDEE 'paralysed' string
+		END
+	
+	////////////////////////////////////
+	// general halfling tweaks to give +1 to attacks with thrown weapons
+	////////////////////////////////////
+	
+	COPY_EXISTING "racethac.2da" override
+		COUNT_2DA_COLS colcount
+		COUNT_2DA_ROWS colcount rowcount
+		FOR (col=1;col<colcount;++col) BEGIN
+			READ_2DA_ENTRY 0 (col - 1) (colcount - 1) race
+			PATCH_IF "%race%" STRING_EQUAL_CASE "HALFLING" BEGIN
+				halfling_col=col
+			END
+		END
+		FOR (row=0;row<rowcount;++row) BEGIN
+			READ_2DA_ENTRY row 1 colcount label
+			PATCH_MATCH "%label%" WITH
+				dart sling BEGIN
+					SET_2DA_ENTRY row halfling_col colcount 1
+				END
+				DEFAULT
+			END
+		END
+	BUT_ONLY
+	
+	LAF resolve_splprot_entry INT_VAR stat=0x10c value="-1" STR_VAR relation="not_equal" RET splprot_num=value END
+	COPY_EXISTING_REGEXP ".*\.itm" override
+		READ_LONG 0x8 name
+		PATCH_IF (name = 6697 || name = 6724) BEGIN
+			LPF ADD_ITEM_EQEFFECT INT_VAR opcode=318 target=2 timing=2 insert_point=99 parameter1=IDS_OF_SYMBOL (race halfling) parameter2=splprot_num STR_VAR resource="%SOURCE_RES%" END
+			LPF ADD_ITEM_EQEFFECT INT_VAR opcode=54 target=2 timing=2 insert_point=99 parameter1=1 END
+		END
+	BUT_ONLY
+	
+	////////////////////////////////////
+	// lightfoot halflings
+	////////////////////////////////////
+	
+	LAF resolve_statdesc INT_VAR strref=RESOLVE_STR_REF (@602) STR_VAR bam="dwicosm" location=icon RET stat_num END
+	
+	CREATE spl "%spl_subrace_lightfoot_halfling%"
+		LPF add_basic_spell_ability END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 timing=1 STR_VAR resource="%spl_subrace_lightfoot_halfling%" END
+		// saving throw modifier
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=33 target=2 timing=9 parameter1="-1" END// cancel dwarf bonuses, add luck
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=34 target=2 timing=9 parameter1="-1" END 
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=35 target=2 timing=9 parameter1=1 END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=36 target=2 timing=9 parameter1=1 END 
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=37 target=2 timing=9 parameter1="-1" END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=142 target=2 timing=9 parameter2=stat_num END
+		// halfling AC modifier
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=0 target=2 timing=9 parameter1=1 END
+
+	
+	////////////////////////////////////
+	// strongheart halflings
+	////////////////////////////////////
+	
+	CREATE spl "%spl_subrace_strongheart_halfling%"
+		LPF add_basic_spell_ability END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 timing=1 STR_VAR resource="%spl_subrace_strongheart_halfling%" END
+		// saving throw modifier
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=33 target=2 timing=9 parameter1="-2" END// cancel dwarf bonuses
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=34 target=2 timing=9 parameter1="-2" END 
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=37 target=2 timing=9 parameter1="-2" END
+		// halfling AC modifier
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=0 target=2 timing=9 parameter1=1 END
+
+	
+	////////////////////////////////////
+	//ghostwise halflings
+	////////////////////////////////////
+
+	CREATE spl "%spl_subrace_ghostwise_halfling%"
+		LPF add_basic_spell_ability END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 timing=1 STR_VAR resource="%spl_subrace_ghostwise_halfling%" END
+		// saving throw modifier
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=33 target=2 timing=9 parameter1="-2" END// cancel dwarf bonuses
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=34 target=2 timing=9 parameter1="-2" END 
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=37 target=2 timing=9 parameter1="-2" END
+		// halfling AC modifier
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=0 target=2 timing=9 parameter1=1 END
+		// 1/day barbarian rage
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=171 target=2 timing=9 STR_VAR resource="SPCL152" END
+	
+	
+		
+	
+	// swap out the main dwarf-description and halfling-description strings 
+	
+	STRING_SET_EVALUATE race_desc_DWARF @801
+	STRING_SET_EVALUATE race_desc_HALFLING @803
+	// install the tables
+	
+	LAF add_to_subrace_tables
+		STR_VAR subrace_table=dwarves_halflings
+				table_path
+	END
+
+	
+	
+END
+
+DEFINE_ACTION_FUNCTION subrace_resources_underdark BEGIN
+	
+	/////////////////////////////////////
+	// general light-sensitivity
+	/////////////////////////////////////
+	
+	LAF resolve_splprot_entry INT_VAR stat=0x106 value="-1" relation_number=11 RET outdoor_value=value END // when NOT outdoor
+	
+	LAF resolve_statdesc INT_VAR strref=RESOLVE_STR_REF (@700) STR_VAR bam="dwico137" location=icon RET stat_num END
+
+	
+	// the applicator spell - repeats 1/sec, applies payload spell if outdoors in the day
+	CREATE spl "%spl_light_sensitivity%"
+		LPF add_basic_spell_ability END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=326 timing=4 duration=1 target=2 STR_VAR resource="%spl_light_sensitivity%" END // reapply after 1 second
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=318 target=2 duration=1 parameter2=90 STR_VAR resource="%spl_light_sensitivity_subspell_1%" END // immunity to payload before dawn or after dusk
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=318 target=2 duration=1 parameter1=0b11 parameter2=outdoor_value STR_VAR resource="%spl_light_sensitivity_subspell_1%" END  // immunity to payload outdoors
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=146 target=2 timing=1 parameter2=1 STR_VAR resource="%spl_light_sensitivity_subspell_1%" END // apply payload
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 timing=1 parameter1=0b11 parameter2=outdoor_value STR_VAR resource="%spl_light_sensitivity_subspell_3%" END //remove payload
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 timing=1 parameter2=90 STR_VAR resource="%spl_light_sensitivity_subspell_3%" END
+		
+
+	// the payload spell - 1 round blindness, then apply dazzle effect
+	
+	CREATE spl "%spl_light_sensitivity_subspell_1%"
+		LPF add_basic_spell_ability END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=139 target=2 parameter1=14674 /* blinded */ timing=1 END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=74 target=2 duration=6 END // blindness
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=146 target=2 timing=4 duration=6 parameter2=1 STR_VAR resource="%spl_light_sensitivity_subspell_2%" END // dazzle effect
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=318 target=2 timing=1 STR_VAR resource="%spl_light_sensitivity_subspell_1%" END // immunity to subsequent iterations
+
+	
+	// the dazzle effect
+	
+	CREATE spl "%spl_light_sensitivity_subspell_2%"
+		LPF add_basic_spell_ability END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=278 target=2 duration=999999 parameter1="-2" END // -2 to hit
+		LPF CLONE_EFFECT INT_VAR opcode=325 match_opcode=278 END //-2 to saves
+		LPF CLONE_EFFECT INT_VAR opcode=15 match_opcode=278 END //-2 to Dex
+		LPF CLONE_EFFECT INT_VAR opcode=142 match_opcode=278 parameter1=0 parameter2=stat_num END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=139 target=2 parameter1=RESOLVE_STR_REF (@700) END // 'dazzled'
+
+
+	// remove initial spell and dazzle effect
+	
+	CREATE spl "%spl_light_sensitivity_subspell_3%"
+		LPF add_basic_spell_ability END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 timing=1 STR_VAR resource="%spl_light_sensitivity_subspell_1%" END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 timing=1 STR_VAR resource="%spl_light_sensitivity_subspell_2%" END
+
+	
+
+
+	/////////////////////////////////////
+	// install races
+	/////////////////////////////////////
+
+	
+	LAF add_to_subrace_tables
+		STR_VAR race_table=underdark_races
+				table_path
+	END
+
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION assign_npc_subraces BEGIN
+
+
+	OUTER_SET subrace_stat=134
+	LAF 2da_read STR_VAR file=dw_subrace_ids.2da path="%data_loc_shared%" case=lower RET_ARRAY subrace_id_array=array END
+
+	LAF array_read STR_VAR file=npc_subraces.txt location=data RET_ARRAY npc_array=array END
+	ACTION_CLEAR_ARRAY npc_subraces 
+	ACTION_PHP_EACH npc_array AS dv=>subrace BEGIN
+		ACTION_TO_LOWER dv
+		ACTION_IF VARIABLE_IS_SET $sfo_joinable_dvs("%dv%") BEGIN
+			OUTER_SPRINT $npc_subraces("%dv%") "%subrace%"
+		END
+	
+	END
+
+	COPY_EXISTING_REGEXP ".*\.cre" override
+		READ_ASCII 0x280 dv
+		TO_LOWER dv
+		PATCH_IF VARIABLE_IS_SET $npc_subraces("%dv%") BEGIN
+			SPRINT subrace_ident $npc_subraces("%dv%")
+			PATCH_IF VARIABLE_IS_SET $subrace_id_array("%subrace_ident%" "subrace_id") BEGIN
+				SET parameter1=$subrace_id_array("%subrace_ident%" "subrace_id")
+				LPF ADD_CRE_EFFECT INT_VAR opcode=233 target=2 timing=9 parameter1 parameter2=subrace_stat END
+			END
+		END
+	BUT_ONLY
+
+
+////////////////////////////////////////////////////////////////////////////////
+DEFINE_ACTION_FUNCTION wizard_slayer_restrictions BEGIN
+
+
+	LAF virtual_class_setup END
+	
+	LAF exclude_subrace STR_VAR kit=WIZARD_SLAYER subrace="ELF_DROW GNOME_DEEP" END
+	
+	// documentation
+	
+	OUTER_SPRINT extra @70
+	OUTER_SPRINT disadvantages @71	
+	LAF 2daq_extract INT_VAR rowname_column=1 STR_VAR resref=kitlist row=WIZARD_SLAYER column=help RET desc_strref=value END
+	ACTION_GET_STRREF desc_strref desc
+	OUTER_PATCH_SAVE desc "%desc%" BEGIN
+		REPLACE_TEXTUALLY "\(%disadvantages%.*[%WNL%%LNL%%MNL]\)\([^A-Za-z0-9]+\)\([A-Za-z0-9].*\)" "\1\2%extra%%WNL%\2\3" 
+	END
+	STRING_SET_EVALUATE desc_strref "%desc%"
+
+
+END
+
+
+END
+
+
+////////////////////////////////////////////////////////////////////////////////
+DEFINE_ACTION_FUNCTION update_race_recognition BEGIN
+
+
+
+	// bulk collect files to swap on
+
+	COPY_EXISTING_REGEXP - ".*\.dlg" nowhere
+			PATCH_IF INDEX_BUFFER ("Race(")>=0 BEGIN
+				SPRINT $race_dlg("%SOURCE_RES%") ""
+			END
+	BUT_ONLY
+	COPY_EXISTING_REGEXP - ".*\.bcs" nowhere
+		DECOMPILE_AND_PATCH BEGIN
+			PATCH_IF INDEX_BUFFER ("Race(")>=0 BEGIN
+				SPRINT $race_bcs("%SOURCE_RES%") ""
+			END
+		END
+	BUT_ONLY
+
+	// dwarf to duergar
+	
+	OUTER_SPRINT match "Race(\([^,]*\),DWARF)"
+	OUTER_SPRINT replace "OR()Race(\1,DWARF)|Race(\1,DUERGAR)"	
+
+	ACTION_PHP_EACH race_bcs AS script=>discard BEGIN
+		LAF disjunctive_substitution_bcs STR_VAR script match replace END
+	END
+	ACTION_PHP_EACH race_dlg AS dialog=>discard BEGIN
+		LAF disjunctive_substitution_dlg STR_VAR dialog match replace END
+	END
+	
+	// gnome to svirfneblin
+
+	OUTER_SPRINT match "Race(\([^,]*\),GNOME)"
+	OUTER_SPRINT replace "OR()Race(\1,GNOME)|Race(\1,SVIRFNEBLIN)"
+
+	ACTION_PHP_EACH race_bcs AS script=>discard BEGIN
+		LAF disjunctive_substitution_bcs STR_VAR script match replace END
+	END
+	ACTION_PHP_EACH race_dlg AS dialog=>discard BEGIN
+		LAF disjunctive_substitution_dlg STR_VAR dialog match replace END
+	END
+
+	// human to aasimar/genasi/tiefling
+
+	OUTER_SPRINT match "Race(\([^,]*\),HUMAN)"
+	OUTER_SPRINT replace "OR()Race(\1,HUMAN)|Race(\1,AASIMAR)|Race(\1,GENIE)|Race(\1,TIEFLING)"	
+
+	ACTION_PHP_EACH race_bcs AS script=>discard BEGIN
+		LAF disjunctive_substitution_bcs STR_VAR script match replace END
+	END
+	ACTION_PHP_EACH race_dlg AS dialog=>discard BEGIN
+		LAF disjunctive_substitution_dlg STR_VAR dialog match replace END
+	END
+	
+END

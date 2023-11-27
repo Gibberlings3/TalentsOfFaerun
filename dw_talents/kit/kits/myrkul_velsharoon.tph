@@ -1,0 +1,164 @@
+DEFINE_ACTION_FUNCTION myrkul_velsharoon_cleric BEGIN
+
+    LAF myrkul_velsharoon_shared END
+	OUTER_SPRINT kit DW_MYRKUL_VELSHAROON_CLERIC
+	LAF splconv_get_name STR_VAR spell="%CLERIC_ANIMATE_DEAD%" new_type=innate RET spl_myrkul_animate_dead=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_DOLOROUS_DECAY%" new_type=innate RET spl_myrkul_dolorous_decay=new_resref END		
+	LAF splconv_get_name STR_VAR spell="%CLERIC_WITHER%" new_type=innate RET spl_myrkul_wither=new_resref END
+
+	kit.copy[CLERIC=>%kit%]
+	[
+		k.kit_apply_powers{%spl_myrkul_command% 1,%spl_myrkul_npp% 7}
+		k.kit_grant_powers{%spl_myrkul_animate_dead% 3 5,%spl_myrkul_dolorous_decay% 9,%spl_myrkul_wither% 12}
+		k_color_metal=35
+		k_color_minor_cloth=43
+		k_color_main_cloth=30
+		k_color_leather=25
+		k_color_armor=80	
+		k.kit_set_alignment{le ne ce}
+		IF {is_iwd}
+		{{
+			k_bio:=@1026
+			k_name:=@70
+			k_description:=@71
+		}}
+		ELSE
+		{{
+			k_name:=@72
+			k_description:=@73
+		}}
+	]
+	
+	LAF cleric_kit_substitutions STR_VAR kit god=myrkul_velsharoon END
+
+	LAF assign_spheres STR_VAR kit default=cleric subtract="good healing" END
+	LAF holy_symbol INT_VAR name=2021 follower=2022 STR_VAR kit desc_bam=dwvelphl inv_bam=dwvelihl bam_path=dr kit END
+	LAF adjust_cleric_stronghold STR_VAR talos="n_e c_e" helm="l_e" kit END
+	LAF assign_bonus_spells STR_VAR kit spells="CHILL_TOUCH GHOUL_TOUCH SKULL_TRAP SOUL_EATER CREATE_BONEGUARD" END  
+
+END
+
+DEFINE_ACTION_FUNCTION necromancer_of_myrkul_velsharoon BEGIN
+
+    LAF myrkul_velsharoon_shared END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_ANIMATE_DEAD%" new_type=innate RET spl_myrkul_animate_dead=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_DOLOROUS_DECAY%" new_type=innate RET spl_myrkul_dolorous_decay=new_resref END		
+	LAF splconv_get_name STR_VAR spell="%CLERIC_WITHER%" new_type=innate RET spl_myrkul_wither=new_resref END
+	OUTER_SPRINT kit DW_MYRKUL_VELSHAROON_NECROMANCER
+	kit.copy[CLERIC_MAGE=>%kit%]
+	[
+		k.kit_apply_powers{%spl_myrkul_command% 1,%spl_myrkul_npp% 7|class=cleric}
+		k.kit_grant_powers{%spl_myrkul_animate_dead% 3 4,%spl_myrkul_dolorous_decay% 9,%spl_myrkul_wither% 1|class=cleric}
+		k_color_minor_cloth=43
+		k_color_main_cloth=30
+		k.kit_set_alignment{le ne ce}
+		IF {is_iwd}
+		{{
+			k_bio:=@1026
+			k_name:=@120
+			k_description:=@121
+		}}
+		ELSE
+		{{
+			k_name:=@122
+			k_description:=@123
+		}}
+	]
+	LAF cleric_kit_substitutions STR_VAR kit god=myrkul_velsharoon END
+
+	LAF assign_spheres INT_VAR update_scroll_usability=0 STR_VAR kit default=cleric subtract="good healing" END
+	LAF holy_symbol INT_VAR name=2021 follower=2022 STR_VAR kit desc_bam=dwvelphl inv_bam=dwvelihl bam_path=dr kit END
+	LAF adjust_cleric_stronghold STR_VAR talos="n_e c_e" helm="l_e" kit END
+	LAF assign_bonus_spells STR_VAR kit spells="CHILL_TOUCH GHOUL_TOUCH SKULL_TRAP SOUL_EATER CREATE_BONEGUARD" class=cleric END  
+ 
+ 	LAF make_multiclass_specialist STR_VAR kit school=necromancy END
+	LAF set_multiclass_components STR_VAR kit components="DW_MYRKUL_VELSHAROON_CLERIC NECROMANCER"  END
+
+ 
+END
+
+DEFINE_ACTION_FUNCTION myrkul_velsharoon_favored_soul BEGIN
+
+	LAF myrkul_velsharoon_shared END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_ANIMATE_DEAD%" new_type=innate RET spl_myrkul_animate_dead=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_DOLOROUS_DECAY%" new_type=innate RET spl_myrkul_dolorous_decay=new_resref END		
+	LAF splconv_get_name STR_VAR spell="%CLERIC_WITHER%" new_type=innate RET spl_myrkul_wither=new_resref END
+	
+	// make the main kit
+	
+	OUTER_SPRINT kit "DW_MYRKUL_VELSHAROON_FAVORED"
+	ACTION_IF is_iwd BEGIN
+		OUTER_SET name=4058
+		OUTER_SET desc=4059
+		OUTER_SET god=4061
+	END ELSE BEGIN
+		OUTER_SET name=4070
+		OUTER_SET desc=4071
+		OUTER_SET god=4073
+	END
+	
+	LAF build_favored_soul_kit INT_VAR name desc god god_gender=4005 god_temple=4060 STR_VAR kit copy_from=DW_MYRKUL_VELSHAROON_CLERIC END
+	LAF cleric_kit_substitutions STR_VAR kit god=myrkul_velsharoon END
+
+	kit.edit[%kit%|edit_strrefs_in_place:i=1]
+	[
+		k.kit_apply_powers{%spl_myrkul_command% 1,%spl_myrkul_npp% 7}
+		k.kit_grant_powers{%spl_myrkul_animate_dead% 3 4,%spl_myrkul_dolorous_decay% 9,%spl_myrkul_wither% 12}
+	]
+
+	// spell choices
+
+	LAF assign_bonus_spells STR_VAR kit spells="WIZARD_CHILL_TOUCH WIZARD_GHOUL_TOUCH WIZARD_SKULL_TRAP CLERIC_CLOUD_OF_PESTILENCE CLERIC_RAISE_DEAD WIZARD_SOUL_EATER WIZARD_CREATE_BONEGUARD" END 
+
+END
+
+DEFINE_ACTION_FUNCTION myrkul_velsharoon_shared BEGIN
+
+	LAF check_label STR_VAR label=dw#myrkul_velsharoon_shared RET value END
+	ACTION_IF !value BEGIN
+		
+		LAF include STR_VAR file=log_favored_weapon.tph locbase=shared END
+		ACTION_IF is_iwd BEGIN
+			OUTER_SPRINT weapon halberd
+		END ELSE BEGIN
+			OUTER_SPRINT weapon quarterstaff		
+		END
+		LAF log_favored_weapon STR_VAR god=MYRKUL_VELSHAROON weapon END
+
+
+		LAF make_label STR_VAR label=dw#myrkul_velsharoon_shared END
+		
+		// +2 to command undead
+		
+		spl.make[%spl_myrkul_command%]
+		[
+			m.ab.add{}
+			m.ab_fx.add{s_opcode=323 s_target=2 s_timing=9 s_parameter1=2}
+		]
+		
+		// permanent NPP
+		
+		spl.copy[%CLERIC_NEGATIVE_PLANE_PROTECTION%=>%spl_myrkul_npp%]
+		[
+			m.ab_fx.delete{s_opcode=174 OR s_opcode=215}
+			m.ab_fx.alter{s_timing=9 s_duration=0}
+			m_casting_animation=0
+			m_completion_sound:=""
+		]
+
+		// other innates
+	
+		LAF splconv STR_VAR spell="%CLERIC_ANIMATE_DEAD%" new_type=innate RET_ARRAY splconv_array END
+		LAF splconv STR_VAR spell="%CLERIC_DOLOROUS_DECAY%" new_type=innate RET_ARRAY splconv_array END		
+		LAF splconv STR_VAR spell="%CLERIC_WITHER%" new_type=innate RET_ARRAY splconv_array END
+
+		// make granted extra spells, in case kit not installed
+		
+		ACTION_FOR_EACH spell IN CHILL_TOUCH GHOUL_TOUCH SKULL_TRAP SOUL_EATER CREATE_BONEGUARD BEGIN
+			LAF splconv STR_VAR spell new_type=priest RET_ARRAY splconv_array END
+		END
+
+
+	END
+
+END

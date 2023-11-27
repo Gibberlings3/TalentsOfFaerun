@@ -1,0 +1,119 @@
+DEFINE_ACTION_FUNCTION holy_symbol
+	INT_VAR name=0
+			follower=0
+			category=10
+	STR_VAR inv_bam=""
+			desc_bam=""
+			bam_path=""
+			kit=""
+BEGIN
+	SILENT
+	ACTION_IF is_bg2 BEGIN
+		// get data
+		LAF resolve_splprot_entry INT_VAR stat=152 value="-1" STR_VAR relation=equal RET stat_ind_equal=value END
+		LAF kit_get_id STR_VAR kit RET kit_id END
+		// build the spells
+		OUTER_SPRINT resref "dw-hs%kit_id%"
+		COPY_EXISTING "CDHLYSYM.spl" "override/%resref%.spl"
+			WRITE_SHORT 0x1c category
+			LPF DELETE_EFFECT INT_VAR match_opcode=326 END// clear out our own extra effects in CDHLYSYM
+			LPF ALTER_EFFECT INT_VAR match_opcode=122 STR_VAR resource="%resref%" END
+
+		COPY_EXISTING "CDHLYSYM.spl" override
+			LPF ADD_SPELL_EFFECT INT_VAR insert_point=0 opcode=318 target=1 timing=0 duration=1 STR_VAR resource=cdhlysym END
+			LPF ADD_SPELL_EFFECT INT_VAR insert_point=0 opcode=326 target=1 timing=9 parameter1=kit_id parameter2=stat_ind_equal STR_VAR resource="%resref%" END
+		BUT_ONLY
+		
+		// sort out the item itself
+		OUTER_SPRINT desc @10013
+		OUTER_PATCH_SAVE desc "%desc%" BEGIN
+			SPRINT follower_text (AT follower)
+			REPLACE_TEXTUALLY "FOLLOWER_PLACEHOLDER" "%follower_text%"
+		END
+		// build the symbol itself
+		ACTION_IF !FILE_EXISTS_IN_GAME "%resref%.itm" BEGIN
+			itm.copy[belt12=>%resref%]
+			[
+				m_identified_name:=(AT name)
+				m_identified_description:="%desc%"
+				m_icon:="%inv_bam%"
+				m_desc_image:="%desc_bam%"
+				m.fx.add{s_opcode=319 s_target=2 s_timing=2 s_power=1 s_parameter1:="%kit_id%" s_parameter2=9}
+			]
+			ACTION_FOR_EACH bam IN "%inv_bam%" "%desc_bam%" BEGIN
+				ACTION_IF FILE_EXISTS "%MOD_FOLDER%/%component_loc%/%bam_path%/%bam%.bam" BEGIN
+					COPY "%MOD_FOLDER%/%component_loc%/%bam_path%/%bam%.bam" override
+				END
+			END
+		END
+		
+	END
+	VERBOSE
+
+END
+
+DEFINE_ACTION_FUNCTION adjust_cleric_stronghold
+	STR_VAR lathander=""
+			helm=""
+			talos=""
+			kit=""
+BEGIN
+  ACTION_IF is_bg2 BEGIN
+	// sanity
+	ACTION_IF "%kit%" STRING_EQUAL_CASE "" BEGIN
+		FAIL "No kit set for adjust_cleric_strongholds" 
+	END
+	ACTION_FOR_EACH god IN lathander helm talos BEGIN
+		OUTER_SPRINT list "%%god%%"
+		ACTION_MATCH "%list%" WITH
+		"" BEGIN
+		// no entry here
+		END
+		"all" BEGIN
+			OUTER_SPRINT or_line ""
+			OUTER_SPRINT condition_list ""
+			LAF extend INT_VAR inline=1 STR_VAR script=ar0900 bottom=cleric_stronghold_adjust END
+		END
+		DEFAULT
+			OUTER_SET count=0
+			OUTER_SPRINT condition_list ""
+			OUTER_WHILE "%list%" STRING_COMPARE "" BEGIN
+				LAF return_first_entry STR_VAR list RET entry list END
+				OUTER_PATCH_SAVE alignment "%entry%" BEGIN
+					// this is more delicate than it looks
+					REPLACE_TEXTUALLY n_n n
+					REPLACE_TEXTUALLY c CHAOTIC // does not contain n, g, l, or e
+					REPLACE_TEXTUALLY g GOOD // does not contain n, l or e
+					REPLACE_TEXTUALLY l LAWFUL // does not contain n or e
+					REPLACE_TEXTUALLY e EVIL // does not contain n
+					REPLACE_TEXTUALLY n NEUTRAL
+				END
+				OUTER_SPRINT condition_list "%condition_list%Alignment(Player1,%alignment%)"
+				OUTER_SET count +=1
+			END
+			ACTION_IF count=1 BEGIN
+				OUTER_SPRINT or_line ""
+			END ELSE BEGIN
+				OUTER_SPRINT or_line "OR(%count%)"
+			END					
+			LAF extend INT_VAR inline=1 STR_VAR script=ar0900 bottom=cleric_stronghold_adjust END
+		END
+	END
+  END
+
+
+
+END
+
+<<<<<<<< .../stratagems-inline/cleric_stronghold_adjust.baf
+IF
+	Global("OH%god%Override","GLOBAL",0)
+	Kit(Player1,%kit%)
+	%or_line%
+	%condition_list%
+THEN
+	RESPONSE #100
+		SetGlobal("OH%god%Override","GLOBAL",1)
+		Continue()
+END
+>>>>>>>>	

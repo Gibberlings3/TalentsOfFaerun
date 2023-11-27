@@ -1,0 +1,197 @@
+@1="Spell system changes and new spells"
+@2="Races and subraces"
+@3="Portraits"
+@4="Rule-system changes"
+@5="Class and kit revisions"
+@6="User interface tweaks"
+@7="New classes and kits"
+@8="Multiclassed/dual-classed kits"
+@9="Revised and new high-level and lower-level abilities"
+
+
+@50="'Talents of Faerun' is not compatible with your game. (It is compatible with IWDEE, BGEE, SoD, BG2EE, and EET.)"
+@51="This component is not available for Icewind Dale: Enhanced Edition."
+@52="This component is not compatible with Spell Revisions"
+@53="This component is only available for Icewind Dale: Enhanced Edition"
+@54="This component is not available for Baldur's Gate II: Enhanced Edition"
+@55="This component is not available for Baldur's Gate: Enhanced Edition"
+@56="This component is only available for Baldur's Gate II: Enhanced Edition"
+
+@70="'Talents of Faerun' should be installed before 'Sword Coast Stratagems'."
+@71="Skipping this component as an equivalent version from IWDification is already installed."
+@72="This component requires either Icewind Dale, or for the Icewind Dale divine spells to be installed"
+@73="Skipping this component as an equivalent version from Sword Coast Stratagems is already installed"
+@74 = ~Skipping this component, as a very similar change is already installed via Spell Revisions~
+@75="This component requires either Icewind Dale, or for the Icewind Dale arcane spells to be installed"
+@76="This component requires the '3rd-edition-style Armor Class and attack rolls' component to be installed"
+@77="This component must be installed BEFORE 'point-buy system for choosing ability scores'"
+@78="This component requires either Icewind Dale, or for the 'Icewind Dale-style paladins' component to be installed"
+@79="This component must be installed before, not after, the 'Higher-level paladins get additional uses of Lay on Hands and Smite Evil' component"
+@80="Skipping this component as its contents have already been installed via another component"
+@81="This component must be installed before, not after, any component that adds or alters spellcasting classes"
+@82="This component requires either Icewind Dale, or for the Icewind Dale arcane spells to be installed"
+@83="This component requires the 'Add new arcane (wizard) spells' component to be installed"
+@84="This component must be installed before, not after, 'New wizard specializations: elemental specialists'"
+@85="This component must be installed before, not after, 'New wizard specialization: Force Mage'"
+@86="This component must be installed before, not after, 'Allow druids to multiclass as mages, rangers, or thieves'"
+@87="This component must be installed before, not after, 'New sorcerer kit: bloodrager'"
+@88="This component requires either Icewind Dale, or for the Icewind Dale divine spells to be installed"
+@89="This component requires the 'Add new divine (priest) spells' component to be installed"
+@90="This component requires the 'New choices of god / goddess for speciality priests' component to be installed"
+@91="This component must be installed before, not after, any multiclassed kits"
+@92="This component must be installed before, not after, the 'Multiclass/dual-class fighter/druid kits' component"
+@93="Components that add kits or modify the weapon-proficiency system must be installed before, not after, the 'Revised weapon proficiency system' component"
+@94="This component is incompatible with the Tweaks Anthology component that prevents humans from dual-classing"
+@95="This component must not be installed after 'thieves gain skill points in multiples of 5'"
+
+@100="Include arcane spells from Icewind Dale: Enhanced Edition"
+@101="Include divine spells from Icewind Dale: Enhanced Edition"
+@102="Minor tweaks to Icewind Dale-specific spells"
+@103="Restoration spells restore lost ability-score points"
+@104 = ~Spells heal or inflict a random amount of damage (1d8 per level of the spell, plus 1 point per caster level, to a maximum of 5 points per spell level)~
+@105 = ~Spells heal or inflict the maximum amount of damage in this range~
+@106 = ~Spells heal or inflict about the average amount of damage in this range~
+@107 = ~Increase the power of Cure Wounds and Cause Wounds spells to the level found in 3rd Edition D&D~
+@108 = ~IWD-based tweaks to BG versions of some spells~
+@109 = ~BG-based tweaks to IWD versions of some spells~
+@110 = ~Thematically more consistent IWD monster summoning spells~
+@111 = ~Revised Elementals~
+@112 = ~Larloch's Minor Drain becomes more powerful at higher levels~
+@113 = ~Energy Drain spell drains five levels rather than two~
+@114 = ~Modified version of the Iron Body spell (does not prevent spellcasting)~
+@115 = ~Symbol of Pain does not permit a saving throw~
+@116 = ~Make Symbol of Pain and Symbol of Hopelessness available as wizard spells~
+@117 = ~Move Power Words to the school of Enchantment~
+@118 = ~Move Symbols to the school of Enchantment~
+@119= ~Add new divine (priest) spells~
+@120= ~Add new arcane (wizard) spells~
+@121=~Abi-Dalzim's Horrid Wilting does not affect undead, constructs, and (non-water) elementals~
+@122=~Wider availability of wizard spell scrolls in Icewind Dale~
+@123=~Use Baldur's Gate-style Insect Plague and Creeping Doom instead of Icewind Dale versions~
+@124=~Use Baldur's Gate-style Mordenkainen's Sword in addition to Icewind Dale version~
+@125=~Revised Polymorph Self spell~
+@126=~Revised Shapechange spell~
+@127=~Remove most alignment restrictions from cleric spells~
+@128=~Wider range of summoned fiends~
+
+@200=~Introduce new races and subraces~
+
+
+@400=~Revised ability score modifiers~
+@401=~Point-buy system for choosing ability scores~
+@402=~Characters have 75 points to spend (e.g. 16,15,14,12,10,8)~
+@403=~Characters have 80 points to spend (e.g. 18,16,15,13,10,8)~
+@404=~Characters have 85 points to spend (e.g. 18,17,16,13,11,10)~
+@405=~Characters have 90 points to spend (e.g. 18,18,17,15,12,10)~
+@406=~Characters have a random number of points to spend (and can reroll that random number in character creation)~
+@407=~3rd-edition-style Armor Class and attack rolls~
+@408=~3rd-edition-style rules for combining armor bonuses~
+@409=~Remove intelligence-based restrictions on number and level of learnable spells~
+@410=~Cleric/Rangers may become proficient with longbows and shortbows~
+@411=~Revised Weapon Proficiency System~
+@412=~Wider access to Grand Mastery~
+@413=~Multi-classed fighters can advance to Grand Mastery in any weapon~
+@414=~Paladins, blackguards, and single-classed rangers can advance to Grand Mastery in any weapon~
+@415=~All single- and multi-classed warriors (paladins, rangers, blackguards, fighters) can advance to Grand Mastery in any weapon~
+@416=~Dual-class kitted characters must obey the weapon-proficiency restrictions of their kit~
+@417=~Dual-class characters gain weapon proficiencies as for their current class~
+@418=~Standard Talents of Faerun system (recommended)~
+@419=~Strict pen-and-paper 3rd edition system~
+@420=~3rd-edition-style THAC0s (somewhat faster progression for clerics/thieves/mages)~
+
+
+
+@500=~Eliminate class/race restrictions and most class/ability score restrictions~
+@501=~Revised class alignment rules~
+@502=~Icewind Dale-style paladins~
+@503=~Revised Smite Evil~
+@504=~Rangers use Icewind Dale-style spell memorisation~
+@505=~Icewind Dale-style bard songs~
+@506=~Higher-level paladins get additional uses of Lay on Hands and Smite Evil~
+@507=~Revised shapeshift powers for druids and avengers~
+@508=~Allow monks to use staffs~
+@509=~Require speciality mages to memorize at least one spell per level from their speciality school~
+@510=~Allow multiclassed and dual-classed mages to become specialists and wild mages~
+@511=~Druids use cleric XP and spell tables~
+@512=~Thieves gain the Evasion ability (on a successful save for half damage against abilities that require you to dodge, take no damage)~
+@513=~Modified thief Evasion~
+@514=~Rebalanced thief and bounty hunter traps at low levels~
+@515=~Revised speciality priests of Lathander/Helm/Talos/Tempus/Tyr~
+@516=~Adjust opposition schools for speciality mages (see readme for details)~
+@517=~Use Baldur's Gate opposition schools~
+@518=~Use pen-and-paper AD&D opposition schools~
+@519=~Use custom opposition schools~
+@520=~Use Icewind Dale opposition schools~
+@521=~Rebalanced and revised kits~
+@522=~Dragon Disciples can be disciples of any chromatic dragon (Red/Blue/Green/Black/White)~
+@523=~Modified cleric stronghold quest for priests of any god except Lathander/Helm/Talos~
+@524=~Speciality mages automatically get one speciality spell at each level (where possible)~
+
+@600="Tidy up class-selection menu"
+
+@700="Allow druids to multiclass as mages, rangers, and thieves"
+@701="New wizard specializations: elemental specialists"
+@702="New wizard specialization: Force Mage"
+@703="New wizard kits: Militant Wizards"
+@704="New sorcerer kit: Bloodrager"
+@705="New choices of god / goddess for speciality priests"
+@706="New class: Favored Soul"
+@707="Multiclass/dual-class fighter/cleric kits"
+@708="Multiclass/dual-class fighter/druid kits"
+@709="Multiclass/dual-class fighter/mage kits"
+@710="Multiclass/dual-class fighter/thief kits"
+@711="Multiclass/dual-class cleric/mage kits"
+@712="Multiclass/dual-class cleric/ranger and druid/ranger kits"
+@713="Multiclass/dual-class cleric/thief and druid/thief kits"
+@714="Multiclass/dual-class mage/thief kits"
+@715="Multiclass fighter/mage/cleric kits"
+
+@800=""
+
+@801="Characters choose minor new abilities every three levels"
+@802="Revised and expanded high-level abilities system"
+@803="Improved NPC customisation and management"
+
+@900="Thieves gain skill points in multiples of five"
+
+/////////////////////////////////////////////////////////////////////////////////////////
+//// This group of strings is shared between the setup.tra files of SCS, ToF and SoM.
+////////////////////////////////////////////////////////////////////////////////////////
+
+@1000 = ~Spell system revisions and new spells~
+
+@1006= ~Install all spell tweaks (if you don't select this, you will be given a chance to choose by category)~
+@1007=~Core Stratagems spell-system changes (assumed by Sword Coast Stratagems mod)~
+@1008=~Baldur's Gate-inspired tweaks to Icewind Dale spells~
+@1009=~Changes to Restoration~
+@1010=~Changes to shapeshift spells~
+@1011=~Icewind Dale-inspired tweaks to Baldur's Gate/Baldur's Gate II spells~
+@1012=~Rebalancings of slightly-too-powerful spells~
+@1013=~Spell school changes~
+@1014=~Spells increased in power~
+@1020=~Add 9 new arcane spells~
+@1021=~Add 6 new divine spells (some borrowed from Divine Remix)~
+@1022=~Revised Elementals~
+
+@1090="Skipping this component as its contents have already been installed"
+@1097="This component requires the Enhanced Edition"
+@1098="This component is not available on Icewind Dale: Enhanced Edition"
+@1099="This component requires Icewind Dale: Enhanced Edition"
+
+@2001 = ~This component needs to be installed before, not after, 'Initialise AI components' from Sword Coast Stratagems~
+
+@10005= ~Install in batch mode (ask about all components before starting installation). DO NOT USE WITH PROJECT INFINITY.~
+
+@10028=~Finish batch mode installation~
+@10029="Install batched components"
+@10030="Create batch-install file (and uninstall any installed components)"
+
+@24119 = ~Include arcane spells from Icewind Dale: Enhanced Edition~
+@24120 = ~Include divine spells from Icewind Dale: Enhanced Edition~
+@24122 = ~Skipping this component as you have the equivalent component from IWDification installed~
+@24127 = ~Use Baldur's Gate-style Insect Plague and Creeping Doom instead of Icewind Dale versions~
+@24128 = ~Use Baldur's Gate-style Mordenkainen's Sword in addition to Icewind Dale version~
+@24130 = ~Include bard songs from Icewind Dale: Enhanced Edition~
+
+@50011 = ~Batch mode is only available for Windows installs~
+@50012 = ~This component is only used in batch mode~

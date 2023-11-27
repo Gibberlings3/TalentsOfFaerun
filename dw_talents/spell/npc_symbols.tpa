@@ -1,0 +1,32 @@
+DEFINE_ACTION_FUNCTION npc_symbols BEGIN
+
+	// find whatever projectile is used by WIZARD_NPC_SYMBOL_DEATH
+
+	COPY_EXISTING "%WIZARD_NPC_SYMBOL_DEATH%.spl" "%workspace%"
+		READ_LONG 0x64 ab_off
+		READ_SHORT (0x26 + ab_off) pro
+	BUT_ONLY
+
+	// patch it into everything
+	ACTION_FOR_EACH spell IN "%WIZARD_SYMBOL_STUN%" "%CLERIC_SYMBOL_STUN%" "%WIZARD_SYMBOL_FEAR%" "%CLERIC_SYMBOL_FEAR%" "%WIZARD_SYMBOL_DEATH%" "%CLERIC_SYMBOL_DEATH%" BEGIN
+		COPY_EXISTING "%spell%.spl" override
+			LPF ALTER_SPELL_HEADER INT_VAR projectile=pro END
+			SPRINT old1 @500
+			SPRINT new1 @501
+			SPRINT old2 @502
+			SPRINT new2 @503
+			READ_LONG 0x50 strref
+			GET_STRREF strref string
+			INNER_PATCH_SAVE string "%string%" BEGIN
+				REPLACE_TEXTUALLY "%old1%" "%new1%"
+				REPLACE_TEXTUALLY "%old2%" "%new2%"
+			END
+			INNER_ACTION BEGIN
+				STRING_SET_EVALUATE strref "%string%"
+			END
+			
+
+		IF_EXISTS
+	END
+
+END

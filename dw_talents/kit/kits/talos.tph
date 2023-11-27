@@ -1,0 +1,213 @@
+
+DEFINE_ACTION_FUNCTION talos_cleric BEGIN
+
+
+	LAF talos_shared END
+	
+	LAF splconv_get_name STR_VAR spell="%CLERIC_CALL_LIGHTNING%" type=innate RET spl_talos_call_lightning=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_STORM_SHELL%" type=innate RET spl_talos_storm_shell=new_resref END
+
+
+	OUTER_SPRINT kit TALOS
+	LAF cleric_kit_substitutions STR_VAR kit=GODTALOS god=talos END
+	
+	
+
+	kit.edit[%kit%|edit_strrefs_in_place:i=1]
+	[
+		k_name:=@56
+		k_desc:=@57
+		k.kit_remove_powers{%TALOS_STORMSHIELD% %TALOS_LIGHTNING_BOLT%}
+		k.kit_grant_powers{%spl_talos_storm_shell% 3 4,%spl_talos_call_lightning% 5 4,%spl_talos_lightning% 7 5}		
+	]
+	
+	LAF assign_spheres STR_VAR kit kit_clastext="GODTALOS" default=cleric add="air talos_allow" subtract="good charm wards" END
+	OUTER_SPRINT spells "SHOCKING_GRASP LIGHTNING_BOLT CHAIN_LIGHTNING"
+	ACTION_IF VARIABLE_IS_SET "%WIZARD_MINOR_LIGHTNING_BOLT%" BEGIN
+		OUTER_SPRINT spells "%spells% MINOR_LIGHTNING_BOLT"
+	END
+	
+
+	LAF assign_bonus_spells STR_VAR kit spells END 
+	
+END
+
+DEFINE_ACTION_FUNCTION fury_of_talos BEGIN
+
+	LAF talos_shared END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_CALL_LIGHTNING%" type=innate RET spl_talos_call_lightning=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_STORM_SHELL%" type=innate RET spl_talos_storm_shell=new_resref END
+
+
+	OUTER_SPRINT kit DW_TALOS_FURY
+	LAF adjust_rage_descriptions INT_VAR tra_ref=8 RET desc END
+	kit.copy[FIGHTER_CLERIC=>%kit%]
+	[
+		k_name:=@7
+		k_desc:="%desc%"
+		k.kit_grant_powers{%spl_talos_storm_shell% 3 4,%spl_talos_call_lightning% 5 4,%spl_talos_lightning% 7 5|class=cleric}
+		k.kit_grant_powers{%BARBARIAN_RAGE% 1 4|class=fighter}
+		k.kit_apply_powers{spcl151 1,spcl153 11,spcl154 15 4 20|class=fighter}
+		k.kit_match_usability{barbarian}
+		k.kit_set_alignment{cn ne ce}
+		k_colors:="25,83,66,28,23"
+		
+	]
+	LAF cleric_kit_substitutions STR_VAR kit god=talos END
+	LAF assign_spheres STR_VAR kit default=cleric add="air talos_allow" subtract="good charm wards" END
+	LAF assign_bonus_spells STR_VAR kit spells="SHOCKING_GRASP MINOR_LIGHTNING_BOLT LIGHTNING_BOLT CHAIN_LIGHTNING" END
+	LAF set_multiclass_components STR_VAR kit components="barbarian talos"  END
+	LAF holy_symbol INT_VAR name=2054 follower=2055 STR_VAR kit desc_bam=pbelt14 inv_bam=ibelt14 kit END
+
+END
+
+DEFINE_ACTION_FUNCTION talos_favored_soul BEGIN
+
+	LAF talos_shared END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_CALL_LIGHTNING%" type=innate RET spl_talos_call_lightning=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_STORM_SHELL%" type=innate RET spl_talos_storm_shell=new_resref END
+
+	// make the main kit
+	
+	OUTER_SPRINT kit "DW_TALOS_FAVORED"
+	
+	LAF build_favored_soul_kit INT_VAR name=4010 desc=4011 god=4012 god_gender=4005 god_temple=4013 STR_VAR kit copy_from=TALOS END
+	LAF cleric_kit_substitutions STR_VAR kit god=talos END
+	
+	kit.edit[%kit%|edit_strrefs_in_place:i=1]
+	[
+		k.kit_grant_powers{%spl_talos_storm_shell% 3 4,%spl_talos_call_lightning% 5 4,%spl_talos_lightning% 7 5}
+	]
+
+	// spell choices
+	
+	LAF assign_bonus_spells STR_VAR kit spells="WIZARD_SHOCKING_GRASP WIZARD_MINOR_LIGHTNING_BOLT WIZARD_LIGHTNING_BOLT CLERIC_PROTECTION_FROM_LIGHTNING CLERIC_FLAME_STRIKE WIZARD_CHAIN_LIGHTNING CLERIC_EARTHQUAKE" END
+
+
+END
+
+
+DEFINE_ACTION_FUNCTION invoker_of_talos BEGIN
+
+    LAF talos_shared END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_CALL_LIGHTNING%" type=innate RET spl_talos_call_lightning=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_STORM_SHELL%" type=innate RET spl_talos_storm_shell=new_resref END
+
+	OUTER_SPRINT kit DW_TALOS_INVOKER
+	kit.copy[CLERIC_MAGE=>%kit%]
+	[
+		k_name:=@116
+		k_desc:=@117
+		k.kit_grant_powers{%spl_talos_storm_shell% 3 4,%spl_talos_call_lightning% 5 4,%spl_talos_lightning% 7 5|class=cleric}
+		k.kit_set_alignment{cn ne ce}
+		k_color_minor_cloth=83
+		k_color_main_cloth=66
+		IF {is_iwd} {{k_bio=40281}}
+	]
+	
+	LAF cleric_kit_substitutions STR_VAR kit god=talos END
+
+	LAF assign_spheres INT_VAR update_scroll_usability=0 STR_VAR kit default=cleric add="air talos_allow" subtract="good charm wards" END
+	LAF assign_bonus_spells STR_VAR kit spells="SHOCKING_GRASP MINOR_LIGHTNING_BOLT LIGHTNING_BOLT CHAIN_LIGHTNING" class=cleric END
+ 	LAF adjust_cleric_stronghold STR_VAR talos=all kit END
+	LAF holy_symbol INT_VAR name=2054 follower=2055 STR_VAR kit desc_bam=pbelt14 inv_bam=ibelt14 kit END
+
+ 
+ 	LAF make_multiclass_specialist STR_VAR kit school=invocation END
+	LAF set_multiclass_components STR_VAR kit components="TALOS INVOKER"  END
+
+
+ 
+END
+
+DEFINE_ACTION_FUNCTION air_elementalist_of_talos BEGIN
+
+    LAF talos_shared END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_CALL_LIGHTNING%" type=innate RET spl_talos_call_lightning=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_STORM_SHELL%" type=innate RET spl_talos_storm_shell=new_resref END
+
+	OUTER_SPRINT kit DW_TALOS_AIR_ELEMENTALIST
+	kit.copy[CLERIC_MAGE=>%kit%]
+	[
+		k_name:=@140
+		LPF resolve_elem_desc INT_VAR tra_ref=141 STR_VAR swap="%earth_names%" RET k_desc=strref END
+		k.kit_grant_powers{%spl_talos_storm_shell% 3 4,%spl_talos_call_lightning% 5 4,%spl_talos_lightning% 7 5|class=cleric}
+		k.kit_apply_powers{%spl_elementalist_air_innate% 1|class=mage}
+		k.kit_set_alignment{cn ne ce}
+		k_color_minor_cloth=83
+		k_color_main_cloth=66
+		IF {is_iwd} {{k_bio=40281}}
+	]
+	
+	LAF cleric_kit_substitutions STR_VAR kit god=talos END
+
+	LAF assign_spheres INT_VAR update_scroll_usability=0 STR_VAR kit default=cleric add="air talos_allow" subtract="good charm wards" END
+
+	LAF assign_bonus_spells STR_VAR kit spells="SHOCKING_GRASP MINOR_LIGHTNING_BOLT LIGHTNING_BOLT CHAIN_LIGHTNING" class=cleric END
+
+		LAF set_elem_spells INT_VAR school_tra=13 school_tra2=14 STR_VAR kit elem_spec=air elem_block=earth tra=elementalist END
+		LAF bonus_spells_from_list STR_VAR kit path="%MOD_FOLDER%/class_race/bonus_spell_lists/air.txt" class=mage END
+		LAF set_spell_learn_modifiers STR_VAR kit modifiers="mage_air=25, mage_air_shared=25, mage_water=15, mage_fire=15, default=-15" END
+
+	LAF adjust_cleric_stronghold STR_VAR talos=all kit END
+	LAF holy_symbol INT_VAR name=2054 follower=2055 STR_VAR kit desc_bam=pbelt14 inv_bam=ibelt14 kit END
+
+ 	LAF set_multiclass_components STR_VAR kit components="TALOS DW_ELEMENTALIST_AIR"  END
+
+
+ 
+END
+
+
+
+DEFINE_ACTION_FUNCTION talos_shared BEGIN
+
+	LAF include STR_VAR file=log_favored_weapon.tph locbase=shared END
+	LAF log_favored_weapon STR_VAR god=TALOS weapon=spear END
+
+
+	LAF check_label STR_VAR label=dw#talos_shared RET value END
+	ACTION_IF !value BEGIN
+	
+		LAF make_label STR_VAR label=dw#talos_shared END
+
+		// innate Call Lightning, Storm Shell
+		
+		LAF splconv STR_VAR spell="%CLERIC_CALL_LIGHTNING%" new_type=innate RET_ARRAY splconv_array END
+		LAF splconv STR_VAR spell="%CLERIC_STORM_SHELL%" new_type=innate RET_ARRAY splconv_array END
+
+		/////////////////////////////////////////
+		
+		// new Lightning of Talos spell
+
+		// projectile
+
+		talos_lightning_bolt=pro.copy[pro_minor_lightning_bolt=>dw#tlblt|source_locbase=newspell source_location=resource ]
+
+		//main spell
+		spl.make[%spl_talos_lightning%|icon_locbase=newspell icon_location=icon icon_base_name=minor_lightning_]
+		[
+			m_name:=@1016
+			m_description:=@1017
+			m_type:=innate
+			m_level=1
+			m.spl_enforce_school{invocation}
+			m_sectype=10
+			m_break_sanctuary=1
+			m.ab.add{}
+			m.ab.alter{s_type:=magical s_location:=innate s_target=1 s_level=1 s_range=50 s_casting_time=1 s_projectile=talos_lightning_bolt}
+			m.ab.clone{s_level=entry_index+8|number:i=8}
+			m.ab_fx.add{s_opcode=12 s_target=2 s_timing=1 s_power=2 s_parameter2b=4 s_dicenumber=p_level s_dicesize=6 s_save_vs_spell=1 s_save_for_half=1 s_bypass_mirror_image=1 s_dispel_resist=2}	
+		]
+		
+		// spell list
+		
+		LAF define_spell_list STR_VAR key="talos_allow" spells="CLERIC_FIRE_STORM CLERIC_EARTHQUAKE" END
+
+		
+	
+
+	END
+
+
+END

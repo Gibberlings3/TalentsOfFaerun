@@ -1,0 +1,46 @@
+DEFINE_ACTION_FUNCTION kit_fd  BEGIN
+
+	LAF include STR_VAR file=multiclass.tph locbase=shared END
+	LAF include STR_VAR file=fighter_druid.tph location=kits END
+
+	LAF ui_spell_system_spheres END
+	LAF virtual_class_setup END
+
+	ACTION_FOR_EACH fd IN
+		totemic_shaman
+		raging_shifter
+	BEGIN
+		LAF check_ini STR_VAR ini="%fd%" RET value END
+		ACTION_IF is_iwd BEGIN
+			LAF check_ini INT_VAR silent=1 STR_VAR ini="iwd_story_block_%fd%" RET story_block=value END
+		END ELSE BEGIN
+			LAF check_ini INT_VAR silent=1 STR_VAR ini="bg_story_block_%fd%" RET story_block=value END		
+		END
+		ACTION_IF value BEGIN
+			ACTION_TIME "%fd%" BEGIN
+				LAF "%fd%" END
+			END
+		END
+	END
+
+	// update the kit-identification LUA
+	LAF ui_detect_class_kit END
+
+	// externalize proficiencies
+	LAF externalize_weapprof END
+
+	// process scroll usability
+	LAF process_scroll_usability_now END
+
+	// if appropriate, rebuild dual-class grid
+	
+	ACTION_IF FILE_EXISTS_IN_GAME "m_dw_dud.lua" BEGIN
+		LAF collect_dual_class_kit_data END
+	END
+
+	
+	// NPCs
+	
+	LAF run STR_VAR file=npc_kits END
+
+END

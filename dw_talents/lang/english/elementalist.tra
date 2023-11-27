@@ -1,0 +1,102 @@
+@1="Fire Elementalist"
+@2="FIRE ELEMENTALIST: A Mage who specializes in the use of fire magic, at the cost of being unable to use spells related to the opposing elemental plane of Water.
+
+Advantages:
+- May cast one additional spell per level.
+- Receives a +25% bonus when scribing scrolls of fire-related spells.
+- Receives a +15% bonus when scribing scrolls of earth-related or air-related spells.
+- Spirit of Flame: +10% resistance to fire, and targets suffer +20% fire damage.
+
+Disadvantages:
+- May not learn or cast any spells related to water, ice, or cold. The complete list of such spells is: BLOCKED_SPELL_PLACEHOLDER.
+- Receives a -15% penalty when scribing scrolls of non-elemental spells."
+@3="Water Elementalist"
+@4="WATER ELEMENTALIST: A Mage who specializes in the use of water magic, at the cost of being unable to use spells related to the opposing elemental plane of Water.
+
+Advantages:
+- May cast one additional spell per level.
+- Receives a +25% bonus when scribing scrolls of water-related spells.
+- Receives a +15% bonus when scribing scrolls of earth-related or air-related spells.
+- Aegis of Rime: +10% resistance to cold, and targets suffer +20% cold damage.
+
+Disadvantages:
+- May not learn or cast any spells related to fire. The complete list of such spells is: BLOCKED_SPELL_PLACEHOLDER.
+- Receives a -15% penalty when scribing scrolls of non-elemental spells."
+@5="Air Elementalist"
+@6="AIR ELEMENTALIST: A Mage who specializes in the use of air magic, at the cost of being unable to use spells related to the opposing elemental plane of Earth.
+
+Advantages:
+- May cast one additional spell per level.
+- Receives a +25% bonus when scribing scrolls of air-related spells.
+- Receives a +15% bonus when scribing scrolls of fire-related or water-related spells.
+- Scion of Storms: +10% resistance to electricity, and targets suffer +20% electricity damage.
+
+Disadvantages:
+- May not learn or cast any spells related to earth, stone, metal, or acid. The complete list of such spells is: BLOCKED_SPELL_PLACEHOLDER.
+- Receives a -15% penalty when scribing scrolls of non-elemental spells."
+@7="Earth Elementalist"
+@8="EARTH ELEMENTALIST: A Mage who specializes in the use of earth magic, at the cost of being unable to use spells related to the opposing elemental plane of Air.
+
+Advantages:
+- May cast one additional spell per level.
+- Receives a +25% bonus when scribing scrolls of earth-related spells.
+- Receives a +15% bonus when scribing scrolls of fire-related or water-related spells.
+- Aqua Mortis: +10% resistance to acid, and targets suffer +20% acid damage.
+
+Disadvantages:
+- May not learn or cast any spells related to air, clouds, wind, or electricity. The complete list of such spells is: BLOCKED_SPELL_PLACEHOLDER.
+- Receives a -15% penalty when scribing scrolls of non-elemental spells."
+
+@9="one that involves or relates to fire"
+@10="Fire"
+@11="one that involves or relates to water, ice, or cold"
+@12="Water"
+@13="one that involves or relates to air, clouds, wind, or electricity"
+@14="Air"
+@15="one that involves or relates to earth, stone, metal, or acid"
+@16="Earth"
+@18="Elementalist"
+@19="ELEMENTALIST: Elementalists focus on spells involving the four prime elements of air, earth, fire, and water. Each element has a diametrical opposite: air opposes earth, fire opposes water, and vice versa. Every elementalist must choose one element as a specialty. An elementalist may learn and cast any spells relating to the chosen element and gains advantages when doing so. Consequently, the elementalist may not learn or cast any spells associated with the opposing element.
+
+Elementalists recieve a +25% bonus to learning spells of their speciality element, a +15% bonus in learning elemental spells associated with the non-opposed element, and a -15% penalty to learning non-elemental spells. They gain a +10% bonus to resistance against one damage type associated with their element, and their spells and attacks with that damage type do 20% more damage." 
+@20="Choose Element"
+@21="Fighter/Elementalist"
+@22="Cleric/Elementalist"
+@23="Elementalist/Thief"
+@24="Fighter/Elementalist/Thief"
+@25="Fighter/Elementalist/Cleric"
+@26="FIGHTER/ELEMENTALIST: Elementalists focus on spells involving the four prime elements of air, earth, fire, and water. Each element has a diametrical opposite: air opposes earth, fire opposes water, and vice versa. Every elementalist must choose one element as a specialty. An elementalist may learn and cast any spells relating to the chosen element and gains advantages when doing so. Consequently, the elementalist may not learn or cast any spells associated with the opposing element.
+
+Elementalists recieve a +25% bonus to learning spells of their speciality element, a +15% bonus in learning elemental spells associated with the non-opposed element, and a -15% penalty to learning non-elemental spells. They gain a +10% bonus to resistance against one damage type associated with their element, and their spells and attacks with that damage type do 20% more damage." 
+@27="CLERIC/ELEMENTALIST: Elementalists focus on spells involving the four prime elements of air, earth, fire, and water. Each element has a diametrical opposite: air opposes earth, fire opposes water, and vice versa. Every elementalist must choose one element as a specialty. An elementalist may learn and cast any spells relating to the chosen element and gains advantages when doing so. Consequently, the elementalist may not learn or cast any spells associated with the opposing element.
+
+Elementalists recieve a +25% bonus to learning spells of their speciality element, a +15% bonus in learning elemental spells associated with the non-opposed element, and a -15% penalty to learning non-elemental spells. They gain a +10% bonus to resistance against one damage type associated with their element, and their spells and attacks with that damage type do 20% more damage." 
+
+@28="ELEMENTALIST/THIEF: Elementalists focus on spells involving the four prime elements of air, earth, fire, and water. Each element has a diametrical opposite: air opposes earth, fire opposes water, and vice versa. Every elementalist must choose one element as a specialty. An elementalist may learn and cast any spells relating to the chosen element and gains advantages when doing so. Consequently, the elementalist may not learn or cast any spells associated with the opposing element.
+
+Elementalists recieve a +25% bonus to learning spells of their speciality element, a +15% bonus in learning elemental spells associated with the non-opposed element, and a -15% penalty to learning non-elemental spells. They gain a +10% bonus to resistance against one damage type associated with their element, and their spells and attacks with that damage type do 20% more damage." 
+
+@29="FIGHTER/ELEMENTALIST/THIEF: Elementalists focus on spells involving the four prime elements of air, earth, fire, and water. Each element has a diametrical opposite: air opposes earth, fire opposes water, and vice versa. Every elementalist must choose one element as a specialty. An elementalist may learn and cast any spells relating to the chosen element and gains advantages when doing so. Consequently, the elementalist may not learn or cast any spells associated with the opposing element.
+
+Elementalists recieve a +25% bonus to learning spells of their speciality element, a +15% bonus in learning elemental spells associated with the non-opposed element, and a -15% penalty to learning non-elemental spells. They gain a +10% bonus to resistance against one damage type associated with their element, and their spells and attacks with that damage type do 20% more damage." 
+
+@30="FIGHTER/ELEMENTALIST/CLERIC: Elementalists focus on spells involving the four prime elements of air, earth, fire, and water. Each element has a diametrical opposite: air opposes earth, fire opposes water, and vice versa. Every elementalist must choose one element as a specialty. An elementalist may learn and cast any spells relating to the chosen element and gains advantages when doing so. Consequently, the elementalist may not learn or cast any spells associated with the opposing element.
+
+Elementalists recieve a +25% bonus to learning spells of their speciality element, a +15% bonus in learning elemental spells associated with the non-opposed element, and a -15% penalty to learning non-elemental spells. They gain a +10% bonus to resistance against one damage type associated with their element, and their spells and attacks with that damage type do 20% more damage." 
+
+@31="DRUID/MAGE: This character can use the abilities of a Druid and a Mage, though weapons are restricted to only those allowed by the Druid's ethos, and Mage spells cannot be cast while wearing armor."
+@32="Druid / Air Elementalist"
+@33="Druid / Earth Elementalist"
+@34="Druid / Fire Elementalist"
+@35="Druid / Water Elementalist"
+@36="Druid / Elementalist"
+@37="DRUID/ELEMENTALIST: Elementalists focus on spells involving the four prime elements of air, earth, fire, and water. Each element has a diametrical opposite: air opposes earth, fire opposes water, and vice versa. Every elementalist must choose one element as a specialty. An elementalist may learn and cast any spells relating to the chosen element and gains advantages when doing so. Consequently, the elementalist may not learn or cast any spells associated with the opposing element.
+
+Elementalists recieve a +25% bonus to learning spells of their speciality element, a +15% bonus in learning elemental spells associated with the non-opposed element, and a -15% penalty to learning non-elemental spells. They gain a +10% bonus to resistance against one damage type associated with their element, and their spells and attacks with that damage type do 20% more damage." 
+
+@38="Air"
+@39="Earth"
+@40="Fire"
+@41="Water"
+
+@42="All Elements"

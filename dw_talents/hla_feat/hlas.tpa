@@ -1,0 +1,55 @@
+DEFINE_ACTION_FUNCTION hlas STR_VAR version=0 BEGIN // version is for testing. v=1 installs setup. v=2 installs main hlas
+
+	ACTION_IF version=0 || version=1 BEGIN
+		LAF run STR_VAR file=wipe_hlas END
+		LAF ui_externalize_hlas END
+		
+		component_loc:==spell
+		WITH_TRA "%MOD_FOLDER%/lang/english/spell.tra" "%MOD_FOLDER%/lang/%LANGUAGE%/spell.tra" BEGIN
+			LAF run STR_VAR file=fiend_summoning END
+		END
+		component_loc:==fiend
+		INCLUDE "%MOD_FOLDER%/%component_loc%/friendly_fiends_core.tpa" 
+		WITH_TRA "%MOD_FOLDER%/lang/english/fiend.tra" "%MOD_FOLDER%/lang/%LANGUAGE%/fiend.tra" BEGIN
+			LAF friendly_fiends_core STR_VAR script_loc="fiend/script" tph_loc="fiend" END
+		END
+		
+		component_loc:==hla_feat
+		LAF run STR_VAR file=hla_minimum_level END
+	END
+	component_loc:==hla_feat
+
+	LAF include STR_VAR file=make_feats.tph END
+	LAF include STR_VAR file=install_feats.tph END
+	
+	ACTION_IF version=0 || version=1 BEGIN
+		ACTION_FOR_EACH setup IN hla_setup hla_elemental_transformations missing_items poison empowered_healing item_crafting paladin_touch wand_scroll_use slippery_mind_avoid_death hla_elemental_summons hla_elemental_princes arcane_knowledge vanilla_adjustments BEGIN
+			LAF hla_feat_setup STR_VAR setup END
+		END
+
+		LAF run STR_VAR file=ranger_favored_enemy END
+	END
+	
+	LAF check_label STR_VAR label=dw#feats_installed RET value END
+	
+	ACTION_IF !value BEGIN
+		LAF install_feats INT_VAR is_epic=1 STR_VAR feat_table=ranger_hate_table.2da path="%data_loc%" END
+	END
+	LAF install_feats INT_VAR is_epic=1 STR_VAR feat_table=ranger_hate_table_epic.2da path="%data_loc%" END
+
+	ACTION_IF version=0 || version=2 BEGIN
+	
+		ACTION_FOR_EACH type IN arcane divine monk rogue shaman warrior summons shared BEGIN
+			ACTION_IF FILE_EXISTS "%MOD_FOLDER%/%component_loc%/hla_spec_%type%.tph" BEGIN
+				LAF include STR_VAR file="hla_spec_%type%.tph" END
+			END
+			LAF make_feats INT_VAR is_epic=1 STR_VAR feat_table="hla_table_%type%.2da" location=data resource_location="%component_loc%/resource/hla" END
+			LAF install_feats INT_VAR is_epic=1 STR_VAR feat_table="hla_table_%type%.2da" location=data END
+		END
+		
+		LAF run STR_VAR file=move_hlas_into_spcl END
+		LAF run STR_VAR file=mc_forbid END
+		
+	END
+
+END

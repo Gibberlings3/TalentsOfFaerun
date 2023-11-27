@@ -1,0 +1,1233 @@
+/* Underlying presumptions:
+
+- Poison is renamed Fortitude
+- Dragon Breath is renamed Reflex
+- Spell is renamed Will
+- Wand is treated as Reflex (and is deprecated)
+- Polymorph is treated as Fortitude (and is deprecated)
+
+
+*/
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+//// Main function
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+DEFINE_ACTION_FUNCTION 3e_save BEGIN
+
+	INCLUDE "%MOD_FOLDER%/shared/evasion_shared.tph"
+
+	LAF check_label STR_VAR label="dw#evasion_setup" RET evasion_done=value END 
+	ACTION_IF !evasion_done BEGIN	
+		LAF erase_previous_evasion END
+		LAF make_label STR_VAR label="dw#evasion_setup" END
+	END
+
+	// various setup tasks
+
+	OUTER_SPRINT $save_name_short("REFLEX") @1
+	OUTER_SPRINT $save_name("REFLEX") @2
+	OUTER_SPRINT $save_name_short("FORT") @3
+	OUTER_SPRINT $save_name("FORT") @4
+	OUTER_SPRINT $save_name_short("WILL") @5
+	OUTER_SPRINT $save_name("WILL") @6
+	OUTER_SPRINT $failed_save("REFLEX") @7
+	OUTER_SPRINT $failed_save("FORT") @8
+	OUTER_SPRINT $failed_save("WILL") @9
+	
+	OUTER_SPRINT $plural_save("WILL") @13
+	OUTER_SPRINT $plural_save("FORT") @14
+	OUTER_SPRINT $plural_save("REFLEX") @15
+	OUTER_SPRINT negate_old @11
+	OUTER_SPRINT negate_new @12
+	OUTER_SPRINT must_old @180
+	OUTER_SPRINT must_new @181
+	OUTER_SPRINT to_old @182
+	OUTER_SPRINT to_new @183
+	OUTER_SPRINT they_old @184
+	OUTER_SPRINT they_new @185
+	
+	OUTER_SPRINT "spell_desc_saving_throw" @10
+
+	ACTION_FOR_EACH tra_ref IN 100 101 110 111 120 121 125 126  130 131 140 141 145 146 150 151 160 161 170 171 BEGIN
+		OUTER_SPRINT temp (AT tra_ref)
+		OUTER_SPRINT $all_save_strings("%tra_ref%") "%temp%"
+	END
+	ACTION_FOR_EACH tra_ref IN 102 112 122 127 132 142 147 152 162 BEGIN
+		OUTER_SPRINT temp (AT tra_ref)
+		OUTER_SPRINT $plural_save_strings("%tra_ref%") "%temp%"
+	
+	END
+
+	LAF get_some_projectiles RET pro_entangle pro_grease pro_holy_smite pro_unholy_blight pro_spiritual_wrath pro_summon_insects pro_insect_plague pro_web pro_cloudkill pro_stinking_cloud END
+
+	LAF get_hardcoded_saves RET_ARRAY hardcoded_saves END
+	
+	LAF reflex_helpless_setup END
+	
+	// Alter UI
+		
+	COPY_EXISTING "ui.menu" override
+		PATCH_IF GAME_IS "iwdee" BEGIN
+			LPF UI_alter_function STR_VAR function=buildCharacterDetails patch=UI_saves END
+		END ELSE BEGIN
+			LPF UI_alter_object STR_VAR object=CHARACTER object_type=menu patch=UI_swap_help_string END
+		END
+		REPLACE_TEXTUALLY "chargen\.levelInfo" "dwFilterOutSaves(chargen.levelInfo)"
+		REPLACE_TEXTUALLY "chargen\.charInfo" "dwFilterOutSaves(chargen.charInfo)"
+	LAF UI_install_function INT_VAR inline=1 STR_VAR new_function_path=".../stratagems-inline/filter_out_saves.lua" lua_file="m_dw_shr" search_string=dwFilterOutSaves END
+
+
+	// standardise some spell/item descriptions
+	
+	ACTION_IF is_iwd BEGIN
+		OUTER_SPRINT standardise_file standardise_desc_iwd
+	END ELSE BEGIN
+		OUTER_SPRINT standardise_file standardise_desc_bg	
+	END
+	
+	// fix a few bugs
+
+	ACTION_IF is_iwd BEGIN
+		LAF save_bugfix_iwd END
+	END 
+		
+	// handle special-case spells and items
+	
+	LAF 3e_save_special_cases RET_ARRAY special_case altered_strref END
+	
+	// handle protective spells and items
+	
+	COPY "%MOD_FOLDER%/%component_loc%/data/%standardise_file%.2da" "%workspace%"
+		COUNT_2DA_COLS colcount
+		READ_2DA_ENTRIES_NOW standardise_data colcount
+		FOR (row=1;row<standardise_data;++row) BEGIN
+			READ_2DA_ENTRY_FORMER standardise_data row 0 resref
+			READ_2DA_ENTRY_FORMER standardise_data row 1 ext
+			READ_2DA_ENTRY_FORMER standardise_data row 2 old_tra
+			READ_2DA_ENTRY_FORMER standardise_data row 3 new_tra
+			SPRINT old (AT old_tra)
+			SPRINT new (AT new_tra)
+			INNER_ACTION BEGIN
+			  ACTION_IF FILE_EXISTS_IN_GAME "%resref%.%ext%" BEGIN
+				COPY_EXISTING "%resref%.%ext%" "%workspace%"
+					PATCH_IF "%ext%" STRING_EQUAL_CASE itm BEGIN
+						READ_LONG 0x54 desc_strref
+					END ELSE BEGIN
+						READ_LONG 0x50 desc_strref
+					END
+				BUT_ONLY
+				ACTION_GET_STRREF desc_strref desc
+				OUTER_INNER_PATCH_SAVE desc_new "%desc%" BEGIN
+					REPLACE_TEXTUALLY "%old%" "%new%"
+				END
+				STRING_SET_EVALUATE desc_strref "%desc_new%"
+			  END
+			END
+		END
+	BUT_ONLY
+	
+	ACTION_PHP_EACH sfo_spell_resrefs AS ids=>resref BEGIN
+		ACTION_IF FILE_EXISTS_IN_GAME "%resref%.spl" && !VARIABLE_IS_SET $special_case("%resref%") BEGIN
+			COPY_EXISTING "%resref%.spl" override
+				SPRINT $done_this_protective("%resref%") ""
+				LPF diagnose_protective_saves STR_VAR resref RET savetype END
+				PATCH_MATCH "%savetype%" WITH
+				none all BEGIN
+				END
+				fort reflex will BEGIN
+					READ_LONG 0x50 strref
+					PATCH_IF strref>=0 && !VARIABLE_IS_SET $altered_strref("%strref%") BEGIN
+						SET $altered_strref("%strref%")=1
+						INNER_ACTION BEGIN
+							LAF adjust_description INT_VAR strref STR_VAR savetype END
+						END
+					END
+					TO_UPPER resref
+					SPRINT $spell_savetype("%resref%") "%savetype%"
+				END
+				DEFAULT
+					LPF log_this STR_VAR file="save_bonus_spells.txt" input="%resref%:  %savetype%" END
+				END
+
+			BUT_ONLY
+
+		END
+	END
+	COPY_EXISTING_REGEXP ".*\.spl" override
+		SPRINT resref "%SOURCE_RES%"
+		TO_UPPER resref
+		PATCH_IF !VARIABLE_IS_SET $done_this_protective("%resref%")  && !VARIABLE_IS_SET $special_case("%resref%") BEGIN  // check we haven't already done it
+			LPF diagnose_protective_saves STR_VAR resref RET savetype END
+			PATCH_MATCH "%savetype%" WITH
+			none all BEGIN
+			END
+			fort reflex will BEGIN
+				READ_LONG 0x50 strref
+				PATCH_IF strref>=0 && !VARIABLE_IS_SET $altered_strref("%strref%") BEGIN
+					SET $altered_strref("%strref%")=1
+					INNER_ACTION BEGIN
+						LAF adjust_description INT_VAR strref STR_VAR savetype END
+					END
+				END
+				SPRINT $spell_savetype("%resref%") "%savetype%"
+			END
+			DEFAULT
+				LPF log_this STR_VAR file="save_bonus_spells.txt" input="%resref%:  %savetype%" END
+			END
+		END
+	BUT_ONLY
+
+	COPY_EXISTING_REGEXP ".*\.itm" override
+		SPRINT resref "%SOURCE_RES%"
+		TO_UPPER resref
+		PATCH_IF !VARIABLE_IS_SET $special_case("%resref%") BEGIN
+			LPF diagnose_protective_saves INT_VAR is_item=1 STR_VAR resref RET savetype END
+			PATCH_MATCH "%savetype%" WITH
+			none all BEGIN
+			END
+			fort reflex will BEGIN
+				READ_LONG 0x54 strref
+				PATCH_IF strref>=0 && !VARIABLE_IS_SET $altered_strref("%strref%") BEGIN
+					SET $altered_strref("%strref%")=1
+					INNER_ACTION BEGIN
+						LAF adjust_description INT_VAR strref STR_VAR savetype END
+					END
+				END
+			END
+			DEFAULT
+				LPF log_this STR_VAR file="save_bonus_items.txt" input="%resref%:  %savetype%" END
+			END
+		END
+	BUT_ONLY
+	
+	// audit EFF files
+	
+	COPY_EXISTING_REGEXP ".*\.eff" "override"
+		SPRINT resref "%SOURCE_RES%"
+		TO_UPPER resref
+		LPF diagnose_saves INT_VAR is_effect=1 STR_VAR resref RET savetype END
+		PATCH_IF "%savetype%" STRING_COMPARE_CASE "NONE" BEGIN
+			SPRINT $effect_savetype("%resref%") "%savetype%"
+			LPF edit_effect_savetype STR_VAR savetype END
+		END
+	BUT_ONLY
+
+	// go through spells in the ids list (do them first, they get priority for descriptions)
+
+	ACTION_PHP_EACH sfo_spell_resrefs AS ids=>resref BEGIN
+	OUTER_SPRINT $updated_saves("%resref%") ""
+		ACTION_IF FILE_EXISTS_IN_GAME "%resref%.spl" && !VARIABLE_IS_SET $special_case("%resref%") BEGIN
+			OUTER_SPRINT savetype_parent "none"
+			OUTER_SPRINT setter null
+			COPY_EXISTING "%resref%.spl" "%workspace%"
+				READ_LONG 0x8 name_strref
+			BUT_ONLY
+			COPY_EXISTING_REGEXP "%resref%[A-Z]?\.spl" "override"
+				LPF diagnose_saves STR_VAR resref RET savetype save_for_half END
+				PATCH_IF "%savetype%" STRING_COMPARE_CASE "none" BEGIN
+					PATCH_IF "%SOURCE_RES%" STRING_COMPARE_CASE "%resref%" && "%savetype_parent%" STRING_EQUAL_CASE "none" BEGIN
+						LPF log_this STR_VAR file="secondaries.txt" input="%ids%: %savetype%" END
+					END
+					LPF set_saves STR_VAR savetype END
+					PATCH_IF "%savetype_parent%" STRING_EQUAL_CASE "none" BEGIN
+						SPRINT savetype_parent "%savetype%"
+						SPRINT setter "%SOURCE_RES%"
+					END ELSE 
+					PATCH_IF !("%savetype%" STRING_EQUAL_CASE "%savetype_parent%") BEGIN
+						LPF log_this STR_VAR file="mismatches.txt" input="%ids% (set to %savetype_parent% by %setter%; set to %savetype% by %SOURCE_RES%)" END
+					END
+					PATCH_IF "%savetype%" STRING_EQUAL_CASE REFLEX BEGIN
+						LPF reflex_helpless END
+					END
+					PATCH_IF save_for_half AND "%savetype%" STRING_EQUAL_CASE REFLEX AND !evasion_done BEGIN
+						LPF enable_evasion INT_VAR name_strref STR_VAR resref END
+					END
+				END
+			BUT_ONLY
+			ACTION_IF "%savetype_parent%" STRING_COMPARE_CASE "none" BEGIN
+				COPY_EXISTING "%resref%.spl" override
+					READ_LONG 0x50 strref
+					PATCH_IF strref>=0 && !VARIABLE_IS_SET $altered_strref("%strref%") BEGIN
+						SET $altered_strref("%strref%")=1
+						INNER_ACTION BEGIN
+							LAF adjust_description INT_VAR strref STR_VAR savetype="%savetype_parent%" END
+						END
+					END
+					TO_UPPER resref
+					SPRINT $spell_savetype("%resref%") "%savetype_parent%"
+				BUT_ONLY
+			END
+		END
+	END
+
+	// now do all other spells
+	
+	COPY_EXISTING_REGEXP ".*\.spl" override
+		SPRINT resref "%SOURCE_RES%"
+		TO_UPPER resref
+		PATCH_IF !VARIABLE_IS_SET $updated_saves("%resref%") && !VARIABLE_IS_SET $special_case("%resref%") BEGIN  // check we haven't already done it
+				LPF diagnose_saves STR_VAR resref RET savetype save_for_half END
+				PATCH_IF "%savetype%" STRING_COMPARE_CASE "none" BEGIN
+					LPF set_saves STR_VAR savetype END
+					PATCH_IF "%savetype%" STRING_EQUAL_CASE REFLEX && save_for_half && !evasion_done BEGIN
+						LPF enable_evasion STR_VAR resref END
+					END
+					READ_LONG 0x50 strref
+					PATCH_IF strref>=0 && !VARIABLE_IS_SET $altered_strref("%strref%") BEGIN
+						SET $altered_strref("%strref%")=1
+						INNER_ACTION BEGIN
+							LAF adjust_description INT_VAR strref STR_VAR savetype END
+						END
+					END
+					SPRINT $spell_savetype("%resref%") "%savetype%"
+				END
+		END
+	BUT_ONLY
+	
+	// now do items
+	
+	COPY_EXISTING_REGEXP ".*\.itm" override	
+		SPRINT resref "%SOURCE_RES%"
+		TO_UPPER resref
+		LPF diagnose_saves INT_VAR is_item=1 STR_VAR resref RET savetype save_for_half END
+		PATCH_IF "%savetype%" STRING_COMPARE_CASE "none" BEGIN
+			LPF set_saves INT_VAR is_item=1 STR_VAR savetype END
+				PATCH_IF "%savetype%" STRING_EQUAL_CASE REFLEX && save_for_half && !evasion_done BEGIN
+					LPF enable_evasion INT_VAR is_item=1 STR_VAR resref END
+				END
+			READ_LONG 0x54 strref
+			PATCH_IF strref>=0 && !VARIABLE_IS_SET $altered_strref("%strref%") BEGIN
+				SET $altered_strref("%strref%")=1
+				INNER_ACTION BEGIN
+					LAF adjust_description INT_VAR strref STR_VAR savetype END
+				END
+			END
+		END
+	BUT_ONLY
+
+	// now do the descriptions of a few spells that aren't adjusted automatically
+	
+	
+	COPY "%MOD_FOLDER%/%component_loc%/data/extra_spell_shifts.2da" "%workspace%"
+		COUNT_2DA_COLS colcount
+		READ_2DA_ENTRIES_NOW extra_shift_data colcount
+		FOR (row=1;row<extra_shift_data;++row) BEGIN
+			READ_2DA_ENTRY_FORMER extra_shift_data row 0 resref
+			READ_2DA_ENTRY_FORMER extra_shift_data row 1 savetype
+			PATCH_IF VARIABLE_IS_SET "%resref%" BEGIN
+				SPRINT resref EVAL "%%resref%%"
+			END
+			PATCH_IF FILE_EXISTS_IN_GAME "%resref%.spl" BEGIN
+				INNER_ACTION BEGIN
+					COPY_EXISTING "%resref%.spl" "%workspace%"
+						READ_LONG 0x50 strref
+					BUT_ONLY
+					LAF adjust_description INT_VAR strref is_item=1 STR_VAR savetype END
+				END
+			END
+		END
+	BUT_ONLY
+	
+		
+	// now do engine strings
+	
+	COPY_EXISTING "enginest.2da" "%workspace%"
+		REPLACE_EVALUATE "STRREF_FAILEDSAVE_\([A-Z]+\) +\([0-9]+\)" BEGIN
+			SET strref="%MATCH2%"
+			SPRINT type "%MATCH1%"
+			PATCH_MATCH "%type%" WITH
+			DEATH POLY BEGIN
+				SPRINT newstring @8
+				proceed=1
+			END
+			WANDS BREATH BEGIN
+				SPRINT newstring @7
+				proceed=1
+			END
+			SPELL BEGIN
+				SPRINT newstring @9
+				proceed=1
+			END
+			DEFAULT
+				proceed=0
+			END
+			PATCH_IF proceed BEGIN
+				INNER_ACTION BEGIN
+					STRING_SET_EVALUATE strref "%newstring%"
+				END
+			END
+		END
+		""
+		REPLACE_EVALUATE "STRREF_MADESAVE_\([A-Z]+\) +\([0-9]+\)" BEGIN
+			SET strref="%MATCH2%"
+			SPRINT type "%MATCH1%"
+			PATCH_MATCH "%type%" WITH
+			DEATH POLY BEGIN
+				SPRINT newstring @4
+				proceed=1
+			END
+			WANDS BREATH BEGIN
+				SPRINT newstring @2
+				proceed=1
+			END
+			SPELL BEGIN
+				SPRINT newstring @6
+				proceed=1
+			END
+			DEFAULT
+				proceed=0
+			END
+			PATCH_IF proceed BEGIN
+				INNER_ACTION BEGIN
+					STRING_SET_EVALUATE strref "%newstring%"
+				END
+			END
+		END
+		""
+		REPLACE_EVALUATE "STRREF_GUI_MIXED_SAVEVS\([A-Z]+\) +\([0-9]+\)" BEGIN
+			SET strref="%MATCH2%"
+			SPRINT type "%MATCH1%"
+			PATCH_MATCH "%type%" WITH
+			POLY BEGIN
+				SPRINT newstring @3
+				proceed=1
+			END
+			BREATH BEGIN
+				SPRINT newstring @1
+				proceed=1
+			END
+			SPELLS BEGIN
+				SPRINT newstring @5
+				proceed=1
+			END
+			DEATH WANDS BEGIN
+				SPRINT newstring "DW_DELETE_ME"
+				proceed=1
+			END
+			DEFAULT
+				proceed=0
+			END
+			PATCH_IF proceed BEGIN
+				INNER_ACTION BEGIN
+					STRING_SET_EVALUATE strref "%newstring%"
+				END
+			END
+		END
+		""
+		REPLACE_EVALUATE "STRREF_GUI_MIXED_\([A-Z]+\)SAVTHREDUCEDBY +\([0-9]+\)" BEGIN
+			SET strref="%MATCH2%"
+			SPRINT type "%MATCH1%"
+			PATCH_MATCH "%type%" WITH
+			BREATH BEGIN
+				SPRINT newstring @175
+				proceed=1
+			END
+			DEATH BEGIN
+				SPRINT newstring @176
+				proceed=1
+			END
+			SPELL BEGIN
+				SPRINT newstring @177
+				proceed=1
+			END
+			POLY WAND BEGIN
+				SPRINT newstring DW_DELETE_ME
+				proceed=1			
+			END
+			DEFAULT
+				proceed=0
+			END
+			PATCH_IF proceed BEGIN
+				INNER_ACTION BEGIN
+					STRING_SET_EVALUATE strref "%newstring%"
+				END
+			END			
+		END
+		""
+		
+		// now do dwarf/halfling/gnome saves
+		
+		COPY_EXISTING "savecndh.2da" override
+			COUNT_2DA_COLS colcount
+			READ_2DA_ENTRIES_NOW savecndh_old colcount
+			FOR (col=1;col<colcount;++col) BEGIN
+				READ_2DA_ENTRY_FORMER savecndh_old 0 col val
+				SET_2DA_ENTRY_LATER savecndh_new 1 col 0
+				SET_2DA_ENTRY_LATER savecndh_new 2 col val
+			END
+			SET_2DA_ENTRIES_NOW savecndh_new colcount
+			PRETTY_PRINT_2DA
+		BUT_ONLY
+
+		COPY_EXISTING "savecng.2da" override
+			COUNT_2DA_COLS colcount
+			FOR (col=1;col<colcount;++col) BEGIN
+				SET_2DA_ENTRY_LATER savecng_new 1 col 0
+			END
+			SET_2DA_ENTRIES_NOW savecng_new colcount
+			PRETTY_PRINT_2DA
+		BUT_ONLY
+		
+		// now adjust some special-case strings (mostly class descriptors)
+		
+		LAF adjust_special_case_strings END
+
+		
+		
+END
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+//// Read in the small number of spells that we force to one save or another
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION get_hardcoded_saves STR_VAR locbase="" RET_ARRAY hardcoded_saves BEGIN
+	ACTION_IF "%locbase%" STRING_EQUAL_CASE "" BEGIN
+		OUTER_SPRINT locbase "%component_loc%"
+	END
+	ACTION_CLEAR_ARRAY hardcoded_saves
+	OUTER_SPRINT $hardcoded_saves("NULL_ENTRY") "NULL" // because empty array returns are illegal in WEIDU
+	COPY "%MOD_FOLDER%/%locbase%/data/hardcoded_saves.2da" "%workspace%"
+		READ_2DA_ENTRIES_NOW hardcoded_data 2
+		FOR (row=0;row<hardcoded_data;++row) BEGIN
+			READ_2DA_ENTRY_FORMER hardcoded_data row 0 resref
+			PATCH_IF VARIABLE_IS_SET "%resref%" BEGIN
+				SPRINT resref EVAL "%%resref%%"
+			END
+			TO_UPPER resref
+			PATCH_IF FILE_EXISTS_IN_GAME "%resref%.spl" || FILE_EXISTS_IN_GAME "%resref%"  BEGIN
+				READ_2DA_ENTRY_FORMER hardcoded_data row 1 save
+				SPRINT $hardcoded_saves("%resref%") "%save%"
+			END			
+		END
+	BUT_ONLY
+END
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+//// Read some (hardcoded) spells to get projectiles used in the save heuristic
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION get_some_projectiles
+	RET pro_entangle pro_grease pro_holy_smite pro_unholy_blight pro_spiritual_wrath pro_summon_insects pro_insect_plague pro_web pro_cloudkill pro_stinking_cloud
+BEGIN
+	ACTION_DEFINE_ASSOCIATIVE_ARRAY spells_to_pros BEGIN
+		"%WIZARD_GREASE%"=>pro_grease
+		"%CLERIC_ENTANGLE%"=>pro_entangle
+		"%CLERIC_HOLY_SMITE%"=>pro_holy_smite
+		"%CLERIC_UNHOLY_BLIGHT%"=>pro_unholy_blight
+		"%CLERIC_SUMMON_INSECTS%"=>pro_summon_insects
+		"%CLERIC_INSECT_PLAGUE%"=>pro_insect_plague
+		"%WIZARD_WEB%"=>pro_web
+		"%WIZARD_STINKING_CLOUD%"=>pro_stinking_cloud
+		"%WIZARD_CLOUDKILL%"=>pro_cloudkill
+	END
+	ACTION_PHP_EACH spells_to_pros AS spell=>pro BEGIN
+		COPY_EXISTING - "%spell%.spl" nowhere
+			GET_OFFSET_ARRAY ab_arr SPL_V10_HEADERS
+			ab_off=$ab_arr(0)
+			READ_SHORT ab_off+0x26 "%pro%"
+		BUT_ONLY	
+	END
+	ACTION_IF FILE_EXISTS_IN_GAME "%CLERIC_SPIRITUAL_WRATH%.spl" BEGIN
+		COPY_EXISTING "%CLERIC_INSECT_PLAGUE%.spl" override
+			GET_OFFSET_ARRAY ab_arr SPL_V10_HEADERS
+			ab_off=$ab_arr(0)
+			READ_SHORT ab_off+0x26 pro_spiritual_wrath
+		BUT_ONLY	
+	END ELSE BEGIN
+		OUTER_SET pro_spiritual_wrath="-99"
+	END
+
+END
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+//// Heuristically determine a protective spell or item save type
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+DEFINE_PATCH_FUNCTION diagnose_protective_saves
+	INT_VAR is_item=0
+	STR_VAR resref=""
+	RET savetype
+BEGIN
+	CLEAR_ARRAY opcodes_used
+	save_bonus_count=0
+	SPRINT savetype ""
+	PATCH_IF is_item BEGIN
+		GET_OFFSET_ARRAY ab_arr ITM_V10_HEADERS
+	END ELSE BEGIN
+		GET_OFFSET_ARRAY ab_arr SPL_V10_HEADERS
+	END
+	PHP_EACH ab_arr AS ab_ind=>ab_off BEGIN
+	 PATCH_IF (ab_ind=0 OR is_item) BEGIN
+	  READ_SHORT ab_off+0x26 projectile
+	  PATCH_IF is_item BEGIN
+		GET_OFFSET_ARRAY2 fx_arr ab_off ITM_V10_HEAD_EFFECTS
+	  END ELSE BEGIN
+		GET_OFFSET_ARRAY2 fx_arr ab_off SPL_V10_HEAD_EFFECTS
+	  END
+	  PHP_EACH fx_arr AS fx_ind=>fx_off BEGIN
+		READ_SHORT fx_off opcode
+		SET $opcodes_used("%opcode%")=1
+	  END
+	 END
+	END
+	PATCH_IF is_item BEGIN
+		GET_OFFSET_ARRAY fxg_arr ITM_V10_GEN_EFFECTS
+		PHP_EACH fxg_arr AS fx_ind=>fx_off BEGIN
+			READ_SHORT fx_off opcode
+			SET $opcodes_used("%opcode%")=1
+		END
+	END
+	save_bonus_count=0
+	FOR (n=33;n<=37;++n) BEGIN
+		PATCH_IF VARIABLE_IS_SET $opcodes_used("%n%") BEGIN
+			++save_bonus_count
+		END
+	END
+	PATCH_IF save_bonus_count=1 BEGIN
+		PATCH_IF VARIABLE_IS_SET $opcodes_used("33") || VARIABLE_IS_SET $opcodes_used("35") BEGIN
+			SPRINT savetype FORT
+		END
+		PATCH_IF VARIABLE_IS_SET $opcodes_used("34") || VARIABLE_IS_SET $opcodes_used("36") BEGIN
+			SPRINT savetype REFLEX
+		END
+		PATCH_IF VARIABLE_IS_SET $opcodes_used("37") BEGIN
+			SPRINT savetype WILL
+		END
+	END ELSE
+	PATCH_IF save_bonus_count=0 BEGIN
+		SPRINT savetype NONE
+	END ELSE
+	PATCH_IF save_bonus_count=5 BEGIN
+		SPRINT savetype ALL
+	END ELSE BEGIN
+		SPRINT savetype MULTIPLE
+	END
+
+
+
+
+END
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+//// Heuristically determine a spell's or item's save type
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+DEFINE_PATCH_FUNCTION diagnose_saves 
+	INT_VAR is_item=0
+			is_effect=0
+	STR_VAR resref=""
+	RET savetype save_for_half
+BEGIN
+
+ SPRINT savetype UNKNOWN
+ CLEAR_ARRAY opcodes_used
+ SET save_record=0
+ SET save_for_half=0
+ SET permits_save=0
+ SPRINT resource ""
+ SPRINT effect ""
+ SET school=0
+ PATCH_IF is_effect BEGIN
+	READ_BYTE 0x40 save
+	save=save BAND 0b00011111
+	PATCH_IF !(save=0) BEGIN
+		SET permits_save=1
+	END
+	READ_LONG 0x10 opcode_here
+	SET $opcodes_used("%opcode_here%")=1
+ 
+ END ELSE BEGIN
+	PATCH_IF is_item BEGIN
+		GET_OFFSET_ARRAY ab_arr ITM_V10_HEADERS
+	END ELSE BEGIN	
+		READ_BYTE 0x25 school
+		GET_OFFSET_ARRAY ab_arr SPL_V10_HEADERS
+	END
+	PHP_EACH ab_arr AS ab_ind=>ab_off BEGIN
+	  READ_SHORT ab_off+0x26 projectile
+	  PATCH_IF is_item BEGIN
+		GET_OFFSET_ARRAY2 fx_arr ab_off ITM_V10_HEAD_EFFECTS
+	  END ELSE BEGIN
+		GET_OFFSET_ARRAY2 fx_arr ab_off SPL_V10_HEAD_EFFECTS
+	  END
+	  PHP_EACH fx_arr AS fx_ind=>fx_off BEGIN
+		READ_SHORT fx_off opcode
+		SET $opcodes_used("%opcode%")=1
+		PATCH_IF (opcode=146 || opcode=148) BEGIN
+			READ_ASCII (0x14+fx_off) resource
+				TO_UPPER resource
+			PATCH_IF VARIABLE_IS_SET $spell_savetype("%resource%") BEGIN
+				SPRINT temp $spell_savetype("%resource%")
+				PATCH_IF "%savetype%" STRING_EQUAL_CASE "UNKNOWN" || "%savetype%" STRING_EQUAL_CASE "%temp%" BEGIN
+					SPRINT savetype "%temp%"
+				END ELSE BEGIN
+					LPF log_this INT_VAR repeat=0 STR_VAR file=save_secspell_conflict.txt input="%SOURCE_FILE%" END
+				END
+			END
+		END
+		PATCH_IF (opcode=177||opcode=248||opcode=249) BEGIN
+			READ_ASCII (0x14+fx_off) effect
+				TO_UPPER effect
+			PATCH_IF VARIABLE_IS_SET $effect_savetype("%effect%") BEGIN
+				SPRINT temp $effect_savetype("%effect%")
+				PATCH_IF "%savetype%" STRING_EQUAL_CASE "UNKNOWN" || "%savetype%" STRING_EQUAL_CASE "%temp%" BEGIN
+					SPRINT savetype "%temp%"
+				END ELSE BEGIN
+					LPF log_this INT_VAR repeat=0 STR_VAR file=save_effect_conflict.txt input="%SOURCE_FILE%" END
+				END
+			END
+			
+		END
+		PATCH_IF opcode=12 BEGIN
+			READ_BYTE 0x2d+fx_off special
+			PATCH_IF special BOR 0b11111110 = 0b11111111 BEGIN
+				SET save_for_half=1
+			END
+		END
+		READ_BYTE 0x24+fx_off save
+		save=save BAND 0b00011111
+		PATCH_IF !(save=0) BEGIN
+			SET permits_save=1
+			PATCH_IF save_record=0 BEGIN
+				SET save_record=save
+			END ELSE 
+			PATCH_IF !(save=save_record) BEGIN
+				LPF log_this INT_VAR repeat=0 STR_VAR file=save_mismatch.txt input="%SOURCE_FILE%" END
+			END
+		END
+	  END
+	END
+ END // end of data collection
+	
+	// if there's no saving throw, we don't care
+	PATCH_IF permits_save=0 && "%savetype%" STRING_EQUAL_CASE "unknown" BEGIN
+		SPRINT savetype NONE
+	END ELSE BEGIN
+		// check the hardcoded list
+		TO_UPPER resref
+		PATCH_IF is_effect BEGIN
+			SPRINT resref_full "%resref%.EFF"
+		END ELSE
+		PATCH_IF is_item BEGIN
+			SPRINT resref_full "%resref%.ITM"		
+		END ELSE BEGIN
+			SPRINT resref_full "%resref%"
+		
+		END
+		PATCH_IF VARIABLE_IS_SET $hardcoded_saves("%resref_full%") BEGIN
+			SPRINT savetype $hardcoded_saves("%resref_full%")
+		END
+	END
+	// not found? check projectile
+	PATCH_IF "%savetype%" STRING_EQUAL_CASE "UNKNOWN" BEGIN
+		PATCH_MATCH "%projectile%" WITH
+		"%pro_summon_insects%" "%pro_insect_plague%" "%pro_stinking_cloud%" "%pro_cloudkill%" BEGIN
+			SPRINT savetype FORT
+		END
+		"%pro_holy_smite%" "%pro_unholy_blight%" "%pro_spiritual_wrath%" BEGIN
+			SPRINT savetype WILL
+		END
+		"%pro_web%" "%pro_entangle%" "%pro_grease%" 96 /* skull trap */ BEGIN
+			SPRINT savetype REFLEX	
+		END
+		DEFAULT
+		END
+	END
+	// still not found? Go through opcode/school heuristics
+	PATCH_IF "%savetype%" STRING_EQUAL_CASE "UNKNOWN" BEGIN	
+		// kill/poison/death/disease/petrification/polymorph/disintegrate/PWKill opcode: FORT
+		PATCH_IF (VARIABLE_IS_SET $opcodes_used(13) || VARIABLE_IS_SET $opcodes_used(25) || VARIABLE_IS_SET $opcodes_used(55) || VARIABLE_IS_SET $opcodes_used(78) || VARIABLE_IS_SET $opcodes_used(134) || VARIABLE_IS_SET $opcodes_used(135)   || VARIABLE_IS_SET $opcodes_used(209)  || VARIABLE_IS_SET $opcodes_used(238))  BEGIN
+			SPRINT savetype FORT
+		END ELSE
+		// necromancy (but not fear): FORT
+		PATCH_IF school=7 && !VARIABLE_IS_SET $opcodes_used(24) BEGIN
+			SPRINT savetype FORT		
+		// inflicts damage? Reflex
+		END ELSE
+		PATCH_IF VARIABLE_IS_SET $opcodes_used(12) BEGIN
+			SPRINT savetype REFLEX
+		END ELSE BEGIN
+			SPRINT savetype WILL
+		END
+	END 
+END
+
+////////////////////////////////////////////////////////////////////////////////////////
+///	Actually implement a spell save change
+////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION set_saves INT_VAR is_item=0 STR_VAR savetype="" BEGIN
+
+	PATCH_IF is_item BEGIN
+		GET_OFFSET_ARRAY ab_arr ITM_V10_HEADERS
+	
+	END ELSE BEGIN
+		GET_OFFSET_ARRAY ab_arr SPL_V10_HEADERS
+	END
+	PHP_EACH ab_arr AS ab_ind=>ab_off BEGIN
+		PATCH_IF is_item BEGIN
+			GET_OFFSET_ARRAY2 fx_arr ab_off ITM_V10_HEAD_EFFECTS
+		END ELSE BEGIN
+			GET_OFFSET_ARRAY2 fx_arr ab_off SPL_V10_HEAD_EFFECTS		
+		END
+		PHP_EACH fx_arr AS fx_ind=>fx_off BEGIN
+			READ_BYTE 0x24+fx_off save
+			check=save BAND 0b00011111
+			PATCH_IF !(check=0) BEGIN
+				SET save=save BAND 0b11100000 // erase existing save data
+				PATCH_MATCH "%savetype%" WITH
+				FORT BEGIN
+					SET mask=0b00000100			
+				END
+				REFLEX BEGIN
+					SET mask=0b00000010
+				END
+				WILL BEGIN
+					SET mask=0b00000001
+				END
+				DEFAULT
+					PATCH_FAIL "Unknown savetype %savetype% in 'set_spell_saves' function"
+				END
+				SET save=save BOR mask
+				WRITE_BYTE 0x24+fx_off save
+			END
+		END
+	END
+	
+END
+
+////////////////////////////////////////////////////////////////////////////////////////
+///	Change a strref over to the new system
+////////////////////////////////////////////////////////////////////////////////////////
+
+
+DEFINE_ACTION_FUNCTION adjust_description INT_VAR is_item=0 strref=0 STR_VAR savetype="" BEGIN
+
+	ACTION_GET_STRREF strref string
+	
+	OUTER_SPRINT new_short $save_name_short("%savetype%")
+	OUTER_SPRINT new_long $save_name("%savetype%")
+	OUTER_SPRINT new_plural $plural_save("%savetype%")
+	OUTER_INNER_PATCH_SAVE string_new "%string%" BEGIN
+		PATCH_IF !is_item BEGIN
+			REPLACE_TEXTUALLY "^%spell_desc_saving_throw%: +\(.*\)" "%spell_desc_saving_throw%: %new_short% \1"
+		END
+		REPLACE_TEXTUALLY "%must_old%" "%must_new%"
+		REPLACE_TEXTUALLY "%to_old%" "%to_new%"
+		REPLACE_TEXTUALLY "%they_old%" "%they_new%"
+		REPLACE_TEXTUALLY " %negate_old%" " %negate_new%"
+		PHP_EACH all_save_strings AS discard=>str BEGIN
+			REPLACE_TEXTUALLY "%str%" "%new_long%"
+		END
+		PHP_EACH plural_save_strings AS discard=>str BEGIN
+			REPLACE_TEXTUALLY "%str%" "%new_plural%"
+		END
+	END
+	ACTION_IF "%string_new%" STRING_COMPARE "%string%" BEGIN
+		STRING_SET_EVALUATE strref "%string_new%"
+	END
+
+
+END
+
+///////////////////////////////////////////////////////////////////////////////////////
+///	Special-case spells
+////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION 3e_save_special_cases RET_ARRAY special_case altered_strref BEGIN
+
+	OUTER_SPRINT $altered_strref("999999") ""
+	
+	// Prismatic Spray
+	
+	ACTION_IF FILE_EXISTS_IN_GAME "%WIZARD_PRISMATIC_SPRAY%.spl" BEGIN
+		COPY_EXISTING "%WIZARD_PRISMATIC_SPRAY%.spl" overrideral
+			LPF ALTER_EFFECT INT_VAR match_save_vs_spell=1 save_vs_spell=0 save_vs_breath=1 END
+			LPF ALTER_EFFECT INT_VAR match_save_vs_wand=1 save_vs_wand=0 save_vs_spell=1 END
+			LPF ALTER_EFFECT INT_VAR match_save_vs_polymorph=1 save_vs_polymorph=0 save_vs_poison=1 END
+			READ_LONG 0x50 desc_strref
+		BUT_ONLY
+		ACTION_GET_STRREF desc_strref desc
+		OUTER_INNER_PATCH_SAVE desc "%desc%" BEGIN
+			REPLACE_TEXTUALLY "%all_save_strings_100%" "%save_name_REFLEX%" // spell->reflex
+			REPLACE_TEXTUALLY "%all_save_strings_140%" "%save_name_WILL%" // wand->will
+			REPLACE_TEXTUALLY "%all_save_strings_160%" "%save_name_FORT%" // petri->fort
+			REPLACE_TEXTUALLY "%all_save_strings_120%" "%save_name_FORT%" // poison->fort
+		END
+		STRING_SET_EVALUATE desc_strref "%desc%"
+		OUTER_SPRINT $altered_strref("%desc_strref%") ""
+		OUTER_SPRINT $special_case("%WIZARD_PRISMATIC_SPRAY%") ""
+	END
+	
+	// Storm of Vengeance
+	
+	ACTION_IF FILE_EXISTS_IN_GAME "%CLERIC_STORM_OF_VENGEANCE%.spl" BEGIN
+		COPY_EXISTING "%CLERIC_STORM_OF_VENGEANCE%.spl" override
+			LPF ALTER_EFFECT INT_VAR match_save_vs_spell=1 save_vs_spell=0 save_vs_breath=1 END
+			READ_LONG 0x50 desc_strref
+		BUT_ONLY
+		ACTION_GET_STRREF desc_strref desc
+		OUTER_INNER_PATCH_SAVE desc "%desc%" BEGIN
+			REPLACE_TEXTUALLY "%all_save_strings_100%" "%save_name_REFLEX%" // spell->reflex
+			REPLACE_TEXTUALLY "%all_save_strings_130%" "%save_name_FORT%" // death->fort
+		END
+		STRING_SET_EVALUATE desc_strref "%desc%"
+		OUTER_SPRINT $altered_strref("%desc_strref%") ""
+		OUTER_SPRINT $special_case("%CLERIC_STORM_OF_VENGEANCE%") ""
+	END
+		
+	// Barkskin
+	
+	ACTION_IF FILE_EXISTS_IN_GAME "%CLERIC_BARKSKIN%.spl" BEGIN
+		COPY_EXISTING "%CLERIC_BARKSKIN%.spl" override
+			LPF DELETE_EFFECT INT_VAR match_opcode=34 END
+			LPF DELETE_EFFECT INT_VAR match_opcode=36 END
+			READ_LONG 0x50 desc_strref
+		BUT_ONLY
+		ACTION_GET_STRREF desc_strref desc
+		OUTER_INNER_PATCH_SAVE desc "%desc%" BEGIN
+			PATCH_IF is_iwd BEGIN
+				SPRINT swap_out @202
+			END ELSE BEGIN 
+				SPRINT swap_out @304
+			END
+			SPRINT swap_in @190
+			REPLACE_TEXTUALLY "%swap_out%" "%swap_in%" // spell->reflex
+		END
+		STRING_SET_EVALUATE desc_strref "%desc%"
+		OUTER_SPRINT $altered_strref("%desc_strref%") ""
+		OUTER_SPRINT $special_case("%CLERIC_BARKSKIN%") ""
+	END
+	
+	// Cloak of Displacement
+	
+	ACTION_IF FILE_EXISTS_IN_GAME "clck03.itm" BEGIN
+		COPY_EXISTING "clck03.itm" override
+			LPF DELETE_EFFECT INT_VAR match_opcode=33 END
+			READ_LONG 0x54 desc_strref
+		BUT_ONLY
+		ACTION_GET_STRREF desc_strref desc
+		OUTER_INNER_PATCH_SAVE desc "%desc%" BEGIN
+			REPLACE_TEXTUALLY "^.*\(%all_save_strings_110%\|%all_save_strings_140%\).*[%WNL%%LNL%%MNL%]" "" // delete sp
+			REPLACE_TEXTUALLY "%all_save_strings_130%" "%save_name_REFLEX%" // death->reflex
+		END
+		STRING_SET_EVALUATE desc_strref "%desc%"
+		OUTER_SPRINT $altered_strref("%desc_strref%") ""
+		OUTER_SPRINT $special_case("CLCK03") ""	
+	END
+	
+	// Mirror of Black Ice Amulet
+	
+	ACTION_IF FILE_EXISTS_IN_GAME "mirror2.itm" BEGIN
+		COPY_EXISTING "mirror2.itm" override
+			LPF DELETE_EFFECT INT_VAR match_opcode=37 END
+			LPF ALTER_EFFECT INT_VAR match_opcode=34 opcode=36 END
+			READ_LONG 0x54 desc_strref
+		BUT_ONLY
+		ACTION_GET_STRREF desc_strref desc
+		OUTER_INNER_PATCH_SAVE desc "%desc%" BEGIN
+			REPLACE_TEXTUALLY "^.*%all_save_strings_100%.*[%WNL%%LNL%%MNL%]" "" // delete spell save
+			REPLACE_TEXTUALLY "%all_save_strings_140%" "%save_name_REFLEX%" // wand->reflex
+		END
+		STRING_SET_EVALUATE desc_strref "%desc%"
+		OUTER_SPRINT $altered_strref("%desc_strref%") ""
+		OUTER_SPRINT $special_case("CLCK03") ""	
+	END
+	
+	// Bracers of Icelandic Pearl
+	
+	ACTION_IF FILE_EXISTS_IN_GAME "braceip.itm" BEGIN
+		COPY_EXISTING "braceip.itm" override
+			READ_LONG 0x54 desc_strref
+		BUT_ONLY
+		ACTION_GET_STRREF desc_strref desc
+		OUTER_INNER_PATCH_SAVE desc "%desc%" BEGIN
+			SPRINT old @1000
+			SPRINT new @1001
+			REPLACE_TEXTUALLY "%old%" "%new%"
+			SPRINT old @1002
+			SPRINT new @1003
+			REPLACE_TEXTUALLY "%old%" "%new%"
+		END
+		STRING_SET_EVALUATE desc_strref "%desc%"
+		OUTER_SPRINT $altered_strref("%desc_strref%") ""
+		OUTER_SPRINT $special_case("BRACEIP") ""		
+	END
+	
+	// Mustard Jelly attack (it's fine, has no description, but we don't want its saves tweaked)
+	
+	OUTER_SPRINT $special_case("JELLMU1") ""
+	OUTER_SPRINT $special_case("PLYJELLY") ""
+	
+END
+
+DEFINE_ACTION_FUNCTION save_bugfix_iwd BEGIN
+
+	COPY_EXISTING "%WIZARD_AGANNAZAR_SCORCHER%.spl" override
+		LPF ALTER_EFFECT INT_VAR match_save_for_half=1 save_vs_spell=1 END
+		LPF ALTER_EFFECT INT_VAR match_save_for_half=1 ignore_primary=1 ignore_secondary=0 END
+		LPF ALTER_EFFECT INT_VAR match_save_for_half=0 ignore_primary=0 ignore_secondary=1 END
+
+	BUT_ONLY
+END
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+//// Adjust special-case strings
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION adjust_special_case_strings BEGIN
+
+	//
+	// class descriptive text
+	//
+	
+	// get the data
+	
+	LAF 2da_read STR_VAR file=clastext_adjusts.2da location=data case=mixed RET_ARRAY adjusts_array=array END
+	LAF 2da_read STR_VAR file=clastext.2da RET_ARRAY clastext_array=array clastext_rows=rows END
+	ACTION_IF FILE_EXISTS "%data_loc_shared%/multiclass_kit_components.2da" BEGIN
+		LAF 2da_read STR_VAR file=multiclass_kit_components.2da path="%data_loc_shared%" case=mixed RET_ARRAY mc_array=array mc_rows=rows END
+	END
+	
+	// assemble a list of classes to edit
+	
+	ACTION_CLEAR_ARRAY processing_array
+	
+	ACTION_PHP_EACH clastext_rows AS kit=>discard BEGIN
+		ACTION_IF VARIABLE_IS_SET $adjusts_array("%kit%" savetype) BEGIN
+			OUTER_SPRINT savetype $adjusts_array("%kit%" savetype)
+			OUTER_SPRINT $processing_array("%kit%" "%savetype%") "" 
+		END
+	END
+	ACTION_IF FILE_EXISTS "%data_loc_shared%/multiclass_kit_components.2da" BEGIN
+		ACTION_PHP_EACH mc_rows AS kit=>discard BEGIN
+			ACTION_FOR_EACH label IN class1 class2 class3 BEGIN
+				OUTER_SPRINT component $mc_array("%kit%" "%label%")
+				ACTION_IF VARIABLE_IS_SET $adjusts_array("%component%" savetype) BEGIN
+					OUTER_SPRINT savetype $adjusts_array("%component%" savetype)
+					OUTER_SPRINT $processing_array("%kit%" "%savetype%") "" 
+				END		
+			END
+		END
+	END
+	
+	// actually do the edits
+	
+	ACTION_PHP_EACH processing_array AS k=>discard BEGIN
+		OUTER_SPRINT kit "%k_0%"
+		OUTER_SPRINT savetype "%k_1%"
+		OUTER_SET strref=$clastext_array("%kit%" DESCSTR)
+		ACTION_IF "%savetype%" STR_EQ "SPECIAL" BEGIN
+			ACTION_MATCH "%kit%" WITH
+			MONK BEGIN
+				ACTION_GET_STRREF strref desc
+				OUTER_INNER_PATCH_SAVE desc_new "%desc%" BEGIN
+					REPLACE_TEXTUALLY "%must_old%" "%must_new%"
+					REPLACE_TEXTUALLY "%to_old%" "%to_new%"
+					REPLACE_TEXTUALLY "%they_old%" "%they_new%"
+					REPLACE_TEXTUALLY "%all_save_strings_100%" "%save_name_FORT%"
+					REPLACE_TEXTUALLY "%all_save_strings_102%" "%plural_save_WILL%"
+				END
+				STRING_SET_EVALUATE strref "%desc_new%"
+			END
+			DEFAULT
+				FAIL "Unrecognised special entry %kit% in clastext_adjusts.2da" 
+			END	
+		END ELSE BEGIN
+			LAF adjust_description INT_VAR strref STR_VAR savetype END
+		END
+	END
+	
+	// race descriptive text
+	LAF check_label STR_VAR label=dw#3e_abilities RET value END
+	ACTION_IF value BEGIN
+	
+	WITH_TRA "%scs_tra_loc%/english/ability.tra" "%scs_tra_loc%/%LANGUAGE%/ability.tra" BEGIN
+		OUTER_SPRINT dwarf_old @27
+		OUTER_SPRINT halfling_old @27
+		OUTER_SPRINT gnome_old @29
+	END
+	OUTER_SPRINT dwarf_new @2031
+	OUTER_SPRINT halfling_new @2031
+	OUTER_SPRINT gnome_new @2041
+	
+	END ELSE BEGIN
+	
+	ACTION_IF is_iwd BEGIN
+		OUTER_SPRINT dwarf_old @2002
+		OUTER_SPRINT halfling_old @2012
+		OUTER_SPRINT gnome_old @2022
+	END ELSE
+	ACTION_IF is_bg2 BEGIN
+		OUTER_SPRINT dwarf_old @2001
+		OUTER_SPRINT halfling_old @2011
+		OUTER_SPRINT gnome_old @2021	
+	END ELSE BEGIN
+		OUTER_SPRINT dwarf_old @2000
+		OUTER_SPRINT halfling_old @2010
+		OUTER_SPRINT gnome_old @2020	
+	END
+	
+	
+	OUTER_SPRINT dwarf_new @2003
+	OUTER_SPRINT halfling_new @2003
+	OUTER_SPRINT gnome_new @2023
+	
+	END
+	COPY_EXISTING racetext.2da "%workspace%"
+		COUNT_2DA_ROWS 3 rowcount
+		FOR (row=0;row<rowcount;++row) BEGIN
+			READ_2DA_ENTRY row 0 3 race
+			READ_2DA_ENTRY row 3 3 strref
+			PATCH_MATCH "%race%" WITH
+			DWARF GNOME HALFLING BEGIN
+				TO_LOWER race
+				SPRINT old EVAL "%%race%_old%"
+				SPRINT new EVAL "%%race%_new%"
+				GET_STRREF strref desc
+				INNER_PATCH_SAVE desc_new "%desc%" BEGIN
+					REPLACE_TEXTUALLY "%old%" "%new%"
+				END
+				INNER_ACTION BEGIN
+					STRING_SET_EVALUATE strref "%desc_new%"
+				END
+			END
+			DEFAULT
+			END
+		END
+	BUT_ONLY
+	
+	//subrace descriptive text
+	
+	ACTION_IF FILE_EXISTS "%data_loc_shared%/dw_subrace_data.2da" BEGIN
+		LAF 2da_read STR_VAR file="dw_subrace_data.2da" path="%data_loc_shared%" RET_ARRAY subrace_array=array END
+
+		// gnomes
+		OUTER_SPRINT old @3000
+		OUTER_SPRINT new @3001
+		ACTION_FOR_EACH row IN GNOME_ROCK GNOME_DEEP BEGIN
+			OUTER_SET desc_strref=$subrace_array("%row%" "DESC")
+			ACTION_IF desc_strref>0 BEGIN
+				ACTION_GET_STRREF desc_strref desc
+				OUTER_PATCH_SAVE desc "%desc%" BEGIN
+					REPLACE_TEXTUALLY "%old%" "%new%"
+				END
+				STRING_SET_EVALUATE desc_strref "%desc%"
+			END
+		END
+		
+		// dwarves
+		OUTER_SPRINT old @3010
+		OUTER_SPRINT new @3011
+		ACTION_FOR_EACH row IN DWARF_SHIELD DWARF_GOLD DWARF_DUERGAR BEGIN
+			OUTER_SET desc_strref=$subrace_array("%row%" "DESC")
+			ACTION_IF desc_strref>0 BEGIN
+				ACTION_GET_STRREF desc_strref desc
+				OUTER_PATCH_SAVE desc "%desc%" BEGIN
+					REPLACE_TEXTUALLY "%old%" "%new%"
+				END
+				STRING_SET_EVALUATE desc_strref "%desc%"
+			END
+		END
+	END
+	
+	// dust mephit
+	
+	COPY_EXISTING "famdust.itm" "%workspace%"
+		READ_LONG 0x54 strref
+	BUT_ONLY
+	LAF adjust_description INT_VAR strref STR_VAR savetype=REFLEX END
+		
+	// Mustard Jelly attack form
+	
+	COPY_EXISTING "%WIZARD_POLYMORPH_MUSTARD_JELLY%.spl" "%workspace%"
+		READ_LONG 0x50 strref
+	BUT_ONLY
+	ACTION_GET_STRREF strref desc
+	OUTER_INNER_PATCH_SAVE desc_new "%desc%" BEGIN
+		REPLACE_TEXTUALLY "%all_save_strings_120%" "%save_name_FORT%"
+		REPLACE_TEXTUALLY "%all_save_strings_110%" "%save_name_WILL%"
+	END
+	STRING_SET_EVALUATE strref "%desc_new%"
+	
+	
+
+END
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+//// Edit the savetype of an effect
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION edit_effect_savetype STR_VAR savetype="" BEGIN
+
+	READ_BYTE 0x40 save_byte
+	SET save_byte = save_byte BAND 0b11100000
+	PATCH_MATCH "%savetype%" WITH
+	FORT BEGIN
+		SET save_byte = save_byte BOR 0b00000100
+	END
+	REFLEX BEGIN
+		SET save_byte = save_byte BOR 0b00000010	
+	END
+	WILL BEGIN
+			SET save_byte = save_byte BOR 0b00000001
+	END
+	DEFAULT
+	END
+	WRITE_BYTE 0x40 save_byte
+END
+
+
+DEFINE_PATCH_FUNCTION UI_saves BEGIN
+
+	REPLACE_TEXTUALLY ~workingString *= *Infinity_FetchString(characters\[currentID\]\.proficiencies\.save\(Wand\|Poly\)\.strRef) \.\. ": " \.\.  characters\[currentID\]\.proficiencies\.save\(Wand\|Poly\).current[ %TAB%%WNL%%LNL%%MNL%]+addCharacterDetail(nil,nil,workingString)~ ~~
+	REPLACE_TEXTUALLY "saveDeath" "DWSavePlaceholder"
+	REPLACE_TEXTUALLY "saveBreath" "saveDeath"
+	REPLACE_TEXTUALLY "DWSavePlaceholder" "saveBreath"
+
+END
+
+DEFINE_PATCH_FUNCTION UI_swap_help_string BEGIN
+
+	REPLACE_TEXTUALLY ~lua "helpTextString"~ ~lua "dwFilterOutSaves(helpTextString)"~
+	
+END
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION reflex_helpless BEGIN
+
+		SET helpless=0x29
+		PATCH_IF "%SOURCE_EXT%" STRING_EQUAL_CASE "spl" BEGIN
+			SPRINT function ADD_SPELL_EFFECT
+		END ELSE BEGIN
+			SPRINT function ADD_ITEM_EFFECT
+		END
+		LPF "%function%" INT_VAR insert_point=0 opcode=326 target=2 timing=1 parameter1=helpless parameter2=138 STR_VAR resource="%spl_helpless_reflex_save%" END
+
+
+
+END
+
+DEFINE_ACTION_FUNCTION reflex_helpless_setup BEGIN
+
+	CREATE spl "dw#rshel" 
+		LPF add_basic_spell_ability END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=36 target=2 timing=0 duration=1 parameter1="-20" parameter2=3 END
+
+
+
+END
+
+<<<<<<<< .../stratagems-inline/filter_out_saves.lua
+function dwFilterOutSaves(string)
+
+	string=string.gsub(string,"DW_DELETE_ME:[^%c]+%c","")
+	return string
+
+end
+>>>>>>>>

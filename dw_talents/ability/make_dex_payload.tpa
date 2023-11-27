@@ -1,0 +1,45 @@
+DEFINE_ACTION_FUNCTION make_dex_payload BEGIN
+
+
+	// get splprot entry
+	LAF resolve_splprot_entry INT_VAR stat=40 value="-1" STR_VAR relation=equal RET splprot_value=value END
+
+	// master spell
+	
+	CREATE spl "dw3edex" 
+		LPF add_basic_spell_ability END
+		FOR (value=0;value<=25;value+=1) BEGIN
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 STR_VAR resource="dw3ed%value%" END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 parameter1=value parameter2=splprot_value STR_VAR resource="dw3ed%value%" END
+			INNER_ACTION BEGIN
+				LAF make_dex_secondary_spell INT_VAR dex=value END
+			END
+		END
+
+	// dexmod.2da
+	
+	COPY_EXISTING dexmod.2da override
+		LPF 2da_read RET_ARRAY rows array END
+		PHP_EACH rows AS dex=>discard BEGIN
+			PATCH_IF IS_AN_INT dex BEGIN
+				LPF 3e_abil_standard INT_VAR ability=dex RET modifier END
+				SET $array("%dex%" "MISSILE")=modifier
+				SET $array("%dex%" "AC")=(0 - modifier)
+			END
+		END
+		LPF 2da_write STR_VAR array default="0" END
+
+END
+
+DEFINE_ACTION_FUNCTION make_dex_secondary_spell
+	INT_VAR dex=0
+BEGIN
+	CREATE spl "dw3ed%dex%" 
+		LPF add_basic_spell_ability END
+		LPF 3e_abil_standard INT_VAR ability=dex RET modifier END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=34 target=2 timing=9 parameter1=modifier END // wands
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=36 target=2 timing=9 parameter1=modifier END // breath weapon
+
+
+
+END

@@ -1,0 +1,129 @@
+DEFINE_ACTION_FUNCTION militant_wizards BEGIN
+
+	LAF check_ini STR_VAR ini=number_of_required_militant_wizard_spells RET number_required=value END
+	LAF check_ini STR_VAR ini=list_specialist_spells RET list_spells=value END
+
+	// setup resources
+
+	LAF include STR_VAR file=mageschools_shared.tph locbase=shared END	
+	LAF virtualise_specialist_blocks STR_VAR tra=mageschool END
+	
+	LAF run STR_VAR file=319ify_item_restrictions locbase=shared END
+	LAF run STR_VAR file=armored_mages locbase=shared END
+	LAF run STR_VAR file=school_save_bonuses locbase=shared END
+
+	// make the actual kits
+	
+	ACTION_FOR_EACH mage_version IN abjurer conjurer invoker necromancer BEGIN
+		LAF militant_wizard_kit STR_VAR mage_version END
+	END
+
+	// specialist menus for single-class MWs
+	LAF add_kit_menu INT_VAR name=58 desc=60 title=59 STR_VAR id=militant_wizard kits="DW_MILITANT_ABJURER DW_MILITANT_CONJURER DW_MILITANT_INVOKER DW_MILITANT_NECROMANCER" class=MAGE END
+
+	// update the kit-identification LUA
+	LAF ui_detect_class_kit END
+	
+	// impose schools - specialist
+
+	ACTION_DEFINE_ASSOCIATIVE_ARRAY spec_map BEGIN
+		ABJURER=>abjuration
+		CONJURER=>conjuration
+		INVOKER=>invocation
+		NECROMANCER=>necromancy
+	END	
+	
+	ACTION_PHP_EACH spec_map AS kit=>spell_list BEGIN
+		OUTER_SPRINT kit "DW_MILITANT_%kit%"
+		LAF set_specialist_spells INT_VAR number_required list_spells update_description=1 STR_VAR kit spell_list END	
+	END
+	// impose schools - blocks
+	
+	LAF set_spell_list INT_VAR update_scrolls_later=1 STR_VAR kit=DW_MILITANT_ABJURER block_learn="alteration illusion divination" END	
+	LAF set_spell_list INT_VAR update_scrolls_later=1 STR_VAR kit=DW_MILITANT_CONJURER block_learn="alteration divination invocation" END	
+	LAF set_spell_list INT_VAR update_scrolls_later=1 STR_VAR kit=DW_MILITANT_INVOKER block_learn="enchantment illusion conjuration" END	
+	LAF set_spell_list INT_VAR update_scrolls_later=1 STR_VAR kit=DW_MILITANT_NECROMANCER block_learn="alteration illusion enchantment" END	
+	
+
+	// assign learning modifiers
+
+	LAF set_spell_learn_modifiers STR_VAR kit=DW_MILITANT_ABJURER modifiers="abjuration=15, default=-15" END
+	LAF set_spell_learn_modifiers STR_VAR kit=DW_MILITANT_CONJURER modifiers="conjuration=15, default=-15" END
+	LAF set_spell_learn_modifiers STR_VAR kit=DW_MILITANT_INVOKER modifiers="invocation=15, default=-15" END
+	LAF set_spell_learn_modifiers STR_VAR kit=DW_MILITANT_NECROMANCER modifiers="necromancy=15, default=-15" END
+
+	
+	// log extra weapons for prof
+	LAF include STR_VAR file=prof_tools.tph locbase=prof END
+	ACTION_FOR_EACH school IN ABJURER CONJURER INVOKER NECROMANCER BEGIN
+		LAF prof_add_kit_weapons STR_VAR kit="DW_MILITANT_%school%" weapons="longsword shortsword bastardsword" END
+	END
+	
+
+	// re-externalize proficiencies if appropriate
+	ACTION_IF FILE_EXISTS "%data_loc_shared%/weapprof.2da" BEGIN
+		LAF externalize_weapprof END
+	END
+
+
+	// process scroll usability
+	LAF process_scroll_usability_now END
+
+	// if appropriate, rebuild dual-class grid
+	
+	ACTION_IF FILE_EXISTS_IN_GAME "m_dw_dud.lua" BEGIN
+		LAF collect_dual_class_kit_data END
+	END
+
+
+END
+
+DEFINE_ACTION_FUNCTION militant_wizard_kit STR_VAR mage_version="" BEGIN
+
+	ACTION_MATCH "%mage_version%" WITH
+	abjurer BEGIN
+		OUTER_SET name_var=54
+		OUTER_SET desc_var=55
+		OUTER_SPRINT save_bonus "%spl_save_bonus_abjuration%"
+	END
+	conjurer BEGIN
+		OUTER_SET name_var=56
+		OUTER_SET desc_var=57
+		OUTER_SPRINT save_bonus "%spl_save_bonus_conjuration%"
+	END
+	invoker BEGIN
+		OUTER_SET name_var=50
+		OUTER_SET desc_var=51
+		OUTER_SPRINT save_bonus "%spl_save_bonus_invocation%"
+	END
+	necromancer BEGIN
+		OUTER_SET name_var=52
+		OUTER_SET desc_var=53	
+		OUTER_SPRINT save_bonus "%spl_save_bonus_necromancy%"
+	END
+	DEFAULT
+		FAIL "Unrecognised militant wizard type %mage_version%"
+	END
+	ACTION_TO_UPPER mage_version
+	
+	OUTER_SPRINT kit "DW_MILITANT_%mage_version%"
+	kit.copy[%mage_version%=>%kit%]
+	[
+		k_name:=(AT name_var)
+		k_description:=(AT desc_var)
+		k.kit_apply_powers{%spl_leather_armor_usable% 1,%spl_chain_armor_usable% 7,%spl_plate_armor_usable% 15,%spl_animation_armored_mage% 1,%save_bonus% 1}
+		k.kit_remove_powers{%spl_mage_unusability_flag%}
+		k_melee=2
+		k_ranged=2
+		k_styles=2
+	]
+	
+	LAF check_label STR_VAR label=dw-bonus_specialist_spells RET value END
+	ACTION_IF value BEGIN
+		OUTER_SPRINT path "%MOD_FOLDER%/class_race/bonus_spell_lists/%mage_version%.txt"
+		ACTION_TO_LOWER path
+		LAF bonus_spells_from_list INT_VAR skip_clab=1 STR_VAR kit path END
+	END	
+
+END
+

@@ -1,0 +1,125 @@
+DEFINE_ACTION_FUNCTION druid_multiclass BEGIN
+
+	// shared data
+	
+	LAF include STR_VAR file=druid_shared.tph locbase=shared END
+	LAF get_cleric_to_druid_string RET c_to_d_apply_string c_to_d_grant_string END
+
+	LAF ui_spell_system_spheres END
+	LAF virtual_class_setup END
+
+
+	// required tools
+	
+	LAF run STR_VAR file=319ify_item_restrictions locbase=shared END
+	LAF run STR_VAR file=one_fewer_spell locbase=shared END
+	LAF include STR_VAR file=prof_tools.tph locbase=prof END
+	LAF include STR_VAR file=multiclass.tph locbase=shared END
+
+	// marker if required
+
+	LAF ds_resolve_stat STR_VAR id=DW_DRUID RET druid_splstate=stat_ind END
+
+	// if needed, make marker spell
+	
+	ACTION_IF !FILE_EXISTS_IN_GAME "%spl_druid_marker%.spl" BEGIN
+
+		spl.make[%spl_druid_marker%]
+		[
+			m.ab.add{}
+			m.ab_fx.add{s_opcode=328 s_target=2 s_timing=9 s_parameter2=druid_splstate s_special=1} 
+		]
+	
+	END
+
+	// spell to disable Turn Undead
+	
+	spl.make[%spl_disable_turn_undead%]
+	[
+		m.ab.add{}
+		m.ab_fx.add{s_opcode=144 s_target=2 s_timing=9 s_parameter2=6}
+	]
+
+	// are we installing druid/elementalists?
+	
+	LAF check_label STR_VAR label=dw#multiclass_specialists_permitted RET value1=value END
+	LAF check_label STR_VAR label=dw-elementalist RET value2=value END
+	OUTER_SET druid_elementalists=(value1 && value2)
+
+	// set up the sphere system if druid/elementalists are used
+	
+	ACTION_IF druid_elementalists BEGIN
+		LAF ui_spell_system_spheres END
+	END
+
+	// the actual kits
+
+
+	ACTION_FOR_EACH this_kit IN 
+		druid_mage
+		druid_ranger
+		druid_thief
+	BEGIN
+		LAF check_ini STR_VAR ini="%this_kit%" RET value END
+		ACTION_IF value BEGIN
+			LAF include STR_VAR file="%this_kit%.tph" location=kits END
+			LAF "%this_kit%" END
+		END
+		OUTER_SPRINT kit_name "DW_%this_kit%"
+		ACTION_TO_UPPER kit_name
+		OUTER_SPRINT $druid_mc_kit_names("%kit_name%") ""
+	END
+		
+	// elementalist specialization if required
+
+	
+	ACTION_IF druid_elementalists BEGIN
+		WITH_TRA "%scs_tra_loc%/english/elementalist.tra" "%scs_tra_loc%/%LANGUAGE%/elementalist.tra" BEGIN 
+			LAF druid_elementalists END
+		END
+		ACTION_FOR_EACH elem IN EARTH AIR FIRE WATER BEGIN
+			OUTER_SPRINT $druid_mc_kit_names("DW_DRUID_ELEMENTALIST_%elem%") ""
+		END
+	END
+
+	
+	// update the kit-identification LUA
+	LAF ui_detect_class_kit END
+
+	
+	// alter script and dialog checks. DRUID_ALL should return 1, CLERIC_ALL should return 0
+	LAF run STR_VAR file= amalgamate_class_checks locbase=shared END
+
+	// fast finder for 'Class'
+	
+	ACTION_CLEAR_ARRAY druid_scripts
+	ACTION_CLEAR_ARRAY druid_dialogs
+	COPY_EXISTING_REGEXP - ".*\.bcs" nowhere 
+		PATCH_IF INDEX_BUFFER (16396)>=0 BEGIN
+			SPRINT $druid_scripts("%SOURCE_RES%") ""
+		END
+	COPY_EXISTING_REGEXP - ".*\.dlg" nowhere 
+		PATCH_IF INDEX_BUFFER ("Class(")>=0 BEGIN
+			SPRINT $druid_dialogs("%SOURCE_RES%") ""
+		END
+
+	ACTION_PHP_EACH druid_scripts AS script=>discard BEGIN
+		LAF disjunctive_substitution STR_VAR script match="Class(\([^,]*\),DRUID_ALL)" replace="OR()Class(\1,DRUID_ALL)|CheckSpellState(\1,DW_DRUID)" END
+	END
+	ACTION_PHP_EACH druid_dialogs AS dialog=>discard BEGIN
+		LAF disjunctive_substitution STR_VAR dialog match="Class(\([^,]*\),CLERIC_ALL)" replace="Class(\1,CLERIC_ALL)|!CheckSpellState(\1,DW_DRUID)" END
+	END
+	
+	// cleric/rangers use cleric spells
+	
+	LAF assign_spheres STR_VAR class=CLERIC_RANGER default=cleric END
+	
+	// re-externalize proficiencies if appropriate
+	ACTION_IF FILE_EXISTS "%data_loc_shared%/weapprof.2da" BEGIN
+		LAF externalize_weapprof END
+	END
+
+	// process scroll usability
+	LAF process_scroll_usability_now END
+
+END

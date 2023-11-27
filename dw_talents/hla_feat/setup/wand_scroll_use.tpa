@@ -1,0 +1,104 @@
+DEFINE_ACTION_FUNCTION wand_scroll_use BEGIN
+
+	// get a couple of unique SPECIFIC elements
+   LAF ids_resolve INT_VAR min=150 STR_VAR ids=SCROLL_OR_WAND idsfile=SPECIFIC RET specifics_scroll=value END 
+   LAF ids_resolve INT_VAR min=150 STR_VAR ids=WAND idsfile=SPECIFIC RET specifics_wand=value END 
+
+	// load needed resources
+	
+	LAF include STR_VAR file=319ify_item_restrictions.tpa locbase=shared END
+
+	// initialize
+	LAF 2daq_extract STR_VAR resref=clastext case=lower column=mixed RET_ARRAY clastext_array=array END
+	ACTION_FOR_EACH class IN thief fighter_thief cleric_thief  BEGIN
+		OUTER_SET "%class%_strref"=$clastext_array("%class%")
+		ACTION_IF FILE_EXISTS_IN_GAME "m_dw_itd.lua" && !RESOURCE_CONTAINS "m_dw_itd.lua" "dwUnusable[%value%]" BEGIN
+			APPEND "m_dw_itd.lua" "dwUnusable[%value%]={}" 
+		END
+	END
+
+	// make needed menu change
+	COPY_EXISTING "ui.menu" override
+		REPLACE_TEXTUALLY EXACT_MATCH "itemDesc.item.description" "dwItemDescription(itemDesc.item)"
+	BUT_ONLY
+	
+	// make a spell setting the specifics value to the no-scroll value
+	
+	CREATE spl "%spl_no_scroll_use%"
+		LPF add_basic_spell_ability END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=72 target=1 timing=1 parameter1=specifics_scroll parameter2=4 END
+	
+
+	// apply the no-scrolls at 1st level for all thief kits and for cleric/thief, fighter/thief
+	
+	kit.edit_all[THIEF]
+	[
+	k.kit_apply_powers{%spl_no_scroll_use% 1}
+	]
+
+	// if '%spl_mage_unusability_flag%' is present, we've 319-ified. In this case we zero the specifics, and give
+	// immunity to spl_no_scroll_use, at the start of this spell and %spl_animation_armored_mage%
+	//
+	// if not, create a new spell that does this and add it to all mage classes (and set up externalized descriptions)
+	
+	
+	ACTION_IF FILE_EXISTS_IN_GAME "%spl_mage_unusability_flag%.spl" BEGIN
+		ACTION_FOR_EACH spell IN "%spl_mage_unusability_flag%" "%spl_animation_armored_mage%" BEGIN
+			ACTION_IF FILE_EXISTS_IN_GAME "%spell%.spl" BEGIN
+				COPY_EXISTING "%spell%.spl" override
+					LPF ADD_SPELL_EFFECT INT_VAR insert_point=0 opcode=72 target=1 timing=1 parameter1=0 parameter2=4 END
+					LPF ADD_SPELL_EFFECT INT_VAR insert_point=0 opcode=318 target=1 timing=1 STR_VAR resource="%spl_no_scroll_use%" END
+			END		
+		END	
+	END ELSE BEGIN
+		LAF edit_descriptions_setup END
+		CREATE spl "%spl_zero_specifics%"
+			LPF add_basic_spell_ability END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=313 target=1 timing=9 STR_VAR resource="dw-ftwnd" END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=318 target=1 timing=9 STR_VAR resource="%spl_no_scroll_use%" END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=72 target=1 timing=1 parameter1=0 parameter2=4 END
+
+	
+		kit.edit_all[MAGE]
+		[
+		k.kit_apply_powers{%spl_zero_specifics% 1}
+		]
+	END
+	
+	// go through all the scrolls and wands; remove the main usability flag, set scrolls as unusable by the specifics_scroll specific, wands as unusable by that and the specifics_wands specific, and mark them both in m_dw_itd
+	// by definition, a scroll/wand is affected if it's usable by mages but not thieves
+
+	OUTER_SPRINT lua_add ""
+	COPY_EXISTING_REGEXP ".*\.itm" override
+		SPRINT resref "%SOURCE_RES%"
+		TO_UPPER resref
+		PATCH_IF ((BYTE_AT 0x18) BOR 0b11111011 )=0b11111111 BEGIN // droppable
+			READ_SHORT 0x1c category
+			PATCH_MATCH "%category%" WITH
+			11 35 BEGIN
+				PATCH_IF !(((BYTE_AT 0x20) BOR 0b11111011) = 0b11111111) && (((BYTE_AT 0x20) BOR 0b10111111) = 0b11111111) BEGIN
+					// set usability flags
+					WRITE_BYTE 0x20 ((BYTE_AT 0x20) BAND 0b10111101)
+					WRITE_BYTE 0x1f ((BYTE_AT 0x1f) BAND 0b11111101)
+					// mark up lua
+					SPRINT lua_add "%lua_add%dwUnusable['%resref%']={}%WNL%"
+					PATCH_FOR_EACH class IN thief fighter_thief cleric_thief BEGIN
+						strref="%class%_strref"
+						SPRINT lua_add "%lua_add%dwUnusable['%resref%'][%strref%]=true%WNL%"
+					END	
+					// 319ify as unusable for scroll specific
+					LPF ADD_ITEM_EQEFFECT INT_VAR opcode=319 target=2 parameter1=specifics_scroll parameter2=6 END
+					// if a wand, 319ify as unusable for wand specific
+					PATCH_IF category=35 BEGIN
+						LPF ADD_ITEM_EQEFFECT INT_VAR opcode=319 target=2 parameter1=specifics_wand parameter2=6 END
+					END
+				END
+			END
+			DEFAULT
+			END
+		END
+	BUT_ONLY
+	
+	// write the lua data
+	APPEND "m_dw_itd.lua" "%WNL%%lua_add%"
+END

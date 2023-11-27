@@ -1,0 +1,181 @@
+DEFINE_ACTION_FUNCTION talona_cleric BEGIN
+
+    LAF talona_shared END
+	OUTER_SPRINT kit DW_TALONA_CLERIC
+	LAF splconv_get_name STR_VAR spell="%CLERIC_MOLD_TOUCH%" new_type=innate RET spl_talona_mold_touch=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_CLOUD_OF_PESTILENCE%" new_type=innate RET spl_talona_cloud_of_pestilence=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_CAUSE_DISEASE%" new_type=innate RET spl_talona_cause_disease=new_resref END
+	kit.copy[CLERIC=>%kit%]
+	[
+		k_name:=@104
+		k_desc:=@105
+		k.kit_apply_powers{%spl_talona_disease_immunity% 1,%spl_talona_poison_immunity% 4}
+		k.kit_grant_powers{%spl_talona_cause_disease% 3 6,%spl_talona_mold_touch% 5 6,%spl_talona_poison_weapon% 6 6,%spl_talona_cloud_of_pestilence% 7 6}
+		k_color_metal=35
+		k_color_minor_cloth=52
+		k_color_main_cloth=103
+		k_color_leather=25
+		k_color_armor=80	
+		k.kit_set_alignment{le ne ce}
+	]
+
+	LAF cleric_kit_substitutions STR_VAR kit god=talona END
+
+	LAF assign_spheres STR_VAR kit default=cleric subtract="good healing" END
+	LAF holy_symbol INT_VAR name=2046 follower=2047 STR_VAR kit desc_bam=cring34 inv_bam=iring34 END
+	LAF adjust_cleric_stronghold STR_VAR talos="all" kit END
+ 	LAF assign_bonus_spells STR_VAR kit spells="STINKING_CLOUD CONTAGION CLOUDKILL" END
+ 
+END
+
+DEFINE_ACTION_FUNCTION assassin_of_talona BEGIN
+
+    LAF talona_shared END
+	OUTER_SPRINT kit DW_TALONA_ASSASSIN
+	LAF splconv_get_name STR_VAR spell="%CLERIC_MOLD_TOUCH%" new_type=innate RET spl_talona_mold_touch=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_CLOUD_OF_PESTILENCE%" new_type=innate RET spl_talona_cloud_of_pestilence=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_CAUSE_DISEASE%" new_type=innate RET spl_talona_cause_disease=new_resref END
+
+	kit.copy[CLERIC_THIEF=>%kit%]
+	[
+		k_name:=@165
+		LPF adjust_assassin_descriptions INT_VAR tra_ref=166 RET k_desc=desc END
+		k.kit_apply_powers{%spl_talona_disease_immunity% 1,%spl_talona_poison_immunity% 4|class=cleric}
+		k.kit_apply_powers{SPCL421 1|class=thief} // +1 hit/damage}
+		k.kit_grant_powers{%spl_talona_cause_disease% 3 6,%spl_talona_mold_touch% 5 6,%spl_talona_cloud_of_pestilence% 7 6|class=cleric}
+		k.kit_grant_powers{%ASSASSIN_POISON% 1 4|class=thief}
+		k_color_metal=35
+		k_color_minor_cloth=52
+		k_color_main_cloth=103
+		k_color_leather=25
+		k_color_armor=80	
+		k.kit_set_alignment{le ne ce}
+		k.kit_copy_from{thiefskl|source=ASSASIN}
+	]
+
+	LAF cleric_kit_substitutions STR_VAR kit god=talona END	
+	LAF copy_backstab STR_VAR kit copy_from=ASSASIN END
+
+	LAF assign_spheres STR_VAR kit default=cleric subtract="good healing" END
+	LAF holy_symbol INT_VAR name=2046 follower=2047 STR_VAR kit desc_bam=cring34 inv_bam=iring34 END
+	LAF adjust_cleric_stronghold STR_VAR talos="all" kit END
+ 	LAF assign_bonus_spells STR_VAR kit spells="STINKING_CLOUD CONTAGION CLOUDKILL" END
+	LAF set_multiclass_components STR_VAR kit components="assasin dw_talona_cleric"  END
+	
+
+ 
+END
+
+DEFINE_ACTION_FUNCTION necromancer_of_talona BEGIN
+
+    LAF talona_shared END
+	OUTER_SPRINT kit DW_TALONA_NECROMANCER
+	LAF splconv_get_name STR_VAR spell="%CLERIC_MOLD_TOUCH%" new_type=innate RET spl_talona_mold_touch=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_CLOUD_OF_PESTILENCE%" new_type=innate RET spl_talona_cloud_of_pestilence=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_CAUSE_DISEASE%" new_type=innate RET spl_talona_cause_disease=new_resref END
+	kit.copy[CLERIC_MAGE=>%kit%]
+	[
+		k_name:=@118
+		k_desc:=@119
+		k.kit_apply_powers{%spl_talona_disease_immunity% 1,%spl_talona_poison_immunity% 4|class=cleric}
+		k.kit_grant_powers{%spl_talona_cause_disease% 3 6,%spl_talona_mold_touch% 5 6,%spl_talona_poison_weapon% 6 6,%spl_talona_cloud_of_pestilence% 7 6|class=cleric}
+		k_color_minor_cloth=52
+		k_color_main_cloth=103
+		k.kit_set_alignment{le ne ce}
+	]
+
+	LAF cleric_kit_substitutions STR_VAR kit god=talona END
+
+	LAF assign_spheres INT_VAR update_scroll_usability=0 STR_VAR kit default=cleric subtract="good healing" END
+	LAF holy_symbol INT_VAR name=2046 follower=2047 STR_VAR kit desc_bam=cring34 inv_bam=iring34 END
+	LAF adjust_cleric_stronghold STR_VAR talos="all" kit END
+ 	LAF assign_bonus_spells STR_VAR kit spells="STINKING_CLOUD CONTAGION CLOUDKILL" class=cleric END
+ 
+ 	LAF make_multiclass_specialist STR_VAR kit school=necromancy END
+	LAF set_multiclass_components STR_VAR kit components="DW_TALONA_CLERIC NECROMANCER"  END
+
+END
+
+
+
+DEFINE_ACTION_FUNCTION talona_favored_soul BEGIN
+
+
+	LAF talona_shared END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_MOLD_TOUCH%" new_type=innate RET spl_talona_mold_touch=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_CLOUD_OF_PESTILENCE%" new_type=innate RET spl_talona_cloud_of_pestilence=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_CAUSE_DISEASE%" new_type=innate RET spl_talona_cause_disease=new_resref END
+
+	// make the main kit
+	
+	OUTER_SPRINT kit "DW_TALONA_FAVORED"
+	
+	LAF build_favored_soul_kit INT_VAR name=4119 desc=4120 god=4122 god_gender=4029 god_temple=4121 STR_VAR kit copy_from=DW_TALONA_CLERIC END
+	LAF cleric_kit_substitutions STR_VAR kit god=talona END
+
+	kit.edit[%kit%|edit_strrefs_in_place:i=1]
+	[
+		k.kit_apply_powers{%spl_talona_disease_immunity% 1,%spl_talona_poison_immunity% 4}
+		k.kit_grant_powers{%spl_talona_cause_disease% 3 6,%spl_talona_mold_touch% 5 6,%ASSASSIN_POISON% 6 6,%spl_talona_cloud_of_pestilence% 7 6}
+	]
+
+	// spell choices
+
+	LAF assign_bonus_spells STR_VAR kit spells="CLERIC_CURSE WIZARD_STINKING_CLOUD CLERIC_UNHOLY_BLIGHT WIZARD_CONTAGION WIZARD_CLOUDKILL CLERIC_HARM CLERIC_SYMBOL_DEATH" END
+	LAF adjust_cleric_stronghold STR_VAR talos=all kit END
+
+END
+
+
+
+
+DEFINE_ACTION_FUNCTION talona_shared BEGIN
+
+	LAF include STR_VAR file=log_favored_weapon.tph locbase=shared END
+	LAF log_favored_weapon STR_VAR god=TALONA weapon=dagger END
+
+	
+   LAF check_label STR_VAR label=dw#talona_shared RET value END
+   ACTION_IF !value BEGIN
+   
+		LAF make_label STR_VAR label=dw#talona_shared END
+		
+		// immunity to disease, cloud of pestilence, and stinking cloud
+		
+		// other innates
+
+		LAF splconv STR_VAR spell="%CLERIC_MOLD_TOUCH%" new_type=innate RET_ARRAY splconv_array END
+		LAF splconv STR_VAR spell="%CLERIC_CLOUD_OF_PESTILENCE%" new_type=innate RET_ARRAY splconv_array END
+		LAF splconv STR_VAR spell="%CLERIC_CAUSE_DISEASE%" new_type=innate RET_ARRAY splconv_array END
+		LAF splconv_get_name STR_VAR spell="%CLERIC_CLOUD_OF_PESTILENCE%" new_type=innate RET spl_talona_cloud_of_pestilence=new_resref END
+		
+		spl.make[%spl_talona_disease_immunity%]
+		[
+			m.ab.add{}
+			m.immunity_effect{diseased}
+			m.ab_fx.add{s_opcode=328 s_target=2 s_special=1 s_timing=9 s_parameter2=IDS_OF_SYMBOL (splstate NAUSEA_IMMUNITY)}
+			m.ab_fx.add{s_opcode=318 s_target=2 s_timing=9 s_resource:="%CLERIC_CLOUD_OF_PESTILENCE% %spl_talona_cloud_of_pestilence%"} 
+		]
+		
+		
+		
+		// immunity to poison
+		
+		spl.make[%spl_talona_poison_immunity%]
+		[
+			m.ab.add{}
+			m_name:=@1060
+			m.immunity_effect{poison}
+		]
+		
+		// make granted extra spells, in case kit not installed
+		
+		ACTION_FOR_EACH spell IN STINKING_CLOUD CONTAGION CLOUDKILL BEGIN
+			LAF splconv STR_VAR spell new_type=priest RET_ARRAY splconv_array END
+		END
+
+
+   END	
+
+
+END

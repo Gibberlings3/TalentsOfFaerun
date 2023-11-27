@@ -1,0 +1,19 @@
+
+DEFINE_ACTION_FUNCTION skull_trap BEGIN
+
+     LAF log_this INT_VAR repeat=0 STR_VAR file="scs_modified_spells.2da" input=WIZARD_SKULL_TRAP END
+
+
+OUTER_SPRINT ~new~ @209
+OUTER_SPRINT ~old~ @210
+	spl.edit[%WIZARD_SKULL_TRAP%|edit_strrefs_in_place:i=1]
+	[
+		m.ab.delete{s_level>12}
+		new:=@209
+		old:=@210
+		INNER_PATCH_SAVE m_description "%m_description%" BEGIN
+			REPLACE_TEXTUALLY "%old%" "%new%"
+		END
+	]
+
+END

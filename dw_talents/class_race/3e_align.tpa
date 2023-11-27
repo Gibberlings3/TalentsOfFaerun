@@ -1,0 +1,185 @@
+DEFINE_ACTION_FUNCTION 3e_align BEGIN
+
+	// start by parsing KITLIST to determine parent classes
+	
+	COPY_EXISTING "kitlist.2da" "%workspace%"
+		COUNT_2DA_COLS colcount
+		READ_2DA_ENTRIES_NOW kitlist_contents colcount
+		FOR (row=0;row<kitlist_contents;++row) BEGIN
+			READ_2DA_ENTRY_FORMER kitlist_contents row 1 class
+			READ_2DA_ENTRY_FORMER kitlist_contents row 8 parent_id
+			PATCH_IF IS_AN_INT parent_id BEGIN
+				LOOKUP_IDS_SYMBOL_OF_INT parent class parent_id
+				SPRINT $parent("%class%") "%parent%"
+			END
+		END
+	BUT_ONLY
+	
+	// now go through alignmnt
+	
+	COPY_EXISTING "alignmnt.2da" "override"
+		COUNT_2DA_COLS colcount
+		READ_2DA_ENTRIES_NOW alignment_data colcount
+		// first pass to find row names
+		FOR (row=0;row<alignment_data;++row) BEGIN
+			READ_2DA_ENTRY_FORMER alignment_data row 0 class
+			SET $row("%class%")=row
+		END
+		// now go through to find which kits match parent class (or are parent classes themselves)
+		FOR (row=0;row<alignment_data;++row) BEGIN
+			READ_2DA_ENTRY_FORMER alignment_data row 0 class
+			SET proceed=1
+			PATCH_IF VARIABLE_IS_SET $parent("%class%") BEGIN
+				SPRINT parent $parent("%class%")
+				SET parent_row=$row("%parent%")
+				FOR (col=1;col<=9;++col) BEGIN
+					READ_2DA_ENTRY_FORMER alignment_data row col kit_entry
+					READ_2DA_ENTRY_FORMER alignment_data parent_row col parent_entry
+					PATCH_IF !(kit_entry=parent_entry) BEGIN
+						SET proceed=0
+					END
+				END
+			END 
+			PATCH_IF proceed BEGIN
+				PATCH_IF VARIABLE_IS_SET $parent("%class%") BEGIN
+					SPRINT to_match "%parent%"
+				END ELSE BEGIN
+					SPRINT to_match "%class%"
+				END
+				PATCH_MATCH "%to_match%" WITH
+				DRUID BEGIN
+					REPLACE_TEXTUALLY "%class% .*" "%class% 0 1 0 1 1 1 0 1 0"
+				END
+				THIEF RANGER BEGIN
+					PATCH_MATCH "%class%" WITH
+					ASSASIN BEGIN 
+						REPLACE_TEXTUALLY "%class% .*" "%class% 0 1 1 0 1 1 0 1 1"						
+					END
+					DEFAULT
+						REPLACE_TEXTUALLY "%class% .*" "%class% 1 1 1 1 1 1 1 1 1"	
+					END					
+				END
+				DEFAULT
+				END
+			END			
+		END
+		PRETTY_PRINT_2DA
+	BUT_ONLY
+	
+	// update descriptions
+
+	LAF 2daq_extract STR_VAR resref=clastext column=DESCSTR RET_ARRAY desc_array=array END
+	
+	// ranger
+	
+	strref.patch[desc_array_RANGER]
+	{
+		SPRINT old_text @600
+		SPRINT new_text @601
+		REPLACE_TEXTUALLY EXACT_MATCH "%old_text%" "%new_text%"
+		SPRINT old_align @602
+		REPLACE_TEXTUALLY "^[^a-zA-z]+%old_align%.*[%WNL%%MNL%%LNL%]" ""	
+	}
+	strref.patch[desc_array_DRUID]
+	[
+		SPRINT old_align @603
+		SPRINT new_align @604
+		REPLACE_TEXTUALLY "%old_align%" "%new_align%"
+	]
+	
+	// thief
+	
+	strref.patch[desc_array_THIEF]
+	{
+		SPRINT old_align @605
+		REPLACE_TEXTUALLY "^[^a-zA-z]+%old_align%.*[%WNL%%MNL%%LNL%]" ""
+	}
+	
+	// assassin
+	
+	strref.patch[desc_array_ASSASSIN]
+	{
+		SPRINT target @606
+		SPRINT align @607
+		REPLACE_TEXTUALLY "^\([^a-zA-z]+\)\(%target%.*\)" "\1\2%WNL%\1%align%"
+	}
+
+	// alignment changes: Jaheira
+	
+	LAF check_ini STR_VAR ini=jaheira_is_ng RET value END
+	ACTION_IF value BEGIN
+	
+		ACTION_FOR_EACH resref IN 
+		jahei12b jahei14 jaheir11 jaheir12 jaheir7 jaheir8 ttjaheir 
+		jaheir jaheir2 jaheir4 jaheir6
+		BEGIN
+			ACTION_IF FILE_EXISTS_IN_GAME "%resref%.cre" BEGIN
+				COPY_EXISTING "%resref%.cre" override
+					WRITE_BYTE 0x27b 33
+			END
+		END
+	END
+
+	// alignment changes: Faldorn
+	
+	LAF check_ini STR_VAR ini=faldorn_is_ne RET value END
+	ACTION_IF value BEGIN
+	
+		ACTION_FOR_EACH resref IN 
+		cefald01 cefald02 cefald04 cefaldor
+		faldor faldor5
+		BEGIN
+			ACTION_IF FILE_EXISTS_IN_GAME "%resref%.cre" BEGIN
+				COPY_EXISTING "%resref%.cre" override
+					WRITE_BYTE 0x27b 35
+			END
+		END
+	END
+	
+	// rangers don't fall
+	
+	APPEND "fallen.2da" "RANGER 0"
+	ACTION_PHP_EACH parent AS kit=>class BEGIN
+		ACTION_IF "%class%" STRING_EQUAL_CASE "ranger" BEGIN
+			APPEND "fallen.2da" "%kit% 0"
+		END	
+	END
+	COPY_EXISTING "fallen.2da" override
+		PRETTY_PRINT_2DA
+		
+	
+	ACTION_IF is_bg2 BEGIN
+
+		// remove reference to fallen rangers from Minister Lloyd's dialog
+
+		COPY_EXISTING "uhmay01.dlg" override
+			DECOMPILE_AND_PATCH BEGIN
+				REPLACE_TEXTUALLY "IF ~~ THEN GOTO 83" "IF ~~ THEN GOTO 84"
+			END
+		BUT_ONLY
+		STRING_SET 38115 @10
+
+		// remove Fallen Ranger effects from hell dialogs
+		
+		ACTION_FOR_EACH script IN ar2901 ar2902 ar2903 ar2904 ar2905 BEGIN
+			COPY_EXISTING "%script%.bcs" override
+				DECOMPILE_AND_PATCH BEGIN
+					REPLACE_TEXTUALLY ".*RemoveRangerHood.*" ""
+				END
+		END
+
+	END
+	
+
+	
+
+
+
+
+
+
+
+
+
+
+END

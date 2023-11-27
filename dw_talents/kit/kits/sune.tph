@@ -1,0 +1,239 @@
+DEFINE_ACTION_FUNCTION sune_cleric BEGIN
+
+    LAF sune_shared END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_EMOTION_HOPELESSNESS%" new_type=innate RET spl_sune_emotion_hopelessness=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_EMOTION_HOPE%" new_type=innate RET spl_sune_emotion_hope=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_FLAME_STRIKE%" new_type=innate RET spl_sune_flame_strike=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_MANTLE%" new_type=innate RET spl_sune_mantle=new_resref END
+	OUTER_SPRINT kit DW_SUNE_CLERIC
+
+	kit.copy[CLERIC=>%kit%]
+	[
+		k_name:=@64
+		k_desc:=@65
+		k.kit_grant_powers{%spl_sune_charm% 1 6,%spl_sune_veil% 5 8,%spl_sune_flame_strike% 7 5,%spl_sune_emotion_hope% 9,%spl_sune_emotion_hopelessness% 9,%spl_sune_mantle% 12}
+		k_mod_chr=2
+		k_color_metal=35
+		k_color_minor_cloth=49
+		k_color_main_cloth=46
+		k_color_leather=25
+		k_color_armor=80	
+		k.kit_set_alignment{ng cg cn}
+		IF {is_iwd} {{k_bio:=@1024}}
+	]
+
+	LAF cleric_kit_substitutions STR_VAR kit god=sune END
+
+	LAF assign_spheres STR_VAR kit default=cleric subtract="evil necromantic combat" add="fire sune_allow" END
+	LAF holy_symbol INT_VAR name=2015 follower=2016 STR_VAR kit desc_bam=nmpsuhly inv_bam=nmisuhly bam_path=dr kit END
+	LAF adjust_cleric_stronghold STR_VAR lathander=all kit END
+	LAF assign_bonus_spells STR_VAR kit spells="FRIENDS" END
+ 
+ 
+END
+
+DEFINE_ACTION_FUNCTION swashbuckler_of_sune BEGIN
+
+    LAF sune_shared END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_EMOTION_HOPELESSNESS%" new_type=innate RET spl_sune_emotion_hopelessness=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_EMOTION_HOPE%" new_type=innate RET spl_sune_emotion_hope=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_FLAME_STRIKE%" new_type=innate RET spl_sune_flame_strike=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_MANTLE%" new_type=innate RET spl_sune_mantle=new_resref END
+	OUTER_SPRINT kit DW_SUNE_SW
+
+	kit.copy[CLERIC_THIEF=>%kit%]
+	[
+		k_name:=@173
+		k_desc:=@174
+		k.kit_grant_powers{%spl_sune_charm% 1 6,%spl_sune_veil% 5 8,%spl_sune_flame_strike% 7 5,%spl_sune_emotion_hope% 9,%spl_sune_emotion_hopelessness% 9,%spl_sune_mantle% 12|class=cleric}
+		k.kit_apply_powers{splcl441 1,splcl441 5 5,splcl141 5 5|class=thief}
+		k_mod_chr=2
+		k_warhammer=2
+		k_club=2
+		k_flailmorningstar=2
+		k_mace=2
+		k_quarterstaff=2
+		k_2weapon=3
+		k_color_metal=35
+		k_color_minor_cloth=49
+		k_color_main_cloth=46
+		k_color_leather=25
+		k_color_armor=80	
+		k.kit_set_alignment{ng cg cn}
+		IF {is_iwd} {{k_bio:=@1024}}
+	]
+	
+	LAF cleric_kit_substitutions STR_VAR kit god=sune END
+
+	LAF assign_spheres STR_VAR kit default=cleric subtract="evil necromantic combat" add="fire sune_allow" END
+	LAF holy_symbol INT_VAR name=2015 follower=2016 STR_VAR kit desc_bam=nmpsuhly inv_bam=nmisuhly bam_path=dr kit END
+	LAF adjust_cleric_stronghold STR_VAR lathander=all kit END
+	LAF assign_bonus_spells STR_VAR kit spells="FRIENDS" END
+ 
+	LAF copy_backstab STR_VAR kit copy_from=swashbuckler END
+ 
+	LAF set_multiclass_components STR_VAR kit components="swashbuckler dw_sune_cleric"  END
+	
+	// log extra weapons for prof
+	
+	LAF include STR_VAR file=prof_tools.tph locbase=prof END
+	LAF prof_add_kit_weapons STR_VAR kit weapons="2weapon" END
+	
+	// grant extra prof
+	
+	LAF prof_add_kit_extra_slots INT_VAR slots=1 STR_VAR kit END
+END
+
+DEFINE_ACTION_FUNCTION enchanter_of_sune BEGIN
+
+    LAF sune_shared END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_EMOTION_HOPELESSNESS%" new_type=innate RET spl_sune_emotion_hopelessness=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_EMOTION_HOPE%" new_type=innate RET spl_sune_emotion_hope=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_FLAME_STRIKE%" new_type=innate RET spl_sune_flame_strike=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_MANTLE%" new_type=innate RET spl_sune_mantle=new_resref END
+	OUTER_SPRINT kit DW_SUNE_ENCHANTER
+
+	kit.copy[CLERIC_MAGE=>%kit%]
+	[
+		k_name:=@110
+		k_desc:=@111
+		k.kit_grant_powers{%spl_sune_charm% 1 6,%spl_sune_veil% 5 8,%spl_sune_flame_strike% 7 5,%spl_sune_emotion_hope% 9,%spl_sune_emotion_hopelessness% 9,%spl_sune_mantle% 12|class=cleric}
+		k_mod_chr=2
+		k_color_minor_cloth=49
+		k_color_main_cloth=46
+		k_min_chr=14
+		k.kit_set_alignment{ng cg cn}
+		IF {is_iwd} {{k_bio:=@1024}}
+	]
+
+	LAF cleric_kit_substitutions STR_VAR kit god=sune END
+
+	LAF assign_spheres INT_VAR update_scroll_usability=0 STR_VAR kit default=cleric subtract="evil necromantic combat" add="fire sune_allow" END
+	LAF holy_symbol INT_VAR name=2015 follower=2016 STR_VAR kit desc_bam=nmpsuhly inv_bam=nmisuhly bam_path=dr kit END
+	LAF adjust_cleric_stronghold STR_VAR lathander=all kit END
+ 	LAF assign_bonus_spells STR_VAR kit spells="FRIENDS" class=cleric END
+
+ 	LAF make_multiclass_specialist INT_VAR enforce_ability_minimum=0 STR_VAR kit school=enchantment END
+	LAF set_multiclass_components STR_VAR kit components="DW_SUNE_CLERIC ENCHANTER"  END
+
+ 
+END
+
+DEFINE_ACTION_FUNCTION fire_elementalist_of_sune BEGIN
+
+    LAF sune_shared END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_EMOTION_HOPELESSNESS%" new_type=innate RET spl_sune_emotion_hopelessness=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_EMOTION_HOPE%" new_type=innate RET spl_sune_emotion_hope=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_FLAME_STRIKE%" new_type=innate RET spl_sune_flame_strike=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_MANTLE%" new_type=innate RET spl_sune_mantle=new_resref END
+
+	OUTER_SPRINT kit DW_SUNE_FIRE_ELEMENTALIST
+
+	kit.copy[CLERIC_MAGE=>%kit%]
+	[
+		k_name:=@150
+		LPF resolve_elem_desc INT_VAR tra_ref=151 STR_VAR swap="%water_names%" RET k_desc=strref END
+		k.kit_grant_powers{%spl_sune_charm% 1 6,%spl_sune_veil% 5 8,%spl_sune_flame_strike% 7 5,%spl_sune_emotion_hope% 9,%spl_sune_emotion_hopelessness% 9,%spl_sune_mantle% 12|class=cleric}
+		k.kit_apply_powers{%spl_elementalist_fire_innate% 1|class=mage}
+		k_mod_chr=2
+		k_color_minor_cloth=49
+		k_color_main_cloth=46
+		k.kit_set_alignment{ng cg cn}
+		IF {is_iwd} {{k_bio:=@1024}}
+	]
+	
+	LAF cleric_kit_substitutions STR_VAR kit god=sune END
+
+	LAF assign_spheres INT_VAR update_scroll_usability=0 STR_VAR kit default=cleric subtract="evil necromantic combat" add="fire sune_allow" END
+
+ 	LAF assign_bonus_spells STR_VAR kit spells="FRIENDS" class=cleric END
+	LAF set_elem_spells INT_VAR school_tra=9 school_tra2=10 STR_VAR kit elem_spec=fire elem_block=water tra=elementalist END
+	LAF bonus_spells_from_list STR_VAR kit path="%MOD_FOLDER%/class_race/bonus_spell_lists/fire.txt" class=mage END
+	LAF set_spell_learn_modifiers STR_VAR kit modifiers="mage_fire=25, mage_fire_shared=25, mage_air=15, mage_earth=15, default=-15" END
+
+	LAF holy_symbol INT_VAR name=2015 follower=2016 STR_VAR kit desc_bam=nmpsuhly inv_bam=nmisuhly bam_path=dr kit END
+	LAF adjust_cleric_stronghold STR_VAR lathander=all kit END
+
+	LAF set_multiclass_components STR_VAR kit components="DW_SUNE_CLERIC DW_ELEMENTALIST_FIRE"  END
+
+ 
+ 
+END
+
+DEFINE_ACTION_FUNCTION sune_favored_soul BEGIN
+
+
+	LAF sune_shared END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_EMOTION_HOPELESSNESS%" new_type=innate RET spl_sune_emotion_hopelessness=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_EMOTION_HOPE%" new_type=innate RET spl_sune_emotion_hope=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_FLAME_STRIKE%" new_type=innate RET spl_sune_flame_strike=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_MANTLE%" new_type=innate RET spl_sune_mantle=new_resref END
+
+	// make the main kit
+	
+	OUTER_SPRINT kit "DW_SUNE_FAVORED"
+	
+	LAF build_favored_soul_kit INT_VAR name=4047 desc=4048 god=4049 god_gender=4029 god_temple=4050 STR_VAR kit copy_from=DW_SUNE_CLERIC END
+	LAF cleric_kit_substitutions STR_VAR kit god=sune END
+
+	kit.edit[%kit%|edit_strrefs_in_place:i=1]
+	[
+		k.kit_grant_powers{%spl_sune_charm% 1 6,%spl_sune_veil% 5 8,%spl_sune_flame_strike% 7 5,%spl_sune_emotion_hope% 9,%spl_sune_emotion_hopelessness% 9,%spl_sune_mantle% 12}
+		k_mod_chr=2
+	]
+
+	// spell choices
+
+	LAF assign_bonus_spells STR_VAR kit spells="WIZARD_FRIENDS CLERIC_CHARM_PERSON CLERIC_EXALTATION CLERIC_MENTAL_DOMINATION CLERIC_FLAME_STRIKE CLERIC_HEAL CLERIC_NATURE_BEAUTY" END
+
+END
+
+
+
+DEFINE_ACTION_FUNCTION sune_shared BEGIN
+
+	LAF include STR_VAR file=log_favored_weapon.tph locbase=shared END
+	LAF log_favored_weapon STR_VAR god=SUNE weapon=flailmorningstar END
+
+	
+   LAF check_label STR_VAR label=dw#sune_shared RET value END
+   ACTION_IF !value BEGIN
+   
+		LAF make_label STR_VAR label=dw#sune_shared END
+		
+		// emotion,flame strike, mantle
+		
+		LAF splconv STR_VAR spell="%WIZARD_EMOTION_HOPELESSNESS%" new_type=innate RET_ARRAY splconv_array END
+		LAF splconv STR_VAR spell="%WIZARD_EMOTION_HOPE%" new_type=innate RET_ARRAY splconv_array  END
+		LAF splconv STR_VAR spell="%CLERIC_FLAME_STRIKE%" new_type=innate RET_ARRAY splconv_array  END
+		LAF splconv STR_VAR spell="%WIZARD_MANTLE%" new_type=innate RET_ARRAY splconv_array  END
+
+
+
+		// charm person
+		
+		LAF splconv STR_VAR spell="%WIZARD_CHARM_PERSON%" new_type=innate new_resref="%spl_sune_charm%" END
+
+		spl.edit[%spl_sune_charm%]
+		[
+			m_name:=@1020
+			m_description:=@1021
+			m.ab_fx.alter{s_savebonus=0}
+		]
+
+		// veil of djalice
+		
+		spl.copy[cdsune2=>%spl_sune_veil%|source_location=dr]
+		[
+			m_name:=@1022
+			m_description:=@1023
+		]
+		
+		// spell list
+			
+		LAF define_spell_list STR_VAR key="sune_allow" spells="CLERIC_CHARM_PERSON" END
+
+	
+	END
+
+END

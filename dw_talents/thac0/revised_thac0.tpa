@@ -1,0 +1,82 @@
+DEFINE_ACTION_FUNCTION revised_thac0 BEGIN
+
+	// get data
+	LAF 2da_read INT_VAR inline=1 STR_VAR file=thac0type.2da RET_ARRAY type_array=array END
+	LAF 2da_read INT_VAR inline=1 STR_VAR file=thac0data.2da RET_ARRAY thac0_array=array END
+	
+	// process
+
+	COPY_EXISTING "thac0.2da" override
+		LPF 2da_read RET_ARRAY array END
+		PHP_EACH array AS k=>discard BEGIN
+			PATCH_IF IS_AN_INT k_1 BEGIN
+				LPF calculate_thac0 INT_VAR level=k_1 STR_VAR class="%k_0%" RET value END
+			END
+			SET $array("%k_0%" "%k_1%") = value
+		END
+		LPF 2da_write STR_VAR array default="0" END
+	BUT_ONLY
+
+END
+
+
+
+
+
+DEFINE_PATCH_FUNCTION calculate_thac0
+	INT_VAR level=0
+	STR_VAR class=""
+	RET value
+BEGIN
+	TO_UPPER class
+	PATCH_IF VARIABLE_IS_SET $type_array("%class%" TYPE) BEGIN
+		SPRINT type $type_array("%class%" TYPE)
+		mult=$thac0_array("%type%" MULTIPLIER)
+		div=$thac0_array("%type%" DIVISOR)		
+		min=$thac0_array("%type%" MINIMUM)
+		value=20 - (( level * mult) / div )
+		value= value<min? min: value
+	END ELSE BEGIN
+		PATCH_WARN "calculate_thac0 error: unrecognized class %class%"
+		value=21 - level
+	END
+
+END
+
+<<<<<<<<.../stratagems-inline/thac0type.2da
+2DA V1.0
+*
+					TYPE
+CLERIC				CLERIC
+FIGHTER				FIGHTER
+MAGE				MAGE
+THIEF				CLERIC
+BARD				CLERIC
+PALADIN				FIGHTER
+RANGER				FIGHTER
+DRUID				CLERIC
+FIGHTER_MAGE		FIGHTER
+FIGHTER_CLERIC		FIGHTER
+FIGHTER_THIEF		FIGHTER
+FIGHTER_MAGE_THIEF	FIGHTER
+MAGE_THIEF			CLERIC
+CLERIC_MAGE			CLERIC
+CLERIC_THIEF		CLERIC
+FIGHTER_DRUID		FIGHTER
+FIGHTER_MAGE_CLERIC	FIGHTER
+CLERIC_RANGER		FIGHTER
+MONK				FIGHTER
+SORCERER			MAGE
+SHAMAN				CLERIC
+>>>>>>>>
+
+<<<<<<<<.../stratagems-inline/thac0data.2da
+2DA V1.0
+*
+					MULTIPLIER		DIVISOR		MINIMUM
+FIGHTER				1				1			0
+CLERIC				3				4			2
+MAGE				1				2			5
+>>>>>>>>
+
+

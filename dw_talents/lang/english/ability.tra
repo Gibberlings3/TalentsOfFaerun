@@ -1,0 +1,73 @@
+@1="STRENGTH: Strength measures a character's muscle, endurance, and stamina. Strength is especially important to fighters, paladins, rangers, and monks because it helps them prevail in combat.
+
+Strength affects a character's chance to hit in melee, how much damage is inflicted with melee and thrown weapons, the ability to force open locked doors and containers, and how much a character can carry.
+
+Minimum: <MINIMUM>
+Maximum: <MAXIMUM>"
+
+@2="DEXTERITY: Dexterity measures a character's hand-eye coordination, agility, reflexes and balance. Dexterity is most important to thieves, but any character benefits from it.
+
+Dexterity affects a character's Armor Class (making you easier or harder to strike in combat), attack bonus with missile weapons, saving throws vs. Wands and Dragon Breath (dodging fireballs or other attacks you can avoid by moving quickly), and the skills Find Traps, Hide in Shadows, Move Silently, Open Locks, Pick Pockets, and Set Traps.
+
+Minimum: <MINIMUM>
+Maximum: <MAXIMUM>"
+
+@3="CONSTITUTION: Constitution measures a character's fitness, health, and physical resistance to hardship, injury, and disease. Constitution is important to all characters because it affects hit points. 
+
+Constitution affects a character's hit points (how much damage you can take before dying) and saving throws vs. Poison/Paralysis/Death and Petrification/Polymorph (resisting the effects of poison, etc.).
+
+Minimum: <MINIMUM>
+Maximum: <MAXIMUM>"
+
+@4="INTELLIGENCE: Intelligence measures a character's memory, reasoning, and learning ability.  Intelligence is the most important ability score for wizards, and is also useful for bards.
+
+Intelligence affects the number of magic spells that a wizard can cast each day, and the chance of learning a wizard spell from a scroll.
+
+Minimum: <MINIMUM>
+Maximum: <MAXIMUM>"
+
+@5="WISDOM: Wisdom measures a character's enlightenment, judgment, and common sense.  Wisdom is most important to clerics, druids, paladins, rangers, and shamans, but helps any character that wants ability to resist controlling magic. It also affects the Armor Class of an unarmored monk, making you easier or harder to strike in combat.
+
+Wisdom affects saving throws vs. spells (resisting a harpy's charming song, etc.) and the number of divine magic spells that clerics, druids, paladins, rangers, and shamans can cast each day. It also provides an additional bonus to a monk's Armor Class.
+
+Minimum: <MINIMUM>
+Maximum: <MAXIMUM>"
+
+@6="CHARISMA: Charisma measures a character's force of personality, persuasiveness, personal magnetism, and ability to lead.  Charisma is most important for favored souls, paladins, sorcerers, and bards.
+
+Charisma affects the number of spells that favored souls, sorcerers, and bards can cast each day, the power of a cleric or paladin's Turn Undead ability, and the prices charged by stores. It also provides an additional bonus to a paladin's saving throws.
+
+Minimum: <MINIMUM>
+Maximum: <MAXIMUM>"
+
+
+
+
+
+@11="Application of this spell" // must exactly match some initial part of description of BG2 strength spell
+@12="Upon application of this spell" // must match beginning of description from IWD strength spell
+@13="Upon application of this spell, the target's Strength is magically increased by an amount depending on its class. Warriors gain 1d8 points, priests and rogues gain 1d6 points, and wizards gain 1d4 points. The maximum Strength obtained from this spell is 18."
+
+@14="Strength
+When necessary, Mazzy can draw upon a great well of strength for brief periods of time. The strength obtained depends upon Mazzy's level:
+
+- level 1-9: Strength 18
+- level 10-12: Strength 19
+- level 13-15: Strength 20
+- level 16+: Strength 21
+
+Such might cannot be sustained indefinitely, alas. After 3 turns, the power coursing through her body ebbs, and Mazzy's Strength returns to normal levels."
+
+@20="Receives a \+2 bonus to all Saving Throws." // must exactly match the description in the Paladin class-description text
+@21="Adds <PRO_HISHER> Charisma bonus to all Saving Throws."
+@22="Starts with an Armor Class" // must exactly match the start of the description in the Monk class-description text
+@23="Gains +1 to base Armor Class every 2 levels."
+
+@25="Requires at least" // must match the start of strings like 'Requires at least 16 charisma' in the Enchanter description.
+
+
+
+@26="+2 bonus to Saving Throws vs. Paralysis/Poison/Death, vs. Rod/Staff/Wand, and vs. Spell, with additional bonuses based on Constitution."
+@27="+2 bonus to Saving Throws vs. Paralysis/Poison/Death, vs. Rod/Staff/Wand, and vs. Spell."
+@28="+2 bonus to Saving Throws vs. Rod/Staff/Wand and vs. Spell, with additional bonuses based on Constitution."
+@29="+2 bonus to Saving Throws vs. Rod/Staff/Wand and vs. Spell."

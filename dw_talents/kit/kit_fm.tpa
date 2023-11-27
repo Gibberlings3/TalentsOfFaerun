@@ -1,0 +1,93 @@
+DEFINE_ACTION_FUNCTION kit_fm BEGIN
+
+	LAF include STR_VAR file=multiclass.tph locbase=shared END
+	LAF include STR_VAR file=mageschools_shared.tph locbase=shared END
+	LAF virtualise_specialist_blocks STR_VAR tra=mageschool END
+	LAF include STR_VAR file=elementalist_shared.tph END
+	LAF run STR_VAR file=no_kensai_robes locbase=shared END
+
+
+	LAF include STR_VAR file=fighter_mage.tph location=kits END
+	
+	ACTION_CLEAR_ARRAY fm_kits
+	ACTION_DEFINE_ASSOCIATIVE_ARRAY fm_kits BEGIN
+		abjurant_defender=>null
+		kensai_illusionist=>null
+		kensai_enchanter=>null
+		barbarian_transmuter=>null
+		berserker_invoker=>null
+		berserker_wild_mage=>null
+	END
+	
+	LAF check_label STR_VAR label=dw-elementalist RET elemental_kits=value END
+	ACTION_IF elemental_kits BEGIN
+		LAF make_elemental_spell_lists RET earth_names air_names water_names fire_names all_names END
+		ACTION_DEFINE_ASSOCIATIVE_ARRAY fm_kits BEGIN
+			barbarian_fire_elementalist=>null
+			barbarian_water_elementalist=>null
+			barbarian_air_elementalist=>null
+			barbarian_earth_elementalist=>null
+		END
+	END
+	LAF check_label STR_VAR label=dw-force_mage RET force_mage=value END
+	ACTION_IF force_mage BEGIN
+		ACTION_DEFINE_ASSOCIATIVE_ARRAY fm_kits BEGIN
+			kensai_force_mage=>null
+		END
+	END
+	
+	
+	ACTION_PHP_EACH fm_kits AS fm=>null BEGIN
+		LAF check_ini STR_VAR ini="%fm%" RET value END
+		ACTION_IF is_iwd BEGIN
+			LAF check_ini INT_VAR silent=1 STR_VAR ini="iwd_story_block_%fm%" RET story_block=value END
+		END ELSE BEGIN
+			LAF check_ini INT_VAR silent=1 STR_VAR ini="bg_story_block_%fm%" RET story_block=value END		
+		END
+		ACTION_IF value && !story_block BEGIN
+			ACTION_TIME "%fm%" BEGIN
+				LAF "%fm%" END
+			END
+		END
+	END
+
+	
+	// introduce submenu for barbarian/elementalist
+	
+	LAF add_kit_menu INT_VAR name=30001 desc=30002 title=30000 STR_VAR id=barbarian_elementalist kits="DW_BARBARIAN_ELEMENTALIST_AIR DW_BARBARIAN_ELEMENTALIST_FIRE DW_BARBARIAN_ELEMENTALIST_EARTH DW_BARBARIAN_ELEMENTALIST_WATER" class=FIGHTER_MAGE END
+
+	// virtual names for b/elem multiclass kits
+	
+	ACTION_IF elemental_kits BEGIN
+		LAF override_chargen_kit_name INT_VAR override=30003 STR_VAR kit=DW_BARBARIAN_ELEMENTALIST_EARTH class=FIGHTER_MAGE END
+		LAF override_chargen_kit_name INT_VAR override=30004 STR_VAR kit=DW_BARBARIAN_ELEMENTALIST_AIR class=FIGHTER_MAGE END
+		LAF override_chargen_kit_name INT_VAR override=30005 STR_VAR kit=DW_BARBARIAN_ELEMENTALIST_FIRE class=FIGHTER_MAGE END
+		LAF override_chargen_kit_name INT_VAR override=30006 STR_VAR kit=DW_BARBARIAN_ELEMENTALIST_WATER class=FIGHTER_MAGE END
+	END
+
+
+	// update the kit-identification LUA
+	LAF ui_detect_class_kit END
+
+
+	
+	// externalize proficiencies
+	LAF externalize_weapprof END
+
+	// process scroll usability
+	LAF process_scroll_usability_now END	
+
+	// if appropriate, rebuild dual-class grid
+	
+	ACTION_IF FILE_EXISTS_IN_GAME "m_dw_dud.lua" BEGIN
+		LAF collect_dual_class_kit_data END
+	END
+
+	
+	// NPCs
+	
+	LAF run STR_VAR file=npc_kits END
+
+END
+
+

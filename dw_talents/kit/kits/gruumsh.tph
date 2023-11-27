@@ -1,0 +1,153 @@
+DEFINE_ACTION_FUNCTION gruumsh_cleric BEGIN
+
+	LAF splconv_get_name STR_VAR spell="%CLERIC_AID%" new_type=innate RET spl_gruumsh_aid=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_STRENGTH_OF_ONE%" new_type=innate RET spl_gruumsh_strength_of_one=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_CHAMPIONS_STRENGTH%" new_type=innate RET spl_gruumsh_champions_strength=new_resref END
+
+    LAF gruumsh_shared END
+	OUTER_SPRINT kit DW_GRUUMSH_CLERIC
+
+	kit.copy[CLERIC=>%kit%]
+	[
+		k_name:=@92
+		k_desc:=@93
+		k.kit_apply_powers{%spl_gruumsh_innate% 1}
+		k.kit_grant_powers{%spl_gruumsh_aid% 1 6,%spl_gruumsh_strength_of_one% 3 6,%spl_gruumsh_spear% 5 6,%spl_gruumsh_champions_strength% 7}
+		k_color_metal=35
+		k_color_minor_cloth=46
+		k_color_main_cloth=47
+		k_color_leather=25
+		k_color_armor=80
+		k.kit_set_alignment{cn ne ce}
+		if {is_iwd} {{k_bio:=@1043}}
+		k_any_race=0
+		k_halforc=1		
+	]
+	
+	LAF cleric_kit_substitutions STR_VAR kit god=gruumsh END
+
+	LAF assign_spheres STR_VAR kit default=cleric subtract="good divination wards" add="fire earth" END
+	LAF holy_symbol INT_VAR name=2034 follower=2035 category=1 STR_VAR kit desc_bam=camul10 inv_bam=iamul10 kit END
+	LAF adjust_cleric_stronghold STR_VAR talos="all" kit END
+ 
+ 
+END
+
+DEFINE_ACTION_FUNCTION wrathful_spear_of_gruumsh BEGIN
+
+	LAF splconv_get_name STR_VAR spell="%CLERIC_AID%" new_type=innate RET "%spl_gruumsh_aid%"=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_STRENGTH_OF_ONE%" new_type=innate RET "%spl_gruumsh_strength_of_one%"=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_CHAMPIONS_STRENGTH%" new_type=innate RET "%spl_gruumsh_champions_strength%"=new_resref END
+
+    LAF gruumsh_shared END
+	OUTER_SPRINT kit DW_GRUUMSH_WRATHFUL_SPEAR
+	LAF adjust_rage_descriptions INT_VAR tra_ref=160 RET desc END
+	kit.copy[FIGHTER_CLERIC=>%kit%]
+	[
+		k_name:=@159
+		k_desc:="%desc%"
+		k.kit_apply_powers{%spl_gruumsh_innate% 1|class=cleric}
+		k.kit_grant_powers{%spl_gruumsh_aid% 1 6,%spl_gruumsh_strength_of_one% 3 6,%spl_gruumsh_spear% 5 6,%spl_gruumsh_champions_strength% 7|class=cleric}
+		k.kit_grant_powers{%BERSERKER_RAGE% 1 5|class=fighter}
+		k_sling=0
+		k.kit_match_usability{berserker}
+		k_color_metal=35
+		k_color_minor_cloth=46
+		k_color_main_cloth=47
+		k_color_leather=25
+		k_color_armor=80	
+		k.kit_set_alignment{cn ne ce}
+		if {is_iwd} {{k_bio:=@1043}}
+		k_any_race=0
+		k_halforc=1		
+	]
+
+	LAF cleric_kit_substitutions STR_VAR kit god=gruumsh END
+
+	LAF assign_spheres STR_VAR kit default=cleric subtract="good divination wards" add="fire earth" END
+	LAF holy_symbol INT_VAR name=2034 follower=2035 category=1 STR_VAR kit desc_bam=camul10 inv_bam=iamul10 kit END
+	LAF adjust_cleric_stronghold STR_VAR talos="all" kit END
+	LAF set_multiclass_components STR_VAR kit components="barbarian dw_gruumsh_cleric"  END
+ 
+ 
+END
+
+DEFINE_ACTION_FUNCTION gruumsh_favored_soul BEGIN
+
+	LAF splconv_get_name STR_VAR spell="%CLERIC_AID%" new_type=innate RET "%spl_gruumsh_aid%"=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_STRENGTH_OF_ONE%" new_type=innate RET "%spl_gruumsh_strength_of_one%"=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_CHAMPIONS_STRENGTH%" new_type=innate RET "%spl_gruumsh_champions_strength%"=new_resref END
+
+	LAF gruumsh_shared END
+
+	// make the main kit
+	
+	OUTER_SPRINT kit "DW_GRUUMSH_FAVORED"
+	
+	LAF build_favored_soul_kit INT_VAR name=4095 desc=4096 god=4098 override_bio=1043 STR_VAR kit copy_from=DW_GRUUMSH_CLERIC END
+	LAF cleric_kit_substitutions STR_VAR kit god=gruumsh END
+
+	kit.edit[%kit%|edit_strrefs_in_place:i=1]
+	[
+		k.kit_apply_powers{%spl_gruumsh_innate% 1}
+		k.kit_grant_powers{%spl_gruumsh_aid% 1 6,%spl_gruumsh_strength_of_one% 3 6,%spl_gruumsh_spear% 5 6,%spl_gruumsh_champions_strength% 7}
+	]
+
+	// spell choices
+
+	LAF assign_bonus_spells STR_VAR kit spells="CLERIC_CURSE CLERIC_DRAW_UPON_HOLY_MIGHT CLERIC_PRAYER CLERIC_BLOOD_RAGE CLERIC_MASS_CAUSE_LIGHT_WOUNDS CLERIC_BLADE_BARRIER CLERIC_DESTRUCTION" END
+
+END
+
+
+
+
+DEFINE_ACTION_FUNCTION gruumsh_shared BEGIN
+
+	LAF include STR_VAR file=log_favored_weapon.tph locbase=shared END
+	LAF log_favored_weapon STR_VAR god=GRUUMSH weapon=spear END
+
+	
+   LAF check_label STR_VAR label=dw#gruumsh_shared RET value END
+   ACTION_IF !value BEGIN
+   
+		LAF make_label STR_VAR label=dw#gruumsh_shared END
+		
+		// +1 vs elves
+		
+		eff.make[%spl_gruumsh_innate%]
+		[
+			m_opcode=178
+			m_timing=2
+			m_target=0
+			m_parameter1=IDS_OF_SYMBOL (race "elf")
+			m_parameter2=4
+			m_parameter3=1
+		]
+		
+		spl.make[%spl_gruumsh_innate%]
+		[
+			m.ab.add{}
+			m.ab_fx.add{s_opcode=177 s_target=2 s_parameter2=4 s_timing=9 s_resource:="%spl_gruumsh_innate%"}
+		]
+		
+		// Spear of Gruumsh
+		
+		LAF splconv STR_VAR spell="%WIZARD_LANCE_OF_DISRUPTION%" new_type=innate new_resref="%spl_gruumsh_spear%" END
+
+		spl.edit[%spl_gruumsh_spear%]
+		[
+			m_name:=@1041
+			m_description:=@1042
+			m.ab_fx.alter{s_parameter2b=16| match="s_opcode=12"}
+		]
+		
+		// other spells
+		
+		LAF splconv STR_VAR spell="%CLERIC_AID%" new_type=innate RET_ARRAY splconv_array END
+		LAF splconv STR_VAR spell="%CLERIC_STRENGTH_OF_ONE%" new_type=innate RET_ARRAY splconv_array END
+		LAF splconv STR_VAR spell="%CLERIC_CHAMPIONS_STRENGTH%" new_type=innate RET_ARRAY splconv_array END
+	
+   END	
+
+END

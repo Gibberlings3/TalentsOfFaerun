@@ -1,0 +1,17 @@
+DEFINE_ACTION_FUNCTION universal_trigger BEGIN
+
+  OUTER_SPRINT oldstring @14100
+  OUTER_SPRINT oldstring2 @14101
+  OUTER_SPRINT newstring @14102
+
+spl.edit[%WIZARD_CONTINGENCY% %WIZARD_CHAIN_CONTINGENCY% %WIZARD_MINOR_SEQUENCER% %WIZARD_SPELL_SEQUENCER% %WIZARD_SPELL_TRIGGER%|edit_strrefs_in_place:i=1 allow_missing:i=1]
+[
+	m_unusable_enchanter=0
+	INNER_PATCH_SAVE m_description "%m_description%" BEGIN
+		REPLACE_TEXTUALLY "%oldstring%" "%newstring%"
+		REPLACE_TEXTUALLY "%oldstring2%" "%newstring%"
+	END
+]
+
+
+END

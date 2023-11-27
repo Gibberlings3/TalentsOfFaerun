@@ -1,0 +1,137 @@
+
+DEFINE_ACTION_FUNCTION mask_cleric BEGIN
+
+	OUTER_SPRINT kit DW_MASK_CLERIC
+	LAF mask_shared END
+	LAF splconv_get_name STR_VAR new_type=innate spell="%WIZARD_KNOCK%" RET spl_mask_knock=new_resref END
+	LAF splconv_get_name STR_VAR new_type=innate spell="%WIZARD_SHADOW_DOOR%" RET spl_mask_shadow_door=new_resref END	
+	LAF splconv_get_name STR_VAR new_type=innate spell="%WIZARD_SHADOW_MONSTERS%" RET spl_mask_shadow_monsters=new_resref END	
+	LAF splconv_get_name STR_VAR new_type=innate spell="%WIZARD_DEMI_SHADOW_MONSTERS%" RET spl_mask_demi_shadow_monsters=new_resref END	
+	LAF splconv_get_name STR_VAR new_type=innate spell="%WIZARD_SHADES%" RET spl_mask_shades=new_resref END
+	
+	kit.copy[CLERIC=>%kit%]
+	[
+		k_name:=@34
+		k_desc:=@35
+		k.kit_grant_powers{%spl_mask_knock% 3 4,%spl_mask_shadow_door% 9 6,%spl_mask_shadow_monsters% 7,%spl_mask_demi_shadow_monsters% 11,%spl_mask_shades% 13}
+		k.kit_apply_powers{%spl_mask_remove_shadow_monsters% 11,%spl_mask_remove_demi_shadow_monsters% 13}
+		k_color_metal=25
+		k_color_minor_cloth=190
+		k_color_main_cloth=182
+		k_color_leather=2
+		k_color_armor=24
+		k.kit_set_alignment{nn le ne ce}
+		if {is_iwd} {{k_bio:=@1007}}
+	]
+
+	LAF cleric_kit_substitutions STR_VAR kit god=mask END
+	LAF holy_symbol INT_VAR name=2006 follower=2007 category=7 STR_VAR bam_path=dr desc_bam=phelm29 inv_bam=cdislhly kit END
+	LAF adjust_cleric_stronghold STR_VAR talos=all kit END
+	LAF assign_spheres STR_VAR kit default=cleric subtract="good combat necromantic" add="moon" END
+	LAF assign_bonus_spells STR_VAR kit spells="SLEEP INVISIBILITY NON_DETECTION IMPROVED_INVISIBILITY SHADOW_DOOR POWER_WORD_SILENCE MASS_INVISIBILITY" END
+
+
+END
+
+DEFINE_ACTION_FUNCTION thief_of_mask BEGIN
+
+	OUTER_SPRINT kit DW_MASK_THIEF
+	LAF mask_shared END
+	LAF splconv_get_name STR_VAR new_type=innate spell="%WIZARD_KNOCK%" RET spl_mask_knock=new_resref END
+	LAF splconv_get_name STR_VAR new_type=innate spell="%WIZARD_SHADOW_DOOR%" RET spl_mask_shadow_door=new_resref END	
+	LAF splconv_get_name STR_VAR new_type=innate spell="%WIZARD_SHADOW_MONSTERS%" RET spl_mask_shadow_monsters=new_resref END	
+	LAF splconv_get_name STR_VAR new_type=innate spell="%WIZARD_DEMI_SHADOW_MONSTERS%" RET spl_mask_demi_shadow_monsters=new_resref END	
+	LAF splconv_get_name STR_VAR new_type=innate spell="%WIZARD_SHADES%" RET spl_mask_shades=new_resref END
+
+	kit.copy[CLERIC_THIEF=>%kit%]
+	[
+		k_name:=@37
+		k_desc:=@38
+		k.kit_grant_powers{%spl_mask_knock% 3 4,%spl_mask_shadow_door% 9 6,%spl_mask_shadow_monsters% 7,%spl_mask_demi_shadow_monsters% 11,%spl_mask_shades% 13|class=cleric}
+		k.kit_apply_powers{%spl_mask_remove_shadow_monsters% 11,%spl_mask_remove_demi_shadow_monsters% 13|class=cleric}
+		k_color_metal=25
+		k_color_minor_cloth=190
+		k_color_main_cloth=182
+		k_color_leather=2
+		k_color_armor=24
+		k.kit_set_alignment{nn le ne ce}	
+		if {is_iwd} {{k_bio:=@1007}}
+	]
+
+	LAF cleric_kit_substitutions STR_VAR kit god=mask END
+	LAF holy_symbol INT_VAR name=2006 follower=2007 category=7 STR_VAR bam_path=dr desc_bam=phelm29 inv_bam=cdislhly kit END
+	LAF adjust_cleric_stronghold STR_VAR talos=all kit END
+	LAF assign_spheres STR_VAR kit default=cleric subtract="good combat necromantic" add="moon" END
+	LAF assign_bonus_spells STR_VAR kit spells="SLEEP INVISIBILITY NON_DETECTION IMPROVED_INVISIBILITY SHADOW_DOOR POWER_WORD_SILENCE MASS_INVISIBILITY" END
+	LAF set_multiclass_components STR_VAR kit components="dw_mask_cleric"  END
+
+
+END
+
+DEFINE_ACTION_FUNCTION mask_favored_soul BEGIN
+
+	LAF mask_shared END
+	LAF splconv_get_name STR_VAR new_type=innate spell="%WIZARD_KNOCK%" RET spl_mask_knock=new_resref END
+	LAF splconv_get_name STR_VAR new_type=innate spell="%WIZARD_SHADOW_DOOR%" RET spl_mask_shadow_door=new_resref END	
+	LAF splconv_get_name STR_VAR new_type=innate spell="%WIZARD_SHADOW_MONSTERS%" RET spl_mask_shadow_monsters=new_resref END	
+	LAF splconv_get_name STR_VAR new_type=innate spell="%WIZARD_DEMI_SHADOW_MONSTERS%" RET spl_mask_demi_shadow_monsters=new_resref END	
+	LAF splconv_get_name STR_VAR new_type=innate spell="%WIZARD_SHADES%" RET spl_mask_shades=new_resref END
+
+	// make the main kit
+	
+	OUTER_SPRINT kit "DW_MASK_FAVORED"
+	
+	LAF build_favored_soul_kit INT_VAR name=4039 desc=4040 god=4041 god_gender=4005 god_temple=4042 STR_VAR kit copy_from=DW_MASK_CLERIC END
+	LAF cleric_kit_substitutions STR_VAR kit god=mask END
+
+	kit.edit[%kit%|edit_strrefs_in_place:i=1]
+	[
+		k.kit_grant_powers{%spl_mask_knock% 3 4,%spl_mask_shadow_door% 9 6,%spl_mask_shadow_monsters% 7,%spl_mask_demi_shadow_monsters% 11,%spl_mask_shades% 13}
+		k.kit_apply_powers{%spl_mask_remove_shadow_monsters% 11,%spl_mask_remove_demi_shadow_monsters% 13}
+	]
+
+	// spell choices
+
+	LAF assign_bonus_spells STR_VAR kit spells="WIZARD_SLEEP WIZARD_INVISIBILITY WIZARD_NON_DETECTION WIZARD_IMPROVED_INVISIBILITY WIZARD_SHADOW_DOOR WIZARD_POWER_WORD_SILENCE WIZARD_MASS_INVISIBILITY" END
+
+
+END
+
+
+DEFINE_ACTION_FUNCTION mask_shared BEGIN
+
+	LAF include STR_VAR file=log_favored_weapon.tph locbase=shared END
+	LAF log_favored_weapon STR_VAR god=MASK weapon=longsword END
+
+
+	LAF check_label STR_VAR label=dw#mask_shared RET value END
+	ACTION_IF !value BEGIN
+	
+		LAF make_label STR_VAR label=dw#mask_shared END
+
+		LAF splconv STR_VAR new_type=innate spell="%WIZARD_KNOCK%" RET_ARRAY splconv_array END
+		LAF splconv STR_VAR new_type=innate spell="%WIZARD_SHADOW_DOOR%" RET_ARRAY splconv_array END	
+		LAF splconv STR_VAR new_type=innate spell="%WIZARD_SHADOW_MONSTERS%" RET spl_mask_shadow_monsters=new_resref RET_ARRAY splconv_array END	
+		LAF splconv STR_VAR new_type=innate spell="%WIZARD_DEMI_SHADOW_MONSTERS%" RET spl_mask_demi_shadow_monsters=new_resref RET_ARRAY splconv_array END	
+		LAF splconv STR_VAR new_type=innate spell="%WIZARD_SHADES%" RET_ARRAY splconv_array END
+
+
+
+		// spells to remove old shadow effects
+		
+		spl.make[%spl_mask_remove_shadow_monsters%]
+		[
+			m.ab.add{}
+			m.ab_fx.add{s_opcode=172 s_target=2 s_timing=1 s_resource:="%spl_mask_shadow_monsters%"}
+		]
+
+		spl.make[%spl_mask_remove_demi_shadow_monsters%]
+		[
+			m.ab.add{}
+			m.ab_fx.add{s_opcode=172 s_target=2 s_timing=1 s_resource:="%spl_mask_demi_shadow_monsters%"}
+		]
+
+
+		
+	END
+END

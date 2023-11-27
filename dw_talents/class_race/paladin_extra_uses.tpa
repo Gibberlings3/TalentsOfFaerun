@@ -1,0 +1,87 @@
+DEFINE_ACTION_FUNCTION paladin_extra_uses BEGIN
+
+	// get parameters
+
+	LAF check_ini STR_VAR ini=lay_on_hands_level RET lay_on_hands_level=value END
+	LAF check_ini STR_VAR ini=lay_on_hands_interval RET lay_on_hands_interval=value END
+	LAF check_ini STR_VAR ini=smite_evil_level RET smite_evil_level=value END
+	LAF check_ini STR_VAR ini=smite_evil_interval RET smite_evil_interval=value END
+
+	// edit trueclass paladin
+
+
+	kit.edit[PALADIN]
+	[
+		k.kit_grant_powers{%PALADIN_LAY_ON_HANDS% %lay_on_hands_level% %lay_on_hands_interval%}
+		PATCH_IF VARIABLE_IS_SET PALADIN_SMITE_EVIL BEGIN
+			k.kit_grant_powers{%PALADIN_SMITE_EVIL% %smite_evil_level% %smite_evil_interval%} 
+		END
+	]
+
+
+	// edit paladin kits (restricting to those who actually get the power, e.g. Undead Slayers don't get Lay on Hands)
+	
+	
+
+	array.new[patch_data]
+	[
+		"%PALADIN_LAY_ON_HANDS%"=>"%lay_on_hands_level% %lay_on_hands_interval%"
+		"%PALADIN_SMITE_EVIL%" => "%smite_evil_level% %smite_evil_interval%"
+		"%spl_smite_evil_cavalier%" => "%smite_evil_level% %smite_evil_interval%"
+		"%spl_smite_evil_undead_hunter%" => "%smite_evil_level% %smite_evil_interval%"
+		"%spl_smite_good%" => "%smite_evil_level% %smite_evil_interval%"	
+	]
+	
+	LAF 2da_read STR_VAR file=kitlist.2da RET_ARRAY kitlist_rows=rows kitlist_array=array END
+
+	ACTION_PHP_EACH kitlist_rows AS row=>discard BEGIN
+		ACTION_IF IS_AN_INT "kitlist_array_%row%_CLASS" && "kitlist_array_%row%_CLASS"=6 BEGIN
+			OUTER_SPRINT clab $kitlist_array("%row%" "ABILITIES")
+			OUTER_SPRINT kit $kitlist_array("%row%" "ROWNAME")
+			kit.edit["%kit%"]
+			[
+				PHP_EACH patch_data AS spell=>spell_data BEGIN
+					LPF return_first_entry STR_VAR list="%spell_data%" RET entry1=entry entry2=list END
+					PATCH_IF RESOURCE_CONTAINS "%clab%.2da" "%spell%" BEGIN
+						k.kit_grant_powers{%spell% %entry1% %entry2%}
+					END
+				END			
+			]			
+		END
+	END
+
+
+	// update descriptive text
+	
+
+	COPY_EXISTING - "%PALADIN_LAY_ON_HANDS%.spl" nowhere
+		READ_STRREF 0x8 lay_on_hands_name
+	BUT_ONLY
+	smite_evil_name:==@705
+	smite_good_name:==@712
+	string_base:==@709
+	OUTER_PATCH_SAVE string_lay_on_hands "%string_base%" BEGIN
+		REPLACE_TEXTUALLY PLACEHOLDER1 "%lay_on_hands_level%"
+		REPLACE_TEXTUALLY PLACEHOLDER2 "%lay_on_hands_interval%"
+	END
+	OUTER_PATCH_SAVE string_smite_evil "%string_base%" BEGIN
+		REPLACE_TEXTUALLY PLACEHOLDER1 "%smite_evil_level%"
+		REPLACE_TEXTUALLY PLACEHOLDER2 "%smite_evil_interval%"
+	END	
+	LAF 2daq_extract STR_VAR resref="clastext" row=PALADIN column=DESCSTR RET desc_strref=value END
+	strref.patch[desc_strref]
+	[
+		REPLACE_TEXTUALLY "\(.*%lay_on_hands_name%.*\)" "\1 %string_lay_on_hands%"
+		REPLACE_TEXTUALLY "\(.*%smite_evil_name%.*\)" "\1 %string_smite_evil%"	
+	]
+	LAF 2daq_extract STR_VAR resref="clastext" row=BLACKGUARD column=DESCSTR RET desc_strref=value END
+	strref.patch[desc_strref]
+	[
+		REPLACE_TEXTUALLY "\(.*%smite_good_name%.*\)" "\1 %string_smite_good%"	
+	]
+
+
+
+
+
+END

@@ -1,0 +1,156 @@
+DEFINE_ACTION_FUNCTION clangeddin_cleric BEGIN
+
+	OUTER_SPRINT kit DW_CLANGEDDIN_CLERIC
+	LAF clangeddin_shared END
+
+	LAF splconv_get_name STR_VAR spell="%CLERIC_COMMAND%" new_type=innate RET spl_clangeddin_command=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_DISPEL_MAGIC%" new_type=innate RET spl_clangeddin_dispel_magic=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_STRENGTH_OF_ONE%" new_type=innate RET spl_clangeddin_strength_of_one=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_CHAMPIONS_STRENGTH%" new_type=innate RET spl_clangeddin_champions_strength=new_resref END
+
+	
+	kit.copy[CLERIC=>%kit%]
+	[
+		k_name:=@100
+		k_desc:=@101	
+		k.kit_grant_powers{%spl_clangeddin_command% 1,%spl_clangeddin_command% 10 10,%spl_clangeddin_dispel_magic% 3 6,%spl_clangeddin_strength_of_one% 5 6,%spl_clangeddin_champions_strength% 7}
+		k_color_metal=25
+		k_color_leather=2
+		k_color_armor=24
+		k_color_minor_cloth=28
+		k_color_main_cloth=41
+		k_any_race=0
+		k_dwarf=1
+		k.kit_set_alignment{lg ng ln}
+		IF {is_iwd} {{k_bio:=@1056}}
+	]
+
+	LAF cleric_kit_substitutions STR_VAR kit god=clangeddin END
+	LAF holy_symbol INT_VAR name=2042 follower=2043 STR_VAR inv_bam=imisc8g desc_bam=cmisc8g kit END
+	LAF assign_spheres STR_VAR kit default=cleric add="earth" subtract="evil necromantic summoning" END
+
+
+END
+
+DEFINE_ACTION_FUNCTION axe_of_clangeddin BEGIN
+
+	OUTER_SPRINT kit DW_CLANGEDDIN_AXE
+	LAF clangeddin_shared END
+
+	LAF splconv_get_name STR_VAR spell="%CLERIC_COMMAND%" new_type=innate RET spl_clangeddin_command=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_DISPEL_MAGIC%" new_type=innate RET spl_clangeddin_dispel_magic=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_STRENGTH_OF_ONE%" new_type=innate RET spl_clangeddin_strength_of_one=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_CHAMPIONS_STRENGTH%" new_type=innate RET spl_clangeddin_champions_strength=new_resref END
+
+
+	kit.copy[FIGHTER_CLERIC=>%kit%]
+	[
+		k_name:=@161
+		k_desc:=@162	
+		k.kit_grant_powers{%spl_clangeddin_command% 1,%spl_clangeddin_command% 10 10,%spl_clangeddin_dispel_magic% 3 6,%spl_clangeddin_strength_of_one% 5 6,%spl_clangeddin_champions_strength% 7|class=cleric}
+		k_color_metal=25
+		k_color_leather=2
+		k_color_armor=24
+		k_color_minor_cloth=28
+		k_color_main_cloth=41
+		k_any_race=0
+		k_dwarf=1
+		k.kit_set_alignment{lg ng ln}
+		IF {is_iwd} {{k_bio:=@1056}}
+	]
+
+	LAF cleric_kit_substitutions STR_VAR kit god=clangeddin END
+	LAF holy_symbol INT_VAR name=2042 follower=2043 STR_VAR inv_bam=imisc8g desc_bam=cmisc8g kit END
+	LAF assign_spheres STR_VAR kit default=cleric add="earth" subtract="evil necromantic summoning" END
+	LAF set_multiclass_components STR_VAR kit components="dw_clangeddin_cleric"  END
+
+
+END
+
+DEFINE_ACTION_FUNCTION battlerager_of_clangeddin BEGIN
+
+	OUTER_SPRINT kit DW_CLANGEDDIN_BATTLERAGER
+	LAF clangeddin_shared END
+
+	LAF splconv_get_name STR_VAR spell="%CLERIC_COMMAND%" new_type=innate RET spl_clangeddin_command=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_DISPEL_MAGIC%" new_type=innate RET spl_clangeddin_dispel_magic=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_STRENGTH_OF_ONE%" new_type=innate RET spl_clangeddin_strength_of_one=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_CHAMPIONS_STRENGTH%" new_type=innate RET spl_clangeddin_champions_strength=new_resref END
+
+
+	LAF adjust_rage_descriptions INT_VAR tra_ref=158 RET desc END
+	kit.copy[FIGHTER_CLERIC=>%kit%]
+	[
+		k_name:=@157
+		k_desc:="%desc%"	
+		k.kit_grant_powers{%spl_clangeddin_command% 1,%spl_clangeddin_command% 10 10,%spl_clangeddin_dispel_magic% 3 6,%spl_clangeddin_strength_of_one% 5 6,%spl_clangeddin_champions_strength% 7|class=cleric}
+		k.kit_grant_powers{%BERSERKER_RAGE% 1 5|class=fighter}
+		k_sling=0
+		k.kit_match_usability{berserker}
+		k_color_metal=25
+		k_color_leather=2
+		k_color_armor=24
+		k_color_minor_cloth=28
+		k_color_main_cloth=41
+		k_any_race=0
+		k_dwarf=1
+		k.kit_set_alignment{lg ng ln}
+		IF {is_iwd} {{k_bio:=@1056}}
+	]
+	
+	LAF cleric_kit_substitutions STR_VAR kit god=clangeddin END
+	LAF holy_symbol INT_VAR name=2042 follower=2043 STR_VAR inv_bam=imisc8g desc_bam=cmisc8g kit END
+	LAF assign_spheres STR_VAR kit default=cleric add="earth" subtract="evil necromantic summoning" END
+	LAF set_multiclass_components STR_VAR kit components="berserker dw_clangeddin_cleric"  END
+
+
+END
+
+DEFINE_ACTION_FUNCTION clangeddin_favored_soul BEGIN
+
+	LAF clangeddin_shared END
+
+	LAF splconv_get_name STR_VAR spell="%CLERIC_COMMAND%" new_type=innate RET spl_clangeddin_command=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_DISPEL_MAGIC%" new_type=innate RET spl_clangeddin_dispel_magic=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_STRENGTH_OF_ONE%" new_type=innate RET spl_clangeddin_strength_of_one=new_resref END
+	LAF splconv_get_name STR_VAR spell="%CLERIC_CHAMPIONS_STRENGTH%" new_type=innate RET spl_clangeddin_champions_strength=new_resref END
+
+
+	OUTER_SPRINT kit DW_CLANGEDDIN_FAVORED
+	LAF build_favored_soul_kit INT_VAR name=4111 desc=4112 god=4114 god_gender=4005 god_temple=4113 STR_VAR kit copy_from=DW_CLANGEDDIN_CLERIC END
+	LAF cleric_kit_substitutions STR_VAR kit god=clangeddin END
+
+
+	kit.edit[%kit%|edit_strrefs_in_place:i=1]
+	[
+		k.kit_grant_powers{%spl_clangeddin_command% 1,%spl_clangeddin_command% 10 10,%spl_clangeddin_dispel_magic% 3 6,%spl_clangeddin_strength_of_one% 5 6,%spl_clangeddin_champions_strength% 7}
+	]
+
+	LAF assign_bonus_spells STR_VAR kit spells="CLERIC_BLESS CLERIC_DRAW_UPON_HOLY_MIGHT CLERIC_PRAYER CLERIC_DEFENSIVE_HARMONY CLERIC_RIGHTEOUS_WRATH_OF_THE_FAITHFUL CLERIC_BLADE_BARRIER CLERIC_HOLY_WORD" END
+
+END	
+
+
+
+DEFINE_ACTION_FUNCTION clangeddin_shared BEGIN
+
+	LAF include STR_VAR file=log_favored_weapon.tph locbase=shared END
+	LAF log_favored_weapon STR_VAR god=CLANGEDDIN weapon=axe END
+
+
+	LAF check_label STR_VAR label=dw#clangeddin_shared RET value END
+	ACTION_IF !value BEGIN
+	
+		LAF make_label STR_VAR label=dw#clangeddin_shared END
+	
+	// innate spells
+	
+	LAF splconv STR_VAR spell="%CLERIC_COMMAND%" new_type=innate RET_ARRAY splconv_array END
+	LAF splconv STR_VAR spell="%CLERIC_DISPEL_MAGIC%" new_type=innate RET_ARRAY splconv_array END
+	LAF splconv STR_VAR spell="%CLERIC_STRENGTH_OF_ONE%" new_type=innate RET_ARRAY splconv_array END
+	LAF splconv STR_VAR spell="%CLERIC_CHAMPIONS_STRENGTH%" new_type=innate RET_ARRAY splconv_array END
+
+	
+	END
+
+END

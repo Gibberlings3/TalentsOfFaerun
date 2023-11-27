@@ -1,0 +1,297 @@
+DEFINE_ACTION_FUNCTION mystra_cleric BEGIN
+
+    LAF mystra_shared END
+	OUTER_SPRINT kit DW_MYSTRA_CLERIC
+	LAF splconv_get_name STR_VAR spell="%WIZARD_REMOVE_MAGIC%" new_type=innate RET spl_mystra_remove_magic=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_SPELL_TURNING%" new_type=innate RET spl_mystra_spell_turning=new_resref END
+
+	kit.copy[CLERIC=>%kit%]
+	[
+		k_name:=@80
+		k_desc:=@81
+		k.kit_apply_powers{%spl_mystra_innate% 1,%spl_mystra_casting_time% 3,%spl_mystra_casting_time% 11,%spl_mystra_casting_time% 19}
+		k.kit_grant_powers{%spl_mystra_remove_magic% 5 6,%spl_mystra_spell_turning% 9 6}
+		k_color_metal=35
+		k_color_minor_cloth=105
+		k_color_main_cloth=58
+		k_color_leather=25
+		k_color_armor=80
+		k.kit_set_alignment{lg ng cg ln cn le}	
+		IF {is_iwd} {{k_bio:=@1033}}
+	]
+	LAF cleric_kit_substitutions STR_VAR kit god=mystra END
+
+	LAF assign_spheres STR_VAR kit default=cleric subtract="evil good" add="earth air fire water sun moon" END
+	LAF holy_symbol INT_VAR name=2028 follower=2029 STR_VAR kit desc_bam=dwmysphl inv_bam=dwmysihl bam_path=resource kit END
+	LAF adjust_cleric_stronghold STR_VAR lathander="l_g n_g c_g c_n" helm="l_n l_e" kit END
+	LAF assign_bonus_spells STR_VAR kit spells="SHIELD VOCALIZE MINOR_GLOBE_OF_INVULNERABILITY BREACH SEVEN_EYES" END
+  
+END
+
+DEFINE_ACTION_FUNCTION force_mage_of_mystra BEGIN
+
+    LAF mystra_shared END
+	OUTER_SPRINT kit DW_MYSTRA_FORCE_MAGE
+	LAF splconv_get_name STR_VAR spell="%WIZARD_REMOVE_MAGIC%" new_type=innate RET spl_mystra_remove_magic=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_SPELL_TURNING%" new_type=innate RET spl_mystra_spell_turning=new_resref END
+	
+	kit.copy[CLERIC_MAGE=>%kit%]
+	[
+		k_name:=@154
+		k_desc:=@155
+		k.kit_apply_powers{%spl_mystra_innate% 1,%spl_mystra_casting_time% 3,%spl_mystra_casting_time% 11,%spl_mystra_casting_time% 19|class=cleric}
+		k.kit_apply_powers{%spl_force_mage_innate% 1|class=mage}
+		k.kit_grant_powers{%spl_mystra_remove_magic% 5 6,%spl_mystra_spell_turning% 9 6|class=cleric}
+		k_color_minor_cloth=105
+		k_color_main_cloth=58
+		k.kit_set_alignment{lg ng cg ln cn le}	
+		IF {is_iwd} {{k_bio:=@1033}}
+	]
+	
+	LAF cleric_kit_substitutions STR_VAR kit god=mystra END
+	LAF set_multiclass_components STR_VAR kit components="dw_mystra_cleric dw_force_mage"  END
+	LAF assign_spheres INT_VAR update_scroll_usability=0 STR_VAR kit default=cleric subtract="evil good" add="sun moon" END
+	
+	LAF assign_bonus_spells STR_VAR kit spells="SHIELD VOCALIZE MINOR_GLOBE_OF_INVULNERABILITY BREACH SEVEN_EYES" class=cleric END
+
+	// make into a force mage
+	WITH_TRA "%scs_tra_loc%/english/force_mage.tra" "%scs_tra_loc%/%LANGUAGE%/force_mage.tra" BEGIN
+		LAF check_ini STR_VAR ini=number_of_required_force_mage_spells RET number_required=value END
+		LAF check_ini STR_VAR ini=list_specialist_spells RET list_spells=value END
+		LAF set_spell_list STR_VAR kit block_learn="mage_earth mage_air mage_fire mage_water" END	
+		LAF set_specialist_spells INT_VAR number_required list_spells update_description=1 STR_VAR kit spell_list="force" END
+		LAF set_spell_learn_modifiers STR_VAR kit modifiers="force=25" END
+		LAF bonus_spells_from_list STR_VAR kit path="%MOD_FOLDER%/class_race/bonus_spell_lists/force.txt" class=mage END
+		LAF exclude_elemental_items STR_VAR kit element=any END
+	END
+
+	LAF holy_symbol INT_VAR name=2028 follower=2029 STR_VAR kit desc_bam=dwmysphl inv_bam=dwmysihl bam_path=resource kit END
+	LAF adjust_cleric_stronghold STR_VAR lathander="l_g n_g c_g c_n" helm="l_n l_e" kit END
+	
+END
+
+DEFINE_ACTION_FUNCTION wild_mage_of_mystra BEGIN
+
+    LAF mystra_shared END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_REMOVE_MAGIC%" new_type=innate RET spl_mystra_remove_magic=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_SPELL_TURNING%" new_type=innate RET spl_mystra_spell_turning=new_resref END
+	OUTER_SPRINT kit DW_MYSTRA_WILD_MAGE
+	
+	kit.copy[CLERIC_MAGE=>%kit%]
+	[
+		k_name:=@152
+		k_desc:=@153
+		k.kit_apply_powers{%spl_mystra_innate% 1,%spl_mystra_casting_time% 3,%spl_mystra_casting_time% 11,%spl_mystra_casting_time% 19|class=cleric}
+		k.kit_grant_powers{%spl_mystra_remove_magic% 5 6,%spl_mystra_spell_turning% 9 6|class=cleric}
+		k_color_minor_cloth=105
+		k_color_main_cloth=58
+		k.kit_set_alignment{lg ng cg ln cn le}	
+		IF {is_iwd} {{k_bio:=@1033}}
+		k_kitlist_unusable:=" 0x80000000" // wild mage
+	]
+	
+	LAF cleric_kit_substitutions STR_VAR kit god=mystra END
+
+	LAF assign_spheres INT_VAR update_scroll_usability=0 STR_VAR kit default=cleric subtract="evil good" add="earth air fire water sun moon" END
+	LAF holy_symbol INT_VAR name=2028 follower=2029 STR_VAR kit desc_bam=dwmysphl inv_bam=dwmysihl bam_path=resource kit END
+	LAF adjust_cleric_stronghold STR_VAR lathander="l_g n_g c_g c_n" helm="l_n l_e" kit END
+	LAF assign_bonus_spells STR_VAR kit spells="SHIELD VOCALIZE MINOR_GLOBE_OF_INVULNERABILITY BREACH SEVEN_EYES" class=cleric END
+	
+	LAF set_multiclass_components STR_VAR kit components="dw_mystra_cleric wildmage"  END
+
+END
+
+DEFINE_ACTION_FUNCTION transmuter_of_mystra BEGIN
+
+    LAF mystra_shared END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_REMOVE_MAGIC%" new_type=innate RET spl_mystra_remove_magic=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_SPELL_TURNING%" new_type=innate RET spl_mystra_spell_turning=new_resref END
+	OUTER_SPRINT kit DW_MYSTRA_TRANSMUTER
+
+	kit.copy[CLERIC_MAGE=>%kit%]
+	[
+		k_name:=@130
+		k_desc:=@131
+		k.kit_apply_powers{%spl_mystra_innate% 1,%spl_mystra_casting_time% 3,%spl_mystra_casting_time% 11,%spl_mystra_casting_time% 19|class=cleric}
+		k.kit_grant_powers{%spl_mystra_remove_magic% 5 6,%spl_mystra_spell_turning% 9 6|class=cleric}
+		k_color_minor_cloth=105
+		k_color_main_cloth=58
+		k.kit_set_alignment{lg ng cg ln cn le}	
+		IF {is_iwd} {{k_bio:=@1033}}
+	]
+	
+	LAF cleric_kit_substitutions STR_VAR kit god=mystra END
+
+	LAF assign_spheres INT_VAR update_scroll_usability=0 STR_VAR kit default=cleric subtract="evil good" add="earth air fire water sun moon" END
+	LAF holy_symbol INT_VAR name=2028 follower=2029 STR_VAR kit desc_bam=dwmysphl inv_bam=dwmysihl bam_path=resource kit END
+	LAF adjust_cleric_stronghold STR_VAR lathander="l_g n_g c_g c_n" helm="l_n l_e" kit END
+	LAF assign_bonus_spells STR_VAR kit spells="SHIELD VOCALIZE MINOR_GLOBE_OF_INVULNERABILITY BREACH SEVEN_EYES" class=cleric END
+
+ 	LAF make_multiclass_specialist STR_VAR kit school=alteration END
+	LAF set_multiclass_components STR_VAR kit components="DW_MYSTRA_CLERIC TRANSMUTER"  END
+
+
+END
+
+DEFINE_ACTION_FUNCTION abjurer_of_mystra BEGIN
+
+    LAF mystra_shared END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_REMOVE_MAGIC%" new_type=innate RET spl_mystra_remove_magic=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_SPELL_TURNING%" new_type=innate RET spl_mystra_spell_turning=new_resref END
+	OUTER_SPRINT kit DW_MYSTRA_ABJURER
+	
+	kit.copy[CLERIC_MAGE=>%kit%]
+	[
+		k_name:=@134
+		k_desc:=@135
+		k.kit_apply_powers{%spl_mystra_innate% 1,%spl_mystra_casting_time% 3,%spl_mystra_casting_time% 11,%spl_mystra_casting_time% 19|class=cleric}
+		k.kit_grant_powers{%spl_mystra_remove_magic% 5 6,%spl_mystra_spell_turning% 9 6|class=cleric}
+		k_color_minor_cloth=105
+		k_color_main_cloth=58
+		k.kit_set_alignment{lg ng cg ln cn le}	
+		IF {is_iwd} {{k_bio:=@1033}}
+	]
+	
+	LAF cleric_kit_substitutions STR_VAR kit god=mystra END
+
+	LAF assign_spheres INT_VAR update_scroll_usability=0 STR_VAR kit default=cleric subtract="evil good" add="earth air fire water sun moon" END
+	LAF holy_symbol INT_VAR name=2028 follower=2029 STR_VAR kit desc_bam=dwmysphl inv_bam=dwmysihl bam_path=resource kit END
+	LAF adjust_cleric_stronghold STR_VAR lathander="l_g n_g c_g c_n" helm="l_n l_e" kit END
+	LAF assign_bonus_spells STR_VAR kit spells="SHIELD VOCALIZE MINOR_GLOBE_OF_INVULNERABILITY BREACH SEVEN_EYES" class=cleric END
+
+ 	LAF make_multiclass_specialist STR_VAR kit school=abjuration END
+	LAF set_multiclass_components STR_VAR kit components="DW_MYSTRA_CLERIC ABJURER"  END
+
+
+ 
+END
+
+DEFINE_ACTION_FUNCTION polymath_of_mystra BEGIN
+
+    LAF mystra_shared END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_REMOVE_MAGIC%" new_type=innate RET spl_mystra_remove_magic=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_SPELL_TURNING%" new_type=innate RET spl_mystra_spell_turning=new_resref END
+	OUTER_SPRINT kit DW_MYSTRA_POLYMATH
+	ACTION_TIME mp_main BEGIN
+	kit.copy[FIGHTER_MAGE_CLERIC=>%kit%][
+		k_name:=@230
+		k_desc:=@231
+		k.kit_apply_powers{%spl_mystra_innate% 1,%spl_mystra_casting_time% 3,%spl_mystra_casting_time% 11,%spl_mystra_casting_time% 19|class=cleric}
+		k.kit_grant_powers{%spl_mystra_remove_magic% 5 6,%spl_mystra_spell_turning% 9 6|class=cleric}
+		k_color_main_cloth=58
+		k.kit_set_alignment{lg ng cg ln cn le}	
+		IF {is_iwd} {{k_bio:=@1033}}
+	]
+	END
+	ACTION_TIME mp_kit_sub BEGIN
+	LAF cleric_kit_substitutions STR_VAR kit god=mystra END
+	END
+	ACTION_TIME mp_sphere BEGIN
+	LAF assign_spheres STR_VAR kit default=cleric subtract="evil good" add="earth air fire water sun moon" END
+	END
+	ACTION_TIME mp_sym_sh BEGIN
+	LAF holy_symbol INT_VAR name=2028 follower=2029 STR_VAR kit desc_bam=dwmysphl inv_bam=dwmysihl bam_path=resource kit END
+	LAF adjust_cleric_stronghold STR_VAR lathander="l_g n_g c_g c_n" helm="l_n l_e" kit END
+	END
+	
+	ACTION_TIME mp_bonus BEGIN
+	LAF assign_bonus_spells STR_VAR kit spells="SHIELD VOCALIZE MINOR_GLOBE_OF_INVULNERABILITY BREACH SEVEN_EYES" class=cleric END
+	END
+
+	ACTION_TIME mp_mc_spec BEGIN
+ 	LAF make_multiclass_specialist STR_VAR kit school=invocation END
+	END
+	
+	ACTION_TIME mp_mc_comp BEGIN
+	LAF set_multiclass_components STR_VAR kit components="DW_MYSTRA_CLERIC INVOKER"  END
+	END
+
+
+
+END
+
+
+
+
+
+DEFINE_ACTION_FUNCTION mystra_favored_soul BEGIN
+
+
+	LAF mystra_shared END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_REMOVE_MAGIC%" new_type=innate RET spl_mystra_remove_magic=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_SPELL_TURNING%" new_type=innate RET spl_mystra_spell_turning=new_resref END
+
+	// make the main kit
+	
+	OUTER_SPRINT kit "DW_MYSTRA_FAVORED"
+	
+	LAF build_favored_soul_kit INT_VAR name=4079 desc=4080 god=4082 god_gender=4029 god_temple=4081 STR_VAR kit copy_from=DW_MYSTRA_CLERIC END
+	LAF cleric_kit_substitutions STR_VAR kit god=mystra END
+
+	kit.edit[%kit%|edit_strrefs_in_place:i=1]
+	[
+		k.kit_apply_powers{%spl_mystra_innate% 1,%spl_mystra_casting_time% 3,%spl_mystra_casting_time% 11,%spl_mystra_casting_time% 19}
+		k.kit_grant_powers{%spl_mystra_remove_magic% 5 6,%spl_mystra_spell_turning% 9 6}
+	]
+
+	// spell choices
+
+	LAF assign_bonus_spells STR_VAR kit spells="WIZARD_SHIELD WIZARD_VOCALIZE CLERIC_MISCAST_MAGIC WIZARD_MINOR_GLOBE_OF_INVULNERABILITY WIZARD_BREACH CLERIC_WONDROUS_RECALL WIZARD_SEVEN_EYES" END
+
+END
+
+
+
+DEFINE_ACTION_FUNCTION mystra_shared BEGIN
+
+	LAF include STR_VAR file=log_favored_weapon.tph locbase=shared END
+	LAF log_favored_weapon STR_VAR god=MYSTRA weapon=dagger END
+
+	
+   LAF check_label STR_VAR label=dw#mystra_shared RET value END
+   ACTION_IF !value BEGIN
+   
+		LAF make_label STR_VAR label=dw#mystra_shared END
+		
+		// innate power (+1 to saving throws vs all schools, immune to wild and dead magic areas)
+		
+		spl.make[%spl_mystra_innate%]
+		[
+			m.ab.add{}
+			m.ab_fx.add{s_opcode=346 s_target=2 s_timing=9 s_parameter1=1 s_special=entry_index+1|number:i=8}
+			IF {VARIABLE_IS_SET WILD_MAGIC_AREA}
+			{{
+				m.ab_fx.add{s_opcode=318 s_target=2 s_timing=9 s_resource:="%WILD_MAGIC_AREA%"}
+			}}
+			IF {VARIABLE_IS_SET DEAD_MAGIC_AREA}
+			{{
+				m.ab_fx.add{s_opcode=318 s_target=2 s_timing=9 s_resource:="%DEAD_MAGIC_AREA%"}
+			}}
+		]
+		
+		
+		// casting time speedup
+		
+		spl.make[%spl_mystra_casting_time%]
+		[
+			m_name:=@1034
+			m.ab.add{}
+			m.ab_fx.add{s_opcode=189 s_target=2 s_timing=9 s_parameter1=1 s_parameter2=0}
+		]
+
+		// other innates
+		
+		LAF splconv STR_VAR spell="%WIZARD_REMOVE_MAGIC%" new_type=innate RET_ARRAY splconv_array END
+		LAF splconv STR_VAR spell="%WIZARD_SPELL_TURNING%" new_type=innate RET_ARRAY splconv_array END
+
+
+
+		// make item boosts to casting time noncumulative 
+		
+		LAF include STR_VAR file=noncumulative_casting_time.tph locbase=lib END
+		OUTER_SET display_strref=RESOLVE_STR_REF (@30007)
+		LAF noncumulative_casting_time INT_VAR display_strref END
+
+	
+   END
+END

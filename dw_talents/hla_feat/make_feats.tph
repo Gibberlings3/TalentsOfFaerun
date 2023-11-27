@@ -1,0 +1,1125 @@
+///// Main function ////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION make_feats
+	INT_VAR is_epic=0
+	STR_VAR feat_table=""
+			location=""
+			locbase=""
+			path=""
+			resource_location="" // relative to MOD_FOLDER
+BEGIN
+
+	// get some basic data
+	
+	LAF read_in_class_names RET_ARRAY class_names END
+	LAF read_in_kit_names RET_ARRAY kit_names END
+	LAF read_in_basic_requirements_map RET_ARRAY basic_requirements_map END
+	LAF read_in_school_exclusions_map RET_ARRAY school_exclusions_map sorcerer_hla_map END
+	LAF read_in_sphere_names RET_ARRAY sphere_names END
+
+	// get the names from the feat table, for prerequisites and resource-loc copying
+	
+	LAF read_in_feats STR_VAR table="%feat_table%" location locbase path RET_ARRAY feat_names END
+	
+	// get the table of previous feats, ditto
+	
+	ACTION_IF FILE_EXISTS "%data_loc_shared%/dw_feat_data.2da" BEGIN
+		LAF 2da_read STR_VAR case=mixed file=dw_feat_data.2da path="%data_loc_shared%" RET_ARRAY feat_data=array END
+	END
+	
+	// install any files
+	
+	ACTION_IF "%resource_location%" STR_CMP "" BEGIN
+		ACTION_PHP_EACH feat_names AS name=>discard BEGIN
+			ACTION_IF DIRECTORY_EXISTS "%MOD_FOLDER%/%resource_location%/%name%" BEGIN
+				ACTION_BASH_FOR "%MOD_FOLDER%/%resource_location%/%name%" ".*" BEGIN
+					ACTION_MATCH "%BASH_FOR_EXT%" WITH
+						D BAF BEGIN
+							COMPILE "%BASH_FOR_FILESPEC%"
+						END
+						DEFAULT
+							COPY "%BASH_FOR_FILESPEC%" override
+						END
+				END
+			END
+		END	
+	END
+	
+	// core action
+	LAF 2da_process_table STR_VAR table="%feat_table%" location locbase path function=make_feats_core END
+
+END
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+/// Runs on a line of a feat table, generating the feat and amending its documentation with prerequisites and requirements
+
+DEFINE_ACTION_FUNCTION make_feats_core
+	INT_VAR name=0 desc=0 max_count=1 
+	STR_VAR id="" resref="" type="" select_desc="" prerequisite="" require_1="" require_2="" require_3="" require_4="" require_5="" exclude_kit="" special="" special_string="" alignment="" exclude_hla="" checks=""
+BEGIN
+	PRINT "making feat %id%"
+
+
+	ACTION_IF VARIABLE_IS_SET "%resref%" BEGIN
+		OUTER_SPRINT resref EVAL "%%resref%%"
+	END
+	
+	// evaluate any checks to see if we should proceed
+	LAF evaluate_feat_checks STR_VAR checks id resref RET proceed END
+	
+	ACTION_IF proceed BEGIN
+
+		///////////////////////////////////////////////
+		// process the 'specials' table
+		//////////////////////////////////////////////////
+
+		ACTION_CLEAR_ARRAY feat_special_table
+		OUTER_WHILE "%special%" STRING_COMPARE "" BEGIN
+			LAF return_first_entry STR_VAR list="%special%" separator="|" RET entry special=list END
+			OUTER_PATCH_SAVE entry "%entry%" BEGIN
+				SPRINT output ""
+				REPLACE_EVALUATE "\[\([^]]*\)\]" BEGIN
+					SPRINT output "%MATCH1%"
+				END
+				""
+			END
+			OUTER_SPRINT $feat_special_table("%entry%") "%output%"
+		END
+		///////////////////////////////////////////////
+		// make copy if appropriate
+		//////////////////////////////////////////////////
+		
+		ACTION_IF VARIABLE_IS_SET $feat_special_table("copy") BEGIN
+			OUTER_SPRINT old_resref $feat_special_table("copy")
+			ACTION_IF FILE_EXISTS "%MOD_FOLDER%/%component_loc%/resource/%old_resref%.spl" BEGIN
+				COPY "%MOD_FOLDER%/%component_loc%/resource/%old_resref%.spl" "override/%resref%.spl"
+			END ELSE
+			ACTION_IF FILE_EXISTS_IN_GAME "%old_resref%.spl" BEGIN
+				COPY_EXISTING "%old_resref%.spl" "override/%resref%.spl"
+					LPF DELETE_SPELL_HEADER INT_VAR header_type="-1" min_level=100 END // remove any scroll making
+			END ELSE BEGIN
+				WARN "%resref% should be a clone of %old_resref%, but it doesn't exist"
+			END
+		END
+		
+		///////////////////////////////////////////////
+		// process the description
+		//////////////////////////////////////////////////
+		
+		/////////////
+		/// generate various string additions
+		//////////////
+		
+
+		//// prerequisites
+		
+		OUTER_SPRINT align_prereq ""
+		ACTION_IF "%alignment%" STR_CMP "*" BEGIN 
+			ACTION_DEFINE_ASSOCIATIVE_ARRAY align_desc_map BEGIN
+				not_lawful=>3057
+				not_chaotic=>3056
+				not_good=>3082
+				not_evil=>3083
+				lawful=>3085
+				chaotic=>3084
+				good=>3086
+				evil=>3087
+			END
+			OUTER_SET align_strref=$align_desc_map("%alignment%")
+			ACTION_IF IS_AN_INT align_strref BEGIN
+				OUTER_SPRINT align_prereq (AT align_strref)
+			END
+		END 
+		
+		OUTER_SPRINT prereq ""
+		ACTION_CLEAR_ARRAY exempt_array
+		OUTER_PATCH_SAVE prerequisite "%prerequisite%" BEGIN
+			REPLACE_EVALUATE "\[\(.*\)\]" BEGIN
+				SPRINT list "%MATCH1%"
+				WHILE "%list%" STR_CMP "" BEGIN
+					LPF return_first_entry STR_VAR list separator="|" RET entry list END
+					TO_UPPER entry
+					PATCH_IF VARIABLE_IS_SET $kit_names("%entry%") BEGIN
+						SPRINT $exempt_array("%entry%") $kit_names("%entry%")
+					END
+				END
+			END
+			""
+		END
+		ACTION_IF "%prerequisite%" STRING_COMPARE_CASE "" BEGIN
+			ACTION_TO_UPPER prerequisite
+			ACTION_IF VARIABLE_IS_SET $feat_names("%prerequisite%") BEGIN
+				OUTER_SPRINT prereq $feat_names("%prerequisite%")
+			END ELSE
+			ACTION_IF VARIABLE_IS_SET $feat_data("%prerequisite%" "resref") BEGIN
+				OUTER_SPRINT prereq_resref $feat_data("%prerequisite%" "resref")
+				PRINT "%prereq_resref%"
+				COPY_EXISTING - "%prereq_resref%.spl" nowhere
+				READ_STRREF 0x8 prereq
+			END
+			ACTION_MATCH "%prerequisite%" WITH
+			"ARCANE_KNOWLEDGE_.*" BEGIN
+				OUTER_PATCH "%prerequisite%" BEGIN
+					REPLACE_EVALUATE "ARCANE_KNOWLEDGE_\(.*\)" BEGIN
+						SPRINT school "%MATCH1%"
+						TO_LOWER school
+					END
+					""
+				END
+				OUTER_SPRINT "or_string" @1040
+				ACTION_DEFINE_ASSOCIATIVE_ARRAY school_names BEGIN
+					abjuration=>ABJURER
+					conjuration=>CONJURER
+					divination=>DIVINER
+					enchantment=>ENCHANTER
+					illusion=>ILLUSIONIST
+					invocation=>INVOKER
+					necromancy=>NECROMANCER
+					alteration=>TRANSMUTER				
+				END
+				OUTER_SPRINT kit $school_names("%school%")
+				OUTER_SPRINT kitname $kit_names("%kit%")
+				OUTER_SPRINT prereq "%prereq%, %or_string% %kitname%"
+				ACTION_PHP_EACH sorcerer_hla_map AS k=>v BEGIN
+					ACTION_IF "%k_1%" STR_EQ "%school%" BEGIN
+						OUTER_SPRINT kitname $kit_names("%k_0%")
+						OUTER_SPRINT prereq "%prereq%, %or_string% %kitname%"						
+					END
+				END
+			END
+			DEFAULT
+			END
+		END 
+		ACTION_PHP_EACH exempt_array AS kit=>kitname BEGIN
+			OUTER_SPRINT prereq "%prereq%, %or_string% %kitname%"
+		END
+		
+		ACTION_IF "%align_prereq%%prereq%" STR_EQ "" BEGIN
+			OUTER_SPRINT prereq_string ""
+		END ELSE BEGIN
+			OUTER_SPRINT prereq_start @1011	
+			ACTION_IF "%align_prereq%" STR_EQ "" || "%prereq%" STR_EQ "" BEGIN
+				OUTER_SPRINT prereq_spacer ""
+			END ELSE BEGIN
+				OUTER_SPRINT prereq_spacer @1013
+			END
+			OUTER_SPRINT prereq_string "%WNL%%WNL%%prereq_start%%prereq%%prereq_spacer%%align_prereq%."
+		END
+		
+			
+
+		//// requirements
+			
+		OUTER_SPRINT sphere ""
+		OUTER_SPRINT req_string ""
+		ACTION_CLEAR_ARRAY req_desc_array
+		OUTER_FOR (req=1;req<=5;++req) BEGIN
+			OUTER_SPRINT requirement EVAL "%require_%req%%" 
+			ACTION_IF "%requirement%" STRING_COMPARE "*" BEGIN
+				LAF document_feat_requirement STR_VAR requirement RET string sphere_here=sphere END
+				ACTION_IF "%sphere_here%" STR_CMP "" BEGIN
+					ACTION_IF "%sphere%" STR_EQ "" || "%sphere%" STR_EQ "%sphere_here%" BEGIN
+						OUTER_SPRINT sphere "%sphere_here%"
+					END ELSE BEGIN
+						OUTER_SPRINT sphere "%sphere%/%sphere_here%"
+					END
+					
+				END
+				OUTER_SPRINT $req_desc_array("%string%") ""
+			END
+		END
+		LAF make_comma_separated_list INT_VAR sort_array=1 tra_ref_two=1000 tra_ref_many=1001 STR_VAR string_array=req_desc_array RET list END
+		ACTION_IF "%list%" STRING_COMPARE "" BEGIN
+			OUTER_SPRINT req_start @1010
+			OUTER_SPRINT req_string "%WNL%%WNL%%req_start%%list%."
+		END
+		
+		//// kit exclusions
+			
+		OUTER_SPRINT exclude_string ""
+		ACTION_IF !VARIABLE_IS_SET $feat_special_table("hide_kits") BEGIN
+			ACTION_IF "%exclude_kit%" STRING_COMPARE "*" BEGIN
+				LAF document_feat_kit_exclusion STR_VAR exclude_kit RET string END
+				ACTION_IF "%string%" STRING_COMPARE "" BEGIN
+					OUTER_SPRINT excl_start @1012
+					OUTER_SPRINT exclude_string "%WNL%%WNL%%excl_start%%string%."
+				END
+			END
+		END
+		/// number of uses
+		
+		OUTER_SPRINT number_use_string ""
+		ACTION_IF max_count>1 && "%type%" STR_EQ "apply" BEGIN
+			ACTION_IF max_count=2 BEGIN
+				OUTER_SPRINT line @1100
+			END ELSE
+			ACTION_IF max_count=99 BEGIN
+				OUTER_SPRINT line @1102
+			END ELSE BEGIN
+				OUTER_SPRINT line @1101
+				OUTER_PATCH_SAVE line "%line%" BEGIN
+					REPLACE_TEXTUALLY NUMBER_OF_TIMES "%max_count%"
+				END
+			END		
+			OUTER_SPRINT number_use_string "%number_use_string%%WNL%%WNL%%line%"
+		END
+		
+		// any extra special string
+		
+		OUTER_SPRINT extra_string ""
+		ACTION_IF "%special_string%" STRING_COMPARE "*" BEGIN
+			OUTER_SPRINT extra (AT special_string)
+			OUTER_SPRINT extra_string "%WNL%%WNL%%extra%"
+		END
+		
+		// all together
+		
+		OUTER_SPRINT select_screen_info "%prereq_string%%req_string%%exclude_string%%number_use_string%%extra_string%"
+
+		///////////////////////////
+		//// Get the main name/desc
+		///////////////////////////
+		
+		OUTER_SET desc_strref="-1"
+		OUTER_SPRINT desc_string ""
+		ACTION_IF FILE_EXISTS_IN_GAME "%resref%.spl" BEGIN
+			COPY_EXISTING "%resref%.spl" "%workspace%"
+				READ_LONG 0x50 desc_strref
+				PATCH_IF desc="-1" BEGIN
+					GET_STRREF desc_strref desc_string
+				END
+				PATCH_IF name="-1" BEGIN
+					READ_STRREF 0x8 name_string
+				END
+			BUT_ONLY
+		END
+		ACTION_IF desc>=0 BEGIN
+			OUTER_SPRINT desc_string (AT desc)	
+		END
+		ACTION_IF name>=0 BEGIN
+			OUTER_SPRINT name_string (AT name)
+		END
+		
+		// add the name as a title to the description if it is not present already
+		
+		ACTION_IF STRING_LENGTH "%name_string%" > STRING_LENGTH "%desc_string%" BEGIN
+			OUTER_SET add_name_to_desc=1
+		END ELSE BEGIN
+			OUTER_PATCH "%desc_string%" BEGIN
+				READ_ASCII 0x0 name_check (STRING_LENGTH "%name_string%")
+				add_name_to_desc= "%name_check%" STR_CMP "%name_string%" 
+			END
+		END
+		ACTION_IF add_name_to_desc BEGIN
+			OUTER_SPRINT desc_string "%name_string%%WNL%%WNL%%desc_string%"
+		END
+		
+		// swap the sphere if appropriate
+		
+		ACTION_IF "%sphere%" STR_CMP "" BEGIN
+			OUTER_SPRINT sphere_start @1303
+			OUTER_PATCH_SAVE desc_string "%desc_string%" BEGIN
+				REPLACE_TEXTUALLY "%sphere_start%.*" "%sphere_start% %sphere%"
+			END
+		END
+		
+		
+		/////////////////////////////////////////////////////////////////////////
+		/// If we're overriding the select-screen description, add all the
+		/// prereq (etc) data to the new description. Otherwise, add it to 
+		/// the main description
+		/////////////////////////////////////////////////////////////////////
+		
+		// process any description override
+		ACTION_MATCH "%select_desc%" WITH
+		"*" BEGIN 
+			OUTER_SET override_desc=0
+			OUTER_SPRINT desc_string "%desc_string%%select_screen_info%"
+		END
+		DEFAULT
+			OUTER_SET override_desc=1
+			ACTION_IF IS_AN_INT select_desc BEGIN
+				OUTER_SPRINT select_desc_string (AT select_desc)
+			END ELSE BEGIN
+				ACTION_MATCH "%select_desc%" WITH 
+				overlay BEGIN
+					OUTER_SPRINT select_desc_string "%desc_string%"
+				END
+				extra_spell BEGIN
+					OUTER_SPRINT line @504
+					OUTER_PATCH_SAVE select_desc_string "%line%" BEGIN
+						REPLACE_TEXTUALLY "SPELL_PLACEHOLDER" "%name_string%"
+					END
+					OUTER_SPRINT line @503
+					OUTER_PATCH_SAVE name_replace "%line%" BEGIN
+						REPLACE_TEXTUALLY "SPELL_PLACEHOLDER" "%name_string%"
+					END
+					LAF override_hla_name INT_VAR strref=RESOLVE_STR_REF ("%name_replace%") STR_VAR resref END
+
+				END
+				extra_use BEGIN
+					OUTER_SPRINT line @501
+					OUTER_PATCH_SAVE select_desc_string "%line%" BEGIN
+						REPLACE_TEXTUALLY "POWER_PLACEHOLDER" "%name_string%"
+					END
+					OUTER_SPRINT line @502
+					OUTER_PATCH_SAVE name_replace "%line%" BEGIN
+						REPLACE_TEXTUALLY "POWER_PLACEHOLDER" "%name_string%"
+					END
+					LAF override_hla_name INT_VAR strref=RESOLVE_STR_REF ("%name_replace%") STR_VAR resref END
+				END
+				"n_[0-9]+" BEGIN
+					OUTER_PATCH_SAVE name_tra "%select_desc%" BEGIN
+						REPLACE_TEXTUALLY "n_" ""
+					END
+					LAF override_hla_name INT_VAR strref=RESOLVE_STR_REF ((AT name_tra)) STR_VAR resref END
+					OUTER_SPRINT select_desc_string "%desc_string%"
+				
+				END
+				"t_[0-9]+" BEGIN
+					OUTER_PATCH_SAVE top_tra "%select_desc%" BEGIN
+						REPLACE_TEXTUALLY "t_" ""
+					END
+					OUTER_SPRINT top_string (AT top_tra)
+					OUTER_SPRINT select_desc_string "%top_string%%WNL%%WNL%%desc_string%"
+				END
+				DEFAULT
+					FAIL "illegal argument %select_desc% for description override"
+				END
+			END
+			OUTER_SPRINT select_desc_string "%select_desc_string%%select_screen_info%"
+			LAF override_hla_description INT_VAR strref=RESOLVE_STR_REF ("%select_desc_string%") STR_VAR resref END
+		END
+		
+		// if the item already exists, patch in the description
+
+		ACTION_IF FILE_EXISTS_IN_GAME "%resref%.spl"  BEGIN
+			COPY_EXISTING "%resref%.spl" override
+				SAY 0x50 "%desc_string%"
+		END
+		
+		//////////////////////////////////////////////////////
+		// make the actual spell if needs be
+		//////////////////////////////////////////////////////
+		
+			
+		ACTION_IF !(FILE_EXISTS_IN_GAME "%resref%.spl") || VARIABLE_IS_SET $feat_special_table("overwrite") || VARIABLE_IS_SET $feat_special_table("edit") BEGIN
+			OUTER_SPRINT patch "%id%"
+			OUTER_SET arguments="-1"
+			OUTER_PATCH "%id%" BEGIN
+				REPLACE_EVALUATE "\(.*\)_\([0-9]+\)$" BEGIN
+					SPRINT patch "%MATCH1%"
+					SET arguments="%MATCH2%"
+				END
+				""
+			END
+			ACTION_IF !(FILE_EXISTS_IN_GAME "%resref%.spl") || VARIABLE_IS_SET $feat_special_table("overwrite") BEGIN
+				OUTER_SET desc_strref=RESOLVE_STR_REF ("%desc_string%") // do it this way rather than with set_description because the latter mangles line breaks		
+				CREATE spl "%resref%"
+					LPF add_basic_spell_ability END
+					LPF ALTER_SPELL_HEADER INT_VAR target=5 END
+			END
+			COPY_EXISTING "%resref%.spl" override
+				PATCH_IF name>=0 BEGIN
+					SAY 0x8 (AT name)
+				END
+				PATCH_IF "%desc_string%" STR_CMP "" BEGIN
+					SAY 0x50 "%desc_string%"				
+				END
+				PATCH_IF arguments>=0 BEGIN
+					LPF "%patch%" INT_VAR arguments END
+				END ELSE BEGIN
+					LPF "%patch%" END
+				END
+			BUT_ONLY
+		END ELSE
+		
+		ACTION_IF name>=0 || desc>=0 BEGIN
+			COPY_EXISTING "%resref%.spl" override
+				PATCH_IF name>=0 BEGIN
+					SAY 0x8 (AT name)
+				END
+				PATCH_IF "%desc_string%" STR_CMP "" BEGIN
+					SAY 0x50 "%desc_string%"				
+				END
+			
+			BUT_ONLY
+		END
+		////////////////////////
+	
+	END // end of 'if proceed' outer loop
+	
+END
+
+///////////////////////////////////////////////////////////////////////////////////
+///	Evaluate a check on whether we should build/install a feat
+///////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_DIMORPHIC_FUNCTION evaluate_feat_checks
+	STR_VAR checks="" id="" resref=""
+	RET proceed
+BEGIN
+  OUTER_SET proceed=1
+  ACTION_IF !("%checks%" STRING_EQUAL "*") BEGIN
+	OUTER_WHILE "%checks%" STRING_COMPARE "" BEGIN
+		LAF return_first_entry STR_VAR list="%checks%" separator="|" RET check=entry checks=list END
+		ACTION_MATCH "%check%" WITH
+		"!.*" BEGIN
+			OUTER_PATCH_SAVE check "%check%" BEGIN
+				REPLACE_TEXTUALLY "!" ""
+			END
+			LAF evaluate_feat_checks_core STR_VAR id resref check RET value END
+			OUTER_SET proceed = proceed && !value
+		END
+		DEFAULT
+			LAF evaluate_feat_checks_core STR_VAR id resref check RET value END
+			OUTER_SET proceed = proceed && value
+		END
+	END
+  END
+END
+
+DEFINE_ACTION_FUNCTION evaluate_feat_checks_core
+	STR_VAR check="" id="" resref=""
+	RET value
+BEGIN
+	ACTION_MATCH "%check%" WITH
+	smite_evil BEGIN
+		OUTER_SET value=RESOURCE_CONTAINS "spell.ids" "PALADIN_SMITE_EVIL"
+	END
+	iwd_bardsong BEGIN
+		OUTER_SET value=FILE_EXISTS_IN_GAME "#BARD1.spl"
+		ACTION_IF value BEGIN
+			LAF hla_feat_setup STR_VAR setup=bardsong END
+		END
+	END
+	tof_smite BEGIN
+		OUTER_SET value=FILE_EXISTS_IN_GAME "%spl_smite_evil_cavalier%.spl"
+	END
+	evasion BEGIN
+		LAF check_label STR_VAR label="dw#evasion_setup" RET value END
+	END
+	false BEGIN
+		OUTER_SET value=0
+	END
+	feats BEGIN
+		LAF check_label STR_VAR label="dw#feats_installed" RET value END
+	END
+	DEFAULT
+		LAF warning STR_VAR warning="unrecognized check %check% for feat %id% (%resref%)" END
+		OUTER_SET value=1
+	END
+END
+
+///////////////////////////////////////////////////////////////////////////////////
+/// takes an instruction for a kit exclusion; returns a string detailing the instruction
+///////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION document_feat_kit_exclusion
+	STR_VAR exclude_kit=""
+	RET string
+BEGIN
+	ACTION_CLEAR_ARRAY exclude_array
+	OUTER_WHILE "%exclude_kit%" STRING_COMPARE "" BEGIN
+		LAF return_first_entry STR_VAR list="%exclude_kit%" separator="|" RET entry exclude_kit=list END
+		ACTION_MATCH "%entry%" WITH
+		BLACKGUARD BEGIN END // since we treat blackguards as a separate class, we don't document their exclusions
+		BLACKGUARDVISIBLE BEGIN // ...
+			OUTER_SPRINT name $kit_names("BLACKGUARD")
+			OUTER_SPRINT $exclude_array("%name%") ""
+		END
+		"PARENT_.*" BEGIN END // parent-exclusion instructions aren't documented
+		"NOT_SCHOOL.*" BEGIN
+			OUTER_PATCH "%entry%" BEGIN
+				REPLACE_EVALUATE ".*(\(.*\))" BEGIN
+					SPRINT school_list "%MATCH1%"
+				END
+				""
+			END
+			OUTER_WHILE "%school_list%" STR_CMP "" BEGIN
+				LAF return_first_entry STR_VAR list="%school_list%" separator="," RET school_list=list entry END
+				OUTER_SPRINT $barred_schools("%entry%") ""
+			END
+			ACTION_PHP_EACH school_exclusions_map AS k=>discard BEGIN
+				ACTION_IF VARIABLE_IS_SET $barred_schools("%k_0%") BEGIN
+					ACTION_IF VARIABLE_IS_SET $kit_names("%k_1%") BEGIN
+						OUTER_SPRINT name $kit_names("%k_1%")
+						OUTER_SPRINT $exclude_array("%name%") ""
+					END
+				END
+			END	
+		END
+		DEFAULT
+			ACTION_IF VARIABLE_IS_SET $kit_names("%entry%") BEGIN
+				OUTER_SPRINT name $kit_names("%entry%")
+				OUTER_SPRINT $exclude_array("%name%") ""
+			END ELSE //class?
+			ACTION_IF IDS_OF_SYMBOL (class "%entry%")>=0 BEGIN
+				LAF 2daq_extract STR_VAR resref=clastext row="%entry%" column=MIXED RET value END
+				ACTION_GET_STRREF value name
+				OUTER_SPRINT $exclude_array("%name%") ""
+			END
+			
+		END
+	END
+	LAF make_comma_separated_list INT_VAR sort_array=1 tra_ref_two=1000 tra_ref_many=1001 STR_VAR string_array=exclude_array RET string=list END 
+END
+
+///////////////////////////////////////////////////////////////////////////////////
+/// takes an instruction for a requirement; returns a string detailing the instruction. Also returns (if appropriate) a string detailing the sphere of the spell.
+///////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION document_feat_requirement
+	STR_VAR requirement=""
+	RET string
+		sphere
+BEGIN
+	// a little syntactic sugar
+	ACTION_MATCH "%requirement%" WITH
+	"ARCANE" BEGIN
+		OUTER_SPRINT requirement ARCANE_1
+	END
+	"DIVINE" BEGIN
+		OUTER_SPRINT requirement DIVINE_1
+	END
+	DEFAULT
+	END
+	
+	// break into core and number, if relevant
+	
+	OUTER_SET number=1
+	OUTER_PATCH_SAVE requirement "%requirement%" BEGIN
+		REPLACE_EVALUATE "\(.*\)_\([0-9]+\)" BEGIN
+			number="%MATCH2%"
+		END
+		"%MATCH1%"
+	END
+	
+	// process requirement
+	OUTER_SPRINT string ""
+	ACTION_MATCH "%requirement%" WITH
+	NONE BEGIN
+	END
+	ARCANE BEGIN
+		OUTER_SET tra_ref=1020+number
+		OUTER_SPRINT string (AT tra_ref)
+	END
+	DIVINE BEGIN
+		OUTER_SET tra_ref=1200+number
+		OUTER_SPRINT string (AT tra_ref)
+	END
+	CASTER BEGIN
+		OUTER_SPRINT string @1030
+	END
+	FULL_CASTER BEGIN
+		OUTER_SPRINT string @1031
+	END
+	WARRIOR BEGIN
+	  ACTION_IF !VARIABLE_IS_SET $feat_special_table("hide_class") BEGIN
+		LAF format_integer_as_th INT_VAR number RET number_string END
+		OUTER_SPRINT string @1062
+		OUTER_SPRINT class $class_names("%requirement%")
+		OUTER_PATCH_SAVE string "%string%" BEGIN
+			REPLACE_TEXTUALLY NUMBER "%number_string%"
+			REPLACE_TEXTUALLY CLASS "%class%"
+		END
+	  END	
+	END
+	FIGHTER PALADIN RANGER MAGE SORCERER BARD THIEF CLERIC DRUID SHAMAN FAVORED_SOUL MONK FIGHTER_CLERIC FIGHTER_MAGE FIGHTER_THIEF CLERIC_MAGE CLERIC_THIEF MAGE_THIEF FIGHTER_DRUID CLERIC_RANGER FIGHTER_MAGE_CLERIC FIGHTER_MAGE_THIEF BEGIN
+	  ACTION_IF !VARIABLE_IS_SET $feat_special_table("hide_class") BEGIN
+		LAF format_integer_as_th INT_VAR number RET number_string END
+		OUTER_SPRINT string @1062
+		OUTER_SPRINT class $class_names("%requirement%")
+		OUTER_PATCH_SAVE string "%string%" BEGIN
+			REPLACE_TEXTUALLY NUMBER "%number_string%"
+			REPLACE_TEXTUALLY CLASS "%class%"
+		END
+	  END
+	END
+	SH_OR_FS BEGIN
+	  ACTION_IF !VARIABLE_IS_SET $feat_special_table("hide_class") BEGIN
+		LAF format_integer_as_th INT_VAR number RET number_string END
+		OUTER_SPRINT string1 @1062
+		OUTER_SPRINT string2 @1062
+		OUTER_SPRINT class1 $class_names("FAVORED_SOUL")
+		OUTER_SPRINT class2 $class_names("SHAMAN")
+		OUTER_PATCH_SAVE string1 "%string1%" BEGIN
+			REPLACE_TEXTUALLY NUMBER "%number_string%"
+			REPLACE_TEXTUALLY CLASS "%class1%"
+		END
+		OUTER_PATCH_SAVE string2 "%string2%" BEGIN
+			REPLACE_TEXTUALLY NUMBER "%number_string%"
+			REPLACE_TEXTUALLY CLASS "%class2%"
+		END
+		OUTER_SPRINT string "%string1%, %string2%"
+	  END
+	END	
+	DRAGON_DISCIPLE BEGIN
+		ACTION_IF FILE_EXISTS_IN_GAME "m_dw_vcd.lua" && RESOURCE_CONTAINS "m_dw_vcd.lua" "dragon_disciple" BEGIN
+			COPY_EXISTING - "m_dw_vcd.lua" nowhere
+				REPLACE_EVALUATE "dragon_disciple'.*name=\([0-9]+\)" BEGIN
+					strref="%MATCH1%"
+				END
+				""
+		END ELSE BEGIN
+			LAF 2daq_extract INT_VAR rowname_column=1 STR_VAR resref=kitlist row=DRAGON_DISCIPLE column=MIXED RET strref=value END
+		END
+		LAF format_integer_as_th INT_VAR number RET number_string END
+		ACTION_GET_STRREF strref class
+		OUTER_SPRINT string @1062
+		OUTER_PATCH_SAVE string "%string%" BEGIN
+			REPLACE_TEXTUALLY NUMBER "%number_string%"
+			REPLACE_TEXTUALLY CLASS "%class%"			
+		END
+	END
+	DEFAULT
+		ACTION_IF VARIABLE_IS_SET $sphere_names("%requirement%") BEGIN
+			OUTER_SPRINT sphere_name $sphere_names("%requirement%")
+			ACTION_MATCH "%sphere_name%" WITH
+			CLERIC BEGIN
+				OUTER_SPRINT string @1302
+			END
+			DRUID BEGIN
+				OUTER_SPRINT string @1301
+			END
+			BOTH BEGIN
+				OUTER_SPRINT string @1207			
+			END
+			DEFAULT
+				OUTER_SPRINT string @1300
+				OUTER_PATCH_SAVE string "%string%" BEGIN
+					REPLACE_TEXTUALLY SPHERE_PLACEHOLDER "%sphere_name%"
+				END
+			END		
+			OUTER_SPRINT sphere "%sphere_name%"
+		END ELSE	
+		ACTION_IF VARIABLE_IS_SET $kit_names("%requirement%") BEGIN
+		  ACTION_IF !VARIABLE_IS_SET $feat_special_table("hide_class") BEGIN
+			LAF format_integer_as_th INT_VAR number RET number_string END
+			OUTER_SPRINT string @1062
+			ACTION_IF VARIABLE_IS_SET $feat_special_table("hide_kits") BEGIN
+				LAF 2daq_extract INT_VAR rowname_column=1 STR_VAR resref=kitlist row="%requirements%" column=CLASS RET class_num=value END
+				ACTION_IF IS_AN_INT class_num BEGIN
+					OUTER_PATCH "" BEGIN
+						LOOKUP_IDS_SYMBOL_OF_INT class class class_num
+						TO_UPPER class
+					END
+					OUTER_SPRINT kit $class_names("%class%")
+				END ELSE BEGIN
+					OUTER_SPRINT kit "DUMMY"
+				END				
+			END ELSE BEGIN
+				OUTER_SPRINT kit $kit_names("%requirement%")			
+			END
+			ACTION_IF "%kit%" STR_CMP "DUMMY" BEGIN
+				OUTER_PATCH_SAVE string "%string%" BEGIN
+					REPLACE_TEXTUALLY NUMBER "%number_string%"
+					REPLACE_TEXTUALLY CLASS "%kit%"
+				END
+			END
+		  END
+		END ELSE	
+		ACTION_IF VARIABLE_IS_SET $basic_requirements_map("%requirement%") BEGIN
+			OUTER_SPRINT string $basic_requirements_map("%requirement%")
+		END ELSE BEGIN
+	
+			LAF warning STR_VAR warning="Feat/HLA requirement %requirement% cannot be documented." END
+			OUTER_SPRINT string ""
+			
+		END
+	END
+
+END
+
+///////////////////////////////////////////////////////////////////////////////////
+/// Format an integer in the "1st/2nd/...." format.
+/// if is_epic=1 and the integer is 1, return 'high'
+///////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION format_integer_as_th INT_VAR number=0 RET number_string BEGIN
+	OUTER_SET is_epic=IS_AN_INT is_epic?is_epic:0
+	ACTION_IF is_epic && number=1 BEGIN
+		OUTER_SPRINT number_string @1063
+	END ELSE
+	ACTION_IF number<11 BEGIN
+		OUTER_SET tra_ref=1050+number
+		OUTER_SPRINT number_string (AT tra_ref)
+	END ELSE BEGIN
+		OUTER_SPRINT number_string @1061
+		OUTER_PATCH_SAVE number_string "%number_string%" BEGIN 
+			REPLACE_TEXTUALLY NUMBER "%number%" 
+		END	
+	END
+
+END
+
+///////////////////////////////////////////////////////////////////////////////////
+/// Read in the basic maps for requirements
+///////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION read_in_basic_requirements_map RET_ARRAY basic_requirements_map BEGIN
+	ACTION_CLEAR_ARRAY basic_requirement_map
+	ACTION_DEFINE_ASSOCIATIVE_ARRAY basic_requirements_map BEGIN
+		STEALTH=>1034
+		FIND_TRAPS=>1033
+		DETECT_ILLUSION=>1035
+		PICK_POCKETS=>1032
+		SET_TRAPS=>1036
+		TURN_UNDEAD=>1037
+	END
+	ACTION_PHP_EACH basic_requirements_map AS id=>number BEGIN
+		OUTER_SPRINT string (AT number)
+		OUTER_SPRINT $basic_requirements_map("%id%") "%string%"
+	END
+END
+
+
+///////////////////////////////////////////////////////////////////////////////////
+/// Read in the names of all the feats themselves (for prereq. purposes)
+///////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION read_in_feats
+	STR_VAR table="" location="" locbase="" path=""
+	RET_ARRAY feat_names
+BEGIN
+	ACTION_CLEAR_ARRAY feat_names
+	LAF 2da_read STR_VAR file="%table%" location locbase path type=table_header case=mixed RET_ARRAY rows array END
+	ACTION_PHP_EACH rows AS row=>discard BEGIN
+		OUTER_SPRINT feat_label $array("%row%" "id")
+		OUTER_SET feat_name_tra=$array("%row%" "name:i")
+		ACTION_IF feat_name_tra<0 BEGIN
+			OUTER_SPRINT feat_resref $array("%row%" "resref")
+			ACTION_IF VARIABLE_IS_SET "%feat_resref%" BEGIN
+				OUTER_SPRINT feat_resref EVAL "%%feat_resref%%"
+			END
+			ACTION_IF FILE_EXISTS_IN_GAME "%feat_resref%.spl" BEGIN
+				COPY_EXISTING "%feat_resref%.spl" "%workspace%"
+					READ_STRREF 0x8 name
+					SPRINT $feat_names("%feat_label%") "%name%"
+				BUT_ONLY		
+			END ELSE BEGIN
+				OUTER_SPRINT $feat_names("%feat_label%") ""
+			END
+		END ELSE BEGIN
+			OUTER_SPRINT $feat_names("%feat_label%") (AT feat_name_tra)
+		END
+	END
+END
+
+
+///////////////////////////////////////////////////////////////////////////////////
+/// Read in the names of all the classes from ENGINEST
+///////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION read_in_class_names
+	RET_ARRAY class_names
+BEGIN
+	ACTION_CLEAR_ARRAY class_names
+	COPY_EXISTING "enginest.2da" "%workspace%"
+		PATCH_FOR_EACH class IN RANGER PALADIN BARD THIEF SORCERER SHAMAN CLERIC DRUID MONK CLERIC_THIEF CLERIC_RANGER BEGIN
+			REPLACE_EVALUATE "STRREF_GUI_MIXED_%class%[ %TAB%]+\([0-9]+\)" BEGIN
+				GET_STRREF "%MATCH1%" class_name
+				SPRINT $class_names("%class%") "%class_name%"
+			END
+			""
+		END
+		REPLACE_EVALUATE "STRREF_GUI_MIXED_NORMAL_FIGHTER[ %TAB%]+\([0-9]+\)" BEGIN
+			GET_STRREF "%MATCH1%" class_name
+			SPRINT $class_names("FIGHTER") "%class_name%"
+			SPRINT fightername "%class_name%"
+		END
+		""
+		REPLACE_EVALUATE "STRREF_GUI_MIXED_KIT_MAGESCHOOL_GENERALIST[ %TAB%]+\([0-9]+\)" BEGIN
+			GET_STRREF "%MATCH1%" class_name
+			SPRINT $class_names("MAGE") "%class_name%"
+			SPRINT magename "%class_name%"
+		END
+		""
+		PATCH_FOR_EACH class IN FIGHTER_CLERIC FIGHTER_DRUID FIGHTER_THIEF BEGIN
+			REPLACE_EVALUATE "STRREF_GUI_MIXED_%class%[ %TAB%]+\([0-9]+\)" BEGIN
+				GET_STRREF "%MATCH1%" class_name
+				INNER_PATCH_SAVE class_name "%class_name%" BEGIN
+					REPLACE_TEXTUALLY "<FIGHTERTYPE>" "%fightername%"
+				END
+				SPRINT $class_names("%class%") "%class_name%"
+			END
+			""
+		END
+		PATCH_FOR_EACH class IN CLERIC_MAGE MAGE_THIEF BEGIN
+			REPLACE_EVALUATE "STRREF_GUI_MIXED_%class%[ %TAB%]+\([0-9]+\)" BEGIN
+				GET_STRREF "%MATCH1%" class_name
+				INNER_PATCH_SAVE class_name "%class_name%" BEGIN
+					REPLACE_TEXTUALLY "<MAGESCHOOL>" "%magename%"
+				END
+				SPRINT $class_names("%class%") "%class_name%"
+			END
+			""
+		END
+		PATCH_FOR_EACH class IN FIGHTER_MAGE FIGHTER_MAGE_THIEF FIGHTER_MAGE_CLERIC BEGIN
+			REPLACE_EVALUATE "STRREF_GUI_MIXED_%class%[ %TAB%]+\([0-9]+\)" BEGIN
+				GET_STRREF "%MATCH1%" class_name
+				INNER_PATCH_SAVE class_name "%class_name%" BEGIN
+					REPLACE_TEXTUALLY "<FIGHTERTYPE>" "%fightername%"
+					REPLACE_TEXTUALLY "<MAGESCHOOL>" "%magename%"
+				END
+				SPRINT $class_names("%class%") "%class_name%"
+			END
+			""
+		END
+	BUT_ONLY
+	OUTER_SPRINT $class_names("FAVORED_SOUL") @1070
+END
+
+///////////////////////////////////////////////////////////////////////////////////
+/// Read in the names of all the kits from KITLIST
+///////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION read_in_kit_names
+	RET_ARRAY kit_names 
+BEGIN
+	ACTION_CLEAR_ARRAY kit_names
+	COPY_EXISTING "kitlist.2da" "%workspace%"
+		LPF 2da_read RET_ARRAY rows array END
+		PHP_EACH rows AS row=>discard BEGIN
+			SPRINT kit $array("%row%" "ROWNAME")
+			SPRINT name_strref $array("%row%" "MIXED")
+			PATCH_IF IS_AN_INT name_strref BEGIN
+				TO_UPPER kit
+				GET_STRREF name_strref name
+				SPRINT $kit_names("%kit%") "%name%"
+			END
+		END
+	BUT_ONLY
+
+END
+
+///////////////////////////////////////////////////////////////////////////////////
+/// Read in the names of all the spheres from dw_spell_list_names.txt, or 
+/// some defaults if necessary
+///////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION read_in_sphere_names
+	RET_ARRAY sphere_names 
+BEGIN
+	ACTION_CLEAR_ARRAY sphere_names
+	ACTION_IF FILE_EXISTS "%data_loc_shared%/dw_spell_list_names.txt" BEGIN
+		LAF ini_read INT_VAR flat=1 STR_VAR file=dw_spell_list_names.txt path="%data_loc_shared%" RET_ARRAY array END
+		ACTION_PHP_EACH array AS k=>v BEGIN
+			ACTION_TO_UPPER k
+			OUTER_SPRINT $sphere_names("%k%") "%v%"
+		END
+	END ELSE BEGIN 
+		LAF 2da_read STR_VAR file=sphere_list.2da locbase=sphere type=table_header case=mixed RET_ARRAY array rows END
+		ACTION_PHP_EACH rows AS row=>discard BEGIN
+			OUTER_SPRINT sphere $array("%row%" "ids")
+			ACTION_TO_UPPER sphere
+			OUTER_SPRINT defaults $array("%row%" "defaults")
+			OUTER_SET cleric=!"%defaults%" STRING_CONTAINS_REGEXP "C"
+			OUTER_SET druid=!"%defaults%" STRING_CONTAINS_REGEXP "D"
+			ACTION_IF cleric && druid BEGIN
+				OUTER_SPRINT $sphere_names("%sphere%") @3332
+			END ELSE
+			ACTION_IF cleric BEGIN
+				OUTER_SPRINT $sphere_names("%sphere%") @3333	
+			END ELSE
+			ACTION_IF druid BEGIN
+				OUTER_SPRINT $sphere_names("%sphere%") @3334		
+			END
+		END
+	END
+	
+	
+	COPY_EXISTING "kitlist.2da" "%workspace%"
+		LPF 2da_read RET_ARRAY rows array END
+		PHP_EACH rows AS row=>discard BEGIN
+			SPRINT kit $array("%row%" "ROWNAME")
+			SPRINT name_strref $array("%row%" "MIXED")
+			PATCH_IF IS_AN_INT name_strref BEGIN
+				TO_UPPER kit
+				GET_STRREF name_strref name
+				SPRINT $kit_names("%kit%") "%name%"
+			END
+		END
+	BUT_ONLY
+
+END
+
+
+
+///////////////////////////////////////////////////////////////////////////////////
+/// Make comma-separated list (input is hash in form string=>discard)
+///////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION make_comma_separated_list
+	INT_VAR sort_array=0 tra_ref_two=0 tra_ref_many=0
+	STR_VAR string_array=""
+	RET list
+BEGIN
+	// count number of elements and put them into a more manageable array
+	ACTION_CLEAR_ARRAY working_array
+	OUTER_SET count=0
+	ACTION_IF sort_array BEGIN
+		ACTION_SORT_ARRAY_INDICES "%string_array%" LEXICOGRAPHICALLY
+	END
+	ACTION_PHP_EACH "%string_array%" AS line=>discard BEGIN
+		ACTION_IF "%line%" STRING_COMPARE "" BEGIN
+			OUTER_SET count +=1
+			OUTER_SPRINT $working_array("%count%") "%line%"
+		END
+	END
+	ACTION_IF count=0 BEGIN
+		OUTER_SPRINT list ""
+	END ELSE
+	ACTION_IF count=1 BEGIN
+		OUTER_SPRINT list $working_array("1")
+	END ELSE
+	ACTION_IF count=2 BEGIN
+		OUTER_SPRINT entry1 $working_array("1")
+		OUTER_SPRINT entry2 $working_array("2")
+		OUTER_SPRINT list (AT tra_ref_two)
+		OUTER_PATCH_SAVE list "%list%" BEGIN
+			REPLACE_TEXTUALLY ENTRY1 "%entry1%"
+			REPLACE_TEXTUALLY ENTRY2 "%entry2%"
+		END
+	END ELSE BEGIN
+		OUTER_SPRINT entry1 ""
+		OUTER_FOR (n=1;n<count;++n) BEGIN
+			OUTER_SPRINT temp $working_array("%n%")
+			OUTER_SPRINT entry1 "%entry1%%temp%, "
+		END
+		OUTER_SPRINT entry2 $working_array("%count%")
+		OUTER_SPRINT list (AT tra_ref_many)
+		OUTER_PATCH_SAVE list "%list%" BEGIN
+			REPLACE_TEXTUALLY ENTRY1 "%entry1%"
+			REPLACE_TEXTUALLY ENTRY2 "%entry2%"
+		END		
+	END
+
+END
+
+///////////////////////////////////////////////////////////////////////////////////
+/// Wrapper for WEIDU's ADD_SPELL_EFFECT, presetting the timing and target values
+///////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION add_feat_effect
+  INT_VAR opcode = 0
+          target = 1
+          timing = 9
+          parameter1 = 0
+          parameter2 = 0
+          power = 0
+          resist_dispel = 0
+          duration = 0
+          probability1 = 100
+          probability2 = 0
+          dicenumber = 0
+          dicesize = 0
+          savingthrow = 0
+          savebonus = 0
+          header = 0
+          insert_point = "-1"
+          special = 0
+          ___#special = special
+  STR_VAR resource = ~~
+BEGIN
+	LPF ADD_SPELL_EFFECT 
+		INT_VAR opcode
+				target
+				timing
+				parameter1
+				parameter2
+				power
+				resist_dispel
+				duration
+				probability1
+				probability2
+				dicenumber
+				dicesize
+				savingthrow
+				savebonus
+				header
+				insert_point
+				special
+				___#special
+		STR_VAR resource
+	END
+	
+END
+
+///////////////////////////////////////////////////////////////////////////////////
+///Learn which kits have barred schools
+///////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION read_in_school_exclusions_map RET_ARRAY school_exclusions_map sorcerer_hla_map BEGIN
+
+	// load the mage speciality grid
+
+	ACTION_IF !FILE_EXISTS "%data_loc%/mageschools.2da" BEGIN
+		ACTION_IF is_iwd BEGIN
+			COPY "%MOD_FOLDER%/shared/mageschool/mageschools_iwd.2da" "%data_loc%/mageschools.2da"
+		END ELSE BEGIN
+			COPY "%MOD_FOLDER%/shared/mageschool/mageschools_bg.2da" "%data_loc%/mageschools.2da"		
+		END
+	END
+	LAF array_read STR_VAR file=mageschools.2da path="%data_loc%" RET_ARRAY mageschools=array END
+	ACTION_PHP_EACH mageschools AS kit=>bars BEGIN
+		OUTER_WHILE "%bars%" STR_CMP "" BEGIN
+			LAF return_first_entry STR_VAR list="%bars%" separator="," RET entry bars=list END
+			OUTER_SPRINT $school_exclusions_map("%entry%" "%kit%") ""
+		END
+	END
+	
+	// load the sorcerer speciality grid
+	
+	ACTION_IF FILE_EXISTS "%data_loc_shared%/dw_bloodlines.2da" BEGIN
+		LAF 2da_read STR_VAR file=dw_bloodlines.2da path="%data_loc_shared%" RET_ARRAY rows bloodlines=array END
+		ACTION_PHP_EACH rows AS kit=>discard BEGIN
+			OUTER_SPRINT bar $bloodlines("%kit%" "BAR")
+			OUTER_SPRINT $school_exclusions_map("%bar%" "%kit%") ""
+			OUTER_SPRINT hla $bloodlines("%kit%" "HLA")
+			OUTER_SPRINT $sorcerer_hla_map("%kit%" "%hla%") ""
+		END
+	END
+	
+	// add some hardcoded versions
+	
+	ACTION_DEFINE_ASSOCIATIVE_ARRAY school_exclusions_map BEGIN
+		divination,DW_MILITANT_ABJURER=>""
+		alteration,DW_MILITANT_ABJURER=>""
+		illusion,DW_MILITANT_ABJURER=>""
+		illusion,DW_MILITANT_INVOKER=>""
+		enchantment,DW_MILITANT_INVOKER=>""
+		conjuration,DW_MILITANT_INVOKER=>""
+		alteration,DW_MILITANT_CONJURER=>""
+		divination,DW_MILITANT_CONJURER=>""
+		invocation,DW_MILITANT_CONJURER=>""
+		alteration,DW_MILITANT_NECROMANCER=>""
+		illusion,DW_MILITANT_NECROMANCER=>""
+		enchantment,DW_MILITANT_NECROMANCER=>""
+		conjuration,DW_BLOODRAGER=>""
+		illusion,DW_BLOODRAGER=>""
+		enchantment,DW_BLOODRAGER=>""
+		divination,DW_BLOODRAGER=>""
+	END
+
+
+END
+
+
+///////////////////////////////////////////////////////////////////////////////////
+///Idempotent tool for setup functions
+///////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_DIMORPHIC_FUNCTION hla_feat_setup
+	STR_VAR setup=""
+BEGIN
+	LAF check_label STR_VAR label="dw-hla_setup_%setup%" RET value END
+	ACTION_IF !value BEGIN
+		LAF make_label STR_VAR label="dw-hla_setup_%setup%" END
+		LAF run STR_VAR file="%setup%" location=setup END
+	
+	END
+END

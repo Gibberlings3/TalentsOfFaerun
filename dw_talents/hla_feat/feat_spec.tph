@@ -1,0 +1,382 @@
+DEFINE_PATCH_FUNCTION AEGIS_OF_RIME BEGIN
+
+	LPF add_feat_effect INT_VAR opcode=28 parameter1=10 parameter2=0 END // resist cold
+	LPF add_feat_effect INT_VAR opcode=85 parameter1=10 parameter2=0 END // resist magic cold
+	LPF add_feat_effect INT_VAR opcode=142 parameter2=25 END // resist cold icon
+	LPF add_feat_effect INT_VAR opcode=332 parameter1=20 parameter2=2 END // extra cold damage
+
+END
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION SPIRIT_OF_FLAME BEGIN
+
+	LPF add_feat_effect INT_VAR opcode=30 parameter1=10 parameter2=0 END // resist fire
+	LPF add_feat_effect INT_VAR opcode=84 parameter1=10 parameter2=0 END // resist magic fire
+	LPF add_feat_effect INT_VAR opcode=142 parameter2=16 END // resist fire icon
+	LPF add_feat_effect INT_VAR opcode=332 parameter1=20 parameter2=1 END // extra fire damage
+
+END
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION AQUA_MORTIS BEGIN
+
+	LPF add_feat_effect INT_VAR opcode=27 parameter1=10 parameter2=0 END // resist acid
+	LPF add_feat_effect INT_VAR opcode=142 parameter2=24 END // resist acid icon
+	LPF add_feat_effect INT_VAR opcode=332 parameter1=20 parameter2=4 END // extra acid damage
+
+END
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION SCION_OF_STORMS BEGIN
+
+	LPF add_feat_effect INT_VAR opcode=29 parameter1=10 parameter2=0 END // resist electricity
+	LPF add_feat_effect INT_VAR opcode=142 parameter2=27 END // resist electricity icon
+	LPF add_feat_effect INT_VAR opcode=332 parameter1=20 parameter2=3 END // extra electricity damage
+
+END
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+DEFINE_PATCH_FUNCTION EXTRA_LEVEL INT_VAR arguments=0 BEGIN
+
+	parameter2=2 ** (arguments - 1)
+	LPF add_feat_effect INT_VAR opcode=215 STR_VAR resource=spcontin END // graphic
+	LPF add_feat_effect INT_VAR opcode=42 parameter1=1 parameter2 END // extra spell
+
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION DODGE BEGIN
+
+	LPF add_feat_effect INT_VAR opcode=0 parameter1=1 END // +1 AC
+
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION IMPROVED_INITIATIVE BEGIN
+
+	LPF add_feat_effect INT_VAR opcode=190 parameter1=1 END // +1 weapon speed
+
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION IMPROVED_CRITICAL_MELEE BEGIN
+
+	LPF add_feat_effect INT_VAR opcode=301 parameter1=1 special=1 END // +1 critical chance with melee weapon
+
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION IMPROVED_CRITICAL_RANGED BEGIN
+
+	LPF add_feat_effect INT_VAR opcode=301 parameter1=1 special=2 END // +1 critical chance with ranged weapon
+
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION NIMBLE_FINGERS BEGIN
+
+	LPF add_feat_effect INT_VAR timing=1 opcode=92 parameter1=10 END // +15 to Pick Pockets (timing=1 to alter base score)
+
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION DEVICE_MASTERY BEGIN
+
+	LPF add_feat_effect INT_VAR timing=1 opcode=90 parameter1=10 END // +10 to Open Locks (timing=1 to alter base score)
+	LPF add_feat_effect INT_VAR timing=1 opcode=91 parameter1=10 END // +10 to Find Traps (timing=1 to alter base score)
+
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION STEALTHY BEGIN
+
+	LPF add_feat_effect INT_VAR timing=1 opcode=59 parameter1=10 END // +10 to Move Silently (timing=1 to alter base score)
+	LPF add_feat_effect INT_VAR opcode=275 parameter1=10 END // +10 to Hide in Shadows
+
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION PERCEPTIVE BEGIN
+
+	LPF add_feat_effect INT_VAR opcode=276 parameter1=10 END // +15 to Detect Illusions
+
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION TRAPMASTER BEGIN
+
+	LPF add_feat_effect INT_VAR opcode=277 parameter1=15 END // +15 to Set Traps
+
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION LOREMASTER BEGIN
+
+	LPF add_feat_effect INT_VAR opcode=21 parameter1=30 END // +30 to Lore
+
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION TOUGHNESS BEGIN
+
+	LPF add_feat_effect INT_VAR opcode=18 parameter1=5 END // +5 to current/maximum hit points
+
+END
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION GREAT_FORTITUDE BEGIN
+
+	LPF add_feat_effect INT_VAR opcode=33 parameter1=2 END // +2 to poison saves
+	LPF add_feat_effect INT_VAR opcode=35 parameter1=2 END // +2 to polymorph saves
+
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION LIGHTNING_REFLEXES BEGIN
+
+	LPF add_feat_effect INT_VAR opcode=34 parameter1=2 END // +2 to wand saves
+	LPF add_feat_effect INT_VAR opcode=36 parameter1=2 END // +2 to breath saves
+
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION IRON_WILL BEGIN
+
+	LPF add_feat_effect INT_VAR opcode=37 parameter1=2 END // +2 to spell saves
+
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION DASH BEGIN
+
+	LPF add_feat_effect INT_VAR opcode=176 parameter1=125 parameter2=5 END // +25% speed, unaffected by Free Action opcode
+
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+DEFINE_PATCH_FUNCTION DIRTY_FIGHTING BEGIN
+
+	INNER_ACTION BEGIN
+	
+	     // make the payload spell
+     
+	 OUTER_SET blind_duration=6
+	 OUTER_SET slow_duration=12
+	 OUTER_SET total_duration=(blind_duration<slow_duration)?slow_duration:blind_duration
+     
+    spl.make[%spl_dirty_fighting_payload%]
+	[
+        m.ab.add{}
+        m.ab.alter{s_target=1}
+        m.ab_fx.add{s_opcode=318 s_target=2 s_duration=1 s_resource:="%spl_dirty_fighting_payload%" s_parameter2=107 s_parameter1=2}
+        m.ab_fx.add{s_opcode=318 s_target=2 s_duration=1 s_resource:="%spl_dirty_fighting_payload%" s_parameter2=107 s_parameter1=4}
+        m.ab_fx.add{s_opcode=318 s_target=2 s_duration=1 s_resource:="%spl_dirty_fighting_payload%" s_parameter2=107 s_parameter1=255}
+        m.ab_fx.add{s_opcode=74 s_target=2 s_duration=blind_duration s_probability1=49 s_save_vs_poison=1}										// blindness (0-49)
+        m.ab_fx.add{s_opcode=142 s_target=2 s_duration=blind_duration s_parameter2=8 s_probability1=50 s_save_vs_poison=1}								// blindness icon 
+        m.ab_fx.add{s_opcode=139 s_target=2 s_timing=1 s_parameter1=RESOLVE_STR_REF (@78) s_probability1=49 s_save_vs_poison=1}					// blindness string
+        m.ab_fx.add{s_opcode=40 s_target=2 s_duration=slow_duration s_probability1=100 s_probability2=50 s_save_vs_poison=1}					// slow (50-99)
+        m.ab_fx.add{s_opcode=54 s_target=2 s_duration=slow_duration s_probability1=100 s_probability2=50 s_parameter1="-4" s_save_vs_poison=1}	// -4 THAC0
+        m.ab_fx.add{s_opcode=0 s_target=2 s_duration=slow_duration s_probability1=100 s_probability2=50 s_parameter1="-4" s_save_vs_poison=1}		// -4 AC
+        m.ab_fx.add{s_opcode=142 s_target=2 s_duration=slow_duration s_parameter2=41 s_probability1=100 s_probability2=50 s_save_vs_poison=1}		// slow icon
+        m.ab_fx.add{s_opcode=139 s_target=2 s_timing=1 parameter1=RESOLVE_STR_REF (@79) s_probability1=100 s_probability2=50 s_save_vs_poison=1}
+        m.ab_fx.add{s_opcode=206 s_target=2 s_duration=total_duration s_resource:="%spl_dirty_fighting_payload%" s_parameter1="-1"}  									// non-cumulative; goes last 
+     ]
+ 
+	END
+
+	 // patch the application spell
+     
+	 LPF add_feat_effect INT_VAR opcode=341 STR_VAR resource="%spl_dirty_fighting_payload%" END
+
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION THIEF_USE_SCROLLS BEGIN
+
+	LPF ids_resolve INT_VAR min=150 STR_VAR ids=WAND idsfile=SPECIFIC RET specifics_wand=value END 
+	LPF hla_feat_setup STR_VAR setup=wand_scroll_use END
+	LPF add_feat_effect INT_VAR opcode=72 parameter1=specifics_wand parameter2=4 END
+
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION THIEF_USE_WANDS BEGIN
+
+	LPF hla_feat_setup STR_VAR setup=wand_scroll_use END
+	LPF add_feat_effect INT_VAR opcode=72 parameter1=0 parameter2=4 END
+
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION IMPROVED_TURNING BEGIN
+
+	LPF add_feat_effect INT_VAR opcode=323 parameter1=1 END
+
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION MIGHTY_BLOWS BEGIN
+
+	LPF add_feat_effect INT_VAR opcode=285 parameter1=1 END
+
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION DEADLY_AIM BEGIN
+
+	LPF add_feat_effect INT_VAR opcode=286 parameter1=1 END
+
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION EMPOWERED_CASTING_ARCANE BEGIN
+
+	LPF add_feat_effect INT_VAR opcode=191 parameter1=1 parameter2=0 END
+
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION EMPOWERED_CASTING_DIVINE BEGIN
+
+	LPF add_feat_effect INT_VAR opcode=191 parameter1=1 parameter2=1 END
+
+END
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION EMPOWERED_CASTING_ARCANE_GREATER BEGIN
+
+	LPF add_feat_effect INT_VAR opcode=191 parameter1=2 parameter2=0 END
+
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION EMPOWERED_CASTING_DIVINE_GREATER BEGIN
+
+	LPF add_feat_effect INT_VAR opcode=191 parameter1=2 parameter2=1 END
+
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION AMBIDEXTERITY BEGIN
+
+	LPF add_feat_effect INT_VAR opcode=305 parameter1=1 parameter2=0 END
+
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION HARDENED_WARRIOR BEGIN
+
+	PATCH_FOR_EACH opcode IN 86 87 88 89 BEGIN
+		LPF add_feat_effect INT_VAR opcode parameter1=5 END
+	END
+
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION RESISTANCE BEGIN
+
+	PATCH_FOR_EACH opcode IN 27 28 29 30 31 84 85 BEGIN
+		LPF add_feat_effect INT_VAR opcode parameter1=10 END
+	END
+
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION LINGERING_SONG BEGIN
+
+	LPF add_feat_effect INT_VAR opcode=99 parameter1=300 parameter2=2 END
+
+	// songs need to autoremove their effects
+	
+	INNER_ACTION BEGIN
+		ACTION_FOR_EACH song IN spcl542a spcl751a bardsong BARD_SONG_CURRAN BARD_SONG_TYMORA BARD_SONG KAUDIES BARD_SONG_SIREN BARD_SONG_SITH BARD_SONG_BALLAD BEGIN
+			ACTION_IF VARIABLE_IS_SET "%song%" BEGIN
+				OUTER_SPRINT resref "%%song%%"
+			END ELSE BEGIN
+				OUTER_SPRINT resref "%song%"
+			END		
+			COPY_EXISTING "%resref%.spl" override
+				LPF ADD_SPELL_EFFECT INT_VAR insert_point=0 opcode=321 target=2 timing=1 STR_VAR resource="%resref%" END
+			IF_EXISTS
+		END
+	END
+
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION EMPOWERED_HEALING BEGIN
+
+   LPF ds_resolve_stat STR_VAR id=DW_POWER_UPGRADE_C1 RET stat_ind_low=stat_ind END
+   LPF ds_resolve_stat STR_VAR id=DW_POWER_UPGRADE_C2 RET stat_ind_high=stat_ind END
+   INNER_ACTION BEGIN
+    spl.make[%spl_empowered_healing_helper%]
+	[
+		m.ab.add{}
+		m.ab_fx.add{s_opcode=328 s_special=1 s_timing=9 s_target=1 s_power=1 s_parameter2=stat_ind_high}
+	]
+   END
+   LPF add_feat_effect INT_VAR opcode=326 parameter1=stat_ind_low parameter2=110 STR_VAR resource="%spl_empowered_healing_helper%" END
+   LPF add_feat_effect INT_VAR opcode=318 parameter1=stat_ind_low parameter2=110 STR_VAR resource="%SOURCE_RES%" END
+   LPF add_feat_effect INT_VAR opcode=328 parameter2=stat_ind_low special=1 STR_VAR resource="%spl_empowered_healing_helper%" END
+   
+END
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION ROGUE_SLIPPERY_MIND BEGIN
+
+	LPF hla_feat_setup STR_VAR setup=slippery_mind_avoid_death END
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=146 target=1 timing=1 STR_VAR resource="%spl_slippery_mind_payload%" END
+
+END
+
+////////////////////////////////////////////////////////////
+DEFINE_PATCH_FUNCTION FORCE_OF_PERSONALITY BEGIN
+
+	LPF ds_resolve_stat STR_VAR id=DW_FORCE_OF_PERSONALITY RET stat_ind END
+	LPF add_feat_effect INT_VAR opcode=328 parameter2=stat_ind special=1 END
+
+	LPF check_label STR_VAR label=dw-3e_save RET value END
+	PATCH_IF value BEGIN
+		SAY 0x50 @3328 
+	END
+
+END

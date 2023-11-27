@@ -1,0 +1,139 @@
+DEFINE_ACTION_FUNCTION clerics_bg1_scripting BEGIN
+
+///// discount in Song of the Morning for Lathanderites
+
+	<<<<<<<< .../stratagems-inline/temp.baf
+	IF
+		!Global("%var_beregost_lathander_discount%","GLOBAL",1)
+		Global("dw-lathander-kit","GLOBAL",1)
+	THEN
+		RESPONSE #100
+			SetGlobal("%var_beregost_lathander_discount%","GLOBAL",1)
+			ChangeStoreMarkup("tem3402",70,130)
+			Continue()
+	END
+	>>>>>>>>
+
+	LAF extend_area_script INT_VAR inline=1 STR_VAR area="%Temple_SongoftheMorning%" top=temp END
+
+///// discount in Nashkel temple for Helmites
+
+	<<<<<<<< .../stratagems-inline/temp.baf
+	IF
+		!Global("%var_nashkel_helm_discount%","GLOBAL",1)
+		Global("dw-helm-kit","GLOBAL",1)
+	THEN
+		RESPONSE #100
+			SetGlobal("%var_nashkel_helm_discount%","GLOBAL",1)
+			ChangeStoreMarkup("tem4802",70,130)
+			Continue()
+	END
+	>>>>>>>>
+
+	LAF extend_area_script INT_VAR inline=1 STR_VAR area="%Nashkel_TempleofHelm%" top=temp END
+
+///// discount in BG temple for Helmites
+
+	<<<<<<<< .../stratagems-inline/temp.baf
+	IF
+		!Global("%var_bg_helm_discount%","GLOBAL",1)
+		Global("dw-helm-kit","GLOBAL",1)
+	THEN
+		RESPONSE #100
+			SetGlobal("%var_bg_helm_discount%","GLOBAL",1)
+			ChangeStoreMarkup("tem0002",70,130)
+			Continue()
+	END
+	>>>>>>>>
+
+	LAF extend_area_script INT_VAR inline=1 STR_VAR area="%NBaldursGate_TempleofHelm%" top=temp END
+
+/// discount in Candlekeep shrine for servants of Oghma
+
+	<<<<<<<< .../stratagems-inline/temp.baf
+	IF
+		!Global("%var_candlekeep_oghma_discount%","GLOBAL",1)
+		Global("dw-oghma-kit","GLOBAL",1)
+	THEN
+		RESPONSE #100
+			SetGlobal("%var_candlekeep_oghma_discount%","GLOBAL",1)
+			ChangeStoreMarkup("tem2601",70,130)
+			Continue()
+	END
+	>>>>>>>>
+
+	LAF extend_area_script INT_VAR inline=1 STR_VAR area="%Candlekeep%" top=temp END
+
+/// favor/disfavor of Talos (if you serve him) for helping/harming Tenya
+
+	OUTER_SET favor_strref=RESOLVE_STR_REF (@46)
+	OUTER_SET disfavor_strref=RESOLVE_STR_REF (@47)
+	
+	spl.make[%spl_talos_disfavor%]
+	[
+		m.ab.add{}
+		m.ab_fx.add{s_opcode=321 s_target=2 s_timing=1 s_resource:=%spl_talos_favor%} 
+		m.ab_fx.add{s_opcode=139 s_target=2 s_timing=1 s_parameter1=RESOLVE_STR_REF (@46)}
+		m.ab_fx.add{s_opcode=29 s_target=2 s_timing=0 s_duration=160000 s_parameter1="-25"} 
+		m.ab_fx.add{s_opcode=142 s_target=2 s_timing=0 s_duration=160000 s_parameter2=35} 
+	]
+	spl.make[%spl_talos_favor%]
+	[
+		m.ab.add{}
+		m.ab_fx.add{s_opcode=321 s_target=2 s_timing=1 s_resource:=%spl_talos_disfavor%} 
+		m.ab_fx.add{s_opcode=139 s_target=2 s_timing=1 s_parameter1=RESOLVE_STR_REF (@47)}
+		m.ab_fx.add{s_opcode=29 s_target=2 s_timing=9 s_parameter1=10} 
+		m.ab_fx.add{s_opcode=142 s_target=2 s_timing=9 s_parameter2=27} 
+	]
+	
+	<<<<<<<< .../stratagems-inline/temp.baf
+	IF
+		!Global("%var_talos_favor_fishermen%","GLOBAL",2)
+		Dead("tenya")
+		Global("dw-talos-kit","GLOBAL",1)
+	THEN
+		RESPONSE #100
+			SetGlobal("%var_talos_favor_fishermen%","GLOBAL",2)
+			ApplySpellRES("%spl_talos_favor%",Player1)
+			Continue()
+	END
+
+	IF
+		Global("%var_talos_favor_fishermen%","GLOBAL",0)
+		Global("HelpTenya","GLOBAL",2)
+		Global("dw-talos-kit","GLOBAL",1)
+	THEN
+		RESPONSE #100
+			SetGlobal("%var_talos_favor_fishermen%","GLOBAL",1)
+			ApplySpellRES("%spl_talos_disfavor%",Player1)
+			Continue()
+	END
+	>>>>>>>>
+
+	LAF extend_area_script INT_VAR inline=1 STR_VAR area="%WyrmsCrossing%" top=temp END
+
+
+/// discount in the Lady's house for servants of Tymora
+
+	<<<<<<<< .../stratagems-inline/temp.baf
+	IF
+		!Global("%var_bg_tymora_discount%","GLOBAL",1)
+		Global("dw-tymora-kit","GLOBAL",1)
+	THEN
+		RESPONSE #100
+			SetGlobal("%var_bg_tymora_discount%","GLOBAL",1)
+			ChangeStoreMarkup("tem0132",70,130)
+			Continue()
+	END
+	>>>>>>>>
+
+	LAF extend_area_script INT_VAR inline=1 STR_VAR area="%WBaldursGate_LadysHouse%" top=temp END
+
+
+
+
+
+
+
+
+END

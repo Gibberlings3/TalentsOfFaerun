@@ -1,0 +1,1835 @@
+// this is the only outward-facing function here
+
+DEFINE_ACTION_FUNCTION update_all_proficiency_descriptions 
+	INT_VAR only_classes=0 races=1 STR_VAR class_filter=""
+BEGIN
+	PRINT "Regenerating class/kit descriptions"
+	LAF check_ini STR_VAR ini=debug_display_prof_update_kits RET display_kits=value END
+
+	// get the contents of kitlist and clastext
+	LAF 2da_read STR_VAR file=kitlist.2da rowname_column=ROWNAME RET_ARRAY kitlist_rows=rows kitlist_array=array END
+	LAF 2da_read STR_VAR file=clastext.2da RET_ARRAY clastext_rows=rows clastext_array=array END
+
+
+	// get basic data	
+	LAM load_prof_data
+	
+	// get some strings
+	WITH_TRA "%scs_tra_loc%/english/profdoc.tra" "%scs_tra_loc%/%LANGUAGE%/profdoc.tra" BEGIN
+		OUTER_SPRINT adv_line @250
+		OUTER_SPRINT adv_alt_line NO_DIFFERENCE
+		OUTER_SPRINT feature_line @252
+		OUTER_SPRINT feature_alt_line NO_DIFFERENCE
+		ACTION_IF is_bg1 BEGIN
+			OUTER_SPRINT adv_alt_line @350
+			OUTER_SPRINT feature_alt_line @352
+		END
+		ACTION_IF is_bg2 BEGIN
+			OUTER_SPRINT adv_alt_line @450
+			OUTER_SPRINT feature_alt_line @452
+		END
+		ACTION_IF "%adv_alt_line%" STRING_COMPARE_CASE "NO_DIFFERENCE" BEGIN
+			OUTER_SPRINT adv_line "%adv_alt_line%"
+		END
+		ACTION_IF "%feature_alt_line%" STRING_COMPARE_CASE "NO_DIFFERENCE" BEGIN
+			OUTER_SPRINT feature_line "%feature_alt_line%"
+		END
+	END
+	
+	// main loop
+	SILENT
+	ACTION_PHP_EACH clastext_rows AS class_label=>discard BEGIN
+		OUTER_SET class_id=$clastext_array("%class_label%" CLASSID)
+		OUTER_SPRINT kit_id $clastext_array("%class_label%" KITID) // yes, it's an integer, but some (e.g. wild mage) are outside WEIDU's integer range
+		OUTER_SET desc_strref=$clastext_array("%class_label%" "DESCSTR")
+		ACTION_TO_LOWER class_label
+		ACTION_IF ("%kit_id%" STR_EQ 16384 || !only_classes) BEGIN // again, we have to treat this as a string because of overflow issues
+			OUTER_PATCH "" BEGIN
+				LOOKUP_IDS_SYMBOL_OF_INT parent_class class class_id
+			END
+			ACTION_MATCH "%class_label%" WITH
+			"FALLEN.*" "GRIZZLY_BEAR" "GODXX.*" "DW_DUMMY.*" BEGIN 
+			END
+			DEFAULT
+				ACTION_IF "%class_filter%" STRING_COMPARE "" BEGIN
+					OUTER_PATCH "" BEGIN
+						LPF "%class_filter%" STR_VAR parent_class RET proceed END
+					END
+				END ELSE BEGIN
+					OUTER_SET proceed=1
+				END
+				ACTION_IF proceed BEGIN
+					ACTION_IF display_kits BEGIN
+						PRINT "Generating description for kit %class_label%"
+					END
+					// check the description to check for class/kit status (defined by whether it has 'Advantages:' or 'CLASS FEATURES:' in it
+					ACTION_GET_STRREF desc_strref desc			
+					ACTION_IF INDEX ("^%adv_line%" "%desc%" )>=0 BEGIN
+						LAF update_kit_proficiency_description STR_VAR kit="%class_label%" END								
+					END ELSE
+					ACTION_IF INDEX ("^%feature_line%" "%desc%")>=0 BEGIN
+						LAF update_class_proficiency_description INT_VAR is_multiclass=0 STR_VAR class="%class_label%" parent_class END				
+					END ELSE BEGIN
+						LAF update_class_proficiency_description INT_VAR is_multiclass=1 STR_VAR class="%class_label%" parent_class END								
+					END
+				END
+			END
+		END
+	END
+	VERBOSE
+	ACTION_IF races BEGIN
+		OUTER_FOR (race_id=1;race_id<=7;++race_id) BEGIN
+			LAF update_race_proficiency_description INT_VAR race_id END
+		END
+	END
+
+
+
+END
+
+
+
+
+DEFINE_ACTION_MACRO load_prof_data //internal
+BEGIN
+	LOCAL_SET colcount=0
+	LOCAL_SET id_here=0
+	LOCAL_SET name_strref=0
+	LOCAL_SPRINT weapprof_path ""
+	LOCAL_SPRINT name ""
+	
+	LAF check_label STR_VAR label="dw#prof" RET new_system=value END
+
+	// various strings
+	WITH_TRA "%scs_tra_loc%/english/profdoc.tra" "%scs_tra_loc%/%LANGUAGE%/profdoc.tra" BEGIN
+		OUTER_SPRINT all_weapon_string @3
+		OUTER_SPRINT all_melee_string @1
+		OUTER_SPRINT all_missile_string @2
+		OUTER_SPRINT negative_string @6
+		OUTER_SPRINT max_style_string @100
+		OUTER_FOR (num=1;num<=3;++num) BEGIN
+			OUTER_SET tra_ref=100+num
+			OUTER_SPRINT $all_style_string("%num%") (AT tra_ref)
+			OUTER_SET tra_ref=110+num
+			OUTER_SPRINT $one_style_string("%num%") (AT tra_ref)
+			OUTER_SET tra_ref=120+num
+			OUTER_SPRINT $some_style_string("%num%") (AT tra_ref)
+		END
+		OUTER_SPRINT usable_string @5
+		OUTER_SPRINT all_usable_string @4
+		OUTER_FOR (num=1;num<=5;++num) BEGIN
+			OUTER_SET tra_ref=10+num
+			OUTER_SPRINT $all_prof_string("%num%") (AT tra_ref)
+			OUTER_SET tra_ref=20+num
+			OUTER_SPRINT $prof_string("%num%") (AT tra_ref)
+			OUTER_SET tra_ref=30+num
+			OUTER_SPRINT $all_melee_prof_string("%num%") (AT tra_ref)
+			OUTER_SET tra_ref=40+num
+			OUTER_SPRINT $all_missile_prof_string("%num%") (AT tra_ref)
+		END
+		OUTER_FOR (num=1;num<=5;++num) BEGIN
+			OUTER_SET tra_ref=10+num
+			OUTER_SPRINT $all_advantage_string("%num%") (AT tra_ref)
+			OUTER_SET tra_ref=30+num
+			OUTER_SPRINT $all_melee_advantage_string("%num%") (AT tra_ref)
+			OUTER_SET tra_ref=40+num
+			OUTER_SPRINT $all_missile_advantage_string("%num%") (AT tra_ref)
+			OUTER_SET tra_ref=20+num
+			OUTER_SPRINT $advantage_string("%num%") (AT tra_ref)
+			OUTER_SET tra_ref=25+num
+			OUTER_SPRINT $single_advantage_string("%num%") (AT tra_ref)
+			OUTER_SET tra_ref=60+num
+			OUTER_SPRINT $all_disadvantage_string("%num%") (AT tra_ref)
+			OUTER_SET tra_ref=70+num
+			OUTER_SPRINT $all_melee_disadvantage_string("%num%") (AT tra_ref)
+			OUTER_SET tra_ref=80+num
+			OUTER_SPRINT $all_missile_disadvantage_string("%num%") (AT tra_ref)
+			OUTER_SET tra_ref=50+num
+			OUTER_SPRINT $disadvantage_string("%num%") (AT tra_ref)
+		END
+		OUTER_SPRINT $disadvantage_string("0") @50
+		OUTER_SPRINT $all_disadvantage_string("0") @60
+		OUTER_SPRINT $all_melee_disadvantage_string("0") @70
+		OUTER_SPRINT $all_missile_disadvantage_string("0") @80
+		OUTER_SPRINT begins_with_all @8
+		OUTER_SPRINT begins_with_some @9
+		OUTER_SPRINT prof_with_one @131
+		OUTER_SPRINT spec_with_one @132
+		OUTER_SPRINT prof_with_some @141
+		OUTER_SPRINT spec_with_some @142
+		OUTER_SPRINT style_start_one @151
+		OUTER_SPRINT style_start_some @152
+		OUTER_SPRINT multiclass_start_string @160
+		ACTION_CLEAR_ARRAY prof_match_array
+		OUTER_SET number_of_match_lines=11
+		OUTER_FOR (ind=1;ind<=number_of_match_lines;++ind) BEGIN
+			OUTER_SET tra_ref=200+ind
+			OUTER_SPRINT line (AT tra_ref)
+			OUTER_SPRINT line_alt "%line%"
+			ACTION_IF is_bg1 BEGIN
+				OUTER_SET tra_ref=300+ind
+				OUTER_SPRINT line_alt (AT tra_ref)
+			END
+			ACTION_IF is_bg2 BEGIN
+				OUTER_SET tra_ref=400+ind
+				OUTER_SPRINT line_alt (AT tra_ref)
+			END			
+			ACTION_IF "%line_alt%" STRING_COMPARE_CASE "NO_DIFFERENCE" BEGIN
+				OUTER_SPRINT line "%line_alt%"
+			END
+			OUTER_SPRINT $prof_match_array("%ind%") "%line%"
+		END
+		ACTION_CLEAR_ARRAY initial_swap_array
+		OUTER_FOR (ind=1;ind<=10;++ind) BEGIN
+			OUTER_SET tra_ref=500+ind
+			OUTER_SET tra_ref_new=600+ind
+			OUTER_SPRINT old (AT tra_ref)
+			ACTION_IF "%old%" STRING_COMPARE "NO_SWAP" BEGIN
+				OUTER_SPRINT $initial_swap_array("%old%") (AT tra_ref_new)
+			END
+		END
+		OUTER_SPRINT advantage_line @250
+		OUTER_SPRINT disadvantage_line @251
+		OUTER_SPRINT adv_line_alt NO_DIFFERENCE
+		OUTER_SPRINT dis_line_alt NO_DIFFERENCE
+		ACTION_IF is_bg1 BEGIN
+			OUTER_SPRINT adv_line_alt @350
+			OUTER_SPRINT dis_line_alt @351
+		END
+		ACTION_IF is_bg2 BEGIN
+			OUTER_SPRINT adv_line_alt @450
+			OUTER_SPRINT dis_line_alt @451
+		END
+		ACTION_IF "%adv_line_alt%" STRING_COMPARE_CASE "NO_DIFFERENCE" BEGIN
+			OUTER_SPRINT advantage_line "%adv_line_alt%"
+		END
+		ACTION_IF "%dis_line_alt%" STRING_COMPARE_CASE "NO_DIFFERENCE" BEGIN
+			OUTER_SPRINT disadvantage_line "%dis_line_alt%"
+		END
+		ACTION_IF new_system BEGIN
+			OUTER_SPRINT template @170
+			OUTER_SPRINT template_singular @172
+			OUTER_SPRINT template_zero @168
+		END ELSE BEGIN
+			OUTER_SPRINT template @171
+			OUTER_SPRINT template_singular @173
+			OUTER_SPRINT template_zero @168 // shouldn't arise
+		END
+		OUTER_SPRINT extra_prof_one @180
+		OUTER_SPRINT extra_prof_some @181
+		OUTER_SPRINT trait_line @260
+		OUTER_SPRINT alt_line NO_DIFFERENCE
+		ACTION_IF is_bg1 BEGIN
+			OUTER_SPRINT alt_line @360
+		END
+		ACTION_IF is_bg2 BEGIN
+			OUTER_SPRINT alt_line @460
+		END
+		ACTION_IF "%alt_line%" STRING_COMPARE_CASE "NO_DIFFERENCE" BEGIN
+			OUTER_SPRINT trait_line "%alt_line%"
+		END
+	END
+	// weapon names for organize_weapon_list and organize_style_list;
+	// actual profs for get_kit_weapons, get_kit_styles
+	LAF get_weapprof_path RET weapprof_path END
+	COPY "%weapprof_path%" "%workspace%" 
+		COUNT_2DA_COLS colcount
+		FOR (col=4;col<colcount;++col) BEGIN
+			READ_2DA_ENTRY 0 (col - 1) (colcount - 1) header
+			TO_UPPER header
+			SPRINT $weapprof_header("%col%") "%header%"
+		END		
+		READ_2DA_ENTRIES_NOW weapprof_data colcount
+		// weapon names
+		FOR (row=0;row<weapprof_data;++row) BEGIN
+			READ_2DA_ENTRY_FORMER weapprof_data row 1 id_here
+			PATCH_IF (id_here>=89 && id_here<=115) BEGIN
+				READ_2DA_ENTRY_FORMER weapprof_data row 2 name_strref
+				GET_STRREF name_strref name
+				PATCH_IF id_here>=111 && id_here<=114 BEGIN
+				 SPRINT $style_name("%id_here%") "%name%"
+				END ELSE BEGIN
+				 SPRINT $weapon_name_array("%id_here%") "%name%"
+				END
+				FOR (col=4;col<colcount;++col) BEGIN
+					READ_2DA_ENTRY_FORMER weapprof_data row col entry
+					PATCH_IF !IS_AN_INT entry BEGIN
+						entry=0
+					END
+					SPRINT kit $weapprof_header("%col%")
+					SET $all_weapprof_data("%kit%" "%id_here%")=entry
+				END
+			END
+		END
+	BUT_ONLY
+	OUTER_SET all_weapprof_loaded=1
+
+	// extra kit weapons/styles
+	
+	COPY_EXISTING "m_dw_prd.lua" "%workspace%"
+		REPLACE_EVALUATE "dwKitWeapons\[\([0-9]+\)\]={\(.*\)}" BEGIN
+			SET kit_number="%MATCH1%"
+			INNER_PATCH "%MATCH2%" BEGIN
+				REPLACE_EVALUATE "\[\([0-9]+\)\]=true" BEGIN
+					id="%MATCH1%"
+					SET $all_kit_extra_weapons("%kit_number%" "%id%")=1
+				END
+				""
+			END
+		END
+		""
+		REPLACE_EVALUATE "dwKitExtraProfs\[\([0-9]+\)\]=\([0-9]+\)" BEGIN
+			SET $all_kit_extra_profs("%MATCH1%")="%MATCH2%"
+		END
+		""
+	BUT_ONLY
+	IF_EXISTS
+	OUTER_SET m_dw_prd_parsed=1
+
+	// race descriptions
+	
+	COPY_EXISTING "racetext.2da" override
+		COUNT_2DA_COLS colcount
+		READ_2DA_ENTRIES_NOW racetext_data colcount
+		FOR (row=0;row<racetext_data;++row) BEGIN
+			READ_2DA_ENTRY_FORMER racetext_data row 1 race_here
+			READ_2DA_ENTRY_FORMER racetext_data row 3 desc_strref
+			TO_UPPER race_here
+			SET $race_desc("%race_here%")=desc_strref
+		END
+	  BUT_ONLY
+
+
+	LAF get_all_starting_profs RET_ARRAY starting_profs END
+	
+	
+	// get baseline data from the active 2DA
+	
+	ACTION_IF !FILE_EXISTS "%data_loc_shared%/profs.2da" BEGIN
+		COPY_EXISTING "profs.2da" "%data_loc_shared%"
+	END
+	
+	COPY - "%data_loc_shared%/profs.2da" nowhere
+		REPLACE_EVALUATE "\([^ %TAB%%WNL%%LNL%%MNL%]+\)[ %TAB%]+\([0-9]+\)[ %TAB%]+\([0-9]+\)" BEGIN
+			SPRINT class "%MATCH1%"
+			TO_UPPER class
+			SET $profs_first_level("%class%")="%MATCH2%"
+			SET $profs_interval("%class%")="%MATCH3%"
+		END
+		""
+	BUT_ONLY
+	
+	COPY_EXISTING "enginest.2da" "%workspace%"
+		REPLACE_EVALUATE "STRREF_GUI_MIXED_NORMAL_FIGHTER[ %TAB%]+\([0-9]+\)" BEGIN
+			GET_STRREF "%MATCH1%" mainclass
+		END	
+		""
+		PATCH_FOR_EACH class IN FIGHTER_MAGE FIGHTER_CLERIC FIGHTER_DRUID FIGHTER_THIEF FIGHTER_MAGE_CLERIC FIGHTER_MAGE_THIEF  BEGIN
+			SPRINT $mainclass_string("%class%") "%mainclass% "
+		END
+		REPLACE_EVALUATE "STRREF_GUI_MIXED_RANGER[ %TAB%]+\([0-9]+\)" BEGIN
+			GET_STRREF "%MATCH1%" mainclass
+			SPRINT $mainclass_string("CLERIC_RANGER") "%mainclass% "
+		END
+		""
+		REPLACE_EVALUATE "STRREF_GUI_MIXED_CLERIC[ %TAB%]+\([0-9]+\)" BEGIN
+			GET_STRREF "%MATCH1%" mainclass
+			SPRINT $mainclass_string("CLERIC_MAGE") "%mainclass% "
+			SPRINT $mainclass_string("CLERIC_THIEF") "%mainclass% "
+		END
+		""
+		REPLACE_EVALUATE "STRREF_GUI_MIXED_THIEF[ %TAB%]+\([0-9]+\)" BEGIN
+			GET_STRREF "%MATCH1%" mainclass
+			SPRINT $mainclass_string("MAGE_THIEF") "%mainclass% "
+		END
+		""
+	BUT_ONLY
+	
+	ACTION_IF FILE_EXISTS_IN_GAME "m_dw_sbd.lua" BEGIN
+		LAF prof_parse_subrace_data RET_ARRAY subrace_parent subrace_desc_strref END
+		OUTER_SET subrace_data_parsed=1
+	END
+	
+	LAF get_virtual_parent_classes RET_ARRAY virtual_parent_classes END
+	OUTER_SET virtual_parent_classes_read=1 
+	
+END
+
+DEFINE_ACTION_FUNCTION prof_parse_subrace_data //internal
+	RET_ARRAY subrace_parent subrace_desc_strref
+BEGIN
+	ACTION_CLEAR_ARRAY subrace_parent
+	ACTION_CLEAR_ARRAY subrace_desc_strref
+	COPY_EXISTING "m_dw_sbd.lua" "%workspace%"
+	// we assume extra weapons are not being associated with virtual races
+		REPLACE_EVALUATE "subraces\[\([0-9]+\)\]={\([^}]*\)}" BEGIN
+			SET subrace_id="%MATCH1%"
+			INNER_PATCH "%MATCH2%" BEGIN
+				REPLACE_EVALUATE "parent=\([0-9]+\)" BEGIN
+					SET $subrace_parent("%subrace_id%")="%MATCH1%"
+				END
+				""
+				REPLACE_EVALUATE "desc=\([0-9]+\)" BEGIN
+					SET $subrace_desc_strref("%subrace_id%")="%MATCH1%"
+				END
+				""
+			END
+		END
+		""
+	BUT_ONLY
+END
+
+
+DEFINE_ACTION_FUNCTION organize_weapon_list //internal
+	STR_VAR weapon_list=""
+			known_list=""
+	RET all_weapons
+		all_melee
+		all_missile
+		any_melee
+		any_missile
+		weapon_string
+		total_count
+BEGIN
+	// load some strings if not loaded already
+	ACTION_IF !VARIABLE_IS_SET all_weapon_string BEGIN
+		WITH_TRA "%scs_tra_loc%/english/profdoc.tra" "%scs_tra_loc%/%LANGUAGE%/profdoc.tra" BEGIN
+			OUTER_SPRINT all_weapon_string @3
+			OUTER_SPRINT all_melee_string @1
+			OUTER_SPRINT all_missile_string @2
+			OUTER_SPRINT negative_string @6
+		END
+	END
+	// load some data
+	ACTION_CLEAR_ARRAY weapon_array
+	ACTION_CLEAR_ARRAY melee_array
+	ACTION_CLEAR_ARRAY known_array
+	OUTER_SET max_count=0
+	ACTION_FOR_EACH melee IN 89 90 91 92 93 94 95 96 97 115 98 99 100 101 102 BEGIN
+		OUTER_SET $melee_array("%melee%")=1
+		OUTER_SET $weapon_array("%melee%")=0
+		OUTER_SET $known_array("%melee%")=1
+		OUTER_SET max_count +=1
+	END
+	ACTION_CLEAR_ARRAY missile_array
+	ACTION_FOR_EACH missile IN 103 104 105 106 107 BEGIN
+		OUTER_SET $missile_array("%missile%")=1
+		OUTER_SET $weapon_array("%missile%")=0
+		OUTER_SET $known_array("%missile%")=1
+		OUTER_SET max_count+=1
+	END	
+	// get the weapons into the hash
+	OUTER_SET total_count=0
+	OUTER_WHILE "%weapon_list%" STRING_COMPARE "" BEGIN
+		LAF return_first_entry STR_VAR list="%weapon_list%" RET entry weapon_list=list END
+		OUTER_SET $weapon_array("%entry%")=1
+		OUTER_SET total_count+=1
+	END
+	ACTION_IF "%known_list%" STRING_COMPARE "" BEGIN
+		ACTION_PHP_EACH known_array AS id=>discard BEGIN
+			OUTER_SET $known_array("%id%")=0
+		END
+		OUTER_WHILE "%known_list%" STRING_COMPARE "" BEGIN
+			LAF return_first_entry STR_VAR list="%known_list%" RET entry known_list=list END
+			OUTER_SET $known_array("%entry%")=1
+		END
+	END
+	// decide on style
+	OUTER_SET list_negatively=(total_count+3>=max_count) // if we have all but 3 (or fewer), list negatively
+	// load weapon names, if needed
+	ACTION_IF !VARIABLE_IS_SET $weapon_name_array("89") BEGIN
+		LAF get_weapprof_path RET weapprof_path END
+		COPY "%weapprof_path%" "%workspace%" 
+			COUNT_2DA_COLS colcount
+			READ_2DA_ENTRIES_NOW weapprof_data colcount
+			FOR (row=0;row<weapprof_data;++row) BEGIN
+				READ_2DA_ENTRY_FORMER weapprof_data row 1 id_here
+				PATCH_IF ( (id_here>=89 && id_here<=107) || id_here=115) BEGIN
+					READ_2DA_ENTRY_FORMER weapprof_data row 2 name_strref
+					GET_STRREF name_strref name
+					SPRINT $weapon_name_array("%id_here%") "%name%"
+				END
+			END
+		BUT_ONLY
+	END
+	// filter out melee 
+	OUTER_SET all_melee=1
+	OUTER_SET any_melee=0
+	OUTER_SET know_any_melee=0
+	ACTION_PHP_EACH melee_array AS id=>discard BEGIN
+		ACTION_IF $known_array("%id%")=1 BEGIN
+			OUTER_SET know_any_melee=1
+			ACTION_IF $weapon_array("%id%")=0 BEGIN
+				OUTER_SET all_melee=0
+			END
+			ACTION_IF $weapon_array("%id%")=1 BEGIN
+				OUTER_SET any_melee=1
+			END
+		END
+	END
+	ACTION_IF !know_any_melee BEGIN
+		OUTER_SET all_melee=0
+	END
+	ACTION_IF all_melee && !list_negatively BEGIN
+		ACTION_PHP_EACH melee_array AS id=>discard BEGIN
+			OUTER_SET $weapon_array("%id%")=0
+		END
+	END
+	// filter out missile 
+	OUTER_SET all_missile=1
+	OUTER_SET any_missile=0
+	OUTER_SET know_any_missile=0
+	ACTION_PHP_EACH missile_array AS id=>discard BEGIN
+		ACTION_IF $known_array("%id%")=1 BEGIN
+			OUTER_SET know_any_missile=1
+			ACTION_IF $weapon_array("%id%")=0 BEGIN
+				OUTER_SET all_missile=0
+			END
+			ACTION_IF $weapon_array("%id%")=1 BEGIN
+				OUTER_SET any_missile=1
+			END
+		END
+	END
+	ACTION_IF !know_any_missile BEGIN
+		OUTER_SET all_missile=0
+	END
+	ACTION_IF all_missile && !list_negatively BEGIN
+		ACTION_PHP_EACH missile_array AS id=>discard BEGIN
+			OUTER_SET $weapon_array("%id%")=0
+		END
+	END	
+	OUTER_SET all_weapons=((all_missile || !know_any_missile ) && (all_melee || !know_any_melee))
+	ACTION_IF all_weapons BEGIN
+		OUTER_SPRINT weapon_string "%all_weapon_string%"
+	END ELSE BEGIN	
+		ACTION_IF list_negatively BEGIN
+			OUTER_SET target_val=0
+		END ELSE BEGIN
+			OUTER_SET target_val=1
+		END
+		OUTER_SPRINT weapon_string ""
+		// get alphabetical list of weapons
+		ACTION_CLEAR_ARRAY weapon_names_used
+		ACTION_PHP_EACH weapon_array AS id=>val BEGIN
+			ACTION_IF val=target_val BEGIN
+				OUTER_SPRINT temp $weapon_name_array("%id%")
+				OUTER_SET $weapon_names_used("%temp%")=1
+			END
+		END
+		ACTION_SORT_ARRAY_INDICES weapon_names_used LEXICOGRAPHICALLY
+		// make string
+		ACTION_PHP_EACH weapon_names_used AS name=>discard BEGIN
+			ACTION_IF "%weapon_string%" STRING_EQUAL "" BEGIN
+				OUTER_SPRINT weapon_string "%name%"
+			END ELSE BEGIN
+				OUTER_SPRINT weapon_string "%weapon_string%, %name%"
+			END
+		END
+		// append melee/missile
+		ACTION_IF all_melee && !list_negatively BEGIN
+			ACTION_IF "%weapon_string%" STRING_EQUAL "" BEGIN
+				OUTER_SPRINT weapon_string "%all_melee_string%"
+			END ELSE BEGIN
+				OUTER_SPRINT weapon_string "%weapon_string%, %all_melee_string%"
+			END
+		END ELSE
+		ACTION_IF all_missile && !list_negatively BEGIN
+			ACTION_IF "%weapon_string%" STRING_EQUAL "" BEGIN
+				OUTER_SPRINT weapon_string "%all_missile_string%"
+			END ELSE BEGIN
+				OUTER_SPRINT weapon_string "%weapon_string%, %all_missile_string%"
+			END		
+		END 
+		ACTION_IF list_negatively BEGIN
+			OUTER_SPRINT weapon_string "%negative_string%%weapon_string%"
+		END
+	END
+END
+
+DEFINE_ACTION_FUNCTION organize_style_list //internal
+	STR_VAR style_list=""
+	RET style_string style_number
+BEGIN
+	ACTION_CLEAR_ARRAY style_array
+	
+	// get style names if needed
+	ACTION_IF !VARIABLE_IS_SET $style_name("111") BEGIN
+		LAF get_weapprof_path RET weapprof_path END
+		COPY "%weapprof_path%" "%workspace%" 
+			COUNT_2DA_COLS colcount
+			COUNT_2DA_ROWS colcount rowcount
+			FOR (row=0;row<rowcount;++row) BEGIN
+				READ_2DA_ENTRY row 1 colcount id
+				PATCH_IF (id<=114 && id>=111) BEGIN
+					READ_2DA_ENTRY row 2 colcount strref
+					GET_STRREF strref string
+					SPRINT $style_name("%id%") "%string%"
+				END
+			END
+		BUT_ONLY
+	END
+	OUTER_SET style_number=0
+	OUTER_WHILE "%style_list%" STRING_COMPARE "" BEGIN
+		LAF return_first_entry STR_VAR list="%style_list%" RET entry style_list=list END
+		OUTER_SET style_number +=1
+		OUTER_SPRINT this_style $style_name("%entry%")
+		OUTER_SPRINT $style_array("%this_style%") ""
+	END
+	ACTION_SORT_ARRAY_INDICES style_array LEXICOGRAPHICALLY
+	OUTER_SPRINT style_string ""
+	ACTION_PHP_EACH style_array AS this_style=>discard BEGIN		
+		ACTION_IF "%style_string%" STRING_EQUAL "" BEGIN
+			OUTER_SPRINT style_string "%this_style%"
+		END ELSE BEGIN
+			OUTER_SPRINT style_string "%style_string%, %this_style%"
+		END
+	END
+END
+
+DEFINE_ACTION_FUNCTION get_class_pips //internal
+	STR_VAR class=""
+	RET first_level
+		interval
+		line
+BEGIN
+	LAF check_label STR_VAR label="dw#prof" RET new_system=value END
+	ACTION_IF !VARIABLE_IS_SET template_singular BEGIN
+	 // set some strings
+	 WITH_TRA "%scs_tra_loc%/english/profdoc.tra" "%scs_tra_loc%/%LANGUAGE%/profdoc.tra" BEGIN
+		ACTION_IF new_system BEGIN
+			OUTER_SPRINT template @170
+			OUTER_SPRINT template_singular @172
+			OUTER_SPRINT template_zero @168
+		END ELSE BEGIN
+			OUTER_SPRINT template @171
+			OUTER_SPRINT template_singular @173
+			OUTER_SPRINT template_zero "" //  should not arise
+		
+		END
+	 END
+	END
+	// get baseline data from the active 2DA
+	ACTION_TO_UPPER class
+	ACTION_IF !VARIABLE_IS_SET $profs_first_level("%class%") BEGIN
+	 PRINT "first level data not available for class '%class%'"
+	 ACTION_IF !FILE_EXISTS "%data_loc_shared%/profs.2da" BEGIN
+		COPY_EXISTING "profs.2da" "%data_loc_shared%"
+	 END
+	 COPY - "%data_loc_shared%/profs.2da" nowhere
+		REPLACE_EVALUATE "%class%[ %TAB%]+\([0-9]+\)[ %TAB%]+\([0-9]+\)" BEGIN
+			SET first_level="%MATCH1%"
+			SET interval="%MATCH2%"
+		END
+		""
+	 BUT_ONLY
+	 ACTION_IF new_system BEGIN // override profsmax data from the virtual system
+		COPY "%MOD_FOLDER%/prof/data/profs.2da" "%workspace%" 
+			REPLACE_EVALUATE "%class%[ %TAB%]+\([0-9]+\)" BEGIN
+				SET first_level="%MATCH1%"
+			END
+			""
+		BUT_ONLY
+	 END ELSE BEGIN
+		ACTION_IF FILE_EXISTS_IN_GAME "m_dw_sbd.lua" BEGIN
+			COPY_EXISTING "m_dw_sbd.lua" "%workspace%"
+				REPLACE_EVALUATE "dwMaxCount=\([0-9]+\)" BEGIN
+					SET first_level = first_level - "%MATCH1%"
+				END
+				""
+			BUT_ONLY
+		END
+	 END
+	END ELSE BEGIN
+		OUTER_SET first_level=$profs_first_level("%class%")
+		OUTER_SET interval=$profs_interval("%class%")
+	END
+	// get primary class for prof advancement
+	ACTION_TO_UPPER class
+	ACTION_IF !VARIABLE_IS_SET $mainclass_string("%class%") BEGIN
+	 ACTION_MATCH "%class%" WITH
+	 FIGHTER_MAGE FIGHTER_CLERIC FIGHTER_DRUID FIGHTER_THIEF FIGHTER_MAGE_CLERIC FIGHTER_MAGE_THIEF BEGIN
+		COPY_EXISTING "enginest.2da" "%workspace%"
+			REPLACE_EVALUATE "STRREF_GUI_MIXED_NORMAL_FIGHTER[ %TAB%]+\([0-9]+\)" BEGIN
+				GET_STRREF "%MATCH1%" mainclass
+				SPRINT mainclass "%mainclass% "
+			END
+			""
+		BUT_ONLY
+	 END
+	 CLERIC_RANGER BEGIN
+		COPY_EXISTING "enginest.2da" "%workspace%"
+			REPLACE_EVALUATE "STRREF_GUI_MIXED_RANGER[ %TAB%]+\([0-9]+\)" BEGIN
+				GET_STRREF "%MATCH1%" mainclass
+				SPRINT mainclass "%mainclass% "
+			END
+			""
+		BUT_ONLY
+	 END	
+     CLERIC_MAGE CLERIC_THIEF BEGIN
+		COPY_EXISTING "enginest.2da" "%workspace%"
+			REPLACE_EVALUATE "STRREF_GUI_MIXED_CLERIC[ %TAB%]+\([0-9]+\)" BEGIN
+				GET_STRREF "%MATCH1%" mainclass
+				SPRINT mainclass "%mainclass% "
+			END
+			""
+		BUT_ONLY
+     END
+	 MAGE_THIEF BEGIN
+		COPY_EXISTING "enginest.2da" "%workspace%"
+			REPLACE_EVALUATE "STRREF_GUI_MIXED_THIEF[ %TAB%]+\([0-9]+\)" BEGIN
+				GET_STRREF "%MATCH1%" mainclass
+				SPRINT mainclass "%mainclass% "
+			END
+			""
+		BUT_ONLY
+	 END
+	 DEFAULT
+		OUTER_SPRINT mainclass " "
+	 END
+	END ELSE BEGIN
+		OUTER_SPRINT mainclass $mainclass_string("%class%")
+	END
+	// generate line
+	ACTION_IF first_level=1 BEGIN
+		OUTER_SPRINT template "%template_singular%"
+	END ELSE
+	ACTION_IF first_level=0 BEGIN
+		OUTER_SPRINT template "%template_zero%"
+	END
+	OUTER_PATCH_SAVE line "%template%" BEGIN
+		REPLACE_TEXTUALLY FIRST_LEVEL "%first_level%"
+		REPLACE_TEXTUALLY INTERVAL "%interval%"
+		REPLACE_TEXTUALLY MAINCLASS "%mainclass%"
+	END
+END
+
+
+
+DEFINE_ACTION_FUNCTION get_kit_weapons //internal
+	STR_VAR kit=""
+	RET_ARRAY weapon_array
+BEGIN
+	ACTION_IF "%kit%" STRING_EQUAL_CASE "FAVORED_SOUL" BEGIN // hardcoded (ugh, sorry)
+		ACTION_IF FILE_EXISTS_IN_GAME "m_dw_prf.lua" BEGIN
+			OUTER_FOR (id=89;id<=115;++id) BEGIN
+				OUTER_SET $weapon_array("%id%")=2
+			END	
+			OUTER_SET $weapon_array("114")=3
+		END ELSE BEGIN
+			OUTER_FOR (id=89;id<=115;++id) BEGIN
+				OUTER_SET $weapon_array("%id%")=1
+			END
+		END
+	 END ELSE BEGIN
+		ACTION_IF "%kit%" STRING_EQUAL_CASE "sorcerer" BEGIN
+			OUTER_SPRINT kit mage
+		END
+		ACTION_CLEAR_ARRAY weapon_array	
+		ACTION_IF !VARIABLE_IS_SET all_weapprof_loaded BEGIN
+			LAF get_weapprof_path RET weapprof_path END
+			COPY "%weapprof_path%" "%workspace%"  
+				COUNT_2DA_COLS colcount
+				FOR (col=1;col<colcount;++col) BEGIN
+					READ_2DA_ENTRY 0 (col - 1) (colcount - 1) header
+					PATCH_IF "%header%" STRING_EQUAL_CASE "%kit%" BEGIN
+						kit_col=col
+						col=colcount
+					END
+				END
+				READ_2DA_ENTRIES_NOW weapprof_data colcount
+				FOR (row=0;row<weapprof_data;++row) BEGIN
+					READ_2DA_ENTRY_FORMER weapprof_data row 1 id
+					PATCH_IF ( (id>88 && id<111) || id=115 ) BEGIN
+						READ_2DA_ENTRY_FORMER weapprof_data row kit_col val
+						SET $weapon_array("%id%")=val
+					END
+				END
+			BUT_ONLY
+		END ELSE BEGIN
+			ACTION_TO_UPPER kit
+			OUTER_FOR (id=89;id<=115;++id) BEGIN
+				ACTION_IF (id<111 || id=115) BEGIN
+					ACTION_IF VARIABLE_IS_SET $all_weapprof_data("%kit%" "%id%") BEGIN
+						OUTER_SET $weapon_array("%id%")=$all_weapprof_data("%kit%" "%id%")
+					END
+				END
+			END
+		END
+	END
+END
+
+DEFINE_ACTION_FUNCTION display_kit_weapons //internal
+STR_VAR kit="" BEGIN
+	LAF get_kit_weapons STR_VAR kit RET_ARRAY weapon_array END
+	COPY_EXISTING "weapprof.2da" override
+		COUNT_2DA_COLS colcount
+		READ_2DA_ENTRIES_NOW weapprof_data colcount
+		FOR (row=0;row<weapprof_data;++row) BEGIN
+			READ_2DA_ENTRY_FORMER weapprof_data row 0 label
+			READ_2DA_ENTRY_FORMER weapprof_data row 1 id
+			PATCH_IF id>88 && (id<=110 || id=115) BEGIN
+			SET val=$weapon_array("%id%")
+			PATCH_PRINT "%label%: %val%"
+			END
+			
+		END
+	BUT_ONLY
+
+END
+
+DEFINE_ACTION_FUNCTION get_kit_styles //internal
+	STR_VAR kit=""
+	RET_ARRAY style_array
+BEGIN
+	ACTION_IF "%kit%" STRING_EQUAL_CASE "FAVORED_SOUL" BEGIN // hardcoded (ugh, sorry)
+		ACTION_IF FILE_EXISTS_IN_GAME "m_dw_prf.lua" BEGIN
+			OUTER_FOR (id=111;id<=113;++id) BEGIN
+				OUTER_SET $style_array("%id%")=2
+			END	
+			OUTER_SET $style_array("114")=3
+		END ELSE BEGIN
+			OUTER_FOR (id=111;id<=114;++id) BEGIN
+				OUTER_SET $style_array("%id%")=1
+			END
+		END
+	 END ELSE BEGIN
+		ACTION_IF "%kit%" STRING_EQUAL_CASE "sorcerer" BEGIN
+			OUTER_SPRINT kit mage
+		END
+		ACTION_CLEAR_ARRAY style_array	
+		ACTION_IF !VARIABLE_IS_SET all_weapprof_loaded BEGIN
+			LAF get_weapprof_path RET weapprof_path END
+			COPY "%weapprof_path%" "%workspace%" 
+				COUNT_2DA_COLS colcount
+				FOR (col=1;col<colcount;++col) BEGIN
+					READ_2DA_ENTRY 0 (col - 1) (colcount - 1) header
+					PATCH_IF "%header%" STRING_EQUAL_CASE "%kit%" BEGIN
+						kit_col=col
+						col=colcount
+					END
+				END
+				READ_2DA_ENTRIES_NOW weapprof_data colcount
+				FOR (row=0;row<weapprof_data;++row) BEGIN
+					READ_2DA_ENTRY_FORMER weapprof_data row 1 id
+					PATCH_IF (id>=111 && id<=114) BEGIN
+						READ_2DA_ENTRY_FORMER weapprof_data row kit_col val
+						SET $style_array("%id%")=val
+					END
+				END
+			BUT_ONLY
+		END ELSE BEGIN
+			ACTION_TO_UPPER kit
+			OUTER_FOR (id=111;id<=114;++id) BEGIN
+				ACTION_IF IS_AN_INT $all_weapprof_data("%kit%" "%id%") BEGIN
+					OUTER_SET $style_array("%id%")=$all_weapprof_data("%kit%" "%id%")
+				END ELSE BEGIN
+					OUTER_SET $style_array("%id%")=0			
+				END
+			END
+		END
+	END
+END
+
+DEFINE_ACTION_FUNCTION list_weapons_at_prof_value //internal
+	INT_VAR value="-1"
+			value_min="-1"
+			value_max="-1"
+	STR_VAR weapon_array=""
+	RET weapon_list
+BEGIN
+	ACTION_IF (value<0 && value_min<0 && value_max<0) BEGIN
+		FAIL "list_weapons_at_prof_value needs at least one of value, value_min, value_max to be set"
+	END
+	ACTION_IF (value>=0 && (value_min>=0 || value_max>=0)) BEGIN
+		FAIL "list_weapons_at_prof_value can't have both value, and one of value_min, value_max, set"
+	END
+	ACTION_IF value_min>=0 && value_max<0 BEGIN
+		OUTER_SET value_max=99
+	END
+	ACTION_IF value_max>=0 && value_min<0 BEGIN
+		OUTER_SET value_min=0
+	END
+	ACTION_IF value>=0 BEGIN
+		OUTER_SET value_min=value
+		OUTER_SET value_max=value
+	END
+	OUTER_SPRINT weapon_list ""
+	ACTION_PHP_EACH "%weapon_array%" AS id=>value_here BEGIN
+		ACTION_IF value_min<=value_here && value_max>=value_here BEGIN
+			OUTER_SPRINT weapon_list "%weapon_list% %id%"
+		END
+	END
+
+END
+
+DEFINE_ACTION_FUNCTION get_class_weapon_use //internal
+	STR_VAR class=""
+	RET usability
+	RET_ARRAY string_array 
+BEGIN
+	ACTION_CLEAR_ARRAY string_array
+	// get some data
+	ACTION_IF !VARIABLE_IS_SET usable_string BEGIN
+	  WITH_TRA "%scs_tra_loc%/english/profdoc.tra" "%scs_tra_loc%/%LANGUAGE%/profdoc.tra" BEGIN
+		OUTER_SPRINT usable_string @5
+		OUTER_SPRINT all_usable_string @4
+		OUTER_FOR (num=1;num<=5;++num) BEGIN
+			OUTER_SET tra_ref=10+num
+			OUTER_SPRINT $all_prof_string("%num%") (AT tra_ref)
+			OUTER_SET tra_ref=20+num
+			OUTER_SPRINT $prof_string("%num%") (AT tra_ref)
+			OUTER_SET tra_ref=30+num
+			OUTER_SPRINT $all_melee_prof_string("%num%") (AT tra_ref)
+			OUTER_SET tra_ref=40+num
+			OUTER_SPRINT $all_missile_prof_string("%num%") (AT tra_ref)
+		END
+	  END
+	END
+	// get the array
+	LAF get_kit_weapons STR_VAR kit="%class%" RET_ARRAY weapon_array END
+	// usability
+	LAF list_weapons_at_prof_value INT_VAR value_min=1 STR_VAR weapon_array=weapon_array RET known_list=weapon_list END
+	LAF organize_weapon_list STR_VAR weapon_list="%known_list%" RET weapon_string all_weapons END
+	ACTION_IF all_weapons BEGIN
+		OUTER_SPRINT usability "%all_usable_string%"
+	END ELSE BEGIN
+		OUTER_SPRINT usability "%usable_string%%weapon_string%."
+	END
+	// proficiency
+	OUTER_FOR (number=1;number<=5;++number) BEGIN
+		LAF list_weapons_at_prof_value INT_VAR value=number STR_VAR weapon_array=weapon_array RET weapon_list END
+		LAF organize_weapon_list STR_VAR weapon_list known_list RET weapon_string all_melee all_missile all_weapons END
+		ACTION_IF "%weapon_string%" STRING_COMPARE "" BEGIN
+			ACTION_IF all_weapons BEGIN
+				OUTER_SPRINT $string_array("%number%") $all_prof_string("%number%")
+			END ELSE 
+			ACTION_IF all_melee BEGIN
+				OUTER_SPRINT $string_array("%number%") $all_melee_prof_string("%number%")
+			END ELSE
+			ACTION_IF all_missile BEGIN
+				OUTER_SPRINT $string_array("%number%") $all_missile_prof_string("%number%")			
+			END ELSE BEGIN
+				OUTER_SPRINT temp $prof_string("%number%")
+				OUTER_SPRINT $string_array("%number%") "%temp%%weapon_string%."
+			END
+		END ELSE BEGIN
+			OUTER_SPRINT $string_array("%number%") ""
+		END
+	END
+END
+
+DEFINE_ACTION_FUNCTION get_kit_weapon_use //internal
+	STR_VAR kit=""
+			parent_class=""
+	RET_ARRAY advantage_array disadvantage_array
+BEGIN
+
+	// get some data
+	ACTION_IF !VARIABLE_IS_SET all_missile_advantage_string_1 BEGIN
+	  WITH_TRA "%scs_tra_loc%/english/profdoc.tra" "%scs_tra_loc%/%LANGUAGE%/profdoc.tra" BEGIN
+		OUTER_SPRINT usable_string @5
+		OUTER_SPRINT all_usable_string @4
+		OUTER_FOR (num=1;num<=5;++num) BEGIN
+			OUTER_SET tra_ref=10+num
+			OUTER_SPRINT $all_advantage_string("%num%") (AT tra_ref)
+			OUTER_SET tra_ref=30+num
+			OUTER_SPRINT $all_melee_advantage_string("%num%") (AT tra_ref)
+			OUTER_SET tra_ref=40+num
+			OUTER_SPRINT $all_missile_advantage_string("%num%") (AT tra_ref)
+			OUTER_SET tra_ref=20+num
+			OUTER_SPRINT $advantage_string("%num%") (AT tra_ref)
+			OUTER_SET tra_ref=25+num
+			OUTER_SPRINT $single_advantage_string("%num%") (AT tra_ref)
+			OUTER_SET tra_ref=60+num
+			OUTER_SPRINT $all_disadvantage_string("%num%") (AT tra_ref)
+			OUTER_SET tra_ref=70+num
+			OUTER_SPRINT $all_melee_disadvantage_string("%num%") (AT tra_ref)
+			OUTER_SET tra_ref=80+num
+			OUTER_SPRINT $all_missile_disadvantage_string("%num%") (AT tra_ref)
+			OUTER_SET tra_ref=50+num
+			OUTER_SPRINT $disadvantage_string("%num%") (AT tra_ref)
+		END
+		OUTER_SPRINT $disadvantage_string("0") @50
+		OUTER_SPRINT $all_disadvantage_string("0") @60
+		OUTER_SPRINT $all_melee_disadvantage_string("0") @70
+		OUTER_SPRINT $all_missile_disadvantage_string("0") @80
+	  END
+	END
+
+	// get arrays
+	LAF get_kit_weapons STR_VAR kit RET_ARRAY kit_array=weapon_array END
+	LAF get_kit_weapons STR_VAR kit="%parent_class%" RET_ARRAY parent_class_array=weapon_array END
+	// compare 
+	OUTER_FOR (n=0;n<=4;++n) BEGIN
+		OUTER_SPRINT $lower_list("%n%") ""
+	END
+	OUTER_FOR (n=1;n<=5;++n) BEGIN
+		OUTER_SPRINT $higher_list("%n%") ""
+	END
+	ACTION_PHP_EACH kit_array AS id=>kit_val BEGIN
+		OUTER_SET parent_class_val=$parent_class_array("%id%")
+		ACTION_IF parent_class_val>kit_val BEGIN
+			OUTER_SPRINT temp $lower_list("%kit_val%")
+			OUTER_SPRINT $lower_list("%kit_val%") "%temp% %id%"
+		END ELSE
+		ACTION_IF parent_class_val<kit_val BEGIN
+			OUTER_SPRINT temp $higher_list("%kit_val%")
+			OUTER_SPRINT $higher_list("%kit_val%") "%temp% %id%"		
+		END
+	END
+	// work out strings
+	ACTION_CLEAR_ARRAY advantage_array
+	ACTION_CLEAR_ARRAY disadvantage_array
+	OUTER_FOR (num=0;num<=4;++num) BEGIN
+		OUTER_SPRINT weapon_list $lower_list("%num%")
+		LAF organize_weapon_list STR_VAR weapon_list RET weapon_string any_melee any_missile all_melee all_missile all_weapons END
+		ACTION_IF all_weapons BEGIN
+			OUTER_SPRINT $disadvantage_array("%num%") $all_disadvantage_string("%num%")
+		END ELSE
+		ACTION_IF all_melee && !any_missile BEGIN
+			OUTER_SPRINT $disadvantage_array("%num%") $all_melee_disadvantage_string("%num%")		
+		END ELSE
+		ACTION_IF all_missile && !any_melee BEGIN
+			OUTER_SPRINT $disadvantage_array("%num%") $all_missile_disadvantage_string("%num%")
+		END ELSE 
+		ACTION_IF "%weapon_string%" STRING_COMPARE "" BEGIN
+			OUTER_SPRINT temp $disadvantage_string("%num%")
+			OUTER_SPRINT $disadvantage_array("%num%") "%temp%%weapon_string%."
+		END ELSE BEGIN
+			OUTER_SPRINT $disadvantage_array("%num%") ""
+		END
+	END
+	OUTER_FOR (num=1;num<=5;++num) BEGIN
+		OUTER_SPRINT weapon_list $higher_list("%num%")
+		LAF organize_weapon_list STR_VAR weapon_list RET weapon_string any_melee any_missile all_melee all_missile all_weapons total_count END
+		ACTION_IF all_weapons BEGIN
+			OUTER_SPRINT $advantage_array("%num%") $all_advantage_string("%num%")
+		END ELSE
+		ACTION_IF all_melee && !any_missile BEGIN
+			OUTER_SPRINT $advantage_array("%num%") $all_melee_advantage_string("%num%")		
+		END ELSE
+		ACTION_IF all_missile && !any_melee BEGIN
+			OUTER_SPRINT $advantage_array("%num%") $all_missile_advantage_string("%num%")
+		END ELSE	
+		ACTION_IF "%weapon_string%" STRING_COMPARE "" BEGIN
+			ACTION_IF total_count=1 BEGIN
+				OUTER_SPRINT temp $single_advantage_string("%num%")
+			END ELSE BEGIN
+				OUTER_SPRINT temp $advantage_string("%num%")
+			END
+			OUTER_SPRINT $advantage_array("%num%") "%temp%%weapon_string%."
+		END ELSE BEGIN
+			OUTER_SPRINT $advantage_array("%num%") ""
+		END
+	END
+END
+
+DEFINE_ACTION_FUNCTION get_class_style_use //internal
+	STR_VAR class=""
+	RET_ARRAY style_string_array
+BEGIN
+	ACTION_CLEAR_ARRAY style_string_array
+	// get some strings
+	ACTION_IF !VARIABLE_IS_SET all_style_string_1 BEGIN
+	  WITH_TRA "%scs_tra_loc%/english/profdoc.tra" "%scs_tra_loc%/%LANGUAGE%/profdoc.tra" BEGIN
+		OUTER_SPRINT max_style_string @100
+		OUTER_FOR (num=1;num<=3;++num) BEGIN
+			OUTER_SET tra_ref=100+num
+			OUTER_SPRINT $all_style_string("%num%") (AT tra_ref)
+			OUTER_SET tra_ref=110+num
+			OUTER_SPRINT $one_style_string("%num%") (AT tra_ref)
+			OUTER_SET tra_ref=120+num
+			OUTER_SPRINT $some_style_string("%num%") (AT tra_ref)
+		END
+	  END
+	END
+	// get the array
+	LAF get_kit_styles STR_VAR kit="%class%" RET_ARRAY style_array END
+	// check if we're maxed out
+	ACTION_IF (style_array_111=2 && style_array_112=2 && style_array_113=2 && style_array_114=3) BEGIN
+		OUTER_SPRINT $style_string_array("1") "%max_style_string%"
+	END ELSE BEGIN
+	// otherwise, be more systematic
+		OUTER_FOR (count=1;count<=3;++count) BEGIN
+			OUTER_SPRINT style_list ""
+			ACTION_PHP_EACH style_array AS id=>val BEGIN
+				ACTION_IF val=count BEGIN
+					OUTER_SPRINT style_list "%style_list% %id%"
+				END
+			END
+			LAF organize_style_list STR_VAR style_list RET style_string style_number END
+			ACTION_MATCH "%style_number%" WITH
+			0 BEGIN
+				OUTER_SPRINT $style_string_array("%count%") ""
+			END
+			1 BEGIN
+				OUTER_SPRINT prefix $one_style_string("%count%")
+				OUTER_SPRINT $style_string_array("%count%") "%prefix%%style_string%"
+			END
+			4 BEGIN
+				OUTER_SPRINT $style_string_array("%count%") $all_style_string("%count%")
+			END
+			DEFAULT
+				OUTER_SPRINT prefix $some_style_string("%count%")
+				OUTER_SPRINT $style_string_array("%count%") "%prefix%%style_string%"			
+			END		
+		END	
+	END
+END
+
+DEFINE_ACTION_FUNCTION get_kit_style_use //internal
+	STR_VAR kit=""
+			parent_class=""
+	RET_ARRAY advantage_array
+BEGIN
+	// get some strings
+	ACTION_IF !VARIABLE_IS_SET max_style_string BEGIN
+	  WITH_TRA "%scs_tra_loc%/english/profdoc.tra" "%scs_tra_loc%/%LANGUAGE%/profdoc.tra" BEGIN
+		OUTER_SPRINT max_style_string @100
+		OUTER_FOR (num=1;num<=3;++num) BEGIN
+			OUTER_SET tra_ref=100+num
+			OUTER_SPRINT $all_style_string("%num%") (AT tra_ref)
+			OUTER_SET tra_ref=110+num
+			OUTER_SPRINT $one_style_string("%num%") (AT tra_ref)
+			OUTER_SET tra_ref=120+num
+			OUTER_SPRINT $some_style_string("%num%") (AT tra_ref)
+		END
+	  END
+	END
+	// get arrays
+	LAF get_kit_styles STR_VAR kit RET_ARRAY kit_array=style_array END
+	LAF get_kit_styles STR_VAR kit="%parent_class%" RET_ARRAY parent_class_array=style_array END
+	// compare 
+	OUTER_FOR (n=1;n<=3;++n) BEGIN
+		OUTER_SPRINT $higher_list("%n%") ""
+	END
+	ACTION_PHP_EACH kit_array AS id=>kit_val BEGIN
+		OUTER_SET parent_class_val=$parent_class_array("%id%")
+		ACTION_IF parent_class_val<kit_val BEGIN
+			OUTER_SPRINT temp $higher_list("%kit_val%")
+			OUTER_SPRINT $higher_list("%kit_val%") "%temp% %id%"		
+		END
+	END
+	OUTER_FOR (num=1;num<=3;++num) BEGIN
+		OUTER_SPRINT style_list $higher_list("%num%")
+		LAF organize_style_list STR_VAR style_list RET style_string style_number END
+		ACTION_MATCH "%style_number%" WITH 
+		4 BEGIN
+			OUTER_SPRINT $advantage_array("%num%") $all_style_string("%num%")
+		END
+		1 BEGIN
+			OUTER_SPRINT temp $one_style_string("%num%")
+			OUTER_SPRINT $advantage_array("%num%") "%temp%%style_string%."
+		END
+		0 BEGIN 
+			OUTER_SPRINT $advantage_array("%num%") ""		
+		END
+		DEFAULT
+			OUTER_SPRINT temp $some_style_string("%num%")
+			OUTER_SPRINT $advantage_array("%num%") "%temp%%style_string%."	
+		END
+	END
+END
+
+
+DEFINE_ACTION_FUNCTION get_all_starting_profs //internal
+	RET_ARRAY starting_profs
+BEGIN
+	COPY_EXISTING "m_dw_prd.lua" "%workspace%"
+		REPLACE_EVALUATE "dwStartingProfs\[\([0-9]+\)\]={\(.*\)}" BEGIN
+			SET prof_id="%MATCH1%"
+			INNER_PATCH "%MATCH2%" BEGIN
+				REPLACE_EVALUATE "\[\([0-9]+\)\]=true" BEGIN
+					SET class_num="%MATCH1%"
+					PATCH_IF !VARIABLE_IS_SET $starting_profs("%class_num%") BEGIN
+						SPRINT $starting_profs("%class_num%") ""
+					END
+					SPRINT temp $starting_profs("%class_num%")
+					SPRINT $starting_profs("%class_num%") "%temp% %prof_id%"
+				END
+				""			
+			END
+		END	
+		""
+	BUT_ONLY
+	IF_EXISTS
+END
+
+DEFINE_ACTION_FUNCTION get_class_starting_prof //internal
+	STR_VAR class=""
+	RET starting_prof_string
+BEGIN
+	// get some strings
+	ACTION_IF !VARIABLE_IS_SET begins_with_all BEGIN
+		WITH_TRA "%scs_tra_loc%/english/profdoc.tra" "%scs_tra_loc%/%LANGUAGE%/profdoc.tra" BEGIN
+			OUTER_SPRINT begins_with_all @8
+			OUTER_SPRINT begins_with_some @9
+		END
+	END
+
+	OUTER_SET class_num=IDS_OF_SYMBOL (class "%class%")
+	ACTION_IF !VARIABLE_IS_SET $starting_profs("%class_num%") BEGIN
+		LAF get_all_starting_profs RET_ARRAY starting_profs END
+	END
+	OUTER_SPRINT weapon_list $starting_profs("%class_num%")
+	LAF organize_weapon_list STR_VAR weapon_list RET weapon_string all_weapons  END
+	ACTION_IF all_weapons BEGIN
+		OUTER_SPRINT starting_prof_string "%begins_with_all%"
+	END ELSE BEGIN
+		OUTER_SPRINT starting_prof_string "%begins_with_some%%weapon_string%."
+	END
+END
+
+DEFINE_ACTION_FUNCTION get_kit_starting_prof //internal
+	STR_VAR kit=""
+	RET_ARRAY advantage_array
+BEGIN
+	// get some strings
+	ACTION_IF !VARIABLE_IS_SET prof_with_one BEGIN
+		WITH_TRA "%scs_tra_loc%/english/profdoc.tra" "%scs_tra_loc%/%LANGUAGE%/profdoc.tra" BEGIN
+			OUTER_SPRINT prof_with_one @131
+			OUTER_SPRINT spec_with_one @132
+			OUTER_SPRINT prof_with_some @141
+			OUTER_SPRINT spec_with_some @142
+			OUTER_SPRINT style_start_one @151
+			OUTER_SPRINT style_start_some @152
+		END
+	END
+	ACTION_CLEAR_ARRAY advantage_array
+	OUTER_SPRINT $advantage_array("null_entry") ""
+	ACTION_CLEAR_ARRAY extra_kit_weapons
+	OUTER_FOR (id=89;id<116;++id) BEGIN
+		OUTER_SET $extra_kit_weapons("%id%")=0
+	END
+	OUTER_SPRINT extra_kit_styles ""
+	// get kit number and parent class
+	ACTION_TO_UPPER kit
+	ACTION_IF IS_AN_INT $kitlist_array("%kit%" "ROWNUMBER") BEGIN
+		OUTER_SET kit_number=$kitlist_array("%kit%" "ROWNUMBER")
+		OUTER_SET class_number=$kitlist_array("%kit%" "CLASS")
+	END ELSE BEGIN
+		OUTER_SET kit_number="-1"
+		OUTER_SET class_number=IDS_OF_SYMBOL(class "%kit%") // assume it's a parent class with a mislabelled description
+	END
+
+	// get data, if any, from lua
+	OUTER_SET proceed=0
+	ACTION_IF !VARIABLE_IS_SET m_dw_prd_parsed BEGIN
+	  COPY_EXISTING "m_dw_prd.lua" "%workspace%"
+		REPLACE_EVALUATE "dwKitWeapons\[%kit_number%\]={\(.*\)}" BEGIN
+			SET proceed=1
+			INNER_PATCH "%MATCH1%" BEGIN
+				REPLACE_EVALUATE "\[\([0-9]+\)\]=true" BEGIN
+					id="%MATCH1%"
+					PATCH_IF id>=111 && id<=114 BEGIN
+						SPRINT extra_kit_styles "%extra_kit_styles%%id% "
+					END ELSE BEGIN
+						SET $extra_kit_weapons("%id%")=1
+					END
+				END
+				""
+			END
+		END
+		""
+	  BUT_ONLY
+	END ELSE BEGIN
+		OUTER_FOR (id=89;id<=115;++id) BEGIN
+			ACTION_IF VARIABLE_IS_SET $all_kit_extra_weapons("%kit_number%" "%id%") BEGIN
+				OUTER_SET proceed=1
+				ACTION_IF id>=111 && id<=114 BEGIN
+					OUTER_SPRINT extra_kit_styles "%extra_kit_styles%%id% "
+				END ELSE BEGIN
+					OUTER_SET $extra_kit_weapons("%id%")=1
+				END
+			END
+		END
+	END
+	ACTION_IF proceed BEGIN
+		// compare with class profs
+		ACTION_IF !VARIABLE_IS_SET $starting_profs("%class_number%") BEGIN
+			LAF get_all_starting_profs RET_ARRAY starting_profs END
+		END
+		OUTER_SPRINT class_list $starting_profs("%class_number%")
+		OUTER_WHILE "%class_list%" STRING_COMPARE "" BEGIN
+			LAF return_first_entry STR_VAR list="%class_list%" RET id=entry class_list=list END
+			ACTION_IF $extra_kit_weapons("%id%")=1 BEGIN
+				OUTER_SET $extra_kit_weapons("%id%")=2
+			END
+		END
+		// work out weapons
+		OUTER_SPRINT weapon_list_1 ""
+		OUTER_SPRINT weapon_list_2 ""
+		ACTION_PHP_EACH extra_kit_weapons AS id=>val BEGIN
+			ACTION_IF val=2 BEGIN
+				OUTER_SPRINT weapon_list_2 "%weapon_list_2% %id%"
+			END ELSE
+			ACTION_IF val=1 BEGIN
+				OUTER_SPRINT weapon_list_1 "%weapon_list_1% %id%"			
+			END
+		END
+		ACTION_IF "%weapon_list_1%" STRING_COMPARE "" BEGIN
+			LAF organize_weapon_list STR_VAR weapon_list="%weapon_list_1%" RET weapon_string total_count END
+			ACTION_IF total_count>1 BEGIN
+				OUTER_SPRINT $advantage_array("1") "%prof_with_some%%weapon_string%."
+			END ELSE BEGIN
+				OUTER_SPRINT $advantage_array("1") "%prof_with_one%%weapon_string%."		
+			END
+		END
+		ACTION_IF "%weapon_list_2%" STRING_COMPARE "" BEGIN
+			LAF organize_weapon_list STR_VAR weapon_list="%weapon_list_2%" RET weapon_string total_count END
+			ACTION_IF total_count>1 BEGIN
+				OUTER_SPRINT $advantage_array("2") "%spec_with_some%%weapon_string%."
+			END ELSE BEGIN
+				OUTER_SPRINT $advantage_array("2") "%spec_with_one%%weapon_string%."		
+			END
+		END
+		// work out styles
+		LAF organize_style_list STR_VAR style_list="%extra_kit_styles%" RET style_string style_number END
+		ACTION_MATCH "%style_number%" WITH
+		0 BEGIN END
+		1 BEGIN
+			OUTER_SPRINT $advantage_array("3") "%style_start_one%%style_string%."
+		END
+		DEFAULT
+			OUTER_SPRINT $advantage_array("3") "%style_start_some%%style_string%."		
+		END
+	END
+END
+
+DEFINE_ACTION_FUNCTION get_kit_extra_prof //internal
+	STR_VAR kit=""
+	RET extra_prof_line
+BEGIN
+	// get some strings
+	ACTION_IF !VARIABLE_IS_SET extra_prof_one BEGIN
+		WITH_TRA "%scs_tra_loc%/english/profdoc.tra" "%scs_tra_loc%/%LANGUAGE%/profdoc.tra" BEGIN
+			OUTER_SPRINT extra_prof_one @180
+			OUTER_SPRINT extra_prof_some @181
+		END	
+	END
+	// get kit number
+	ACTION_IF IS_AN_INT $kitlist_array("%kit%" "ROWNUMBER") BEGIN
+		OUTER_SET kit_number=$kitlist_array("%kit%" "ROWNUMBER")
+	END ELSE BEGIN
+		OUTER_SET kit_number="-1"
+	END
+	// get the extra prof number
+	ACTION_IF !VARIABLE_IS_SET m_dw_prd_parsed BEGIN
+		OUTER_SET extra_prof=0
+		COPY_EXISTING "m_dw_prd.lua" "%workspace%"
+			REPLACE_EVALUATE "dwKitExtraProfs\[%kit_number%\]=\([0-9]+\)" BEGIN
+				SET extra_prof="%MATCH1%"
+			END
+		""
+	BUT_ONLY	
+	END ELSE BEGIN
+		ACTION_IF VARIABLE_IS_SET $all_kit_extra_profs("%kit_number%") BEGIN
+			OUTER_SET extra_prof=$all_kit_extra_profs("%kit_number%")
+		END ELSE BEGIN
+			OUTER_SET extra_prof=0
+		END
+	END
+	ACTION_IF extra_prof>1 BEGIN
+		OUTER_PATCH_SAVE extra_prof_line "%extra_prof_some%" BEGIN
+			REPLACE_TEXTUALLY PROF_NUMBER "%extra_prof%"
+		END
+	END ELSE
+	ACTION_IF extra_prof=1 BEGIN
+		OUTER_SPRINT extra_prof_line "%extra_prof_one%"
+	END ELSE BEGIN
+		OUTER_SPRINT extra_prof_line ""
+	END
+END
+
+DEFINE_ACTION_FUNCTION get_race_starting_prof //internal
+	INT_VAR race_id=0
+	RET_ARRAY advantage_array
+BEGIN
+	// get some strings
+	WITH_TRA "%scs_tra_loc%/english/profdoc.tra" "%scs_tra_loc%/%LANGUAGE%/profdoc.tra" BEGIN
+		// these are different because race descriptors are plural: 'elves have these features'
+		OUTER_SPRINT prof_with_one @133
+		OUTER_SPRINT prof_with_some @143
+		OUTER_SPRINT style_start_one @153
+		OUTER_SPRINT style_start_some @154
+	END
+	OUTER_SPRINT extra_race_weapons ""
+	OUTER_SPRINT extra_race_styles ""
+	COPY_EXISTING "m_dw_prd.lua" "%workspace%"
+		REPLACE_EVALUATE "dwRaceWeapons\[%race_id%\]={\(.*\)}" BEGIN
+			INNER_PATCH "%MATCH1%" BEGIN
+				REPLACE_EVALUATE "\[\([0-9]+\)\]=true" BEGIN
+					id="%MATCH1%"
+					PATCH_IF id>=111 && id<=114 BEGIN
+						SPRINT extra_race_styles "%extra_race_styles%%id% "
+					END ELSE BEGIN
+						SPRINT extra_race_weapons "%extra_race_weapons%%id% "
+					END
+				END
+				""
+			END
+		END
+		""
+	BUT_ONLY
+	// work out weapons
+	ACTION_IF "%extra_race_weapons%" STRING_COMPARE "" BEGIN
+		LAF organize_weapon_list STR_VAR weapon_list="%extra_race_weapons%" RET weapon_string total_count END
+		ACTION_IF total_count>1 BEGIN
+			OUTER_SPRINT $advantage_array("1") "%prof_with_some%%weapon_string%."
+		END ELSE BEGIN
+			OUTER_SPRINT $advantage_array("1") "%prof_with_one%%weapon_string%."		
+		END	
+	END
+	ACTION_IF "%extra_race_styles%" STRING_COMPARE "" BEGIN
+		LAF organize_style_list STR_VAR style_list="%extra_race_weapons%" RET style_string style_number END
+		ACTION_IF style_number>1 BEGIN
+			OUTER_SPRINT $advantage_array("2") "%style_start_some%%style_string%."
+		END ELSE BEGIN
+			OUTER_SPRINT $advantage_array("2") "%style_start_one%%style_string%."	
+		END	
+	END
+
+END
+
+
+DEFINE_ACTION_FUNCTION update_class_proficiency_description //internal
+	INT_VAR desc_strref="-1"
+			is_multiclass="-1" // if this is unchanged, work it out heuristically on the basis of whether there's a '_' in the class label
+	STR_VAR class=""
+			parent_class="" // may not be a 'true' class, e.g. barbarian, wild mage (whether we use this function is based on the form of the description, not on the true game status)
+BEGIN
+	ACTION_IF is_multiclass<0 BEGIN
+		OUTER_SET is_multiclass=INDEX ("_" "%class%")>=0
+	END
+	ACTION_IF "%parent_class%" STRING_EQUAL "" BEGIN
+		OUTER_SPRINT parent_class "%class%"
+	END
+	// get some strings
+	ACTION_IF !VARIABLE_IS_SET multiclass_start_string BEGIN
+	  WITH_TRA "%scs_tra_loc%/english/profdoc.tra" "%scs_tra_loc%/%LANGUAGE%/profdoc.tra" BEGIN
+		OUTER_SPRINT multiclass_start_string @160
+		ACTION_CLEAR_ARRAY prof_match_array
+		OUTER_SET number_of_match_lines=11
+		OUTER_FOR (ind=1;ind<=number_of_match_lines;++ind) BEGIN
+			OUTER_SET tra_ref=200+ind
+			OUTER_SPRINT line (AT tra_ref)
+			OUTER_SPRINT line_alt "%line%"
+			ACTION_IF is_bg1 BEGIN
+				OUTER_SET tra_ref=300+ind
+				OUTER_SPRINT line_alt (AT tra_ref)
+			END
+			ACTION_IF is_bg2 BEGIN
+				OUTER_SET tra_ref=400+ind
+				OUTER_SPRINT line_alt (AT tra_ref)
+			END			
+			ACTION_IF "%line_alt%" STRING_COMPARE_CASE "NO_DIFFERENCE" BEGIN
+				OUTER_SPRINT line "%line_alt%"
+			END
+			OUTER_SPRINT $prof_match_array("%ind%") "%line%"
+		END
+		ACTION_CLEAR_ARRAY initial_swap_array
+		OUTER_FOR (ind=1;ind<=10;++ind) BEGIN
+			OUTER_SET tra_ref=500+ind
+			OUTER_SET tra_ref_new=600+ind
+			OUTER_SPRINT old (AT tra_ref)
+			ACTION_IF "%old%" STRING_COMPARE "NO_SWAP" BEGIN
+				OUTER_SPRINT $initial_swap_array("%old%") (AT tra_ref_new)
+			END
+		END
+	  END
+	END
+
+	// get the description if it hasn't been sent already
+	ACTION_IF desc_strref<0 BEGIN
+		ACTION_TO_UPPER class
+		OUTER_SET desc_strref=$clastext_array("%class%" "DESCSTR")
+		END
+	ACTION_GET_STRREF desc_strref desc
+	
+	// allow for annoying clastext/kitlist mismatches
+	LAF sanitize_kit_label STR_VAR kit="%class%" RET class=kit END
+
+	
+	// get the data
+	ACTION_CLEAR_ARRAY weapon_array
+	ACTION_CLEAR_ARRAY style_array
+	LAF get_class_pips STR_VAR class="%parent_class%" RET pip_line=line END
+	LAF get_class_weapon_use STR_VAR class RET usability RET_ARRAY weapon_array=string_array END
+	LAF get_class_style_use STR_VAR class RET_ARRAY style_array=style_string_array END
+	ACTION_CLEAR_ARRAY all_array
+	OUTER_SET ind=0
+	OUTER_SPRINT $all_array("%ind%") "%usability%"
+	OUTER_SET ind+=1
+	OUTER_SPRINT $all_array("%ind%") "%pip_line%"
+	OUTER_SET ind+=1
+	ACTION_IF FILE_EXISTS_IN_GAME "m_dw_prf.lua" BEGIN
+		LAF get_class_starting_prof STR_VAR class RET starting_prof_string END
+		OUTER_SPRINT $all_array("%ind%") "%starting_prof_string%"
+		OUTER_SET ind+=1
+	END
+	ACTION_PHP_EACH weapon_array AS discard=>string BEGIN
+		ACTION_IF "%string%" STRING_COMPARE "" BEGIN
+			OUTER_SPRINT $all_array("%ind%") "%string%"
+			OUTER_SET ind +=1
+		END
+	END
+	ACTION_PHP_EACH style_array AS discard=>string BEGIN
+		ACTION_IF "%string%" STRING_COMPARE "" BEGIN
+			OUTER_SPRINT $all_array("%ind%") "%string%"
+			OUTER_SET ind +=1
+		END
+	END
+	// write the data
+	OUTER_PATCH_SAVE desc_new "%desc%" BEGIN
+	  found_first=0
+	  PHP_EACH initial_swap_array AS old=>new BEGIN
+			REPLACE_TEXTUALLY "%old%" "%new%"
+	  END
+	  PATCH_IF is_multiclass BEGIN
+		 SPRINT data "%WNL%%WNL%%multiclass_start_string%"
+		 PHP_EACH all_array AS discard=>line BEGIN
+			SPRINT data "%data%%WNL%- %line%"
+		 END
+		 insert_point=BUFFER_LENGTH
+		 INSERT_BYTES insert_point (STRING_LENGTH "%data%")
+		 WRITE_ASCIIE insert_point "%data%"
+		
+		
+	  END ELSE BEGIN
+		PHP_EACH prof_match_array AS ind=>match_this BEGIN
+			REPLACE_EVALUATE "^\([^A-Za-z]+\).*%match_this%.*" BEGIN
+				PATCH_IF !found_first BEGIN
+					SPRINT output "%MATCH1%PLACEHOLDER_FOR_SUBSTITUTION"
+					found_first=1
+				END ELSE BEGIN
+					SPRINT output "NULL_WILL_BE_DELETED"
+				END
+			END
+			"%output%"
+		END
+		PHP_EACH all_array AS discard=>line BEGIN
+			REPLACE_TEXTUALLY "\(.*\)PLACEHOLDER_FOR_SUBSTITUTION" "\1%line%%WNL%\1PLACEHOLDER_FOR_SUBSTITUTION"
+		END
+		REPLACE_TEXTUALLY ".*\(PLACEHOLDER_FOR_SUBSTITUTION\|NULL_WILL_BE_DELETED\)[%WNL%%LNL%%MNL%]" ""
+	  END
+	END
+
+	ACTION_IF "%desc_new%" STRING_COMPARE "%desc%" BEGIN
+		STRING_SET_EVALUATE desc_strref "%desc_new%"
+	END
+	
+END
+
+DEFINE_ACTION_FUNCTION update_kit_proficiency_description //internal
+	INT_VAR desc_strref="-1" display=0
+	STR_VAR kit=""
+BEGIN
+	ACTION_TO_UPPER kit
+	// get some strings
+	ACTION_IF !VARIABLE_IS_SET advantage_line BEGIN
+	  WITH_TRA "%scs_tra_loc%/english/profdoc.tra" "%scs_tra_loc%/%LANGUAGE%/profdoc.tra" BEGIN
+		ACTION_CLEAR_ARRAY prof_match_array
+		OUTER_SET number_of_match_lines=11
+		OUTER_FOR (ind=1;ind<=number_of_match_lines;++ind) BEGIN
+			OUTER_SET tra_ref=200+ind
+			OUTER_SPRINT line (AT tra_ref)
+			OUTER_SPRINT line_alt "NO_DIFFERENCE"
+			ACTION_IF is_bg1 BEGIN
+				OUTER_SET tra_ref=300+ind
+				OUTER_SPRINT line_alt (AT tra_ref)
+			END
+			ACTION_IF is_bg2 BEGIN
+				OUTER_SET tra_ref=400+ind
+				OUTER_SPRINT line_alt (AT tra_ref)
+			END			
+			ACTION_IF "%line_alt%" STRING_COMPARE_CASE "NO_DIFFERENCE" BEGIN
+				OUTER_SPRINT line "%line_alt%"
+			END
+			OUTER_SPRINT $prof_match_array("%ind%") "%line%"
+		END
+		OUTER_SPRINT advantage_line @250
+		OUTER_SPRINT disadvantage_line @251
+		OUTER_SPRINT adv_line_alt NO_DIFFERENCE
+		OUTER_SPRINT dis_line_alt NO_DIFFERENCE
+		ACTION_IF is_bg1 BEGIN
+			OUTER_SPRINT adv_line_alt @350
+			OUTER_SPRINT dis_line_alt @351
+		END
+		ACTION_IF is_bg2 BEGIN
+			OUTER_SPRINT adv_line_alt @450
+			OUTER_SPRINT dis_line_alt @451
+		END
+		ACTION_IF "%adv_line_alt%" STRING_COMPARE_CASE "NO_DIFFERENCE" BEGIN
+			OUTER_SPRINT advantage_line "%adv_line_alt%"
+		END
+		ACTION_IF "%dis_line_alt%" STRING_COMPARE_CASE "NO_DIFFERENCE" BEGIN
+			OUTER_SPRINT disadvantage_line "%dis_line_alt%"
+		END
+		ACTION_CLEAR_ARRAY initial_swap_array
+		OUTER_FOR (ind=1;ind<=10;++ind) BEGIN
+			OUTER_SET tra_ref=500+ind
+			OUTER_SET tra_ref_new=600+ind
+			OUTER_SPRINT old (AT tra_ref)
+			ACTION_IF "%old%" STRING_COMPARE "NO_SWAP" BEGIN
+				OUTER_SPRINT $initial_swap_array("%old%") (AT tra_ref_new)
+			END
+		END
+
+	  END
+	END
+	// get the description if we don't already have it
+	ACTION_IF desc_strref<0 BEGIN
+		ACTION_IF VARIABLE_IS_SET $clastext_array("%kit%" "DESCSTR") BEGIN
+			OUTER_SET desc_strref=$clastext_array("%kit%" "DESCSTR")
+		END ELSE 
+		ACTION_IF VARIABLE_IS_SET $clastext_array("GOD%kit%" "DESCSTR") BEGIN
+			OUTER_SET desc_strref=$clastext_array("%kit%" "DESCSTR")			
+		END ELSE BEGIN
+			WARN "Cannot find description strref for kit %kit% in clastext"
+		END
+	END
+	ACTION_GET_STRREF desc_strref desc
+	// allow for annoying clastext/kitlist mismatches
+	LAF sanitize_kit_label STR_VAR kit RET kit END
+	ACTION_TO_UPPER kit
+	// get the data
+	ACTION_CLEAR_ARRAY adv_weapon_array
+	ACTION_CLEAR_ARRAY dis_weapon_array
+	ACTION_CLEAR_ARRAY adv_style_array
+	ACTION_CLEAR_ARRAY initial_array
+	ACTION_CLEAR_ARRAY extra_array
+	
+	
+	// find parent class
+	ACTION_IF VARIABLE_IS_SET $virtual_parent_classes("%kit%") BEGIN
+		OUTER_SPRINT parent_class $virtual_parent_classes("%kit%")
+	END ELSE BEGIN
+		ACTION_IF VARIABLE_IS_SET $kitlist_array("%kit%" "CLASS") BEGIN
+			OUTER_SPRINT parent_class_number $kitlist_array("%kit%" "CLASS")
+			OUTER_PATCH "" BEGIN
+				LOOKUP_IDS_SYMBOL_OF_INT parent_class class parent_class_number
+			END
+		END ELSE // if we're here, this is probably a class that for some reason is using the 'kit' description format
+		ACTION_IF IDS_OF_SYMBOL (class "%kit%")>=0 BEGIN
+			OUTER_SPRINT parent_class "%kit%"
+		END ELSE BEGIN
+			WARN "Cannot find parent class for kit %kit%: it's not in kitlist.2da and it's not in class.ids"
+			OUTER_SPRINT parent_class FIGHTER
+		END
+	END
+
+	
+	LAF get_kit_weapon_use STR_VAR kit parent_class RET_ARRAY adv_weapon_array=advantage_array dis_weapon_array=disadvantage_array END
+	LAF get_kit_style_use STR_VAR kit parent_class RET_ARRAY adv_style_array=advantage_array END
+	ACTION_IF FILE_EXISTS_IN_GAME "m_dw_prf.lua" BEGIN
+		LAF get_kit_starting_prof STR_VAR kit RET_ARRAY initial_array=advantage_array END
+		LAF get_kit_extra_prof STR_VAR kit RET extra_prof_line END
+		OUTER_SPRINT $extra_array("0") "%extra_prof_line%"
+	END
+	ACTION_CLEAR_ARRAY all_adv_array
+	ACTION_CLEAR_ARRAY all_dis_array
+	OUTER_SET ind_adv=0
+	OUTER_SET ind_dis=0
+	ACTION_FOR_EACH array IN initial_array extra_array adv_weapon_array adv_style_array BEGIN
+		ACTION_PHP_EACH "%array%" AS ind=>line BEGIN
+			ACTION_IF "%line%" STRING_COMPARE "" BEGIN
+				OUTER_SPRINT $all_adv_array("%ind_adv%") "%line%"
+				OUTER_SET ind_adv+=1
+			END
+		END
+	END
+	ACTION_FOR_EACH array IN dis_weapon_array BEGIN
+		ACTION_PHP_EACH "%array%" AS ind=>line BEGIN
+			ACTION_IF "%line%" STRING_COMPARE "" BEGIN
+				OUTER_SPRINT $all_dis_array("%ind_dis%") "%line%"
+				OUTER_SET ind_dis+=1
+			END
+		END
+	END
+	// write the data
+	OUTER_PATCH_SAVE desc_new "%desc%" BEGIN
+	    PHP_EACH initial_swap_array AS old=>new BEGIN
+			REPLACE_TEXTUALLY "[^%WNL%%LNL%%MNL%a-zA-Z]*%old%[%WNL%%LNL%%MNL%]?" "%new%"
+	    END
+		PHP_EACH prof_match_array AS ind=>line BEGIN
+			REPLACE_TEXTUALLY ".*%line%.*[%WNL%%LNL%%MNL%]?" ""
+		END
+		PHP_EACH all_adv_array AS ind=>line BEGIN
+			REPLACE_TEXTUALLY "^%advantage_line%.*\([%WNL%%LNL%%MNL%][^a-z0-9+]+\)" "%advantage_line%\1%line%\1"
+		END
+		PHP_EACH all_dis_array AS ind=>line BEGIN
+			REPLACE_TEXTUALLY "^%disadvantage_line%.*\([%WNL%%LNL%%MNL%][^a-z0-9+]+\)" "%disadvantage_line%\1%line%\1"
+		END	
+	END
+	
+	ACTION_IF "%desc_new%" STRING_COMPARE "%desc%" BEGIN
+		STRING_SET_EVALUATE desc_strref "%desc_new%"
+		ACTION_IF display BEGIN
+			PRINT "%desc_new%"
+		END
+	END
+
+
+
+
+END
+
+DEFINE_ACTION_FUNCTION update_race_proficiency_description //internal
+	INT_VAR race_id=0
+BEGIN
+  ACTION_IF FILE_EXISTS_IN_GAME "m_dw_prf.lua" BEGIN
+	// get some strings
+	ACTION_IF !VARIABLE_IS_SET trait_line BEGIN
+	  WITH_TRA "%scs_tra_loc%/english/profdoc.tra" "%scs_tra_loc%/%LANGUAGE%/profdoc.tra" BEGIN
+		OUTER_SPRINT trait_line @260
+		OUTER_SPRINT alt_line NO_DIFFERENCE
+		ACTION_IF is_bg1 BEGIN
+			OUTER_SPRINT alt_line @360
+		END
+		ACTION_IF is_bg2 BEGIN
+			OUTER_SPRINT alt_line @460
+		END
+		ACTION_IF "%alt_line%" STRING_COMPARE_CASE "NO_DIFFERENCE" BEGIN
+			OUTER_SPRINT trait_line "%alt_line%"
+		END
+	  END
+	END
+	// set up an array of descriptions
+	ACTION_CLEAR_ARRAY race_desc_array
+	OUTER_SET array_ind=0
+	// get the description
+	ACTION_IF !VARIABLE_IS_SET $race_desc("%race_id%") BEGIN
+	  COPY_EXISTING "racetext.2da" override
+		COUNT_2DA_COLS colcount
+		READ_2DA_ENTRIES_NOW racetext_data colcount
+		FOR (row=0;row<racetext_data;++row) BEGIN
+			READ_2DA_ENTRY_FORMER racetext_data row 1 race_id_here
+			PATCH_IF race_id_here=race_id BEGIN
+				READ_2DA_ENTRY_FORMER racetext_data row 3 desc_strref
+				row=racetext_data
+				SET $race_desc_array("%array_ind%")=desc_strref
+				array_ind+=1
+			END
+		END
+	  BUT_ONLY
+	END ELSE BEGIN
+		OUTER_SET $race_desc_array("%array_ind%")=$race_desc("%race_id%")
+		OUTER_SET array_ind+=1
+	END
+	// get any subrace descriptions
+	ACTION_IF FILE_EXISTS_IN_GAME "m_dw_sbd.lua" BEGIN
+		ACTION_IF !VARIABLE_IS_SET subrace_data_parsed BEGIN
+			LAF prof_parse_subrace_data RET_ARRAY subrace_parent subrace_desc_strref END
+		END 
+		ACTION_PHP_EACH subrace_parent AS id=>parent BEGIN
+			ACTION_IF parent=race_id BEGIN
+				ACTION_IF VARIABLE_IS_SET $subrace_desc_strref("%id%") BEGIN
+					OUTER_SET $race_desc_array("%array_ind%")=$subrace_desc_strref("%id%")
+					OUTER_SET array_ind+=1
+				END
+			END
+		END
+	END
+	
+	// go through the array and update
+	
+	ACTION_PHP_EACH race_desc_array AS index=>desc_strref BEGIN
+	
+		ACTION_GET_STRREF desc_strref desc
+		// get the data
+		ACTION_CLEAR_ARRAY advantage_array
+		LAF get_race_starting_prof INT_VAR race_id RET_ARRAY advantage_array END
+		// write it
+		OUTER_PATCH_SAVE desc_new "%desc%" BEGIN
+			PHP_EACH advantage_array AS ind=>line BEGIN
+				PATCH_IF "%line%" STRING_COMPARE "" BEGIN
+					REPLACE_TEXTUALLY "\(.*%trait_line%.*\)\([%WNL%%LNL%%MNL%][^a-z0-9+]+\)" "\1\2%line%\2"
+				END
+			END
+		END
+		ACTION_IF "%desc_new%" STRING_COMPARE "%desc" BEGIN
+			STRING_SET_EVALUATE desc_strref "%desc_new%"
+		END
+	END
+  END
+END
+
+
+DEFINE_DIMORPHIC_FUNCTION sanitize_kit_label //internal
+	STR_VAR kit=""
+	RET kit
+BEGIN
+	ACTION_DEFINE_ASSOCIATIVE_ARRAY kit_name_fixes BEGIN
+		archer=>feralan
+		godlathander=>lathander
+		godtalos=>talos
+		godhelm=>helm
+		beast_master=>beastmaster
+		avenger=>beast_friend
+		wild_mage=>wildmage
+		assassin=>assasin
+	END
+	ACTION_TO_LOWER kit
+	ACTION_IF VARIABLE_IS_SET $kit_name_fixes("%kit%") BEGIN
+		OUTER_SPRINT kit $kit_name_fixes("%kit%")
+	END
+END
+
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// route to the path, if we're not sure if we're externalized or not
+// (copy of the one in externalize_proficiencies)
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+
+DEFINE_ACTION_FUNCTION get_weapprof_path //internal
+RET weapprof_path BEGIN
+
+	ACTION_IF FILE_EXISTS "%data_loc_shared%/weapprof.2da" BEGIN
+		OUTER_SPRINT weapprof_path "%data_loc_shared%/weapprof.2da"
+	END ELSE BEGIN
+		COPY_EXISTING "weapprof.2da" "override"
+		OUTER_SPRINT weapprof_path "override/weapprof.2da"
+	END
+
+END
+
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// Define our virtual parent classes
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION get_virtual_parent_classes //internal
+RET_ARRAY virtual_parent_classes BEGIN
+	ACTION_CLEAR_ARRAY virtual_parent_classes
+	ACTION_IF FILE_EXISTS_IN_GAME "m_dw_vcd.lua" BEGIN
+		ACTION_CLEAR_ARRAY virtual_class_temp_array
+		COPY_EXISTING "m_dw_vcd.lua" "%workspace%"
+			REPLACE_EVALUATE "dwVirtualKitClass\[\([0-9]+\)\]='\(favored_soul\|druid_mage\|druid_ranger\|druid_thief\)'" BEGIN
+				SPRINT virtual_parent "%MATCH2%"
+				TO_UPPER virtual_parent
+				PATCH_MATCH "%virtual_parent%" WITH
+					"DRUID.*" BEGIN
+						SPRINT virtual_parent "DW_%virtual_parent%"
+					END
+					DEFAULT
+					END
+				SPRINT $virtual_class_temp_array("%MATCH1%") "%virtual_parent%"
+			END
+			""	
+		BUT_ONLY
+		COPY_EXISTING "kitlist.2da" "%workspace%"
+			COUNT_2DA_COLS colcount
+			READ_2DA_ENTRIES_NOW kitlist_data colcount
+			FOR (row=0;row<kitlist_data;++row) BEGIN
+				READ_2DA_ENTRY_FORMER kitlist_data row 0 kit_id
+				READ_2DA_ENTRY_FORMER kitlist_data row 1 kit_label
+				PATCH_IF VARIABLE_IS_SET $virtual_class_temp_array("%kit_id%") BEGIN
+					SPRINT $virtual_parent_classes("%kit_label%") $virtual_class_temp_array("%kit_id%")
+				END
+			
+			END
+		BUT_ONLY
+	END
+
+END

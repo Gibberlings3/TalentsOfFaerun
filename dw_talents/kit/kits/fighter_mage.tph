@@ -1,0 +1,284 @@
+DEFINE_ACTION_FUNCTION barbarian_fire_elementalist BEGIN
+
+		OUTER_SPRINT kit DW_BARBARIAN_ELEMENTALIST_FIRE
+
+		kit.copy[FIGHTER_MAGE=>%kit%]
+		[
+			k_name:=@181
+			LPF adjust_rage_descriptions INT_VAR tra_ref=182 RET desc END
+			LPF resolve_elem_desc STR_VAR desc swap="%water_names%" RET k_desc=desc END
+			k.kit_grant_powers{%BARBARIAN_RAGE% 1 4|class=fighter}
+			k.kit_apply_powers{spcl151 1,spcl153 11,spcl154 15 4 20|class=fighter}
+			k.kit_apply_powers{%spl_elementalist_fire_innate% 1|class=mage}
+			k_color_minor_cloth=129
+			k_color_main_cloth=47
+			k.kit_match_usability{barbarian}
+		]
+
+		LAF set_elem_spells INT_VAR school_tra=9 school_tra2=10 STR_VAR kit elem_spec=fire elem_block=water tra=elementalist END
+		LAF bonus_spells_from_list STR_VAR kit path="%MOD_FOLDER%/class_race/bonus_spell_lists/fire.txt" END
+		LAF set_spell_learn_modifiers STR_VAR kit modifiers="mage_fire=25, mage_fire_shared=25, mage_air=15, mage_earth=15, default=-15" END
+		LAF set_multiclass_components STR_VAR kit components="barbarian dw_elementalist_fire"  END
+
+END
+
+DEFINE_ACTION_FUNCTION barbarian_water_elementalist BEGIN
+
+		OUTER_SPRINT kit DW_BARBARIAN_ELEMENTALIST_WATER
+
+		kit.copy[FIGHTER_MAGE=>%kit%]
+		[
+			k_name:=@183
+			LPF adjust_rage_descriptions INT_VAR tra_ref=184 RET desc END
+			LPF resolve_elem_desc STR_VAR desc swap="%water_names%" RET k_desc=desc END
+			k.kit_grant_powers{%BARBARIAN_RAGE% 1 4|class=fighter}
+			k.kit_apply_powers{spcl151 1,spcl153 11,spcl154 15 4 20|class=fighter}
+			k.kit_apply_powers{%spl_elementalist_water_innate% 1|class=mage}
+			k_color_minor_cloth=58
+			k_color_main_cloth=31
+			k.kit_match_usability{barbarian}
+		]
+		LAF set_elem_spells INT_VAR school_tra=11 school_tra2=12 STR_VAR kit elem_spec=water elem_block=fire tra=elementalist END
+		LAF bonus_spells_from_list STR_VAR kit path="%MOD_FOLDER%/class_race/bonus_spell_lists/water.txt" END
+		LAF set_spell_learn_modifiers STR_VAR kit modifiers="mage_water=25, mage_water_shared=25, mage_air=15, mage_earth=15, default=-15" END
+		LAF set_multiclass_components STR_VAR kit components="barbarian dw_elementalist_water"  END
+
+END
+
+DEFINE_ACTION_FUNCTION barbarian_air_elementalist BEGIN
+
+		OUTER_SPRINT kit DW_BARBARIAN_ELEMENTALIST_AIR
+
+		kit.copy[FIGHTER_MAGE=>%kit%]
+		[
+			k_name:=@185
+			LPF adjust_rage_descriptions INT_VAR tra_ref=186 RET desc END
+			LPF resolve_elem_desc STR_VAR desc swap="%air_names%" RET k_desc=desc END
+			k.kit_grant_powers{%BARBARIAN_RAGE% 1 4|class=fighter}
+			k.kit_apply_powers{spcl151 1,spcl153 11,spcl154 15 4 20|class=fighter}
+			k.kit_apply_powers{%spl_elementalist_air_innate% 1|class=mage}
+			k_color_minor_cloth=122
+			k_color_main_cloth=176
+			k.kit_match_usability{barbarian}
+		]
+		
+		LAF set_elem_spells INT_VAR school_tra=13 school_tra2=14 STR_VAR kit elem_spec=air elem_block=earth tra=elementalist END
+		LAF bonus_spells_from_list STR_VAR kit path="%MOD_FOLDER%/class_race/bonus_spell_lists/air.txt" END
+		LAF set_spell_learn_modifiers STR_VAR kit modifiers="mage_air=25, mage_air_shared=25, mage_water=15, mage_fire=15, default=-15" END
+		LAF set_multiclass_components STR_VAR kit components="barbarian dw_elementalist_air"  END
+
+END
+
+DEFINE_ACTION_FUNCTION barbarian_earth_elementalist BEGIN
+
+		OUTER_SPRINT kit DW_BARBARIAN_ELEMENTALIST_EARTH
+
+		kit.copy[FIGHTER_MAGE=>%kit%]
+		[
+			k_name:=@187
+			LPF adjust_rage_descriptions INT_VAR tra_ref=188 RET desc END
+			LPF resolve_elem_desc STR_VAR desc swap="%earth_names%" RET k_desc=desc END
+			k.kit_grant_powers{%BARBARIAN_RAGE% 1 4|class=fighter}
+			k.kit_apply_powers{spcl151 1,spcl153 11,spcl154 15 4 20|class=fighter}
+			k.kit_apply_powers{%spl_elementalist_earth_innate% 1|class=mage}
+			k_color_minor_cloth=80
+			k_color_main_cloth=87
+			k.kit_match_usability{barbarian}
+		]
+
+		LAF set_elem_spells INT_VAR school_tra=13 school_tra2=14 STR_VAR kit elem_spec=earth elem_block=air tra=elementalist END
+		LAF bonus_spells_from_list STR_VAR kit path="%MOD_FOLDER%/class_race/bonus_spell_lists/earth.txt" END
+		LAF set_spell_learn_modifiers STR_VAR kit modifiers="mage_earth=25, mage_earth_shared=25, mage_water=15, mage_fire=15, default=-15" END
+		LAF set_multiclass_components STR_VAR kit components="barbarian dw_elementalist_earth"  END
+
+END
+
+DEFINE_ACTION_FUNCTION barbarian_transmuter BEGIN
+
+		OUTER_SPRINT kit DW_BARBARIAN_TRANSMUTER
+
+		kit.copy[FIGHTER_MAGE=>%kit%]
+		[
+			k_name:=@189
+			LPF adjust_rage_descriptions INT_VAR tra_ref=190 RET k_desc=desc END
+			k.kit_grant_powers{%BARBARIAN_RAGE% 1 4|class=fighter}
+			k.kit_apply_powers{spcl151 1,spcl153 11,spcl154 15 4 20|class=fighter}
+			k_color_minor_cloth=80
+			k_color_main_cloth=87
+			k.kit_match_usability{barbarian}
+		]
+
+		LAF set_multiclass_components STR_VAR kit components="barbarian transmuter"  END
+		LAF make_multiclass_specialist STR_VAR kit school=transmutation END
+
+
+END
+
+DEFINE_ACTION_FUNCTION berserker_invoker BEGIN
+
+	OUTER_SPRINT kit DW_BERSERKER_INVOKER
+	
+	kit.copy[FIGHTER_MAGE=>%kit%]
+	[
+		k_name:=@191
+		LPF adjust_rage_descriptions INT_VAR tra_ref=192 RET k_desc=desc END
+		k.kit_grant_powers{%BERSERKER_RAGE% 1 5|class=fighter}
+		k.kit_match_usability{berserker}
+		k_color_metal=30
+		k_color_minor_cloth=91
+		k_color_main_cloth=93
+		k_color_leather=23
+		k_color_armor=93
+		k_ranged=0
+		k_l_g=0
+		k_l_n=0
+		k_l_e=0
+	]
+		
+	LAF set_multiclass_components STR_VAR kit components="berserker invoker"  END
+	LAF make_multiclass_specialist STR_VAR kit school=invocation END
+
+
+END
+
+DEFINE_ACTION_FUNCTION berserker_wild_mage BEGIN
+
+	OUTER_SPRINT kit DW_BERSERKER_WILD_MAGE
+
+	kit.copy[FIGHTER_MAGE=>%kit%]
+	[
+		k_name:=@193
+		k_desc:="%desc%"
+		LPF adjust_rage_descriptions INT_VAR tra_ref=194 RET k_desc=desc END
+		k.kit_grant_powers{%BERSERKER_RAGE% 1 5|class=fighter}
+		k_color_metal=30
+		k_color_minor_cloth=91
+		k_color_main_cloth=93
+		k_color_leather=23
+		k_color_armor=93
+		k_ranged=0
+		k_kitlist_unusable:=" 0x80000000" // wild mage
+		k_l_g=0
+		k_l_n=0
+		k_l_e=0
+	]
+		
+	LAF set_multiclass_components STR_VAR kit components="berserker wildmage"  END
+
+END
+
+DEFINE_ACTION_FUNCTION kensai_enchanter BEGIN
+
+	LAF no_kensai_robes END
+	OUTER_SPRINT kit DW_KENSAI_ENCHANTER 
+	kit.copy[FIGHTER_MAGE=>%kit%]
+	[
+		k_name:=@195
+		k_desc:=@196
+		k.kit_grant_powers{spcl144 1 4|class=fighter}
+		k.kit_apply_powers{spcl143 1,spcl143 4 4,spcl141 3 3,spcl142 1|class=fighter}
+		k.kit_match_usability{kensai}
+		k_ranged=0
+		k_swordandshield=0
+		k_c_g=0
+		k_c_n=0
+		k_c_e=0
+		k.kit_copy_from{clascolr|source=enchanter}
+	]
+		
+	LAF set_multiclass_components STR_VAR kit components="kensai enchanter"  END
+	LAF make_multiclass_specialist STR_VAR kit school=enchantment END
+
+END
+
+DEFINE_ACTION_FUNCTION kensai_illusionist BEGIN
+
+	LAF no_kensai_robes END
+	OUTER_SPRINT kit DW_KENSAI_ILLUSIONIST
+
+	kit.copy[FIGHTER_MAGE=>%kit%]
+	[
+		k_name:=@197
+		k_desc:=@198
+		k.kit_grant_powers{spcl144 1 4|class=fighter}
+		k.kit_apply_powers{spcl143 1,spcl143 4 4,spcl141 3 3,spcl142 1|class=fighter}
+		k.kit_match_usability{kensai}
+		k_ranged=0
+		k_swordandshield=0
+		k_c_g=0
+		k_c_n=0
+		k_c_e=0
+		k.kit_copy_from{clascolr|source=illusionist}
+	]
+
+	LAF set_multiclass_components STR_VAR kit components="kensai illusionist"  END
+	LAF make_multiclass_specialist STR_VAR kit school=illusion END
+
+END
+
+DEFINE_ACTION_FUNCTION kensai_force_mage BEGIN
+
+	LAF no_kensai_robes END
+	OUTER_SPRINT kit DW_KENSAI_FORCE_MAGE
+
+	kit.copy[FIGHTER_MAGE=>%kit%]
+	[
+		k_name:=@199
+		k_desc:=@200
+		k.kit_grant_powers{spcl144 1 4|class=fighter}
+		k.kit_apply_powers{spcl143 1,spcl143 4 4,spcl141 3 3,spcl142 1|class=fighter}
+		k.kit_apply_powers{%spl_force_mage_innate% 1|class=mage}
+		k.kit_match_usability{kensai}
+		k_crossbow=0
+		k_longbow=0
+		k_shortbow=0
+		k_dart=0
+		k_sling=0
+		k_swordandshield=0
+		k_c_g=0
+		k_c_n=0
+		k_c_e=0
+		k.kit_copy_from{clascolr|source=dw_force_mage}
+	]
+
+
+	LAF set_multiclass_components STR_VAR kit components="kensai dw_force_mage"  END
+
+	// make into a force mage
+	WITH_TRA "%scs_tra_loc%/english/force_mage.tra" "%scs_tra_loc%/%LANGUAGE%/force_mage.tra" BEGIN
+		LAF check_ini STR_VAR ini=number_of_required_force_mage_spells RET number_required=value END
+		LAF check_ini STR_VAR ini=list_specialist_spells RET list_spells=value END
+		LAF set_spell_list STR_VAR kit block_learn="mage_earth mage_air mage_fire mage_water" END	
+		LAF set_specialist_spells INT_VAR number_required list_spells update_description=1 STR_VAR kit spell_list="force" END
+		LAF set_spell_learn_modifiers STR_VAR kit modifiers="force=25" END
+		LAF bonus_spells_from_list STR_VAR kit path="%MOD_FOLDER%/class_race/bonus_spell_lists/force.txt" END
+		LAF exclude_elemental_items STR_VAR kit element=any END
+	END
+
+END
+
+
+DEFINE_ACTION_FUNCTION abjurant_defender BEGIN
+
+	OUTER_SPRINT kit DW_ABJURANT_DEFENDER
+
+	kit.copy[FIGHTER_MAGE=>%kit%]
+	[
+		k_name:=@201
+		k_desc:=@202
+		k.kit_grant_powers{spdwd02 1,spdwd02 4 4|class=fighter}
+		k.kit_apply_powers{spdwd01 5 5|class=fighter}
+		k_melee=1
+		k_ranged=1	
+		k_axe=2
+		k_warhammer=2
+		k_any_race=0
+		k_dwarf=1
+	]
+	LAF set_multiclass_components STR_VAR kit components="dwarven_defender abjurer"  END
+	LAF make_multiclass_specialist STR_VAR kit school=abjuration END
+
+
+
+END
+

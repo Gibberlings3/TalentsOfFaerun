@@ -1,0 +1,258 @@
+DEFINE_ACTION_FUNCTION enhance_cure_cause BEGIN
+
+    LAF check_ini STR_VAR ini=enhance_cure_cause_setting RET version=value END
+	ACTION_MATCH "%version%" WITH
+    random BEGIN
+         OUTER_SET random=8
+         OUTER_SET base=0
+    END
+    maximum BEGIN
+         OUTER_SET random=0
+         OUTER_SET base=8
+    END
+    average BEGIN
+         OUTER_SET random=0
+         OUTER_SET base=5
+    END
+    DEFAULT
+       FAIL "Unrecognised ini argument for enhanced_cure_cause (should be random/maximum/average)"
+    END
+    
+    // do cure wounds
+
+    <<<<<<<< .../stratagems-inline/cure_table
+       spell                           spell_level:i          old_hp:i  patch_descript:i
+       CLERIC_CURE_LIGHT_WOUNDS        1                      8         1
+       CLERIC_CURE_MODERATE_WOUNDS     2                      11        1
+       CLERIC_CURE_MEDIUM_WOUNDS       3                      14        1
+       CLERIC_CURE_SERIOUS_WOUNDS      4                      17        1
+       CLERIC_CURE_CRITICAL_WOUNDS     5                      27        1
+       ULITHARID_CURE_SERIOUS_WOUNDS   4                      -1        0
+       INNATE_CURE_LIGHT_WOUNDS        1                      -1        0
+    >>>>>>>>
+
+    LAF 2da_process_table INT_VAR inline=1 STR_VAR table="cure_table" function=patch_cure_spell END
+
+    // do IWD-style cause wounds
+
+    <<<<<<<< .../stratagems-inline/cause_table_direct
+       spell                            spell_level:i          old_hp:i  patch_descript:i
+       CLERIC_CAUSE_LIGHT_WOUNDS        1                      8         1
+       CLERIC_CAUSE_MODERATE_WOUNDS     2                      11        1
+       CLERIC_CAUSE_MEDIUM_WOUNDS       3                      14        1
+       CLERIC_CAUSE_SERIOUS_WOUNDS_IWD  4                      17        1
+       CLERIC_CAUSE_CRITICAL_WOUNDS_IWD 5                      27        1
+       OHBDCSW                          4                      -1        0
+    >>>>>>>>
+
+   LAF 2da_process_table INT_VAR inline=1 STR_VAR table="cause_table_direct" function=patch_cause_spell_direct END
+
+    <<<<<<<< .../stratagems-inline/cause_table_direct_iwd
+       spell                            spell_level:i          old_hp:i  patch_descript:i
+       CLERIC_CAUSE_SERIOUS_WOUNDS		4                      17        1
+       CLERIC_CAUSE_CRITICAL_WOUNDS		5                      27        1
+    >>>>>>>>
+
+	ACTION_IF is_iwd BEGIN
+		LAF 2da_process_table INT_VAR inline=1 STR_VAR table="cause_table_direct_iwd" function=patch_cause_spell_direct END		
+	END
+
+    // do BG2-style cause wounds
+
+    <<<<<<<< .../stratagems-inline/cause_table_indirect
+       spell                            spell_level:i          old_hp:i  patch_descript:i     payload_weapon    payload_spell
+       CLERIC_CAUSE_SERIOUS_WOUNDS      4                      17        1                    SERIOUS           DWCAUSS
+       CLERIC_CAUSE_CRITICAL_WOUNDS     5                      27        1                    CRITICAL          DWCAUSC
+    >>>>>>>>
+
+	ACTION_IF !is_iwd BEGIN
+		LAF 2da_process_table INT_VAR inline=1 STR_VAR table="cause_table_indirect" function=patch_cause_spell_indirect END
+	END
+
+
+END
+////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// helper functions - not encapsulated insofar as they assume random, base
+//
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+//  Patch a cure-wounds spell
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+DEFINE_ACTION_FUNCTION patch_cure_spell
+      INT_VAR patch_descript=0
+              spell_level=0
+              old_hp=0
+	  STR_VAR spell=""
+BEGIN
+	ACTION_IF VARIABLE_IS_SET "%spell%" BEGIN
+		OUTER_SPRINT resref "%%spell%%"
+	END ELSE BEGIN
+		OUTER_SPRINT resref "%spell%"
+	END
+	ACTION_IF FILE_EXISTS_IN_GAME "%resref%.spl" BEGIN
+		LAF get_cure_cause_params INT_VAR spell_level base RET level_min level_max level_range base_here END
+		spl.edit[%resref%]
+		[
+			m.ab.delete{s_level>1}
+			m.ab.clone{s_level=level_min+entry_index+1 |number:i=level_range}
+			m.ab_fx.alter{s_parameter1=base_here + ((p_level=1)?level_min:p_level);;PATCH_IF random>0 BEGIN s_dicenumber=spell_level s_dicesize=random END|match="s_opcode=17"}
+		]
+
+		ACTION_IF patch_descript BEGIN
+		  LAF patch_cure_cause_description INT_VAR level_max spell_level base_here old_hp STR_VAR resref END
+		END
+	END
+END
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+//  Patch a direct-damage-doing cause-wounds spell
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION patch_cause_spell_direct
+           INT_VAR patch_descript=0
+                   spell_level=0
+                   old_hp=0
+		   STR_VAR spell=""
+BEGIN
+	ACTION_IF VARIABLE_IS_SET "%spell%" BEGIN
+		OUTER_SPRINT resref "%%spell%%"
+	END ELSE BEGIN
+		OUTER_SPRINT resref "%spell%"
+	END
+	ACTION_IF FILE_EXISTS_IN_GAME "%resref%.spl" BEGIN
+		LAF get_cure_cause_params INT_VAR spell_level base RET level_min level_max level_range base_here END
+		spl.edit[%resref%]
+		[
+			m.ab.delete{s_level>1}
+			m.ab.clone{s_level=level_min+entry_index+1|number:i=level_range}
+			m.ab_fx.alter{
+				s_parameter1=base_here+ ((p_level=1)?level_min:p_level)
+				PATCH_IF random>0 BEGIN
+					s_dicenumber=spell_level
+					s_dicesize=random
+				END
+				|match="s_opcode=12"
+			} 
+		]
+	  
+	    ACTION_IF patch_descript BEGIN
+			LAF patch_cure_cause_description INT_VAR level_max spell_level base_here old_hp STR_VAR resref END
+		END
+	END
+END
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+//  Patch an indirect-damage-doing cause-wounds spell
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+DEFINE_ACTION_FUNCTION patch_cause_spell_indirect
+           INT_VAR  patch_descript=0
+                   spell_level=0
+                   old_hp=0
+			STR_VAR	spell=""
+                   payload_spell=""
+                   payload_weapon=""
+BEGIN
+	ACTION_IF VARIABLE_IS_SET "%spell%" BEGIN
+		OUTER_SPRINT resref "%%spell%%"
+	END ELSE BEGIN
+		OUTER_SPRINT resref "%spell%"
+	END
+	ACTION_IF FILE_EXISTS_IN_GAME "%resref%.spl" BEGIN
+		LAF get_cure_cause_params INT_VAR spell_level base RET level_min level_max level_range base_here END
+		itm.edit[%payload_weapon%]
+		[
+			m.ab_fx.alter{s_opcode=146 s_parameter1=0 s_parameter2=0 s_timing=0 s_resource:="%payload_spell%"|match="s_opcode=12"}
+		]
+		LAF make_cause_payload INT_VAR spell_level STR_VAR spell="%payload_spell%" END
+		ACTION_IF patch_descript BEGIN
+			LAF patch_cure_cause_description INT_VAR level_max spell_level base_here old_hp STR_VAR resref END
+		END
+   END
+END
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+//  Patch the description
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+DEFINE_ACTION_FUNCTION patch_cure_cause_description
+   INT_VAR base_here=0
+           spell_level=0
+           level_max=0
+           old_hp=0
+   STR_VAR resref=""
+BEGIN
+         ACTION_IF random>0 BEGIN
+            OUTER_SPRINT startstring "%spell_level%d%random%"
+         END ELSE BEGIN
+            OUTER_SPRINT startstring "%base_here%"
+         END
+         OUTER_SPRINT newstring @1020
+         OUTER_SPRINT newstring "%startstring%%newstring%+%level_max%)"
+         COPY_EXISTING "%resref%.spl" "%workspace%"
+              READ_LONG 0x50 tlk_entry
+         BUT_ONLY
+         ACTION_GET_STRREF tlk_entry input
+         OUTER_INNER_PATCH_SAVE output "%input%" BEGIN
+             REPLACE_TEXTUALLY "%old_hp%" "%newstring%"
+         END
+         STRING_SET_EVALUATE tlk_entry ~%output%~
+
+END
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+//  Make a damage-doing spell
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION make_cause_payload
+    INT_VAR spell_level=0
+    STR_VAR spell=""
+BEGIN
+	LAF get_cure_cause_params INT_VAR spell_level base RET level_min level_max level_range base_here END
+ 	spl.make[%spell%]
+	[
+		m.ab.add{}
+		m_sectype=10
+		m.ab.alter{s_level=1}
+		m.ab.clone{s_level=level_min+entry_index+1|number:i=level_range}
+		m.ab_fx.add{
+			s_opcode=12 
+			s_target=2 
+			s_timing=1 
+			s_parameter2b=64
+			s_parameter1=base_here+(p_level=1)?level_min:p_level
+			PATCH_IF random>0 BEGIN
+				s_dicenumber=spell_level
+				s_dicesize=random
+			END
+		}
+	]
+END
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+//  Some shared algebra
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION get_cure_cause_params
+   INT_VAR spell_level=0
+           base=0
+   RET level_min
+       level_max
+       level_range
+       base_here
+BEGIN
+   OUTER_SET level_min=2*spell_level - 1
+   OUTER_SET level_max=5*spell_level
+   ACTION_IF !GAME_IS "IWDEE" BEGIN
+	OUTER_SET level_max=(level_max>20?20:level_max)
+   END
+   OUTER_SET level_range=level_max - level_min
+   OUTER_SET base_here=base*spell_level
+END

@@ -1,0 +1,200 @@
+DEFINE_ACTION_FUNCTION hla_elemental_summons BEGIN
+
+	OUTER_SET duration=120 // master duration for all spells
+
+	// is the elemental-cre component installed? If not, we need air elemental summoning effects, and friendly elementals
+	
+	LAF check_label STR_VAR label=dw-elemental_cre RET value END
+	ACTION_IF !value BEGIN
+		COPY_EXISTING "spfir1p.eff" "override/%eff_friendly_air_elemental_12hd%.eff"
+			WRITE_ASCII 0x30 "%cre_friendly_air_elemental_12hd%.eff"
+		COPY_EXISTING "spfir1p.eff" "override/%eff_friendly_air_elemental_16hd%.eff"
+			WRITE_ASCII 0x30 "%cre_friendly_air_elemental_16hd%.eff"
+		COPY_EXISTING "spfir1p.eff" "override/%eff_friendly_air_elemental_24hd%.eff"
+			WRITE_ASCII 0x30 "%cre_friendly_air_elemental_24hd%.eff"
+		COPY_EXISTING
+			elairsu2.cre "override/%cre_friendly_air_elemental_12hd%.cre"
+			elairsu3.cre "override/%cre_friendly_air_elemental_16hd%.cre"
+			elairsu4.cre "override/%cre_friendly_air_elemental_24hd%.cre"
+				WRITE_ASCII 0x248 "" (8)
+	END ELSE BEGIN
+		OUTER_SPRINT eff_friendly_air_elemental_12hd "spair1"
+		OUTER_SPRINT eff_friendly_air_elemental_16hd "spair2"
+		OUTER_SPRINT eff_friendly_air_elemental_24hd "spair3"
+	END
+	
+	// set the other effects (all fixed externally)
+	
+	ACTION_CLEAR_ARRAY eff_arr
+	ACTION_DEFINE_ASSOCIATIVE_ARRAY eff_arr BEGIN
+		eff_friendly_earth_elemental_12hd => speart1p
+		eff_friendly_earth_elemental_16hd => speart2p
+		eff_friendly_earth_elemental_24hd => speart3p
+		eff_friendly_fire_elemental_12hd => spfir1p
+		eff_friendly_fire_elemental_16hd => spfir2p
+		eff_friendly_fire_elemental_24hd => spfir3p
+		eff_friendly_water_elemental_12hd=> dw#wat1
+		eff_friendly_water_elemental_16hd=> dw#wat2
+		eff_friendly_water_elemental_24hd=> dw#wat3
+	END
+	ACTION_PHP_EACH eff_arr AS var=>val BEGIN
+		OUTER_SPRINT "%var%" "%val%"
+	END
+	
+	// make wrappers for delayed casting of 16hd and 24hd spells
+	
+	ACTION_FOR_EACH element IN earth air fire water BEGIN
+		ACTION_FOR_EACH hd IN 16hd 24hd BEGIN
+			OUTER_SPRINT resource EVAL "%eff_friendly_%element%_elemental_%hd%%"
+			OUTER_SPRINT spell EVAL "%spl_call_elemental_%hd%_%element%%"
+			CREATE spl "%spell%"
+			LPF add_basic_spell_ability END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=177 target=1 parameter2=2 resist_dispel=1 timing=0 duration STR_VAR resource END				
+		END
+	END
+	
+	// build the one-of-each-type spell
+	
+	ACTION_IF FILE_EXISTS_IN_GAME "dw#wat1.eff" BEGIN // do we have IWD water elementals? 
+		OUTER_SPRINT name @3229
+		OUTER_SPRINT description @3231
+		LAF hla_elemental_summons_maker STR_VAR resref="%spl_elemental_swarm_mixed%" 2da_file=elemental_swarm_iwd.2da name description END	
+	END ELSE BEGIN
+		OUTER_SPRINT name @3229
+		OUTER_SPRINT description @3230
+		LAF hla_elemental_summons_maker STR_VAR resref="%spl_elemental_swarm_mixed%" 2da_file=elemental_swarm_no_iwd.2da name description END
+	END
+	
+	// build the all-of-the-same-type spells
+	
+	ACTION_DEFINE_ASSOCIATIVE_ARRAY element_names BEGIN
+		air=>3233
+		earth=>3234
+		fire=>3235
+		water=>3236
+		air_lc=>3238
+		earth_lc=>3239
+		fire_lc=>3240 
+		water_lc=>3241
+	END
+	ACTION_FOR_EACH element IN earth air fire water BEGIN
+		ACTION_IF "%element%" STR_CMP "water" || FILE_EXISTS_IN_GAME "dw#wat1.eff" BEGIN
+			OUTER_SPRINT resref EVAL "%spl_elemental_swarm_%element%%"
+			COPY_EXISTING "sppr723.spl" "override/%resref%.spl"
+				SPRINT elem_name_tra_ref $element_names("%element%")
+				SPRINT elem_name (AT elem_name_tra_ref)
+				SPRINT elem_name_lc_tra_ref $element_names("%element%_lc")
+				SPRINT elem_name_lc (AT elem_name_lc_tra_ref)
+				SPRINT name_base @3237
+				INNER_PATCH_SAVE name "%name_base%" BEGIN
+					REPLACE_TEXTUALLY PLACEHOLDER "%elem_name%"
+				END	
+				SAY 0x8 "%name%"				
+				SPRINT desc_base @3232
+				INNER_PATCH_SAVE desc "%desc_base%" BEGIN
+					REPLACE_TEXTUALLY PLACEHOLDER_UC "%elem_name%"
+					REPLACE_TEXTUALLY PLACEHOLDER_LC "%elem_name_lc%"
+				END
+				SAY 0x50 "%desc%"
+				LPF DELETE_EFFECT END
+				LPF hla_elemental_summons_line STR_VAR all="%element%" END
+		END
+	END
+	
+
+
+END
+
+DEFINE_ACTION_FUNCTION hla_elemental_summons_maker
+	STR_VAR template="sppr723"
+			resref=""
+			2da_file=""
+			name=""
+			description=""
+BEGIN
+	// read data
+	LAF 2da_read INT_VAR inline=1 STR_VAR case=mixed file="%2da_file%" RET_ARRAY swarm_rows=rows swarm_array=array END
+	
+	// edit spell
+	COPY_EXISTING "%template%.spl" "override/%resref%.spl"
+		// if appropriate, add a name/description
+		PATCH_IF "%name%" STR_CMP "" BEGIN
+			SAY 0x8 "%name%"
+		END
+		PATCH_IF "%description%" STR_CMP "" BEGIN
+			SAY 0x50 "%description%"
+		END
+		// clear out old implementation
+		LPF DELETE_EFFECT END
+		PHP_EACH swarm_rows AS row=>discard BEGIN
+			PATCH_FOR_EACH variable IN 
+			probability1 probability2 12hd_1 12hd_2 16hd 24hd BEGIN
+				SPRINT "%variable%" $swarm_array("%row%" "%variable%")
+			END
+			LPF hla_elemental_summons_line INT_VAR probability1 probability2 STR_VAR 12hd_1 12hd_2 16hd 24hd END
+		END
+
+
+END
+
+DEFINE_PATCH_FUNCTION hla_elemental_summons_line
+	INT_VAR probability1=100
+			probability2=0
+	STR_VAR 12hd_1=""
+			12hd_2=""
+			16hd=""
+			24hd=""
+			all=""
+BEGIN
+	PATCH_IF "%all%" STR_CMP "" BEGIN
+		SPRINT 12hd_1 "%all%"
+		SPRINT 12hd_2 "%all%"
+		SPRINT 16hd "%all%"
+		SPRINT 24hd "%all%"
+	END
+	SPRINT resource EVAL "%eff_friendly_%12hd_1%_elemental_12hd%"
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=177 target=1 parameter2=2 resist_dispel=1 timing=0 duration probability1 probability2 STR_VAR resource END
+	SPRINT resource EVAL "%eff_friendly_%12hd_2%_elemental_12hd%"
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=177 target=1 parameter2=2 resist_dispel=1 timing=0 duration probability1 probability2 STR_VAR resource END
+	SPRINT resource EVAL "%spl_call_elemental_16hd_%16hd%%"
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=146 target=1 parameter2=1 resist_dispel=1 timing=4 duration=6 probability1 probability2 STR_VAR resource END
+	SPRINT resource EVAL "%spl_call_elemental_24hd_%24hd%%"
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=146 target=1 parameter2=1 resist_dispel=1 timing=4 duration=12 probability1 probability2 STR_VAR resource END
+	// uncomment next line for debugging
+	// LPF ADD_SPELL_EFFECT INT_VAR insert_point=0 opcode=139 target=1 timing=1 parameter1=RESOLVE_STR_REF ("Probability is between %probability1% and %probability2%") probability1 probability2 END
+	
+
+
+END
+
+
+
+<<<<<<<< .../stratagems-inline/elemental_swarm_iwd.2da
+2DA V1.0
+*
+		probability2		probability1		12hd_1			12hd_2			16hd		24hd
+0		0					7					air				earth			fire		water
+1		8					16					air				earth			water		fire
+2		17					24					air				fire			earth		water
+3		25					33					air				fire			water		earth
+4		34					41					air				water			earth		fire
+5		42					50					air				water			fire		earth
+6		51					57					earth			fire			air			water
+7		58					66					earth			fire			water		air
+8		67					74					earth			water			air			fire
+9		75					83					earth			water			fire		air
+10		84					91					fire			water			air			earth
+11		92					100					fire			water			earth		air
+>>>>>>>>
+
+<<<<<<<< .../stratagems-inline/elemental_swarm_no_iwd.2da
+2DA V1.0
+*
+		probability2		probability1		12hd_1			12hd_2			16hd		24hd
+0		0					16					air				air				fire		earth
+1		17					33					air				air				earth		fire
+2		34					49					earth			earth			fire		air
+3		50					66					earth			earth			air			fire
+4		67					83					fire			fire			air			earth
+5		84					99					fire			fire			earth		air
+>>>>>>>>
