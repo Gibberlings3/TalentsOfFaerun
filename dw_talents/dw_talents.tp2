@@ -374,7 +374,7 @@ BEGIN @502 DESIGNATED 40200 /*LABEL dw_iwd_paladins */ GROUP @5
 
 REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
 REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet" @51	
-FORBID_COMPONENT "iwdification.tp2" 5900 @71
+FORBID_COMPONENT "iwdification.tp2" 100 @71
 FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
 
 LAF run STR_VAR file=paladin location=class_race END
@@ -427,6 +427,7 @@ BEGIN @512 DESIGNATED 40450 GROUP @5
 REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
 REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet" @51
 FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
+REQUIRE_PREDICATE !(MOD_IS_INSTALLED ~iwdification/setup-iwdification.tp2~ 120) @24122
 
 LAF run STR_VAR file=implement_evasion location=shared END
 
@@ -435,6 +436,7 @@ BEGIN @513 DESIGNATED 40460 GROUP @5
 REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
 REQUIRE_PREDICATE GAME_IS "iwdee" @53
 FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
+REQUIRE_PREDICATE !(MOD_IS_INSTALLED ~iwdification/setup-iwdification.tp2~ 120) @24122
 
 LAF run STR_VAR file=implement_evasion location=shared END
 
