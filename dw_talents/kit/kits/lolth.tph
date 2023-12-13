@@ -44,7 +44,7 @@ DEFINE_ACTION_FUNCTION lolth_favored_soul BEGIN
 	
 	OUTER_SPRINT kit "DW_LOLTH_FAVORED"
 	
-	LAF build_favored_soul_kit INT_VAR name=4103 desc=4104 god=4106 override_bio=1045 STR_VAR kit copy_from=DW_LOLTH_CLERIC END
+	LAF build_favored_soul_kit INT_VAR name=4103 desc=4104 god=4106 god_gender=4029 god_temple=4132 override_bio=1045 STR_VAR kit copy_from=DW_LOLTH_CLERIC END
 	LAF cleric_kit_substitutions STR_VAR kit god=lolth END
 	LAF require_gender STR_VAR kit gender=female END
 

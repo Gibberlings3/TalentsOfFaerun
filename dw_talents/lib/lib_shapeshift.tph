@@ -35,16 +35,9 @@ BEGIN
 			SAY 0x8 (AT name)
 		END
 		PATCH_IF description>=0 BEGIN
-			READ_LONG 0x50 old_strref
-			PATCH_IF old_strref>0 BEGIN
-				INNER_ACTION BEGIN
-					STRING_SET_EVALUATE old_strref (AT description)
-				END
-			END ELSE BEGIN
-				SAY 0x50 (AT description)
-			END
+			SAY 0x50 (AT description)
 		END
-		PATCH_IF "%ability_icon%" STRING_COMPARE "" BEGIN
+		PATCH_IF "%icon%" STRING_COMPARE "" BEGIN
 			LPF ALTER_SPELL_HEADER STR_VAR icon END
 		END
 	BUT_ONLY
@@ -85,69 +78,67 @@ BEGIN
 		END
 		
 	END
+
+
+
+	spl.edit[%spell%]
+	[
 	/////////////////////////////////////
 	// sort out basic structure of spell
 	/////////////////////////////////////
-	
+
 	// wipe existing payload
-	spl.edit[%spell%]
-	[
+	
 		m.ab.delete{s_level>1}
 		m.ab_fx.delete{}
-	]
-	// add missing levels to the shapeshift_list array, if necessay
-	ACTION_CLEAR_ARRAY shapeshift_list_full
-	OUTER_SPRINT starting_data ""
-	ACTION_PHP_EACH "%shapeshift_list%" AS level=>data BEGIN
-		ACTION_IF "%starting_data%" STRING_EQUAL "" BEGIN
-			OUTER_SPRINT starting_data "%data%"
+
+		INNER_ACTION BEGIN
+			// add missing levels to the shapeshift_list array, if necessay
+			ACTION_CLEAR_ARRAY shapeshift_list_full
+			OUTER_SPRINT starting_data ""
+			ACTION_PHP_EACH "%shapeshift_list%" AS level=>data BEGIN
+				ACTION_IF "%starting_data%" STRING_EQUAL "" BEGIN
+					OUTER_SPRINT starting_data "%data%"
+				END
+			END
+			OUTER_SPRINT $"%shapeshift_list%"("1") "%starting_data%"
+			OUTER_SET copy_level=1
+			ACTION_IF duration_mult>0 BEGIN
+			  OUTER_FOR (level=1;level<=level_max;++level) BEGIN
+				ACTION_IF VARIABLE_IS_SET $"%shapeshift_list%"("%level%") BEGIN
+					OUTER_SET copy_level=level
+				END
+				OUTER_SPRINT data $"%shapeshift_list%"("%copy_level%")
+				OUTER_SPRINT $shapeshift_list_full("%level%") EVAL "%data%"
+			  END
+			END ELSE BEGIN
+				ACTION_PHP_EACH "%shapeshift_list%" AS level=>data BEGIN
+					OUTER_SPRINT $shapeshift_list_full("%level%") "%data%"
+				END
+			END
 		END
-	END
-	OUTER_SPRINT $"%shapeshift_list%"("1") "%starting_data%"
-	OUTER_SET copy_level=1
-	ACTION_IF duration_mult>0 BEGIN
-	  OUTER_FOR (level=1;level<=level_max;++level) BEGIN
-		ACTION_IF VARIABLE_IS_SET $"%shapeshift_list%"("%level%") BEGIN
-			OUTER_SET copy_level=level
-		END
-		OUTER_SPRINT data $"%shapeshift_list%"("%copy_level%")
-		OUTER_SPRINT $shapeshift_list_full("%level%") EVAL "%data%"
-	  END
-	END ELSE BEGIN
-		ACTION_PHP_EACH "%shapeshift_list%" AS level=>data BEGIN
-			OUTER_SPRINT $shapeshift_list_full("%level%") "%data%"
-		END
-	END
-	// add ability blocks
-	ACTION_IF duration_mult>0 BEGIN
-		spl.edit[%spell%]
-		[
+		// add ability blocks
+		PATCH_IF duration_mult>0 BEGIN
 			n=level_max - 1
 			m.ab.clone{s_level=entry_index+2|match="s_level=1" number:i=n}
-		]
-	END ELSE BEGIN
-		OUTER_SET count=0
-		OUTER_SPRINT level_list ""
-		OUTER_FOR (level=2;level<=level_max;++level) BEGIN
-		   ACTION_IF VARIABLE_IS_SET $shapeshift_list_full("%level%") BEGIN
-			OUTER_SET count+=1 
-			OUTER_SPRINT level_list "%level_list% %level%"
-		   END
-		END
-		ACTION_IF count>0 BEGIN
-			spl.edit[%spell%]
-			[
+
+		END ELSE BEGIN
+			count=0
+			SPRINT level_list ""
+			FOR (level=2;level<=level_max;++level) BEGIN
+					PATCH_IF VARIABLE_IS_SET $shapeshift_list_full("%level%") BEGIN
+					count+=1 
+					SPRINT level_list "%level_list% %level%"
+				END
+			END
+			PATCH_IF count>0 BEGIN
 				LPF array_values_from_string STR_VAR string="%level_list%" RET_ARRAY array END
 				m.ab.clone{
 					s_level=$array("%entry_index%")
 					|match="s_level=1" number:i=count
 				}
-			]
+			END
 		END
-	END
-
-	spl.edit[%spell%]
-	[
 
 		/////////////////////////////////////
 		// grant the restore-natural-form power
@@ -169,89 +160,77 @@ BEGIN
 	
 		PATCH_IF grant_persistent_powers BEGIN
 			PHP_EACH shapeshift_list_full AS level=>data BEGIN
-				// remove the powers
+				// remove the powers, add the granted powers
 				LPF array_values_from_string STR_VAR string="%data%" RET array_length RET_ARRAY array END
-				m.ab_fx.clone{s_opcode=172 s_target=1 s_timing=4 s_duration=p_level*duration_mult+duration_base s_resource:=$array("%entry_index%")|number:i=array_length match_parent="p_level=level"}
+				m.ab_fx.add{s_opcode=172 s_target=1 s_timing=4 s_duration=p_level*duration_mult+duration_base s_resource:=$array("%entry_index%")|number:i=array_length match_parent="p_level=level"}
+				m.ab_fx.add{s_opcode=171 s_target=1 s_timing=1 s_duration=0 s_resource:=$array("%entry_index%")|number:i=array_length match_parent="p_level=level"}
 			END
-			// add the granted powers
-			m.ab_fx.clone{s_opcode=171 s_timing=1 s_duration=0 | match="s_opcode=172 AND !(~%s_resource%~==~%restore_name%~)"}
-
 		END
-
-	]
-	///////////////////////////////
-	// make the insta-grant powers
-	///////////////////////////////
-	ACTION_PHP_EACH "%shapeshift_list%" AS level=>data BEGIN
-		// put 'data' into an array; count its size
-		ACTION_CLEAR_ARRAY shapeshift_instant_list
-		ACTION_CLEAR_ARRAY shapeshift_2da_list
-		OUTER_SPRINT list "%data%"
-		OUTER_SET power_count=0
-		OUTER_WHILE "%list%" STRING_COMPARE "" BEGIN
-			LAF return_first_entry STR_VAR list RET entry list END
-			OUTER_SET power_count+=1
-			ACTION_TO_UPPER entry
-			OUTER_SPRINT $shapeshift_instant_list("%entry%") ""
-		END
-		ACTION_IF power_count=1 BEGIN
-			OUTER_SPRINT $shapeshift_2da_list("%data%") "instant:%entry%"
-		END ELSE BEGIN
-			OUTER_SET found_2da_name=0
-			OUTER_SET number=0
-			OUTER_WHILE !found_2da_name BEGIN
-				ACTION_IF number=100 BEGIN
-					FAIL "too many 2das for make_shapeshift_wrap_spell to cope"
+		
+		INNER_ACTION BEGIN
+			///////////////////////////////
+			// make the insta-grant powers
+			///////////////////////////////
+			ACTION_PHP_EACH "%shapeshift_list%" AS level=>data BEGIN
+				// put 'data' into an array; count its size
+				ACTION_CLEAR_ARRAY shapeshift_instant_list
+				ACTION_CLEAR_ARRAY shapeshift_2da_list
+				OUTER_SPRINT list "%data%"
+				OUTER_SET power_count=0
+				OUTER_WHILE "%list%" STRING_COMPARE "" BEGIN
+					LAF return_first_entry STR_VAR list RET entry list END
+					OUTER_SET power_count+=1
+					ACTION_TO_UPPER entry
+					OUTER_SPRINT $shapeshift_instant_list("%entry%") ""
 				END
-				ACTION_IF !FILE_EXISTS_IN_GAME "dwsstb%number%.2da" BEGIN
-					OUTER_SET found_2da_name=1
-					OUTER_SPRINT 2da_name "dwsstb%number%"
+				ACTION_IF power_count=1 BEGIN
+					OUTER_SPRINT $shapeshift_2da_list("%data%") "instant:%entry%"
 				END ELSE BEGIN
-					OUTER_SET number+=1
+					OUTER_SET found_2da_name=0
+					OUTER_SET number=0
+					OUTER_WHILE !found_2da_name BEGIN
+						ACTION_IF number=100 BEGIN
+							FAIL "too many 2das for make_shapeshift_wrap_spell to cope"
+						END
+						ACTION_IF !FILE_EXISTS_IN_GAME "dwsstb%number%.2da" BEGIN
+							OUTER_SET found_2da_name=1
+							OUTER_SPRINT 2da_name "dwsstb%number%"
+						END ELSE BEGIN
+							OUTER_SET number+=1
+						END
+					END
+					OUTER_SPRINT $shapeshift_2da_list("%data%") "%2da_name%"
+					OUTER_SPRINT 2da_data "2DA V1.0%WNL%****%WNL%ResRef%TAB%Type%WNL%"
+					ACTION_PHP_EACH shapeshift_instant_list AS entry=>discard BEGIN
+						OUTER_SPRINT 2da_data "%2da_data%name%TAB%%entry%%TAB%3%WNL%"
+					END
+					COPY ".../stratagems-inline/blank" "override/%2da_name%.2da"
+						INSERT_BYTES 0x0 STRING_LENGTH "%2da_data%"
+						WRITE_ASCIIE 0x0 "%2da_data%"
 				END
 			END
-			OUTER_SPRINT $shapeshift_2da_list("%data%") "%2da_name%"
-			OUTER_SPRINT 2da_data "2DA V1.0%WNL%****%WNL%ResRef%TAB%Type%WNL%"
-			ACTION_PHP_EACH shapeshift_instant_list AS entry=>discard BEGIN
-				OUTER_SPRINT 2da_data "%2da_data%name%TAB%%entry%%TAB%3%WNL%"
-			END
-			COPY ".../stratagems-inline/blank" "override/%2da_name%.2da"
-				INSERT_BYTES 0x0 STRING_LENGTH "%2da_data%"
-				WRITE_ASCIIE 0x0 "%2da_data%"
 		END
-	END
-	ACTION_PHP_EACH shapeshift_list_full AS level=>data BEGIN
-		OUTER_SPRINT resource $shapeshift_2da_list("%data%")
-		OUTER_SET single_spell=0
-		OUTER_PATCH "%resource%" BEGIN
-			REPLACE_EVALUATE "instant:\(.*\)" BEGIN
-				SPRINT instant_spell "%MATCH1%"
-				SET single_spell=1
+		PHP_EACH shapeshift_list_full AS level=>data BEGIN
+			SPRINT resource $shapeshift_2da_list("%data%")
+			single_spell=0
+			INNER_PATCH "%resource%" BEGIN
+				REPLACE_EVALUATE "instant:\(.*\)" BEGIN
+					SPRINT instant_spell "%MATCH1%"
+					SET single_spell=1
+				END
+				""
 			END
-			""
-		END
-		spl.edit[%spell%]
-		[
 			PATCH_IF single_spell BEGIN
 				// directly apply spell
 				m.ab_fx.add{s_opcode=146 s_target=1 s_timing=1 s_parameter2=1 s_resource:="%instant_spell%"|match_parent="p_level=level"}
 			END ELSE BEGIN
+				// display 'you have been granted powers'
+				m.ab_fx.add{s_opcode=139 s_target=1 s_duration=1 s_parameter1=is_iwd?36577:(is_bg2?8160:26464)|match_parent="p_level=level"}
 				// trigger select-spell
 				m.ab_fx.add{s_opcode=214 s_target=1 s_timing=1 s_resource:="%resource%"|match_parent="p_level=level"}			
 			END
-		]
-	END
-	// display 'you have been granted powers'
-	ACTION_IF !single_spell BEGIN
-		spl.edit[%spell%]
-		[
-			m.ab_fx.add{s_opcode=139 s_target=1 s_duration=1 s_parameter1=is_iwd?36577:(is_bg2?8160:26464)}
-		]
-	END
-	
-
-
-
+		END
+	]
 
 END
 
@@ -681,7 +660,7 @@ DEFINE_ACTION_FUNCTION find_shapeshift_cre_template INT_VAR anim_code=0 STR_VAR 
 	
 	OUTER_SPRINT cre ""
 	// if anim or anim_code is specified, build a template direct
-	// get the anim code if we're given the anim IDS entry
+	// get the anim code if we're given the amin IDS entry
 	ACTION_IF "%anim%" STRING_COMPARE "" BEGIN
 		OUTER_SET anim_code=IDS_OF_SYMBOL ("animate" "%anim%")
 	END

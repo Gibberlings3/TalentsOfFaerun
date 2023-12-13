@@ -33,8 +33,14 @@ LANGUAGE ~English~
 
 BEGIN "test" DESIGNATED 0
 
+//LAF ui_spell_system_setup END
+LAF spell_system_extension_setup END
 
+BEGIN "test precursor" DESIGNATED 10
 
+BEGIN "extra test" DESIGNATED 20
+
+LAF ui_spell_system_spheres END
 //////////////////////////////////////////////////////////////////////
 
 

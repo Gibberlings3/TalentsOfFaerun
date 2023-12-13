@@ -146,7 +146,7 @@ DEFINE_ACTION_FUNCTION find_shaman_spell_levels RET_ARRAY shaman_spell_levels BE
 
 END
 
-DEFINE_ACTION_FUNCTION build_favored_soul_kit INT_VAR god=0 name=0 desc=0 god_gender=0 god_temple=0 allow_neutral=0 override_bio="-1" STR_VAR kit="" favored_weapon="" copy_from="" BEGIN
+DEFINE_ACTION_FUNCTION build_favored_soul_kit INT_VAR god=0 name=0 desc=0  god_gender=0 god_temple=0 allow_neutral=0 override_bio="-1" STR_VAR kit="" favored_weapon="" copy_from="" BEGIN
 
 	LAF ds_resolve_stat STR_VAR id=DW_FAVORED_SOUL RET favored_soul_splstate=stat_ind END
 
@@ -196,6 +196,9 @@ DEFINE_ACTION_FUNCTION build_favored_soul_kit INT_VAR god=0 name=0 desc=0 god_ge
 		REPLACE_TEXTUALLY "FAVORED_WEAPON_PLACEHOLDER" "%weapon_name%"
 	END
 	
+	OUTER_SPRINT god_string (AT god)
+	OUTER_SPRINT god_temple_string (AT god_temple)
+	OUTER_SPRINT god_gender_string (AT god_gender)
 	kit.copy[SHAMAN=>%kit%]
 	[
 		k_name:=(AT name)
@@ -216,8 +219,8 @@ DEFINE_ACTION_FUNCTION build_favored_soul_kit INT_VAR god=0 name=0 desc=0 god_ge
 				k_bio:=@3993
 				INNER_PATCH_SAVE k_bio "%k_bio%" BEGIN
 					REPLACE_TEXTUALLY GOD_NAME "%god_string%"
-					REPLACE_TEXTUALLY GOD_TEMPLE "%god_temple%"
-					REPLACE_TEXTUALLY GOD_HISHER "%god_gender%"					
+					REPLACE_TEXTUALLY GOD_TEMPLE "%god_temple_string%"
+					REPLACE_TEXTUALLY GOD_HISHER "%god_gender_string%"					
 				END
 			END
 		END ELSE BEGIN

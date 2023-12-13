@@ -84,7 +84,7 @@ DEFINE_ACTION_FUNCTION gruumsh_favored_soul BEGIN
 	
 	OUTER_SPRINT kit "DW_GRUUMSH_FAVORED"
 	
-	LAF build_favored_soul_kit INT_VAR name=4095 desc=4096 god=4098 override_bio=1043 STR_VAR kit copy_from=DW_GRUUMSH_CLERIC END
+	LAF build_favored_soul_kit INT_VAR name=4095 desc=4096 god=4098 god_gender=4005 god_temple=4131 override_bio=1043 STR_VAR kit copy_from=DW_GRUUMSH_CLERIC END
 	LAF cleric_kit_substitutions STR_VAR kit god=gruumsh END
 
 	kit.edit[%kit%|edit_strrefs_in_place:i=1]

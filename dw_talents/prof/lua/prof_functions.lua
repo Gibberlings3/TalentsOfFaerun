@@ -1,5 +1,5 @@
 function dwGrantDefaultProficiencies()
-if (dwIsChargen or dwIsDualClassing) then
+if (dwIsChargen or dwIsDualClassing or characters[currentID].level.xp==0) then
 	classid,kitid=dwFindClassKit()
 	count=0
 	if dwIsChargen then
