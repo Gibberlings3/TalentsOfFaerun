@@ -1,3 +1,4 @@
+class/kit
 
 
 BACKUP ~weidu_external/backup/dw_talents~
@@ -207,6 +208,7 @@ REQUIRE_PREDICATE !MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 2040 @1090
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 2040 @1090
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2040 @1090
 FORBID_COMPONENT ~stratagems/setup-stratagems.tp2~ 5900 @2001
+REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~1160~ @96
 
 LAF run STR_VAR file=install_spell_resources version=shapeshift location=spell END
 
@@ -352,6 +354,19 @@ BEGIN @500 DESIGNATED 40000 /*LABEL dw_class_race */ GROUP @5
 
 REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
 FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
+REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~2360~ @96 // Remove Racial Restrictions for Single Classes
+REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~2380~ @96 // Remove Racial Restrictions for Kits 
+REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~2370~ @96 // Alter Dual-class Restrictions 
+REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~2371~ @96
+REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~2372~ @96
+REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~2350~ @96 // Alter Multiclass Restrictions
+REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~2351~ @96
+REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~2353~ @96
+REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~2357~ @96
+REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~2358~ @96
+REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~2550~ @96 // Alter Gnome Mage Kit/Multiclass Options
+REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~2551~ @96
+REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~2552~ @96
 
 LAF run STR_VAR file=3e_class location=class_race END
 
@@ -460,6 +475,7 @@ LAF run STR_VAR file=rebalance_traps location=class_race tra=kit_rebalance END
 //////////////////////////////////////////////////////////////////////
 
 BEGIN @507 DESIGNATED 40600 GROUP @5
+REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~1160~ @96
 
 REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
 
@@ -474,6 +490,13 @@ LAF run STR_VAR files=druid_shapeshift location=class_race tra=shapeshift END
 BEGIN @511 DESIGNATED 40610 GROUP @5
 
 REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
+REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~2290~ @96 // Alter Druid Spell and Level Progression Tables 
+REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~2291~ @96 // Alter Druid Spell and Level Progression Tables 
+REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~2292~ @96 // Alter Druid Spell and Level Progression Tables 
+REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~2293~ @96 // Alter Druid Spell and Level Progression Tables 
+REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~2294~ @96 // Alter Druid Spell and Level Progression Tables 
+REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~2295~ @96 // Alter Druid Spell and Level Progression Tables 
+REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~2296~ @96 // Alter Druid Spell and Level Progression Tables 
 LAF run STR_VAR files=druid_xp_table location=class_race END
 
 //////////////////////////////////////////////////////////////////////
@@ -1094,6 +1117,8 @@ BEGIN @802 DESIGNATED 60200 GROUP @9
 REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
 REQUIRE_PREDICATE GAME_IS "bg2ee eet" @56
 FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
+REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~2300~ @96 // Triple-Class HLA Tables
+REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~2080~ @96 // Delay High Level Abilities 
 
 LAF run STR_VAR file=hlas location=hla_feat tra=hla_feat END
 
@@ -1134,11 +1159,13 @@ REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 80101 @77
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 80102 @77
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 80103 @77
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 80104 @77
+REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~3210~ @96 // Minimum Stats Cheat 
 
 
 LAF run STR_VAR file=3e_abilities location=ability version=1 END
 
 BEGIN @419 SUBCOMPONENT @400 DESIGNATED 80001 /*LABEL dw_3e_ability */ GROUP @4
+REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~3210~ @96 // Minimum Stats Cheat 
 
 LAF run STR_VAR file=3e_abilities location=ability version=2 END
 
@@ -1150,22 +1177,27 @@ LAF run STR_VAR file=3e_abilities location=ability version=2 END
 BEGIN @402 SUBCOMPONENT @401 DESIGNATED 80100 /*LABEL dw_3e_pointbuy_75 */ GROUP @4
 REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
 FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
+REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~3210~ @96 // Minimum Stats Cheat 
 
 LAF run STR_VAR file=pointbuy location=pointbuy version=75 END
 
 BEGIN @403 SUBCOMPONENT @401 DESIGNATED 80101 /*LABEL dw_3e_pointbuy_80 */ GROUP @4
+REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~3210~ @96 // Minimum Stats Cheat 
 
 LAF run STR_VAR file=pointbuy location=pointbuy version=80 END
 
 BEGIN @404 SUBCOMPONENT @401 DESIGNATED 80102 /*LABEL dw_3e_pointbuy_85 */ GROUP @4
+REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~3210~ @96 // Minimum Stats Cheat 
 
 LAF run STR_VAR file=pointbuy location=pointbuy version=85 END
 
 BEGIN @405 SUBCOMPONENT @401 DESIGNATED 80103 /*LABEL dw_3e_pointbuy_90 */ GROUP @4
+REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~3210~ @96 // Minimum Stats Cheat 
 
 LAF run STR_VAR file=pointbuy location=pointbuy version=90 END
 
 BEGIN @406 SUBCOMPONENT @401 DESIGNATED 80104 /*LABEL dw_3e_pointbuy_random */ GROUP @4
+REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~3210~ @96 // Minimum Stats Cheat 
 
 LAF run STR_VAR file=pointbuy location=pointbuy version="-1" END
 
@@ -1177,6 +1209,7 @@ BEGIN @420 DESIGNATED 80150 GROUP @4
 
 REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
 FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
+REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~2240~ @96 // Un-Nerfed THAC0 Table 
 
 LAF run STR_VAR file=revised_thac0 location=thac0 END
 
@@ -1230,6 +1263,8 @@ FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
 FORBID_COMPONENT "dw_talents/dw_talents.tp2" 50000 @80
 FORBID_COMPONENT "dw_talents/dw_talents.tp2" 50100 @80
 FORBID_COMPONENT "dw_talents/dw_talents.tp2" 50200 @80
+REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~3030~ @96 // Easy Spell Learning 
+REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~3031~ @96 // Easy Spell Learning 
 
 LAF run STR_VAR file=no_int_max_spells_wrapper location=shared END
 
@@ -1254,17 +1289,20 @@ BEGIN @413 SUBCOMPONENT @412 DESIGNATED 81010 GROUP @4
 
 REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
 FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
+REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~2200~ @96 // Multi-Class Grandmastery [Weimer] 
 LAF run STR_VAR file=wider_grand_mastery version=0 location=prof END
 
 //////////////////////////////////////////////////////////////////////
 
 BEGIN @414 SUBCOMPONENT @412 DESIGNATED 81011 GROUP @4
+REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~2200~ @96 // Multi-Class Grandmastery [Weimer] 
 
 LAF run STR_VAR file=wider_grand_mastery version=1 location=prof END
 
 //////////////////////////////////////////////////////////////////////
 
 BEGIN @415 SUBCOMPONENT @412 DESIGNATED 81012 GROUP @4
+REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~2200~ @96 // Multi-Class Grandmastery [Weimer] 
 
 LAF run STR_VAR file=wider_grand_mastery version=2 location=prof END
 
@@ -1298,6 +1336,11 @@ BEGIN @411 DESIGNATED 81100 GROUP @4
 
 REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
 FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
+REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~2160~ @96 // Alter Weapon Proficiency System 
+REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~2161~ @96 // Alter Weapon Proficiency System 
+REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~2162~ @96 // Alter Weapon Proficiency System 
+REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~2163~ @96 // Alter Weapon Proficiency System 
+REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~2164~ @96 // Alter Weapon Proficiency System 
 
 LAF run STR_VAR file=prof location=prof END
 
