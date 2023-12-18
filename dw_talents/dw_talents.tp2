@@ -1,23 +1,15 @@
-class/kit
-
-
 BACKUP ~weidu_external/backup/dw_talents~
 AUTHOR "DavidW"
 //MODDER setup_tra none area_variables none missing_extern none missing_resref none ict2_actions none missing_eval none overwriting_file none fun_args warn
-VERSION ~Beta 1~
+VERSION ~Beta 2~
 
 AUTO_EVAL_STRINGS
 README "dw_talents/doc/readme-dw_talents.html"
 
 ALWAYS 
-	ACTION_TIME "always_block" BEGIN
-	OUTER_SET batch_mode_component_number=100
-   ACTION_IF !(COMPONENT_NUMBER=batch_mode_component_number || (VARIABLE_IS_SET SFO_batch_mode && SFO_batch_mode)) BEGIN
-		INCLUDE ~dw_talents/lib/always.tpc~
-   END ELSE BEGIN
-		INCLUDE ~dw_talents/lib/lib_batch.tph~
-   END
-   END
+	OUTER_SET SFO_batch_mode_component_number=100
+	INCLUDE "%MOD_FOLDER%/sfo/batch_mode.tpc"
+	INCLUDE "%MOD_FOLDER%/lib/always.tpc"
 END
 
 // Language Options
@@ -57,9 +49,6 @@ LAF ui_spell_system_spheres END
 /////////////////////////////////////
 
 BEGIN @10005 DESIGNATED 100 NO_LOG_RECORD
-REQUIRE_PREDICATE "%WEIDU_OS%" STR_EQ win32 @50011
-
-LAM batch_mode_initialize
 
 ///////////////////////////////////////////////////////////////////
 ////////////////////////////////////
@@ -74,7 +63,7 @@ REQUIRE_PREDICATE !GAME_IS ~iwdee~ @1098
 REQUIRE_PREDICATE !(MOD_IS_INSTALLED ~iwdification/setup-iwdification.tp2~ 30) @24122
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 1500 @1090
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 1500 @1090
-REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 1500 @1090
+//REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 1500 @1090
 FORBID_COMPONENT ~stratagems/setup-stratagems.tp2~ 5900 @2001
 
 LAF run INT_VAR marker=0 STR_VAR file=iwdspells_arcane location=iwdspells END
@@ -88,7 +77,7 @@ REQUIRE_PREDICATE !GAME_IS ~iwdee~ @1098
 REQUIRE_PREDICATE !(MOD_IS_INSTALLED ~iwdification/setup-iwdification.tp2~ 40) @24122
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 1510 @1090
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 1510 @1090
-REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 1510 @1090
+//REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 1510 @1090
 FORBID_COMPONENT ~stratagems/setup-stratagems.tp2~ 5900 @2001
 
 LAF run INT_VAR marker=0 STR_VAR file=iwdspells_divine location=iwdspells END
@@ -101,7 +90,7 @@ REQUIRE_PREDICATE !GAME_IS ~iwdee~ @1098
 REQUIRE_PREDICATE !(MOD_IS_INSTALLED ~iwdification/setup-iwdification.tp2~ 50) @1090
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 1520 @1090
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 1520 @1090
-REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 1520 @1090
+//REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 1520 @1090
 FORBID_COMPONENT ~stratagems/setup-stratagems.tp2~ 5900 @2001
 
 LAF run INT_VAR marker=0 STR_VAR file=iwdspells_bard location=iwdspells END
@@ -115,7 +104,7 @@ BEGIN @24127 DESIGNATED 1600 GROUP @1000
 REQUIRE_PREDICATE GAME_IS iwdee @1099
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 1600 @1090
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 1600 @1090
-REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 1600 @1090
+//REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 1600 @1090
 FORBID_COMPONENT ~stratagems/setup-stratagems.tp2~ 5900 @2001
 
 LAF run STR_VAR files=bg2spells_insect location=bg2spells END
@@ -128,7 +117,7 @@ BEGIN @24128 DESIGNATED 1610 GROUP @1000
 REQUIRE_PREDICATE GAME_IS iwdee @1099
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 1610 @1090
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 1610 @1090
-REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 1610 @1090
+//REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 1610 @1090
 FORBID_COMPONENT ~stratagems/setup-stratagems.tp2~ 5900 @2001
 
 LAF run STR_VAR files=bg2spells_morsword location=bg2spells END
@@ -141,8 +130,9 @@ BEGIN @1006 DESIGNATED 2000 GROUP @1000
 
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 2000 @1090
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 2000 @1090
-REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2000 @1090
+//REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2000 @1090
 FORBID_COMPONENT ~stratagems/setup-stratagems.tp2~ 5900 @2001
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_2000_installed @1090
 
 LAF run STR_VAR file=install_spell_resources version=all location=spell END
 
@@ -157,8 +147,9 @@ REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 2000 @1090
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2000 @1090
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 2010 @1090
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 2010 @1090
-REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2010 @1090
+//REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2010 @1090
 FORBID_COMPONENT ~stratagems/setup-stratagems.tp2~ 5900 @2001
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_2000_installed @1090
 
 LAF run STR_VAR file=install_spell_resources version=core-scs location=spell END
 
@@ -174,8 +165,9 @@ REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 2000 @1090
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2000 @1090
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 2020 @1090
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 2020 @1090
-REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2020 @1090
+//REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2020 @1090
 FORBID_COMPONENT ~stratagems/setup-stratagems.tp2~ 5900 @2001
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_2000_installed @1090
 
 LAF run STR_VAR file=install_spell_resources version=bg location=spell END
 
@@ -190,8 +182,9 @@ REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 2000 @1090
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2000 @1090
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 2030 @1090
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 2030 @1090
-REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2030 @1090
+//REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2030 @1090
 FORBID_COMPONENT ~stratagems/setup-stratagems.tp2~ 5900 @2001
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_2000_installed @1090
 
 LAF run STR_VAR file=install_spell_resources version=restoration location=spell END
 
@@ -206,8 +199,9 @@ REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 2000 @1090
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2000 @1090
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 2040 @1090
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 2040 @1090
-REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2040 @1090
+//REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2040 @1090
 FORBID_COMPONENT ~stratagems/setup-stratagems.tp2~ 5900 @2001
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_2000_installed @1090
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~1160~ @96
 
 LAF run STR_VAR file=install_spell_resources version=shapeshift location=spell END
@@ -225,8 +219,9 @@ REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 2000 @1090
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2000 @1090
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 2050 @1090
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 2050 @1090
-REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2050 @1090
+//REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2050 @1090
 FORBID_COMPONENT ~stratagems/setup-stratagems.tp2~ 5900 @2001
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_2000_installed @1090
 
 LAF run STR_VAR file=install_spell_resources version=iwd location=spell END
 
@@ -241,8 +236,9 @@ REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 2000 @1090
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2000 @1090
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 2060 @1090
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 2060 @1090
-REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2060 @1090
+//REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2060 @1090
 FORBID_COMPONENT ~stratagems/setup-stratagems.tp2~ 5900 @2001
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_2000_installed @1090
 
 LAF run STR_VAR file=install_spell_resources version=rebalance location=spell END
 
@@ -257,8 +253,9 @@ REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 2000 @1090
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2000 @1090
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 2070 @1090
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 2070 @1090
-REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2070 @1090
+//REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2070 @1090
 FORBID_COMPONENT ~stratagems/setup-stratagems.tp2~ 5900 @2001
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_2000_installed @1090
 
 LAF run STR_VAR file=install_spell_resources version=school location=spell END
 
@@ -273,8 +270,9 @@ REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 2000 @1090
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2000 @1090
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 2080 @1090
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 2080 @1090
-REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2080 @1090
+//REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2080 @1090
 FORBID_COMPONENT ~stratagems/setup-stratagems.tp2~ 5900 @2001
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_2000_installed @1090
 
 LAF run STR_VAR file=install_spell_resources version=boost location=spell END
 
@@ -286,7 +284,7 @@ BEGIN @1020 DESIGNATED 2500 GROUP @1000
 
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 2500 @1090
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 2500 @1090
-REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2500 @1090
+//REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2500 @1090
 FORBID_COMPONENT ~stratagems/setup-stratagems.tp2~ 5900 @2001
 
 LAF run STR_VAR file=extra_arcane_spells location=newspell tra=extra_arcane_spells END
@@ -299,7 +297,7 @@ BEGIN @1021 DESIGNATED 2510 GROUP @1000
 
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 2510 @1090
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 2510 @1090
-REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2510 @1090
+//REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2510 @1090
 FORBID_COMPONENT ~stratagems/setup-stratagems.tp2~ 5900 @2001
 
 LAF run STR_VAR file=extra_divine_spells location=newspell tra=extra_divine_spells END
@@ -312,7 +310,7 @@ BEGIN @1022 DESIGNATED 2520 GROUP @1000
 
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 2520 @1090
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 2520 @1090
-REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2520 @1090
+//REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2520 @1090
 FORBID_COMPONENT ~stratagems/setup-stratagems.tp2~ 5900 @2001
 
 LAF run STR_VAR file=elemental_cre location=elemental_cre END
@@ -404,6 +402,7 @@ REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
 REQUIRE_PREDICATE (GAME_IS "iwdee" || MOD_IS_INSTALLED "dw_talents/dw_talents.tp2" 40200 || MOD_IS_INSTALLED "iwdification.tp2" 100) @78
 FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
 FORBID_COMPONENT "dw_talents/dw_talents.tp2" 40301 @79
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_40301_installed @79
 
 LAF run STR_VAR file=paladin_smite_evil location=class_race END
 
@@ -467,6 +466,10 @@ FORBID_COMPONENT "dw_talents/dw_talents.tp2" 55100 @91
 FORBID_COMPONENT "dw_talents/dw_talents.tp2" 55200 @91
 FORBID_COMPONENT "dw_talents/dw_talents.tp2" 55300 @91
 FORBID_COMPONENT "dw_talents/dw_talents.tp2" 55400 @91
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_55100_installed @91
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_55200_installed @91
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_55300_installed @91
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_55400_installed @91
 
 LAF run STR_VAR file=rebalance_traps location=class_race tra=kit_rebalance END
 
@@ -511,6 +514,7 @@ REQUIRE_PREDICATE (GAME_IS iwdee
 					|| MOD_IS_INSTALLED ~iwdification/setup-iwdification.tp2~ 30 
 					|| MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 1500 
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 1500 
+					|| IS_AN_INT dw_talents_component_1500_installed
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 1500
 				   )
 				   @82		   
@@ -519,6 +523,7 @@ REQUIRE_PREDICATE (GAME_IS iwdee
 					|| MOD_IS_INSTALLED ~iwdification/setup-iwdification.tp2~ 40
 					|| MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 1510 
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 1510 
+					|| IS_AN_INT dw_talents_component_1510_installed
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 1510
 				   )
 				   @88
@@ -526,12 +531,14 @@ REQUIRE_PREDICATE (
 					MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 2500 
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 2500
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2500 
+					|| IS_AN_INT dw_talents_component_2500_installed
 					)
 				   @83
 REQUIRE_PREDICATE (	
 					MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 2510 
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 2510
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2510 
+					|| IS_AN_INT dw_talents_component_2510_installed
 				)
 				   @89
 
@@ -619,6 +626,9 @@ FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
 FORBID_COMPONENT "dw_talents/dw_talents.tp2" 50000 @84
 FORBID_COMPONENT "dw_talents/dw_talents.tp2" 50100 @85
 FORBID_COMPONENT "dw_talents/dw_talents.tp2" 55000 @86
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_50000_installed @84
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_50100_installed @85
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_55000_installed @86
 
 LAF run STR_VAR files=multiclass_specialists location=class_race tra=multiclass_specialists END
 
@@ -626,7 +636,7 @@ LAF run STR_VAR files=multiclass_specialists location=class_race tra=multiclass_
 ///	Sorcerer bloodlines
 //////////////////////////////////////////////////////////////////////
 
-BEGIN "Bloodlines for sorcerers" DESIGNATED 40925 GROUP @5 
+BEGIN @525 DESIGNATED 40925 GROUP @5 
 
 REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
 FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
@@ -635,6 +645,7 @@ REQUIRE_PREDICATE (GAME_IS iwdee
 					|| MOD_IS_INSTALLED ~iwdification/setup-iwdification.tp2~ 30 
 					|| MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 1500 
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 1500 
+					|| IS_AN_INT dw_talents_component_1500_installed
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 1500
 				   )
 				   @82		   
@@ -643,6 +654,7 @@ REQUIRE_PREDICATE (GAME_IS iwdee
 					|| MOD_IS_INSTALLED ~iwdification/setup-iwdification.tp2~ 40
 					|| MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 1510 
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 1510 
+					|| IS_AN_INT dw_talents_component_1510_installed
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 1510
 				   )
 				   @88
@@ -650,12 +662,14 @@ REQUIRE_PREDICATE (
 					MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 2500 
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 2500
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2500 
+					|| IS_AN_INT dw_talents_component_2500_installed
 					)
 				   @83
 REQUIRE_PREDICATE (	
 					MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 2510 
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 2510
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2510 
+					|| IS_AN_INT dw_talents_component_2510_installed 
 					)
 				   @89
 				   
@@ -689,6 +703,12 @@ FORBID_COMPONENT "dw_talents/dw_talents.tp2" 55100 @91
 FORBID_COMPONENT "dw_talents/dw_talents.tp2" 55200 @91
 FORBID_COMPONENT "dw_talents/dw_talents.tp2" 55300 @91
 FORBID_COMPONENT "dw_talents/dw_talents.tp2" 55400 @91
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_50300_installed @87
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_55100_installed @91
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_55200_installed @91
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_55300_installed @91
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_55400_installed @91
+
 
 LAF run STR_VAR files=kit_rebalance location=class_race tra=kit_rebalance END
 
@@ -709,17 +729,22 @@ REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
 FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
 REQUIRE_PREDICATE (GAME_IS iwdee 
 					|| MOD_IS_INSTALLED ~iwdification/setup-iwdification.tp2~ 30 
-					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 10000
+					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 1500
 					|| MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 1500 
+					|| IS_AN_INT dw_talents_component_1500_installed 
+					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 1500 
 					|| FILE_CONTAINS "dw_talents/dw_talents.ini" "require_elementalist_spells_installed *= *0"
 				   )
 				   @82
-REQUIRE_PREDICATE (MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 10700
+REQUIRE_PREDICATE (MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2500
+					|| IS_AN_INT dw_talents_component_2500_installed
 					|| FILE_CONTAINS "dw_talents/dw_talents.ini" "require_elementalist_spells_installed *= *0"
 				   )
 				   @83
 FORBID_COMPONENT "dw_talents/dw_talents.tp2" 55000 @86
 FORBID_COMPONENT "dw_talents/dw_talents.tp2" 81100 @93
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_55000_installed @86
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_81100_installed @93
 
 LAF run STR_VAR files=elementalist location=kit tra=elementalist END
 
@@ -732,6 +757,7 @@ BEGIN @702 DESIGNATED 50100 GROUP @7
 REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
 FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
 FORBID_COMPONENT "dw_talents/dw_talents.tp2" 81100 @93
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_81100_installed @93
 
 LAF run STR_VAR files=force_mage location=kit tra=force_mage END
 
@@ -744,6 +770,7 @@ BEGIN @703 DESIGNATED 50200 GROUP @7
 REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
 FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
 FORBID_COMPONENT "dw_talents/dw_talents.tp2" 81100 @93
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_81100_installed @93
 
 LAF run STR_VAR file=militant_wizards location=kit tra=mageschool END
 
@@ -756,6 +783,7 @@ BEGIN @704 DESIGNATED 50300 GROUP @7
 REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
 FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
 FORBID_COMPONENT "dw_talents/dw_talents.tp2" 81100 @93
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_81100_installed @93
 
 LAF run STR_VAR file=bloodrager location=kit tra=bloodrager END
 
@@ -771,6 +799,7 @@ REQUIRE_PREDICATE (GAME_IS iwdee
 					|| MOD_IS_INSTALLED ~iwdification/setup-iwdification.tp2~ 30 
 					|| MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 1500 
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 1500 
+					|| IS_AN_INT dw_talents_component_1500_installed
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 1500
 				   )
 				   @82		   
@@ -779,6 +808,7 @@ REQUIRE_PREDICATE (GAME_IS iwdee
 					|| MOD_IS_INSTALLED ~iwdification/setup-iwdification.tp2~ 40
 					|| MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 1510 
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 1510 
+					|| IS_AN_INT dw_talents_component_1510_installed
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 1510
 				   )
 				   @88
@@ -786,16 +816,19 @@ REQUIRE_PREDICATE (
 					MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 2500 
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 2500
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2500 
+					|| IS_AN_INT dw_talents_component_2500_installed
 					)
 				   @83
 REQUIRE_PREDICATE (	
 					MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 2510 
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 2510
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2510 
+					|| IS_AN_INT dw_talents_component_2510_installed
 				)
 				   @89
 
 FORBID_COMPONENT "dw_talents/dw_talents.tp2" 81100 @93
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_81100_installed @93
 LAF run STR_VAR file=kit_c location=kit tra=kit END
 
 //////////////////////////////////////////////////////////////////////
@@ -805,8 +838,9 @@ LAF run STR_VAR file=kit_c location=kit tra=kit END
 BEGIN @706 DESIGNATED 50500 GROUP @7
 REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
 FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
-REQUIRE_COMPONENT "dw_talents/dw_talents.tp2" 50400 @90
+REQUIRE_PREDICATE MOD_IS_INSTALLED "dw_talents/dw_talents.tp2" 50400 || !IS_AN_INT dw_talents_component_50400_installed @90
 FORBID_COMPONENT "dw_talents/dw_talents.tp2" 81100 @93
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_81100_installed @93
 
 LAF run STR_VAR file=favored_soul location=kit tra=kit END
 
@@ -829,6 +863,7 @@ BEGIN @700 DESIGNATED 55000 GROUP @7
 REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
 FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
 FORBID_COMPONENT "dw_talents/dw_talents.tp2" 81100 @93
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_81100_installed @93
 
 LAF run STR_VAR files=druid_multiclass location=kit tra=druid_multiclass END
 
@@ -845,6 +880,7 @@ REQUIRE_PREDICATE (GAME_IS iwdee
 					|| MOD_IS_INSTALLED ~iwdification/setup-iwdification.tp2~ 30 
 					|| MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 1500 
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 1500 
+					|| IS_AN_INT dw_talents_component_1500_installed
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 1500
 				   )
 				   @82		   
@@ -853,6 +889,7 @@ REQUIRE_PREDICATE (GAME_IS iwdee
 					|| MOD_IS_INSTALLED ~iwdification/setup-iwdification.tp2~ 40
 					|| MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 1510 
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 1510 
+					|| IS_AN_INT dw_talents_component_1510_installed
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 1510
 				   )
 				   @88
@@ -860,17 +897,20 @@ REQUIRE_PREDICATE (
 					MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 2500 
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 2500
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2500 
+					|| IS_AN_INT dw_talents_component_2500_installed
 					)
 				   @83
 REQUIRE_PREDICATE (	
 					MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 2510 
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 2510
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2510 
+					|| IS_AN_INT dw_talents_component_2510_installed
 				)
 				   @89
 
 FORBID_COMPONENT "dw_talents/dw_talents.tp2" 81100 @93
-REQUIRE_COMPONENT "dw_talents/dw_talents.tp2" 50400 @90
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_81100_installed @93
+REQUIRE_PREDICATE MOD_IS_INSTALLED "dw_talents/dw_talents.tp2" 50400 || !IS_AN_INT dw_talents_component_50400_installed @90
 
 LAF run STR_VAR file=kit_fc location=kit tra=kit END
 
@@ -883,6 +923,7 @@ BEGIN @708 DESIGNATED 55200 GROUP @8
 REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
 FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
 FORBID_COMPONENT "dw_talents/dw_talents.tp2" 81100 @93
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_81100_installed @93
 
 LAF run STR_VAR file=kit_fd location=kit tra=kit END
 
@@ -895,6 +936,7 @@ BEGIN @709 DESIGNATED 55300 GROUP @8
 REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
 FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
 FORBID_COMPONENT "dw_talents/dw_talents.tp2" 81100 @93
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_81100_installed @93
 
 LAF run STR_VAR file=kit_fm location=kit tra=kit END
 
@@ -907,6 +949,7 @@ BEGIN @710 DESIGNATED 55400 GROUP @8
 REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
 FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
 FORBID_COMPONENT "dw_talents/dw_talents.tp2" 81100 @93
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_81100_installed @93
 
 LAF run STR_VAR file=kit_ft location=kit tra=kit END
 
@@ -918,12 +961,13 @@ BEGIN @711 DESIGNATED 55500 GROUP @8
 
 REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
 FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
-REQUIRE_COMPONENT "dw_talents/dw_talents.tp2" 50400 @90
+REQUIRE_PREDICATE MOD_IS_INSTALLED "dw_talents/dw_talents.tp2" 50400 || !IS_AN_INT dw_talents_component_50400_installed @90
 
 REQUIRE_PREDICATE (GAME_IS iwdee 
 					|| MOD_IS_INSTALLED ~iwdification/setup-iwdification.tp2~ 30 
 					|| MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 1500 
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 1500 
+					|| IS_AN_INT dw_talents_component_1500_installed
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 1500
 				   )
 				   @82		   
@@ -932,6 +976,7 @@ REQUIRE_PREDICATE (GAME_IS iwdee
 					|| MOD_IS_INSTALLED ~iwdification/setup-iwdification.tp2~ 40
 					|| MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 1510 
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 1510 
+					|| IS_AN_INT dw_talents_component_1510_installed
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 1510
 				   )
 				   @88
@@ -939,17 +984,20 @@ REQUIRE_PREDICATE (
 					MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 2500 
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 2500
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2500 
+					|| IS_AN_INT dw_talents_component_2500_installed
 					)
 				   @83
 REQUIRE_PREDICATE (	
 					MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 2510 
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 2510
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2510 
+					|| IS_AN_INT dw_talents_component_2510_installed
 				)
 				   @89
 
 				   
 FORBID_COMPONENT "dw_talents/dw_talents.tp2" 81100 @93
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_81100_installed @93
 LAF run STR_VAR file=kit_cm location=kit tra=kit END
 
 //////////////////////////////////////////////////////////////////////
@@ -960,12 +1008,13 @@ BEGIN @712 DESIGNATED 55600 GROUP @8
 
 REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
 FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
-REQUIRE_COMPONENT "dw_talents/dw_talents.tp2" 50400 @90
+REQUIRE_PREDICATE MOD_IS_INSTALLED "dw_talents/dw_talents.tp2" 50400 || !IS_AN_INT dw_talents_component_50400_installed @90
 
 REQUIRE_PREDICATE (GAME_IS iwdee 
 					|| MOD_IS_INSTALLED ~iwdification/setup-iwdification.tp2~ 30 
 					|| MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 1500 
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 1500 
+					|| IS_AN_INT dw_talents_component_1500_installed
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 1500
 				   )
 				   @82		   
@@ -974,6 +1023,7 @@ REQUIRE_PREDICATE (GAME_IS iwdee
 					|| MOD_IS_INSTALLED ~iwdification/setup-iwdification.tp2~ 40
 					|| MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 1510 
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 1510 
+					|| IS_AN_INT dw_talents_component_1510_installed
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 1510
 				   )
 				   @88
@@ -981,17 +1031,20 @@ REQUIRE_PREDICATE (
 					MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 2500 
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 2500
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2500 
+					|| IS_AN_INT dw_talents_component_2500_installed
 					)
 				   @83
 REQUIRE_PREDICATE (	
 					MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 2510 
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 2510
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2510 
+					|| IS_AN_INT dw_talents_component_2510_installed
 				)
 				   @89
 
 				   
 FORBID_COMPONENT "dw_talents/dw_talents.tp2" 81100 @93
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_81100_installed @93
 LAF run STR_VAR file=kit_cr location=kit tra=kit END
 
 //////////////////////////////////////////////////////////////////////
@@ -1002,12 +1055,13 @@ BEGIN @713 DESIGNATED 55700 GROUP @8
 
 REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
 FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
-REQUIRE_COMPONENT "dw_talents/dw_talents.tp2" 50400 @90
+REQUIRE_PREDICATE MOD_IS_INSTALLED "dw_talents/dw_talents.tp2" 50400 || !IS_AN_INT dw_talents_component_50400_installed @90
 
 REQUIRE_PREDICATE (GAME_IS iwdee 
 					|| MOD_IS_INSTALLED ~iwdification/setup-iwdification.tp2~ 30 
 					|| MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 1500 
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 1500 
+					|| IS_AN_INT dw_talents_component_1500_installed
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 1500
 				   )
 				   @82		   
@@ -1016,6 +1070,7 @@ REQUIRE_PREDICATE (GAME_IS iwdee
 					|| MOD_IS_INSTALLED ~iwdification/setup-iwdification.tp2~ 40
 					|| MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 1510 
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 1510 
+					|| IS_AN_INT dw_talents_component_1510_installed
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 1510
 				   )
 				   @88
@@ -1023,17 +1078,20 @@ REQUIRE_PREDICATE (
 					MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 2500 
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 2500
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2500 
+					|| IS_AN_INT dw_talents_component_2500_installed
 					)
 				   @83
 REQUIRE_PREDICATE (	
 					MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 2510 
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 2510
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2510 
+					|| IS_AN_INT dw_talents_component_2510_installed
 				)
 				   @89
 
 				   
 FORBID_COMPONENT "dw_talents/dw_talents.tp2" 81100 @93
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_81100_installed @93
 LAF run STR_VAR file=kit_ct location=kit tra=kit END
 
 //////////////////////////////////////////////////////////////////////
@@ -1045,6 +1103,7 @@ BEGIN @714 DESIGNATED 55800 GROUP @8
 REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
 FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
 FORBID_COMPONENT "dw_talents/dw_talents.tp2" 81100 @93
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_81100_installed @93
 
 LAF run STR_VAR file=kit_mt location=kit tra=kit END
 
@@ -1056,12 +1115,13 @@ BEGIN @715 DESIGNATED 55900 GROUP @8
 
 REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
 FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
-REQUIRE_COMPONENT "dw_talents/dw_talents.tp2" 50400 @90
+REQUIRE_PREDICATE MOD_IS_INSTALLED "dw_talents/dw_talents.tp2" 50400 || !IS_AN_INT dw_talents_component_50400_installed @90
 
 REQUIRE_PREDICATE (GAME_IS iwdee 
 					|| MOD_IS_INSTALLED ~iwdification/setup-iwdification.tp2~ 30 
 					|| MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 1500 
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 1500 
+					|| IS_AN_INT dw_talents_component_1500_installed
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 1500
 				   )
 				   @82		   
@@ -1070,6 +1130,7 @@ REQUIRE_PREDICATE (GAME_IS iwdee
 					|| MOD_IS_INSTALLED ~iwdification/setup-iwdification.tp2~ 40
 					|| MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 1510 
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 1510 
+					|| IS_AN_INT dw_talents_component_1510_installed
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 1510
 				   )
 				   @88
@@ -1077,16 +1138,19 @@ REQUIRE_PREDICATE (
 					MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 2500 
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 2500
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2500 
+					|| IS_AN_INT dw_talents_component_2500_installed
 					)
 				   @83
 REQUIRE_PREDICATE (	
 					MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 2510 
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 2510
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2510 
+					|| IS_AN_INT dw_talents_component_2510_installed
 				)
 				   @89
 
 FORBID_COMPONENT "dw_talents/dw_talents.tp2" 81100 @93
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_81100_installed @93
 				   
 LAF run STR_VAR file=kit_fmc location=kit tra=kit END
 
@@ -1159,6 +1223,11 @@ REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 80101 @77
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 80102 @77
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 80103 @77
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 80104 @77
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_80100_installed @77
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_80101_installed @77
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_80102_installed @77
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_80103_installed @77
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_80104_installed @77
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~3210~ @96 // Minimum Stats Cheat 
 
 
@@ -1235,7 +1304,7 @@ BEGIN @408 DESIGNATED 80300 /*LABEL dw_3e_deflection_stacking */ GROUP @4
 
 REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
 FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
-REQUIRE_PREDICATE MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 80200 @76
+REQUIRE_PREDICATE MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 80200 || IS_AN_INT dw_talents_component_80200_installed @76
 
 
 LAF run STR_VAR file=item_exclude location=3e_ac END
@@ -1263,6 +1332,9 @@ FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
 FORBID_COMPONENT "dw_talents/dw_talents.tp2" 50000 @80
 FORBID_COMPONENT "dw_talents/dw_talents.tp2" 50100 @80
 FORBID_COMPONENT "dw_talents/dw_talents.tp2" 50200 @80
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_50000_installed @80
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_50100_installed @80
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_50200_installed @80
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~3030~ @96 // Easy Spell Learning 
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~3031~ @96 // Easy Spell Learning 
 
@@ -1278,6 +1350,7 @@ REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
 FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
 
 FORBID_COMPONENT "dw_talents/dw_talents.tp2" 55600 @80
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_55600_installed @80
 
 LAF run STR_VAR file=cleric_rangers_use_bows location=shared END
 
@@ -1376,6 +1449,22 @@ FORBID_COMPONENT "dw_talents/dw_talents.tp2" 55600 @80
 FORBID_COMPONENT "dw_talents/dw_talents.tp2" 55700 @80
 FORBID_COMPONENT "dw_talents/dw_talents.tp2" 55800 @80
 FORBID_COMPONENT "dw_talents/dw_talents.tp2" 55900 @80
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_40000_installed @80
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_40900_installed @80
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_50000_installed @80
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_50100_installed @80
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_50200_installed @80
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_50500_installed @80
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_55000_installed @80
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_55100_installed @80
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_55200_installed @80
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_55300_installed @80
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_55400_installed @80
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_55500_installed @80
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_55600_installed @80
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_55700_installed @80
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_55800_installed @80
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_55900_installed @80
 
 LAF run STR_VAR file=setup_menus location=shared END 
 
@@ -1387,28 +1476,11 @@ LAF run STR_VAR file=setup_menus location=shared END
 BEGIN @900 DESIGNATED 90100 GROUP @6
 
 FORBID_COMPONENT "dw_talents/dw_talents.tp2" 60300 @80
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_60300_installed @80
 FORBID_COMPONENT "stratagems/setup-stratagems.tp2" 4100 @80
 FORBID_COMPONENT "stratagems/setup-stratagems.tp2" 4115 @80
 
 LAF run STR_VAR file=accelerate_thief_levelling location=shared END
-
-///////////////////////////////////////////////////////////////////
-////////////////////////////////////
-///	Batch mode finalizer (can be copied to ToF or SoM)
-////////////////////////////////////////////////////////////////////
-/////////////////////////////////////
-
-BEGIN @10029 SUBCOMPONENT @10028 DESIGNATED 100000 NO_LOG_RECORD // batch-mode finalize - execute
-REQUIRE_PREDICATE (VARIABLE_IS_SET SFO_batch_mode) @50012
-
-LAF batch_mode_conclude INT_VAR execute=1 END
-
-//////////////////////////////////////////////////////////////////////////////////////
-
-BEGIN @10030 SUBCOMPONENT @10028 DESIGNATED 100001 NO_LOG_RECORD // batch-mode finalize - store
-
-LAF batch_mode_conclude INT_VAR execute=0 END
-
 
 /*
 //////////////////////////////////////////////////////////////////////////

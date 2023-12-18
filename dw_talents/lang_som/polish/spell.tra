@@ -1,0 +1,491 @@
+
+@100 = ~Zaklęcie jednakże chroni przed strzałami lub bełtami zadającymi obrażenia od żywiołów lub trucizn, o ile te nie dają premii do trafienia.~
+@203 = ~Żelazna skóra, ~
+@204 = ~ i Żelazna skóra.~
+@205 = ~Istocie dotkniętej przez kapłana zostanie tylko 1 punkt życia.~
+@206 = ~Istota dotknięta przez kapłana otrzymuje 150 obrażeń.~
+@207 = ~
+Ta wersja zaklęcia zapewnia ~
+@208 = ~.~
+@209 = ~na poziom czarującego, do maksymalnie 12k6 obrażeń~
+@210 = ~na poziom czarującego~
+@211 = ~Zaklęcie to również zniszczy sferę antymagiczną stworzoną przez zwój Ochrony przed magią.~
+@212 = ~trwa tylko przez dwie godziny.~
+@213 = ~trwa tylko przez dwie godziny. Do tego czasu, wyłącznie niezwykle potężna magia (taka jak Uderzenie czaru) może go zniszczyć.~
+@216 = ~Słowo mocy: oślepienie
+(Sprowadzanie/Przywoływanie)
+
+Poziom: 8
+Zasięg: pole widzenia
+Czas działania: 6 rund
+Czas rzucania: 1
+Obszar działania: 1 istota
+Rzut obronny: brak
+
+Po użyciu Słowa mocy: oślepienie jedna istota na obszarze działania zostaje oślepiona. Efekt ten utrzymuje się przez sześć rund lub do chwili rozproszenia. Ofiary podlegają wszelkim efektom oślepienia, takim jak ujemny modyfikator do trafienia.~
+@300 = ~Przedmiot nie może być użyty podczas polimorfii.~
+@301 = ~Rozproszenia magii lub Zdjęcia klątwy~
+@302 = ~Rozproszenia magii~
+@303 = ~Czar usuwa także nieprzyjemne efekty zaklęcia Polimorfowanie innego.~
+@400 = ~Niewrażliwość na ataki roju~
+@401 = ~Rój zniszczony~
+@500 = ~ktoś~
+@501 = ~przeciwnik~
+@502 = ~wszystkie istoty będące~
+@503 = ~wszyscy wrogowie będący~
+
+@1000 = ~
+
+WARUNKOWANIE:
+
+W momencie uzyskania dostępu do zaklęć 6. poziomu mag będzie mógł rzucać Warunkowanie raz na dzień. Umożliwia to wybranie jednego zaklęcia z repertuaru maga, które zostanie wyzwolone natychmiastowo pod ustalonymi warunkami. Wybranym zaklęciem może być czar o poziomie równym jeden na trzy poziomy czarującego. Na raz można aktywować tylko jedno Warunkowanie.
+
+Gdy mag osiągnie zaklęcia 9. poziomu, będzie mógł również rzucać Łańcuch czarów, który może zawierać trzy zaklęcia do 8. poziomu. Kiedy nastąpi odpowiednie zdarzenie, wszystkie czary zostają natychmiast wyzwolone na magu lub innym wybranym celu. Tylko jeden Łańcuch czarów może być aktywny.
+
+SEKWENCERY:
+
+Kiedy mag nauczy się rzucać zaklęcia 4. poziomu, będzie mógł tworzyć Mniejszy sekwencer zaklęć. Taki sekwencer może zawierać dwa pierwszo- lub drugopoziomowe zaklęcia, które mogą zostać wywołane natychmiastowo w późniejszym czasie. Sekwencer jest dostępny z poziomu zdolności specjalnych maga. Mag może tworzyć Mniejszy sekwencer raz na dzień, ale tylko jeden może być aktywny jednocześnie.
+
+Po nauczeniu się rzucania czarów 7. poziomu mag będzie mógł również tworzyć Sekwencer zaklęć. Można w nim przechowywać trzy czary, maksymalnie 4. poziomu. A w momencie osiągnięcia zaklęć 8. poziomu, mag może tworzyć Wyzwalacz zaklęć, pozwalający na przechowywanie czarów poziomu 1-6.
+~
+@1001 = ~
+
+WARUNKOWANIE:
+
+W momencie uzyskania dostępu do zaklęć 6. poziomu bard będzie mógł rzucać Warunkowanie raz na dzień. Umożliwia to wybranie jednego zaklęcia z repertuaru barda, które zostanie wyzwolone natychmiastowo pod ustalonymi warunkami. Wybranym zaklęciem może być czar o poziomie równym jeden na trzy poziomy czarującego. Na raz można aktywować tylko jedno Warunkowanie.
+
+SEKWENCERY:
+
+Kiedy bard nauczy się rzucać zaklęcia 4. poziomu, będzie mógł tworzyć Mniejszy sekwencer zaklęć. Taki sekwencer może zawierać dwa pierwszo- lub drugopoziomowe zaklęcia, które mogą zostać wywołane natychmiastowo w późniejszym czasie. Sekwencer jest dostępny z poziomu zdolności specjalnych barda. Bard może tworzyć Mniejszy sekwencer raz na dzień, ale tylko jeden może być aktywny jednocześnie.
+~
+@1002 = ~
+Po nauczeniu się rzucania czarów 7. poziomu bard będzie mógł również tworzyć Sekwencer zaklęć. Można w nim przechowywać trzy czary, maksymalnie 4. poziomu.~
+@1003 = ~ W momencie osiągnięcia zaklęć 8. poziomu bard może tworzyć Wyzwalacz zaklęć, pozwalający na przechowywanie czarów poziomu 1-6.~
+@1004 = ~Przygotowanie czaru~
+@1005 = ~Uzyskano specjalną zdolność~
+@1010 = ~
+
+Do bojowych czarów ochronnych, które Wyłom rozprasza należą:~
+@1011 = "oraz"
+@1020 = " +1/poziom (maksymalnie "
+@1021 = "k"
+@1100 = "Odwraca to efekt wyssania poziomów spowodowanego przez magię lub potwora." // NOTE TO TRANSLATORS: must be exact string from description of 'Lesser Restoration' spell
+@1101 = "Odwraca to efekt wcześniejszego wyssania energii." // NOTE TO TRANSLATORS: must be exact string from description of 'Greater Restoration' spell
+@1102 = "Odwraca to efekt wyssania poziomów spowodowanego przez magię lub potwora, jak również przywraca cechy utracone w następstwie takich ataków jak wysysający Siłę dotyk cieni czy pożerający myśli atak łupieżców umysłu."
+
+@3700 = ~
+Uwaga: Zaklęcie to usuwa magiczne ochrony z najbliższych wrogich istot do punktu, który wyznaczył rzucający czar. Z tego powodu, czar może zostać użyty do zdjęcia magicznych ochron nawet z istot, które normalnie nie mogą być celem zaklęć (na przykład, pozostające pod wpływem Niewidzialności).~
+
+@5000 = ~Plaga owadów
+(Sprowadzenie/Przywoływanie)
+
+Poziom: 5
+Sfera: Zwierzęta, Przywoływanie
+Zasięg: 80 metrów
+Czas działania: 6 rund
+Czas rzucania: 5
+Obszar działania: specjalny
+Rzut obronny: specjalny
+
+Czar ten sprowadza rój pełzających, skaczących i latających owadów. Rój zbiera się w punkcie wybranym przez rzucającego czar i atakuje pojedynczą wybraną ofiarę, a dalej przenosi się na wszystkich wrogów w promieniu działania. Przed zaklęciem nie chroni Niewidzialność. W czasie trwania zaklęcia każdy atakowany przez owady otrzymuje co sekundę 1 kłute obrażenie i musi walczyć z karą -2 do rzutu na trafienie i Klasy Pancerza. Ofiary muszą wykonać rzut obronny przeciw zionięciom z modyfikatorem -2 co rundę albo nie będą mogły rzucać czarów wewnątrz roju (100% szans na niepowodzenie czaru). Ze względu na duszącą naturę zaklęcia, każda ofiara musi wykonać co rundę rzut obronny przeciw czarom (z modyfikatorem -2), w przeciwnym razie będzie próbowała uciekać przerażona przed rojem. Istoty posiadające ochronę przed takimi obrażeniami (np. stosujące Kamienną skórę) są odporne na te efekty, dopóki ich ochrona działa. Sprowadzone owady nie są istotami magicznymi, co oznacza, że ochrona przed magią nie odstraszy roju. Ukąszenia owadów są również niemagiczne, więc nie mogą zranić żadnych istot wymagających magicznej broni do zranienia. Rój będzie także omijać nieumarłych, ze względu na ich nienaturalne martwe ciała. Przed owadami może ochronić zaklęcie Ognista Tarcza, gdyż rój nie będzie w stanie przeniknąć przez skrajnie gorącą lub zimną barierę. Wszystkie wrogie insekty mogą być zniszczone za pomocą Zaklęcia śmierci.~
+@5001 = ~Pełzająca zagłada
+(Sprowadzenie/Przywoływanie)
+
+Poziom: 7
+Sfera: Zwierzęta, Przywoływanie
+Zasięg: 80 metrów
+Czas działania: 3 rundy
+Czas rzucania: 5
+Obszar działania: specjalny
+Rzut obronny: specjalny
+
+Rzucający to zaklęcie przyzywa ogromną masę wszelakich jadowitych, kłujących i gryzących pajęczaków, insektów i robaków. Ta wyglądająca niczym dywan masa rozpełza się po dużym obszarze, atakując każdego wroga w zasięgu wzroku. Przed zaklęciem nie chroni Niewidzialność. Wrogowie, którzy znajdą się na drodze roju, muszą wykonać rzut obronny przeciw zaklęciom (z modyfikatorem -2) co rundę, lub zaczną uciekać przed insektami. Stworzenia pochwycone przez rój, co sekundę otrzymują 2 obrażenia i muszą walczyć z karą -2 do rzutu na trafienie i Klasy Pancerza. Dodatkowo ofiary muszą wykonać co rundę rzut obronny przeciw zionięciom (z modyfikatorem -2) albo nie będą mogły rzucać czarów wewnątrz roju (100% szans na niepowodzenie czaru). Istoty posiadające ochronę przed takimi obrażeniami (np. stosujące Kamienną skórę) są odporne na te efekty, dopóki ich ochrona działa. Sprowadzone owady nie są istotami magicznymi, co oznacza, że ochrona przed magią nie odstraszy roju. Ukąszenia owadów są również niemagiczne, więc nie mogą zranić żadnych istot wymagających magicznej broni do zranienia. Rój będzie także omijać nieumarłych, ze względu na ich nienaturalne martwe ciała. Przed owadami może ochronić zaklęcie Ognista Tarcza, gdyż rój nie będzie w stanie przeniknąć przez skrajnie gorącą lub zimną barierę. Wszystkie wrogie insekty mogą być zniszczone za pomocą Zaklęcia śmierci.~
+@5002 = ~Wezwanie owadów 
+(Sprowadzanie/Przywoływanie)
+
+Poziom: 3
+Sfera: Zwierzęta
+Zasięg: 30 metrów
+Czas działania: 7 rund
+Czas rzucania: 9
+Obszar działania: 1 istota
+Rzut obronny: neguje
+
+Czar ten przyciąga stado zwykłych owadów, które atakują wybraną przez czarującego istotę. Rój ten gromadzi się w wyznaczonym przez rzucającego miejscu, znajdującym się w obszarze działania zaklęcia, po czym atakuje wskazaną przez niego istotę. Rzut obronny przeciw zionięciom z modyfikatorem -4 neguje ten efekt, w przeciwnym razie ofiara będzie otrzymywać 1 obrażenie co dwie sekundy przez cały czas działania czaru. Ponadto, ofiara otrzyma karę -2 do testów ataku i Klasy Pancerza. Rój będzie raz za razem gryzł wybraną istotę, utrudniając jej znacznie rzucanie zaklęć (50% niepowodzenia podczas rzucania czaru), przy czym w danej rundzie można uniknąć tego efektu za pomocą rzutu obronnego przeciw zionięciom. Istoty posiadające ochronę przed takimi obrażeniami (np. stosujące Kamienną skórę) są odporne na te efekty, dopóki ich ochrona działa. Jako że sprowadzone owady nie są istotami magicznymi, ochrona przed magią nie odstraszy roju. Ukąszenia owadów są również niemagiczne, więc nie mogą zranić żadnych istot wymagających magicznej broni do zranienia. Rój będzie także omijać nieumarłych, ze względu na ich nienaturalne martwe ciała. Przed owadami może ochronić zaklęcie Ognista Tarcza, gdyż rój nie będzie w stanie przeniknąć przez skrajnie gorącą lub zimną barierę. Wszystkie wrogie insekty mogą być zniszczone za pomocą Zaklęcia śmierci.~
+@5019 = ~Owady zniszczone przez ogień~
+
+@5300 = ~Opończa
+(Odrzucanie)
+
+Poziom: 7
+Zasięg: 0
+Czas działania: 4 rundy
+Czas rzucania: 1
+Obszar działania: rzucający czar
+Rzut obronny: brak
+
+Czar ten zapewnia całkowitą odporność na ataki bronią, z wyjątkiem broni o sile zaklęcia +4 lub większej. Czar ten jest niewiarygodnie skuteczny, ale działa przez krótki czas. Z powodu krótkiego czasu rzucania i działania tego czaru najlepiej stosować go już w czasie walki, by zapewnić sobie kilka rund bezpieczeństwa. Należy pamiętać, że tego czaru nie można stosować w połączeniu z Ochroną przed magicznymi broniami. Ochrona utrzymuje się przez czas działania czaru lub do chwili jego rozproszenia.~
+@5301 = ~Ulepszona opończa
+(Odrzucanie)
+
+Poziom: 8
+Zasięg: 0
+Czas działania: 4 rundy
+Czas rzucania: 1
+Obszar działania: rzucający czar
+Rzut obronny: brak
+
+Czar ten zapewnia całkowitą odporność na ataki bronią, z wyjątkiem broni o sile zaklęcia +5 lub większej. Czar ten jest niewiarygodnie potężny, chociaż działa przez krótki czas. Z powodu krótkiego czasu rzucenia i działania tego czaru najlepiej stosować go już w czasie walki, kiedy kilka sekund może stanowić różnicę między życiem a śmiercią. Należy pamiętać, że tego czaru nie można stosować w połączeniu z Ochroną przed magicznymi broniami. Ochrona utrzymuje się przez czas działania czaru lub do chwili jego rozproszenia.~
+@5302 = ~Całkowita niewrażliwość
+(Odrzucanie)
+
+Poziom: 9
+Zasięg: 0
+Czas działania: 4 rundy
+Czas rzucania: 1
+Obszar działania: rzucający czar
+Rzut obronny: brak
+
+Czar ten zapewnia całkowitą odporność na ataki bronią, niezależnie od ich umagicznienia. Czar ten jest niewiarygodnie potężny, chociaż działa przez krótki czas. Z powodu krótkiego czasu rzucenia i działania tego czaru najlepiej stosować go już w czasie walki, kiedy kilka sekund może stanowić różnicę między życiem a śmiercią. Należy pamiętać, że tego czaru nie można stosować w połączeniu z Ochroną przed magicznymi broniami. Ochrona utrzymuje się przez czas działania czaru lub do chwili jego rozproszenia.~
+@14100 = ~(Wywoływanie)~
+@14101 = ~(Inwokacja/Wywoływanie)~
+@14102 = ~(Sprowadzanie/Przywoływanie, Inwokacja/Wywoływanie)~
+@14400 = ~ Ponadto, czar chroni rzucającego przed magicznym oślepieniem przez 1 turę.~
+// EE-only
+@16010 = ~Ta strzała została pokryta kwasem. Tak więc nie tylko wbija się w ciało, lecz wyżera ranę, jątrząc ją i czyniąc o wiele poważniejszą.
+
+PARAMETRY:
+
+Obrażenia: 1k6 +1, +1k3 obrażeń od kwasu (bez rzutu obronnego)
+TraK0: +1
+Typ obrażeń: pocisk
+Wyrzutnia: łuk
+
+Waga: 0~
+// EE-only
+@16011 = ~Ta magiczna strzała wybucha ogniem po wystrzeleniu w przeciwnika. Efekt jest taki sam, jakby została zamoczona w oleju i podpalona.
+
+PARAMETRY:
+
+Obrażenia: 1k6, +1k2 obrażeń od ognia (rzut obronny przeciw czarom neguje)
+Typ obrażeń: pocisk
+Wyrzutnia: łuk
+
+Waga: 0~
+// EE-only
+@16012 = ~Ta magiczna strzała zmienia się w lodowy pocisk po wystrzeleniu w przeciwnika. Kiedy uderza w ofiarę, szok wywołany zimnem obejmuje całe ciało, zarazem rozpalając je i mrożąc do szpiku kości.
+
+PARAMETRY:
+
+Obrażenia: 1k6, +1k2 obrażeń od zimna (bez rzutu obronnego)
+Typ obrażeń: pocisk
+Wyrzutnia: łuk
+
+Waga: 0~
+
+@32000 = ~Sprowadzenie żywiołaka ziemi
+(Sprowadzanie/Przywoływanie)
+
+Poziom: 6
+Zasięg: pole widzenia rzucającego czar
+Czas działania: 1 tura/poziom
+Czas rzucania: 9
+Obszar działania: specjalny
+Rzut obronny: brak
+
+Po rzuceniu zaklęcia Sprowadzenie żywiołaka ziemi czarujący otwiera wrota do Sfery Żywiołu Ziemi, przyzywając w swoje sąsiedztwo żywiołaka ziemi. Istnieje 60% szans na przyzwanie żywiołaka o 12 Kostkach, 35% szans na przyzwanie żywiołaka o 16 Kostkach i 5% szans na przyzwanie żywiołaka o 24 Kostkach. Żywiołak będzie wykonywał polecenia czarującego do końca działania czaru lub dopóki nie zostanie zniszczony. Wszystkie polecenia wydawane są żywiołakowi telepatycznie, czarujący nie traci więc czasu na nieporozumienia związane z brakiem znajomości języka, jakim posługuje się przyzwane stworzenie.~
+@32001 = ~Sprowadzenie żywiołaka powietrza 
+(Sprowadzanie/Przywoływanie)
+
+Poziom: 6
+Zasięg: pole widzenia rzucającego czar
+Czas działania: 1 tura/poziom
+Czas rzucania: 9
+Obszar działania: specjalny
+Rzut obronny: brak
+
+Po rzuceniu zaklęcia Sprowadzenie żywiołaka powietrza czarujący otwiera wrota do Sfery Żywiołu Powietrza, przyzywając w swoje sąsiedztwo żywiołaka powietrza. Istnieje 60% szans na przyzwanie żywiołaka o 12 Kostkach, 35% szans na przyzwanie żywiołaka o 16 Kostkach i 5% szans na przyzwanie żywiołaka o 24 Kostkach. Żywiołak będzie wykonywał polecenia czarującego do końca działania czaru lub dopóki nie zostanie zniszczony. Wszystkie polecenia wydawane są żywiołakowi telepatycznie, czarujący nie traci więc czasu na nieporozumienia związane z brakiem znajomości języka, jakim posługuje się przyzwane stworzenie.~
+@32002 = ~Sprowadzenie żywiołaka ognia 
+(Sprowadzanie/Przywoływanie)
+
+Poziom: 6
+Zasięg: pole widzenia rzucającego czar
+Czas działania: 1 tura/poziom
+Czas rzucania: 9
+Obszar działania: specjalny
+Rzut obronny: brak
+
+Po rzuceniu zaklęcia Sprowadzenie żywiołaka ognia czarujący otwiera wrota do Sfery Żywiołu Ognia, przyzywając w swoje sąsiedztwo żywiołaka ognia. Istnieje 60% szans na przyzwanie żywiołaka o 12 Kostkach, 35% szans na przyzwanie żywiołaka o 16 Kostkach i 5% szans na przyzwanie żywiołaka o 24 Kostkach. Żywiołak będzie wykonywał polecenia czarującego do końca działania czaru lub dopóki nie zostanie zniszczony. Wszystkie polecenia wydawane są żywiołakowi telepatycznie, czarujący nie traci więc czasu na nieporozumienia związane z brakiem znajomości języka, jakim posługuje się przyzwane stworzenie.~
+@32003 = ~Sprowadzenie mniejszego żywiołaka ziemi 
+(Sprowadzanie/Przywoływanie)
+
+Poziom: 5
+Zasięg: 15 metrów
+Czas działania: 1 tura + 1 runda/poziom
+Czas rzucania: 9
+Obszar działania: specjalny
+Rzut obronny: brak
+
+Rzucający to zaklęcie mag przywołuje mniejszego żywiołaka ziemi, który wypełnia jego polecenia. Żywiołak ma 8 Kostek i będzie spełniał każdą zachciankę osoby rzucającej zaklęcie, aż do chwili odesłania do swej macierzystej sfery, zakończenia działania czaru, lub swojej śmierci.~
+@32004 = ~Sprowadzenie mniejszego żywiołaka powietrza 
+(Sprowadzanie/Przywoływanie)
+
+Poziom: 5
+Zasięg: 15 metrów
+Czas działania: 1 tura + 1 runda/poziom
+Czas rzucania: 9
+Obszar działania: specjalny
+Rzut obronny: brak
+
+Rzucający to zaklęcie mag przywołuje mniejszego żywiołaka powietrza, który wypełnia jego polecenia. Żywiołak ma 8 Kostek i będzie spełniał każdą zachciankę osoby rzucającej zaklęcie, aż do chwili odesłania do swej macierzystej sfery, zakończenia działania czaru, lub swojej śmierci.~
+@32005 = ~Sprowadzenie mniejszego żywiołaka ognia 
+(Sprowadzanie/Przywoływanie)
+
+Poziom: 5
+Zasięg: 15 metrów
+Czas działania: 1 tura + 1 runda/poziom
+Czas rzucania: 9
+Obszar działania: specjalny
+Rzut obronny: brak
+
+Rzucający to zaklęcie mag przywołuje mniejszego żywiołaka ognia, który wypełnia jego polecenia. Żywiołak ma 8 Kostek i będzie spełniał każdą zachciankę osoby rzucającej zaklęcie, aż do chwili odesłania do swej macierzystej sfery, zakończenia działania czaru, lub swojej śmierci.~
+
+@32006 = ~Sprowadzenie mniejszego żywiołaka wody 
+(Sprowadzanie/Przywoływanie)
+
+Poziom: 5
+Zasięg: 15 metrów
+Czas działania: 1 tura + 1 runda/poziom
+Czas rzucania: 9
+Obszar działania: specjalny
+Rzut obronny: brak
+
+Rzucający to zaklęcie mag przywołuje mniejszego żywiołaka wody, który wypełnia jego polecenia. Żywiołak ma 8 Kostek i będzie spełniał każdą zachciankę osoby rzucającej zaklęcie, aż do chwili odesłania do swej macierzystej sfery, zakończenia działania czaru, lub swojej śmierci.~
+@32007 = ~Sprowadzenie żywiołaka wody
+(Sprowadzanie/Przywoływanie)
+
+Poziom: 6
+Zasięg: pole widzenia rzucającego czar
+Czas działania: 1 tura/poziom
+Czas rzucania: 9
+Obszar działania: specjalny
+Rzut obronny: brak
+
+Po rzuceniu zaklęcia Sprowadzenie żywiołaka wody czarujący otwiera wrota do Sfery Żywiołu Wody, przyzywając w swoje sąsiedztwo żywiołaka powietrza. Istnieje 60% szans na przyzwanie żywiołaka o 12 Kostkach, 35% szans na przyzwanie żywiołaka o 16 Kostkach i 5% szans na przyzwanie żywiołaka o 24 Kostkach. Żywiołak będzie wykonywał polecenia czarującego do końca działania czaru lub dopóki nie zostanie zniszczony. Wszystkie polecenia wydawane są żywiołakowi telepatycznie, czarujący nie traci więc czasu na nieporozumienia związane z brakiem znajomości języka, jakim posługuje się przyzwane stworzenie.~
+@32008 = ~Pomniejszy żywiołak wody~
+@32009 = ~Żywiołak wody~
+@32010 = ~Większy żywiołak wody~
+@32011 = ~Starszy żywiołak wody~
+@32012 = ~Sprowadzenie mniejszego żywiołaka powietrza~
+@32013 = ~Sprowadzenie mniejszego żywiołaka ziemi~
+@32014 = ~Sprowadzenie mniejszego żywiołaka ognia~
+@32015 = ~Sprowadzenie żywiołaka wody~
+@32016 = ~Sprowadzenie mniejszego żywiołaka powietrza 
+(Sprowadzanie/Przywoływanie)
+
+Poziom: 5
+Zasięg: pole widzenia rzucającego czar
+Czas działania: 1 tura/poziom
+Czas rzucania: 9
+Obszar działania: specjalny
+Rzut obronny: brak
+
+Postać, która posługuje się czarem sprowadzania mniejszego żywiołaka powietrza, przyzywa go na swe żądanie. Żywiołak dysponuje siłą 8 Kostek i będzie spełniał wszelkie zachcianki czarującego, dopóki nie zostanie odesłany z powrotem albo też nie wygaśnie czas trwania czaru. Czar może też zakończyć swe działanie wraz ze śmiercią żywiołaka.~
+@32017 = ~Sprowadzenie mniejszego żywiołaka ziemi 
+(Sprowadzanie/Przywoływanie)
+
+Poziom: 5
+Zasięg: pole widzenia rzucającego czar
+Czas działania: 1 tura/poziom
+Czas rzucania: 9
+Obszar działania: specjalny
+Rzut obronny: brak
+
+Postać, która posługuje się czarem sprowadzania mniejszego żywiołaka ziemi, przyzywa go na swe żądanie. Żywiołak dysponuje siłą 8 Kostek i będzie spełniał wszelkie zachcianki czarującego, dopóki nie zostanie odesłany z powrotem albo też nie wygaśnie czas trwania czaru. Czar może też zakończyć swe działanie wraz ze śmiercią żywiołaka.~
+@32018 = ~Sprowadzenie mniejszego żywiołaka ognia 
+(Sprowadzanie/Przywoływanie)
+
+Poziom: 5
+Zasięg: pole widzenia rzucającego czar
+Czas działania: 1 tura/poziom
+Czas rzucania: 9
+Obszar działania: specjalny
+Rzut obronny: brak
+
+Postać, która posługuje się czarem sprowadzania mniejszego żywiołaka ognia, przyzywa go na swe żądanie. Żywiołak dysponuje siłą 8 Kostek i będzie spełniał wszelkie zachcianki czarującego, dopóki nie zostanie odesłany z powrotem albo też nie wygaśnie czas trwania czaru. Czar może też zakończyć swe działanie wraz ze śmiercią żywiołaka.~
+@32019   = ~Sprowadzenie mniejszego żywiołaka wody
+(Sprowadzanie/Przywoływanie)
+
+Poziom: 5
+Zasięg: pole widzenia rzucającego czar
+Czas działania: 1 tura/poziom
+Czas rzucania: 9
+Obszar działania: specjalny
+Rzut obronny: brak
+
+Postać, która posługuje się czarem sprowadzania mniejszego żywiołaka wody, przyzywa go na swe żądanie. Żywiołak dysponuje siłą 8 Kostek i będzie spełniał wszelkie zachcianki czarującego, dopóki nie zostanie odesłany z powrotem albo też nie wygaśnie czas trwania czaru. Czar może też zakończyć swe działanie wraz ze śmiercią żywiołaka.~
+@32020 = ~Sprowadzenie mniejszego żywiołaka wody~
+
+@32100 = ~Brama 
+(Sprowadzanie/Przywoływanie)
+
+Poziom: 9
+Zasięg: 0
+Czas działania: 33 rundy
+Czas rzucania: 9
+Obszar działania: specjalny
+Rzut obronny: brak
+
+Za pomocą tego zaklęcia czarujący przyzywa pozaplanarne stworzenie, Biesa z Czeluści lub balora, które atakuje jego wrogów oraz, jeśli nie okaże się on ostrożny, również jego samego. Aby ukryć się przed wzrokiem diabła, czarujący musi rzucić zaklęcie Ochrona przed złem na siebie i na członków swojej drużyny. Jeśli bowiem nie zabezpieczy się skutecznie w ten sposób, bies rozerwie go na strzępy, a następnie uczyni to samo z jego towarzyszami.~
+@32101 = ~Brama 
+(Sprowadzanie/Przywoływanie)
+
+Poziom: 7
+Sfera: Przywoływanie
+Zasięg: 0
+Czas działania: 33 rundy
+Czas rzucania: 5
+Obszar działania: specjalny
+Rzut obronny: brak
+
+Za pomocą tego zaklęcia czarujący przyzywa pozaplanarne stworzenie, Biesa z Czeluści lub balora, które atakuje jego wrogów oraz, jeśli nie okaże się on ostrożny, również jego samego. Aby ukryć się przed wzrokiem diabła, czarujący musi rzucić zaklęcie Ochrona przed złem na siebie i na członków swojej drużyny. Jeśli bowiem nie zabezpieczy się skutecznie w ten sposób, bies rozerwie go na strzępy, a następnie uczyni to samo z jego towarzyszami.~
+@32102 = ~Przyzwanie biesa 
+(Sprowadzanie/Przywoływanie)
+
+Poziom: 8
+Zasięg: 0
+Czas działania: 15 rund
+Czas rzucania: 9
+Obszar działania: specjalny
+Rzut obronny: brak
+
+Jest to potężniejsza wersja 7. poziomowego zaklęcia Wielobies. Przywołuje oszalałego biesa, który atakuje każdego, kto znajduje się w obszarze działania czaru, z wyjątkiem osób chronionych zaklęciem Ochrona przed złem. Tylko zdesperowani lub mający skłonności samobójcze czarodzieje używają Przyzwania biesa.~
+@32103 = ~Wielobies 
+(Sprowadzanie/Przywoływanie)
+
+Poziom: 7
+Zasięg: 0
+Czas działania: 15 rund
+Czas rzucania: 9
+Obszar działania: specjalny
+Rzut obronny: brak
+
+Zaklęcie to przywołuje potężnego biesa, który zaczyna siać wokół zniszczenie, atakując i zabijając wszystko w zasięgu wzroku. Każda osoba chroniona przed złem nie będzie obrana za cel przez biesa. To bardzo niebezpieczne zaklęcie, które najlepiej zostawić na czarną godzinę.~
+@40013 = ~Nawałnica kwasu
+(Wywoływanie)
+
+Poziom: 7
+Zasięg: pole widzenia rzucającego czar
+Czas działania: 4 rundy
+Czas rzucania: 7
+Obszar działania: w promieniu 4 metrów
+Rzut obronny: specjalny
+
+Czar ten uwalnia deszcz kwasu, który zalewa obszar jego działania, zadając z początku 10k6 obrażeń od kwasu. Następnie, każda istota znajdująca się w obszarze działania musi wykonać rzut obronny przeciw zaklęciom, aby uniknąć kolejnych obrażeń. Jeśli rzut obronny się nie powiedzie, ofiara otrzymuje kolejne obrażenia od kwasu w następnych rundach, przy czym w każdej rundzie obrażenia te będą mniejsze: 8k6 obrażeń w pierwszej rundzie działania zaklęcia, 6k6 obrażeń w drugiej rundzie, 4k6 obrażeń w trzeciej, aż do 2k6 obrażeń w czwartek. Zaklęcie kończy się w piątej rundzie. Wydostanie się poza obszar działania Nawałnicy kwasu nie spowoduje zaprzestania otrzymywania obrażeń, albowiem kwas przywiera do skóry.~
+@40014 = ~Zaklęcie to również zniszczy sferę antymagiczną stworzoną przez zwój Ochrony przed magią lub przez zaklęcie Tarcza antymagiczna.~
+
+@40100 = ~Nietykalna świętość umysłu
+(Odrzucanie)
+
+Poziom: 7
+Sfera: Ochrona
+Zasięg: 0
+Czas działania: 8 godzin
+Czas rzucania: 9
+Obszar działania: rzucający czar
+Rzut obronny: brak
+
+Czar ten otacza umysł rzucającego barierą nie do pokonania, przez co chroni go przed wpływami zewnętrznymi. W czasie działania zaklęcia, na rzucającego będą oddziaływać trzy efekty. Po pierwsze, nie będą miały wpływu na niego żadne efekty zauroczenia, zamętu, strachu, ogłupienia, unieruchomienia, snu, labiryntu, szału oraz odurzenia. Po drugie, umiejętność skupienia się rzucającego jest zwiększona, co powoduje, że jego zaklęcia nie mogą zostać przerwane przez efekty czarów takich jak Pozbawienie magii (jednak zaklęcia mogą być przerwane przez otrzymane obrażenia). I po trzecie, dzięki wzmocnionej sile woli, rzucający może ochronić swoje magiczne osłony przed pojedynczym magicznym atakiem takim jak Wyłom czy Zbicie czaru.~
+@40200 = ~Pociski mocy Mordenkainena
+(Inwokacje)
+
+Poziom: 4
+Zasięg: pole widzenia rzucającego czar
+Czas działania: natychmiastowy
+Czas rzucania: 4
+Obszar działania: w promieniu 0,5 metra
+Rzut obronny: specjalny
+
+Zaklęcie to powołuje do istnienia połyskującą kulę magicznej energii, która wystrzeliwuje z dłoni czarodzieja, trafiając bezbłędnie ofiarę. Można tutaj dostrzec duże podobieństwo do czaru Magiczny pocisk. Czarodziej tworzy jeden pocisk na 7. poziomie oraz kolejny pocisk, co każde trzy poziomy po poziomie siódmym aż do maksymalnej ilości czterech pocisków (czyli dwa pociski na 10. poziomie, trzy na 13. poziomie i cztery na 16. poziomie). Każdy pocisk zadaje ofierze 2k4 obrażeń, a następnie wywołuje falę uderzeniową o promieniu pół metra, zadającą 1 obrażenie na poziom czarującego (aż do maksymalnie 15 obrażeń). Przykładowo, czarodziej 12. poziomu może stworzyć dwa pociski, z których każdy zadaje 2k4 +12 magicznych obrażeń. Zaatakowane istoty mogą wykonać rzut obronny przeciw czarom, aby uniknąć obrażeń pochodzących od fali uderzeniowej, lecz nie od samego pocisku. Zaklęcie maga 1. poziomu, o nazwie Tarcza, unieszkodliwia pociski mocy, w tym obrażenia wywołane falą uderzeniową.~
+
+@40300 = ~Boska ochrona~
+@40301 = ~Większa boska ochrona~
+@40302 = ~Boska ochrona
+(Sprowadzanie)
+
+Poziom: 5
+Sfera: Strażnicza
+Zasięg: dotyk
+Czas działania: 3 rundy
+Czas rzucania: 1
+Obszar działania: rzucający czar
+Rzut obronny: brak
+
+Na czas działania zaklęcia, istota, na którą zostało ono rzucone, otrzymuje całkowitą niewrażliwość na otrzymywane obrażenia.~
+@40303   = ~Większa boska ochrona
+(Sprowadzanie)
+
+Poziom: 7
+Sfera: Strażnicza
+Zasięg: dotyk
+Czas działania: 3 rundy
+Czas rzucania: 1
+Obszar działania: rzucający czar
+Rzut obronny: brak
+
+Czar ten zapewnia wskazanej istocie 100% odporności na magię i całkowitą niewrażliwość na otrzymywane obrażenia. Oba te efekty utrzymują się przez cały czas jego działania.~
+@40400 = ~Stworzenie kościanego strażnika~
+@40401 = ~Stworzenie kościanego strażnika
+(Nekromancja)
+
+Poziom: 9
+Zasięg: 6 metrów
+Czas działania: 8 rund + 1 runda/poziom
+Czas rzucania: 9
+Obszar działania: specjalny
+Rzut obronny: brak
+
+Rzucając to zaklęcia, mag wzywa 1-2 kościanych strażników. Te nieumarłe potwory mogą zostać pokierowane do ataku i będą służyć do momentu ich zniszczenia lub wygaśnięcia czaru.~
+@40402 = ~Kościany strażnik~
+
+@40500 = ~Wachlarz cierniowy 
+(Przemiany)
+
+Poziom: 4
+Sfera: Rośliny
+Zasięg: 10 metrów
+Czas działania: natychmiastowy
+Czas rzucania: 3
+Obszar działania: 90° stożek o promieniu 5,5 metra
+Rzut obronny: brak
+
+Czar ten tworzy wachlarz kolców, gwoździ i cierni, które wystrzeliwują z dłoni czarującego. Pokrywają one obszar stożka o promieniu pięciu i pół metra, zadając 4k10 obrażeń kłutych wszystkim istotom, znajdującym się w obszarze działania zaklęcia.~
+@40600 = ~Krąg kości 
+(Nekromancja)
+
+Poziom: 3
+Sfera: Strażnicza, Tworzenie
+Zasięg: 0
+Czas działania: 1 runda/poziom
+Czas rzucania: 3
+Obszar działania: w promieniu 1 metra
+Rzut obronny: brak
+
+Czar ten tworzy barierę z kości, które wirują wokół czarującego, sprawiając, że na czas trwania zaklęcia nie może się on poruszać. Każdy, kto stanie na drodze wirującym kościom, będzie otrzymywał co rundę 1k6 obrażeń obuchowych i 1k6 obrażeń siecznych. Czar ten nie może być używany przez postacie o dobrym charakterze.~
+
+@40700 = ~ Ponadto, kapłan jest chroniony przed kilkoma potężnymi zaklęciami ze szkoły Odrzucenia, takimi jak: Wyłom, Usunięcie magii czy Uwięzienie.~
+@41000 = ~Zaklęcie to nie działa na nieumarłych, konstrukty lub istoty pozaplanarne, a ponadto nie może być używane przez postacie o złym charakterze.~ // NOTE TO TRANSLATORS: Must match the exact string in the description of IWDEE Cure Critical Wounds
+@41001 = "Nie może być używany przez postacie o złym charakterze." // NOTE TO TRANSLATORS: Must match the exact string in the description of IWDEE Mass Cure Light Wounds
+@41002 = "Nie mogą go używać postacie o złym charakterze." // NOTE TO TRANSLATORS: Must match the exact string in the description of IWDEE Heal
+@41003 = "Może być używany jedynie przez postacie o złym charakterze." // NOTE TO TRANSLATORS: Must match the exact string in the description of IWDEE Harm
+
+@50000 = "Księga zaklęć Niesamowitej Niesamowitości"
+@50001 = ~Wystarczy rzut oka na tę księgę, aby posiąść wiedzę o każdym istniejącym zaklęciu. Przeczytanie jej daje czytelnikowi niemalże boski intelekt, który jest niezbędny do zrozumienia tych wszystkich zaklęć. Księga znika po przeczytaniu.
+
+PARAMETRY:
+
+Specjalne:
+– Znika po przeczytaniu, aby pojawić się gdzieś indziej w Sferach
+– W celu użycia należy włożyć do przegródki Podręcznego przedmiotu
+
+Waga: 25~

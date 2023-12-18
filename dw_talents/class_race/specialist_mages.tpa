@@ -1,8 +1,6 @@
 DEFINE_ACTION_FUNCTION specialist_mages BEGIN
 
 
-	LAF include STR_VAR file=ui_spell_system.tph locbase=lua END
-	LAF include STR_VAR file=ui_spell_system_schools.tph locbase=lua END
 	LAF make_label STR_VAR label=dw#enforce_specialists END
 
 	LAF include STR_VAR file=mageschools_shared.tph locbase=shared END

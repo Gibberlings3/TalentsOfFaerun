@@ -1,4 +1,70 @@
 DEFINE_ACTION_FUNCTION test STR_VAR version=0 BEGIN
 
-	LAM data_scroll_resrefs
+
+
+
 END
+
+DEFINE_ACTION_FUNCTION 2da_read_alt 
+	STR_VAR file=""
+	RET_ARRAY array columns rows 
+BEGIN
+	CLEAR_ARRAY array
+	CLEAR_ARRAY columns
+	CLEAR_ARRAY rows
+	COPY_EXISTING - "%file%.2da" nowhere
+		CLEAR_ARRAY lines
+		rowcount=0
+		REPLACE_EVALUATE "^\([^%WNL%%MNL%%LNL%]+\)" BEGIN
+			SPRINT $lines("%count%") "%MATCH1%"
+			++rowcount
+		END	
+		""
+		SPRINT this_line $lines(0)
+		PATCH_IF !("this_line%" STRING_MATCHES_REGEXP "^2DA[ %TAB%]+*V1.0[ %TAB%]*$") BEGIN
+			PATCH_WARN "%file% does not appear to be a 2DA file"
+			proceed=0
+		END
+		PATCH_IF proceed BEGIN
+			SPRINT default $lines(1)
+			SPRINT list $lines(2)
+			SPRINT list "%list% "
+			colcount=0
+			INNER_PATCH "%list%" BEGIN
+				REPLACE_EVALUATE "\([^ %TAB%]\)+[ %TAB%]+" BEGIN
+					SPRINT $col_by_number("%colcount%") "%MATCH1%"
+					SPRINT $columns("%MATCH1%") "%colcount%"
+					++colcount
+				END
+				""
+			END
+			FOR (rownum=3;rownum<rowcount;++rownum) BEGIN
+				SPRINT list $lines("%rownum%")
+				colcount_here="-1"
+				INNER_PATCH "%list%" BEGIN
+					REPLACE_EVALUATE "\([^ %TAB%]\)+[ %TAB%]+" BEGIN
+						PATCH_IF colcount_here<0 BEGIN
+							SPRINT row "%MATCH1%"
+							SPRINT $rows("%row%") "%rownum%"
+						END ELSE BEGIN
+							SPRINT col $col_by_number("%colcount_here%")
+							SPRINT $array("%row%" "%col%") "%MATCH1%"
+						END
+						++colcount_here
+					END
+					""					
+				END
+				FOR (colnum=colcount_here;colnum<colcount;++colnum) BEGIN
+					SPRINT col $col_by_number("%colcount_here%")
+					SPRINT $array("%row%" "%col%") "%default%"
+				END
+			END
+			
+		
+		END
+
+
+
+END
+
+

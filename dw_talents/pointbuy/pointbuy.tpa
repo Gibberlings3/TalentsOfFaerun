@@ -6,7 +6,7 @@ DEFINE_ACTION_FUNCTION pointbuy STR_VAR version="-1" BEGIN
 	OUTER_SET point_total=version
 
 	LAF kit_race_abil_mod END
-	LAF UI_install_function STR_VAR new_function_path="%MOD_FOLDER%/%lua_path%/ui_adjust_abilities.lua" lua_file="m_dw_shr" search_string=dwGetAbilityValue END
+	LAF UI_install_function STR_VAR new_function_path="%MOD_FOLDER%/%lua_loc%/code/ui_adjust_abilities.lua" lua_file="m_dw_shr" search_string=dwGetAbilityValue END
 
 	ACTION_IF point_total>=0 && MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 80000 BEGIN
 		OUTER_SET hide_reroll=1

@@ -2,7 +2,7 @@
 /*
 describe-library
 {
-Files for manipulating 2d arrays via their (assumed uppercase) rows and columns. The
+Functions for manipulating 2d arrays via their (assumed uppercase) rows and columns. The
 main use case is reading these 2d arrays out of .2da game files and extracting data from
 them, and/or manipulating them and writing them back in. This is (hopefully) a much simpler
 and more transparent way to manipulate 2das than by READ_2DA_ENTRY and friends.</p>

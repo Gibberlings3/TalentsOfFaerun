@@ -1,7 +1,7 @@
 DEFINE_ACTION_FUNCTION hla_elemental_transformations BEGIN
 
 
-	LAF include STR_VAR file=lib_shapeshift.tph locbase=lib END
+	LAF include STR_VAR file=lib_shapeshift.tph locbase=shared_som END
 	
 	LAF include STR_VAR file=elemental_cre_shared.tph locbase=elemental_cre END
 	LAF make_shared_elemental_resources END

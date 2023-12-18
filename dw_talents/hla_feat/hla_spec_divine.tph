@@ -1040,7 +1040,7 @@ BEGIN
 			// if not, rebuild shapeshifters ToF style first.
 		
 		
-			LAF include STR_VAR file=lib_shapeshift.tph locbase=lib END
+			LAF include STR_VAR file=lib_shapeshift.tph locbase=shared_som END
 
 			spl.edit[spcl643][m.ab_fx.alter{s_resource:=werewlf1|match="~%s_resource%~ STR_EQ brbrp"}]
 			spl.edit[spcl644][m.ab_fx.alter{s_resource:=werewlf2|match="~%s_resource%~ STR_EQ brbrp"}]

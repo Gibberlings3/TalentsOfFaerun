@@ -32,7 +32,7 @@
         <strong> On the web: </strong><a href="https://www.gibberlings3.net/mods/tweaks/tof/">Home
         page</a>, <a href="https://www.gibberlings3.net/forums/forum/236-talents-of-faer&ucirc;n/">discussion
         forum</a>, <a href="https://www.gibberlings3.net/gallery/album/42-talents-of-faer&ucirc;n/">image gallery</a>, and <a href="https://discord.gg/yTzjMTb">Discord</a></p>
-      <p> <strong>Version beta 1</strong><br />
+      <p> <strong>Version beta 2</strong><br />
         <strong>Languages: </strong>English<br />
         <strong>Platforms: </strong>Windows, macOS, Linux </p>
       <p> Talents of Faer&ucirc;n (ToF) is a collection of about 85 mini-mods for the Enhanced Edition versions of Baldur's Gate, Baldur's Gate II, and Icewind Dale, partially inspired by existing mods and tabletop Dungeons and Dragons resources. It contains many optional tweaks to various parts of gameplay, focusing on expanding and rebalancing player character abilities. Features include 150-odd new high-level abilities, a new 'feat' system where lower-level characters gain abilities every few levels, revisions to existing kits, new classes, new kits for multi-class characters, new types of magical specialization, a dozen or so new spells, many spell tweaks, 20-odd new gods for clerics to worship, a subrace system, a revised system of cleric/druid spells, and tweaks to the rules for ability scores and proficiencies. </p>
@@ -322,19 +322,11 @@
       <p><strong>Higher-Level Paladins Get Additional Uses of Lay on Hands and Smite Evil</strong></p>
       <p>This component grants paladins additional uses of their Lay on Hands and (if you're using it) Smite Evil powers as they gain level. An additional use of Lay on Hands is gained at 5th level and every 4 levels thereafter; an additional use of Smite Evil is gained at 7th level and every 8 levels thereafter.</p>
       <p>(Partly this tracks the way these powers work in 3rd edition D&amp;D; partly it's my subjective assessment that other classes and kits tend to give out extra uses of similarly-powerful abilities.)</p>
-      <p><strong>Icewind Dale-Style Bard Songs</strong><strong><br />
+		<p><strong>Rangers use Icewind Dale-style spell memorisation</strong></p>
         </strong><em>Not available for IWDEE</em></p>
-      <p>This component gives Bards in Baldur's Gate and Baldur's Gate II six different bard songs (gained as they gain levels), to match the Icewind Dale version of the bard. The songs gained are: </p>
-      <ul>
-        <li>1st level: The Ballad of Three Heroes (allies within 30ft. get +1 to attack rolls, damage rolls, and saving throws)</li>
-        <li>3rd level: The Tale of Curran Strongheart (allies within 30ft. are immune to fear, and any fear effects on them are removed)</li>
-        <li>5th level: Tymora's Melody (allies within 30ft. get +1 to luck, +3 to saving throws, +10 to lore, and +10% to all thieving skills)</li>
-        <li>7th level: The Song of Kaudies (allies within 30ft. have a 50% chance to shrug off the effects of spells such as Silence, Shout, Great Shout, Command, Greater Command, or any other sound-based attack)</li>
-        <li>9th level: The Siren's Yearning (enemies within 30 ft. must make a Will save or become enthralled, unable to take action until 1 round passes or they take damage)</li>
-        <li>11th level: War Chant of Sith (allies within 30ft. get +2 to Armor Class, +10% resistance to slashing, piercing, crushing, and missile damage, and regenerate 2 hit points per round)</li>
-      </ul>
-      <p>As in Icewind Dale: Enhanced Edition, only trueclass (non-kitted) bards get these new bard songs.</p>
-      <p><strong>Thieves Gain the Evasion Ability (on a successful save for half damage against abilities that require you to dodge, take no damage) <br />
+		<p>This component changes ranger spell progression to match Icewind Dale. This means that rangers begin gaining spells at 6th level rather than 9th level.</p>
+
+ <p><strong>Thieves Gain the Evasion Ability (on a successful save for half damage against abilities that require you to dodge, take no damage) <br />
         </strong><em>Not available for IWDEE</em></p>
       <p>With this component installed, thieves (single and multi-classed) gain the Evasion ability at 7th level. This allows the thief, on making a successful saving throw for half damage from a spell or effect, to entirely avoid the effect.</p>
       <p>Evasion applies to spells or effects which require the character to dodge or jump clear, like Fireball and Lightning Bolt. It does not apply to spells like Holy Smite (which require willpower to resist) or Abi-Dalzim's Horrid Wilting (which requires fortitude and resilience to resist). A full list of affected spells can be found <a href="subdocuments_dw/evasion.html">here</a>.</p>
@@ -467,14 +459,18 @@
         <li>Tenser's Transformation and Otiluke's Resilient Sphere are both Alteration/Invocation, again matching IWD. (In BG/BG2, they're both plain Invocation.)</li>
       </ul>
       <p>If you use this component together with 'Include Arcane Spells from Icewind Dale: Enhanced Edition', 'Add Nine New Arcane Spells ', 'Move Power Words to the School of Enchantment', and 'Move Symbols to the School of Enchantment', you should find that there are sufficiently many more-or-less useful spells at every level for each speciality to have reasonable options, with the exception of Diviners.</p>
+      <p><strong>Speciality Mages Automatically Get One Speciality Spell at Each Level (where possible)</strong></p>
+      <p>This component does not need 'Require Speciality Mages to Memorize at Least One Spell per Level from their Speciality School' to be installed, but it is designed with it in mind: by making sure that specialists always know at least one spell of each level, it prevents the serious weakness (and annoyance) that occurs when a mage has just failed to find any spells of their speciality at the appropriate level.</p>
       <p><a name="multiclass-specialists" id="multiclass-specialists"></a><strong>Allow Multi-Classed and Dual-Classed Mages to Become Specialists and Wild Mages</strong></p>
       <p>This component permits cleric/mage, fighter/mage, mage/thief, fighter/mage/cleric and fighter/mage/thief characters to be wild mages or specialist mages, instead of generalists. In-game documentation is adjusted to recognize this change.</p>
       <p>Existing racial restrictions on specialities are enforced: unless you have installed 'Eliminate Class/Race Restrictions and Most Class/Ability Score Restrictions' then elves can only be diviners, enchanters, and wild mages; half-elves can be conjurers, diviners, enchanters, transmuters, and wild mages; and gnomes are automatically illusionists.</p>
       <p>The component also permits <em>unkitted</em> characters who dual-class into mages to become specialists or wild mages. Again, existing racial restrictions are enforced; so are ability-score requirements (again, unless you have deactivated them via 'Eliminate Class/Race Restrictions and Most Class/Ability Score Restrictions').</p>
       <p>This component automatically installs the contents of the <a href="#tidy-up-class">'Tidy Up Class-Selection Menu' component</a>.</p>
-      <p><strong>Speciality Mages Automatically Get One Speciality Spell at Each Level (where possible)</strong></p>
-      <p>This component does not need 'Require Speciality Mages to Memorize at Least One Spell per Level from their Speciality School' to be installed, but it is designed with it in mind: by making sure that specialists always know at least one spell of each level, it prevents the serious weakness (and annoyance) that occurs when a mage has just failed to find any spells of their speciality at the appropriate level.</p>
-      <p><strong>Dragon Disciples can be Disciples of Any Chromatic Dragon (Red/Blue/Green/Black/White)</strong></p>
+      <p><strong>Bloodlines for Sorcerers</strong></p>
+	  <p>This component (inspired by Pathfinder's treatment of sorcerers) gives each sorcerer an arcane bloodline, tied to the source of their magic. The 'arcane' bloodline is the default, and functions just like sorcerers in the unmodded game. Other bloodlines (the list is: Celestial, Deepearth, Efreeti, Fiendish, Gravetouched, Rimefrost, Stormborn) gain an additional known spell at every level, thematically connected to their bloodline (some of these spells are from the cleric list) and in exchange are denied access to one school or elemental type of magic. (The list of sorcerous bloodlines is not currently documented except in-game; this should be fixed soon but until then you should be able to get the idea by looking at dw_talents/class_race/data/bloodlines.ini ).</p>
+	  
+	  
+	  <p><strong>Dragon Disciples can be Disciples of Any Chromatic Dragon (Red/Blue/Green/Black/White)</strong></p>
       <p>In the unmodded game, all Dragon Disciples are specifically disciples of red dragons. This component allows sorcerers to be disciples of any chromatic dragon type: red, blue, green, black, white. The character's elemental resistance and breath weapon damage will be tied to their dragon type: red=fire, blue=electricity, green=poison, black=acid, white=cold.</p>
       <p><strong>Rebalanced and Revised Kits</strong></p>
       <p>Nearly all the kits in the unmodded game come from the original Baldur's Gate II, and many of them are not really well balanced for the other games&mdash;many kits gain powerful abilities too early, since the BG2 kits were only designed to be used from 7th level onward; some kits provide static benefits for long periods in the early game (e.g. the Jester's song, which is fixed from 1st level to 14th level); some abilities are specifically based around Shadows of Amn content (such as the cavalier's resistance to fire and acid, the two elemental damage types used by dragons in Shadows of Amn). In addition, a few kits (in my judgement) are a little too weak or strong.</p>
@@ -706,6 +702,7 @@
       </ul>
       <p>If you have installed the 'Druids May Multi-Class as Mages, Rangers, and Thieves' component, this component also adds one new kit for druid/rangers, the Night Wolf (stalker/shapeshifter). Druids and rangers cannot dual-class as druid/rangers and so cannot dual-class into a druid/ranger kit.</p>
       <p>This component requires you to be using the Icewind Dale arcane and divine spells (either because you are playing IWD:EE, or because you have them installed) and the 'Add Nine New Arcane Spells' and 'Add Six New Divine Spells' components of ToF.</p>
+	  <p>This component also grants cleric/rangers the ability to use shortbows and longbows.</li>
       <p><strong>New Multi-Class/Dual-Class for Cleric/Thieves and Druid/Thieves</strong></p>
       <p> This component introduces six new kits for cleric/thieves: </p>
       <ul>
@@ -783,7 +780,7 @@ title="Non-Player Characters">NPCs</acronym> and to make sure they keep up with 
         <li><b>Dexterity</b>: Now affects saving throws vs. Wands and Breath Weapons. Still affects armor class, attack rolls with thrown and missile weapons, and initiative.</li>
         <li><b>Constitution</b>: Now affects saving throws vs. Poison and Paralysis. Still affects hit points (the variable fighter/non-fighter effect has been removed).</li>
         <li><b>Intelligence</b>: Now affects maximum number of memorizable spells for wizards. Still affects chance of learning arcane spells from scrolls.</li>
-        <li><b>Wisdom</b>: Now affects number of spell slots for shamans, and saving throws vs. Spell. Still affects maximum number of memorizable spells for priests.</li>
+        <li><b>Wisdom</b>: Now affects number of spell slots for shamans, saving throws vs. Spell, and Monk AC. Still affects maximum number of memorizable spells for priests.</li>
         <li><b>Charisma</b>: Affects maximum number of memorizable spells for bards and number of spell slots for sorcerers and favored souls, the effective level of a cleric or paladin turning the undead, and (still) also the price you are charged in stores. Paladins receive an additional bonus to their saving throws based on Charisma.</li>
       </ul>
       <p>Bonuses and penalties to attack rolls, hit points, armor class, and saving throws now use a common set of modifiers. (The change to a cleric or paladin's level for turning undead is half this modifier.) For ability scores between 1-18, that system is the same in both versions: </p>
@@ -1002,7 +999,7 @@ There are, however, a number of exceptions. (All in-game documentation has been 
       <p>This component removes restrictions on the maximum level of spells a mage (or bard) character can learn, and the maximum number of spells they can learn at each level. The UI is edited to remove any reference to these restrictions.</p>
       <p>In addition, the 'erase' button is removed from the spellbook, since the intended reason to erase spells is to make room for new ones and there is no longer a capacity limit.</p>
       <p><strong>Cleric/Rangers can Become Proficient with Bows</strong></p>
-      <p>This component grants Cleric/Rangers the ability to put up to two points into proficiency in shortbows and longbows. (It is obsolete if you install the 'Revised Weapon Proficiency System'.) </p>
+      <p>This component grants Cleric/Rangers the ability to put up to two points into proficiency in shortbows and longbows. (It is obsolete if you install the 'Revised Weapon Proficiency System', and is automatically installed if you use the 'New Multi-Class/Dual-Class for Cleric/Rangers and Druid/Rangers' component.) </p>
       <p><strong>Wider Access to Grand Mastery</strong></p>
       <p>This component permits warriors other than single-class fighters to achieve Grand Mastery (five slots) in their usable weapons. There are three versions: allow multi-classed fighters to achieve grand mastery; allow paladins and single-classed rangers to achieve grand mastery; allow all warriors, single and multi-classed, to achieve grand mastery.</p>
       <p><strong>Dual-Class Kitted Characters Must Obey the Weapon-Proficiency Restrictions of Their Kit</strong></p>
@@ -1112,9 +1109,36 @@ href="https://gibberlings3.github.io/iesdp/">Infinity Engine Structure Descripti
     <div class="ribbon_triangle_h2-l"></div>
     <div class="ribbon_triangle_h2-r"></div>
     <div class="section">
-      <p> <b>Version beta 1 </b>(November 2023) </p>
-      <p> Original release. </p>
-    </div>
+</div>
+<div class="ribbon_rectangle_h3"><h3>Version beta 1 (12th December 2023)</h3></div>
+    <div class="ribbon_triangle_h2-l"></div>
+    <div class="ribbon_triangle_h2-r"></div>
+<div class="section"> 
+
+
+<p> Original release. </p>
+</div>
+<div class="ribbon_rectangle_h3"><h3>Version beta 2 (18th December 2023)</h3></div>
+    <div class="ribbon_triangle_h2-l"></div>
+    <div class="ribbon_triangle_h2-r"></div>
+<div class="section"> 
+
+
+<p> 
+<ul>
+<li>Fixed some synchronization bugs between ToF and SCS versions of spell tweaks that were causing install-time failures.</li>
+<li>Installing the mage specialist memorization component by itself no longer breaks ui.menu.</li>
+<li>Multiclass subrace characters no longer receive their bonuses twice.</li>
+<li>Subrace abilities at level >1 should now be applied correctly.</li>
+<li>The fact that monks get to apply their Wisdom bonus to AC is now noted in the readme (it was already documented in-game).</li>
+<li>Added basic documentation for sorcerer bloodlines, since this was originally missing. (Fuller documentation to follow in a subsequent update.)</li>
+<li>Documented 'Rangers use Icewind Dale-style spell memorisation'.</li>
+<li>Documentation now notes that the 'Cleric/Rangers can use bows' component is automatically installed by the 'Cleric/Ranger and Druid/Ranger multiclass kits' component.</li>
+<li>Under-the-hood: Updated to new batch-mode system.</li>
+<li>Under-the-hood: Many library fixes and updates.</li>
+</ul>
+ </p>
+</div>
   </div>
 </div>
 </body>

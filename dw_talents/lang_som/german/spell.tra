@@ -1,0 +1,451 @@
+@100   = ~(Es schützt vor Pfeilen oder Bolzen, die verzaubert sind, um Elementar- oder Giftschaden zu verursachen, sofern diese Verzauberungen nicht auch einen Bonus auf Treffer gewähren.)~ 
+@203   = ~Eisenhäute, ~
+@204   = ~, und Eisenhäute.~ 
+@205   = ~reduziert das Ziel auf 1 Trefferpunkt~
+@206   = ~fügt dem Ziel 150 Trefferpunkte Schaden zu, kann das Ziel aber nicht unter 1 Trefferpunkt reduzieren~ 
+@207   = ~
+Dies ist die ~
+@208   = ~Version des Zaubers. ~
+@209   = ~je Stufe des Magiers (bis zu einem Maximum von 12W6)~ 
+@210   = ~je Stufe des Zauberers~
+@211   = ~Dieser Zauber zerstört auch den antimagischen Bereich, der durch den Schutz einer Magischen Schriftrolle geschaffen wurde.~ 
+@212   = ~erlischt nach zehn Phasen.~
+@213   = ~erlischt nach zehn Phasen. Bis dahin kann er nur äußerst mächtige Magie (so wie der Zauberschlag) zerstört werden.~
+@216   = ~Wort der Macht: Blindheit (Herbeirufung/Beschwörung)
+Grad: 8
+Reichweite: Sichtweite
+Dauer: 6 Runden
+Zeitaufwand: 1
+Wirkungsbereich: 3 Wesen
+Rettungswurf: Nein
+
+Durch dieses Wort der Macht erblindet ein Wesen im Wirkungsbereich. Die Auswirkungen des Zaubers halten 6 Runden lang an oder bis sie gebannt werden. Die Opfer erleiden alle Auswirkungen von Blindheit, wie beispielsweise einen Malus auf Trefferwürfe und Rüstungsklasse. Ebenso ist die Sichtbarkeit des betroffenen Wesens vermindert.~ 
+@300   = ~Gegenstände können nicht verwendet werden, während sie verwandelt sind.~
+@301   = ~Magie bannen oder Fluch bannen~ 
+@302   = ~Magie bannen~
+@303   = ~Der Zauber entfernt auch die unheilvollen Effekte eines Andere verwandeln-Zaubers.~
+@400   = ~Unempfindlich gegen Schwarmangriffe~
+@401   = ~Schwarm zerstört~ 
+@500   = ~jemand kommt zu nah~
+@501   = ~ein Gegner kommt zu nahe~ 
+@502   = ~alle in der Gegend~ 
+@503   = ~alle Feinde in der Gegend~
+@1000  = ~
+
+NOTFALLZAUBER
+Sobald ein Magier die Fähigkeit erlangt hat, Zauber der 6. Stufe zu wirken, kann er einmal am Tag einen Notfallzauber wirken, der einen Zauber bis zu 1/3 der Stufe des Magiers festlegt und unter bestimmten Bedingungen automatisch auf den Magier gewirkt wird. Es kann immer nur ein Notfallzauber aktiv sein.
+
+Sobald der Magier die Fähigkeit erlangt, Zauber der Stufe 9 zu wirken, kann <PRO_HESHE> auch einen Kombinierten Notfall wirken, der drei Zauber bis zur Stufe 8 enthält, die unter bestimmten Bedingungen auf den Magier oder ein anderes bestimmtes Ziel wirken. Es kann immer nur ein Kombinierter Notfall gleichzeitig aktiv sein.
+
+KETTENZAUBER
+Sobald <PRO_HESHE> das Wirken von Zaubern der 4. Stufe erlernt hat, kann ein Magier als angeborene Fähigkeit, die nur einen Augenblick benötigt, um sie festzulegen, einen Geringeren Kettenzauber erschaffen, der zwei Zauber der ersten oder zweiten Stufe enthält, die später gewirkt werden können. Der Magier kann einmal pro Tag einen neuen Geringeren Kettenzauber erschaffen, aber es kann immer nur einer aktiv sein.
+
+Sobald ein Magier das Wirken von Zaubern der 7. Stufe erlernt hat, kann er auch einen vollständigen Kettenzauber erstellen, der drei Zauber der Stufen 1-4 enthält. Sobald <PRO_HESHE> lernt, wie man Zauber der 8. Stufe wirkt, kann <PRO_HESHE> einen Zauberauslöser erstellen, der drei Zauber der Stufen 1-6 enthält.
+~ 
+@1001  = ~
+
+NOTFALLZAUBER
+Sobald ein Barde die Fähigkeit erlangt hat, Zauber der 6. Stufe zu wirken, kann er einmal am Tag einen Notfallzauber wirken, der einen Zauber bis zu 1/3 der Stufe des Bardes festlegt und unter bestimmten Bedingungen automatisch auf den Barde gewirkt wird. Es kann immer nur ein Notfallzauber aktiv sein.
+
+KETTENZAUBER
+Sobald <PRO_HESHE> das Wirken von Zaubern der 4. Stufe erlernt hat, kann ein Barde als angeborene Fähigkeit, die nur einen Augenblick benötigt, um sie festzulegen, einen Geringeren Kettenzauber erschaffen, der zwei Zauber der ersten oder zweiten Stufe enthält, die später gewirkt werden können. Der Barde kann einmal pro Tag einen neuen Geringeren Kettenzauber erschaffen, aber es kann immer nur einer aktiv sein.~
+@1002  = ~
+Wenn ein Barde gelernt hat, wie man Zauber der 7. Stufe wirkt, kann er auch einen vollständigen Kettenzauber erstellen, der drei Zauber der Stufen 1-4 enthält.~
+@1003  = ~ Ein Barde, der Zauber der Stufe 8 wirken kann, kann einen Zauberauslöser erstellen, der drei Zauber der Stufen 1-6 enthält.~
+@1004  = ~Vorbereiten~
+@1005  = ~Gewinnt die Fähigkeit~
+@1010  = ~
+
+Die Kampf-Schutzzauber, die von Bresche gebannt werden, sind~
+@1011  = ~und~
+@1020  = ~ +1 pro Stufe (maximum ~
+@1021  = ~W~
+@1100  = ~Dies macht jeden vorherigen Entzug von Lebenskraft der Kreatur durch eine Macht oder ein Monster rückgängig.~
+@1101  = ~Dies macht jeden vorherigen Entzug von Lebenskraft der Kreatur durch eine Macht oder ein Monster rückgängig.~
+@1102  = ~Dies macht jeden vorherigen Entzug von Lebenskraft der Kreatur durch eine Macht oder ein Monster rückgängig. und stellt verlorene Fähigkeitspunkte wieder her, die durch Quellen wie die kraftraubende Berührung eines Schattens oder die gedankenverschlingenden Angriffe eines Gedankenschinders entstanden sind.~
+@3700  = ~
+Anmerkung: Dieser Zauber kann verwendet werden, um magischen Schutz auch von Kreaturen zu entfernen, die normalerweise nicht durch Zauber anvisiert werden können, weil sie unsichtbar sind.~
+@5000  = ~Insektenplage (Herbeirufung/Beschwörung)
+
+Grad: 5
+Sphäre: Tier
+Reichweite: 75 m
+Dauer: 6 Runden
+Zeitaufwand: 5
+Bereich: Speziell
+Rettungswurf: Speziell (gg. Zauber)
+
+Wenn dieser Zauber gewirkt wird, sammelt sich eine Masse von krabbelnden, hüpfenden und fliegenden Insekten und schwärmt aus. Sie greifen zuerst das Ziel an und bewegen sich dann auf alle Feinde des Zaubernden im Radius des Zaubers zu. Unsichtbarkeit bietet keinen Schutz.
+
+Für die Dauer des Zaubers erleiden die Betroffenen einen Punkt Durchbohrungsschaden pro Sekunde und kämpfen mit einem Malus von -2 auf Angriffswürfe und Rüstungsklasse. Außerdem muss sich das Opfer jede Runde gegen Odemwaffen mit -2 schützen oder eine 100%ige Chance auf einen Fehlschlag des Zaubers erleiden und sich gegen Zauber mit -2 schützen oder in Panik davonlaufen. Kreaturen, die vor dem Schaden geschützt sind, wie z.B. durch den Zauber Steinhaut, sind von diesen sekundären Effekten nicht betroffen, solange ihr Schutz anhält.
+
+Die durch den Zauber beschworenen Insekten sind selbst keine magischen Kreaturen. Das bedeutet, dass sie nicht durch magische Schutzmechanismen wie Antimagie abgewehrt werden; ebenso sind ihre Bisse und Stiche nicht magisch und können keine Kreaturen verletzen, die magische Waffen benötigen, um sie zu verletzen. Die Insekten meiden das unnatürliche Fleisch der Untoten und können keine Barrieren aus extremer Kälte oder Hitze durchdringen, wie sie der Feuerschild-Zauber erzeugt. Und schließlich vernichtet der Todeszauber alle feindlichen Insekten in seinem Wirkungsbereich.~
+@5001  = ~Kriechender Tod (Herbeirufung/Beschwörung)
+
+Grad: 7
+Sphäre: Tier, Beschwörung
+Reichweite: 75 m
+Dauer: 3 Runden
+Zeitaufwand: 5
+Bereich: Speziell
+Rettungswurf: Speziell
+
+Wenn der Zaubernde den Zauber Kriechender Tod spricht, ruft <PRO_HESHE> eine Masse giftiger, beißender und stechender Spinnentiere, Insekten und Tausendfüßer herbei. Diese teppichartige Masse schwärmt über ein großes Gebiet aus und befällt alle feindlichen Kreaturen im Umkreis von 9 m um das Ziel. Unsichtbarkeit bietet keinen Schutz. 
+
+Für die Dauer des Zaubers erleiden die Betroffenen zwei Punkte Durchbohrungsschaden pro Sekunde und kämpfen mit einem Malus von -2 auf Angriffswürfe und Rüstungsklasse. Außerdem muss sich das Opfer jede Runde gegen Odemwaffen mit -2 schützen oder eine 100%ige Chance auf einen Fehlschlag des Zaubers erleiden und sich gegen Zauber mit -2 schützen oder in Panik davonlaufen. Kreaturen, die vor dem Schaden geschützt sind, wie z.B. durch den Zauber Steinhaut, sind von diesen sekundären Effekten nicht betroffen, solange ihr Schutz anhält.
+
+Die durch den Zauber beschworenen Insekten sind selbst keine magischen Kreaturen. Das bedeutet, dass sie nicht durch magische Schutzmechanismen wie Antimagie abgewehrt werden; ebenso sind ihre Bisse und Stiche nicht magisch und können keine Kreaturen verletzen, die magische Waffen benötigen, um sie zu verletzen. Die Insekten meiden das unnatürliche Fleisch der Untoten und können keine Barrieren aus extremer Kälte oder Hitze durchdringen, wie sie der Feuerschild-Zauber erzeugt. Und schließlich vernichtet der Todeszauber alle feindlichen Insekten in seinem Wirkungsbereich.~
+@5002  = ~Insekten herbeirufen (Herbeirufung/Beschwörung)
+
+Grad: 3
+
+Sphäre: Tier
+Reichweite: 30 m
+Dauer: 7 Runden
+Zeitaufwand: 9
+Bereich: 1 Wesen
+Rettungswurf: keiner
+
+Der Zauber Insekten beschwören lockt eine Wolke oder einen Schwarm normaler Insekten an, die einen Feind des Zaubernden angreifen. Dieser Schwarm sammelt sich an einem vom Zaubernden gewählten Punkt innerhalb der Reichweite des Zaubers und greift jede einzelne Kreatur an, auf die der Zaubernde zeigt. Das Opfer kann einen Rettungswurf gegen Odemwaffe mit einem Malus von -4 machen, um dem Schwarm zu entkommen; andernfalls erleidet das Opfer für die Dauer des Zaubers alle 2 Sekunden 1 Punkt Durchbnohrungsschaden. Außerdem kämpft das Opfer mit einem -2 Malus auf <PRO_HISHER> Angriffswurf und einem -2 Malus auf <PRO_HISHER> Rüstungsklasse. Der Schwarm wird das Ziel wiederholt beißen, was das Wirken von Zaubern sehr erschwert (50%ige Chance, dass der Zauber fehlschlägt, mit einem Rettungswurf gegen Odemwaffen jede Runde, um in dieser Runde zu entgehen). Kreaturen, die vor dem Schaden geschützt sind, z.B. durch den Zauber "Steinhaut", sind von diesen sekundären Effekten nicht betroffen, solange ihr Schutz anhält.
+
+Die durch den Zauber beschworenen Insekten sind selbst keine magischen Kreaturen. Das bedeutet, dass sie nicht durch magische Schutzmechanismen wie Antimagie abgewehrt werden; ebenso sind ihre Bisse und Stiche nicht magisch und können keine Kreaturen verletzen, die magische Waffen benötigen, um sie zu verletzen. Die Insekten meiden das unnatürliche Fleisch der Untoten und können keine Barrieren aus extremer Kälte oder Hitze durchdringen, wie sie der Feuerschild-Zauber erzeugt. Und schließlich vernichtet der Todeszauber alle feindlichen Insekten in seinem Wirkungsbereich.~
+@5019  = ~Durch Feuer vernichtete Insekten~
+@5300  = ~Schutzmantel (Bannzauber)
+Grad: 7
+Reichweite: 0
+Dauer: 4 Runden
+Zeitaufwand: 1
+Bereich: Anwender
+Rettungswurf: Nein
+
+Während der Zauber wirkt, kann der Zaubernde nur noch von magischen Waffen +4 oder besseren verwundet werden. Dieser Zauber ist zwar äußerst mächtig, hat aber nur eine sehr geringe Wirkungsdauer. Da er außerdem sehr rasch eingesetzt werden kann, bietet es sich geradezu an, ihn in der Hitze des Gefechts zu benutzen. Der Schutzmantel funktioniert nicht in Verbindung mit dem Schutz vor magischen Waffen. Der Schutz hält an, bis die Wirkungsdauer endet oder der Zauber gebannt wird.~
+@5301  = ~Verbesserter Schutzmantel (Bannzauber)
+Grad: 8
+Reichweite: 0
+Dauer: 4 Runden
+Zeitaufwand: 1
+Bereich: Anwender
+Rettungswurf: Nein
+
+Während der Zauber wirkt, kann der Zaubernde nur noch von magischen Waffen +5 oder besseren verwundet werden. Der Zauber ist zwar äußerst mächtig, hat aber deswegen auch nur eine sehr geringe Wirkungsdauer. Da der Zeitaufwand für das Wirken des Zaubers sehr gering ist, ist er gerade in der Hitze des Gefechts äußerst nützlich. Dieser Zauber bedeutet für den Magier oft den Unterschied zwischen Leben und Tod. Verbesserter Schutzmantel funktioniert nicht in Verbindung mit dem Schutz vor magischen Waffen. Der Schutz hält an, bis die Wirkungsdauer endet oder der Zauber gebannt wird.~
+@5302  = ~Absolute Immunität (Bannzauber)
+Grad: 9
+Reichweite: 0
+Dauer: 4 Runden
+Zeitaufwand: 1
+Bereich: Anwender
+Rettungswurf: Nein
+
+Während der Zauber wirkt, kann der Zaubernde von keinen Waffen verwundet werden, ungeachtet des Grades ihrer Verzauberung. Der Zauber ist zwar äußerst mächtig, hat aber deswegen nur eine sehr geringe Wirkungsdauer. Da der Zeitaufwand für den Einsatz des Zaubers sehr gering ist, ist er gerade in der Hitze des Gefechts äußerst nützlich. Der Zauber bedeutet für den Magier oft den Unterschied zwischen Leben und Tod. Absolute Immunität funktioniert nicht in Verbindung mit dem Schutz vor magischen Waffen. Der Schutz hält an, bis die Wirkungsdauer endet oder der Zauber gebannt wird.~
+@14100 = ~(Hervorrufung)~
+@14101 = ~(Anrufung/Hervorrufung)~
+@14102 = ~(Verzauberung/Bezauberung, Anrufung/Hervorrufung)~
+@14400 = ~ Schließlich schützt der Zauber auch den Wirker eine Runde lang, nachdem er gewirkt wurde, vor magischer Blindheit.~
+@16010 = ~Dieser Pfeil ist mit Säure benetzt. Wenn ein Feind damit getroffen wird, durchbohrt der Pfeil nicht nur dessen Fleisch, sondern verätzt auch die Wunde, die dadurch immer größer und schlimmer wird.
+
+EIGENSCHAFTEN:
+
+Schaden: 1W6 + 1 (Geschoss)
+Schadensbonus:  1W3 (Säure) Kein Rettungswurf
+ETW0-Bonus: -1
+Gewicht: 0
+Waffe:  Bogen~
+@16011 = ~Der Feuerpfeil ist ein magischer Pfeil, der in Flammen aufgeht, wenn er auf einen Feind abgeschossen wird. Die Wirkung ist so ähnlich, als ob man einen mit Öl übergossenen Pfeil anzündet.
+
+EIGENSCHAFTEN:
+
+Schaden: 1W6 (Geschoss)
+Schadensbonus: 1W2 (Feuer)
+(RW gegen Zauber)
+Gewicht: 0
+Waffe: Bogen~
+@16012 = ~Der Eispfeil wurde mit magischen Kräften versehen, die bewirken, dass er sich in eine Kugel aus Eis und Kälte verwandelt, sobald er abgeschossen wird. Beim Auftreffen versetzt der Pfeil seinem Opfer einen Kälteschock, der dessen Körper bis auf die Knochen gefrieren lässt.
+
+EIGENSCHAFTEN:
+
+Schaden: 1W6 (Geschoss)
+Schadensbonus: 1W2 (Kälte)
+(kein Rettungswurf)
+Gewicht: 0
+Waffe: Bogen~
+@32000 = ~Erdelementar beschwören (Herbeirufung/Beschwörung)
+
+Grad: 6
+Reichweite: Sichtweite
+Dauer: 1 Phase/Stufe
+Zeitaufwand: 9
+Bereich: Speziell
+Rettungswurf: Nein
+
+Mit Hilfe dieses Zaubers öffnet der Magier ein spezielles Tor zur Erdebene, durch das ein Erdelementar in der Nähe des Magiers erscheint. Zu 60% verfügt der Elementar über 12 Trefferwürfel, zu 35% über 18 Trefferwürfel und zu 5% über 24 Trefferwürfel. Der Elementar befolgt er all seine Befehle, bis die Wirkungsdauer endet oder er getötet wird. Da die Kommunikation mit dem Wesen auf telepathischem Weg erfolgt, besteht keine Gefahr, dass ein Befehl missverstanden wird, und es ist auch nicht nötig, dass der Magier die Sprache des beschworenen Wesens beherrscht.~
+@32001 = ~Luftelementar beschwören (Herbeirufung/Beschwörung)
+
+Grad: 6
+Reichweite: Sichtweite
+Dauer: 1 Phase/Stufe
+Zeitaufwand: 9
+Bereich: Speziell
+Rettungswurf: Nein
+
+Mit Hilfe dieses Zaubers öffnet der Magier ein spezielles Tor zur Luftebene, durch das ein Luftelementar in der Nähe des Magiers erscheint. Zu 60% verfügt der Elementar über 12 Trefferwürfel, zu 35% über 18 Trefferwürfel und zu 5% über 24 Trefferwürfel. Der Elementar befolgt seine Befehle, bis die Wirkungsdauer endet oder er getötet wird. Da die Kommunikation mit dem Wesen auf telepathischem Weg erfolgt, besteht keine Gefahr, dass ein Befehl missverstanden wird, und es ist auch nicht nötig, dass der Magier die Sprache des beschworenen Wesens beherrscht.~
+@32002 = ~Feuerelementar beschwören (Herbeirufung/Beschwörung)
+
+Grad: 6
+Reichweite: Sichtweite
+Dauer: 1 Phase/Stufe
+Zeitaufwand: 9
+Bereich: Speziell
+Rettungswurf: Nein
+
+Mit Hilfe dieses Zaubers öffnet der Magier ein spezielles Tor zur Feuerebene, durch das ein Feuerelementar in der Nähe des Magiers erscheint. Zu 60% verfügt der Elementar über 12 Trefferwürfel, zu 35% über 18 Trefferwürfel und zu 5% über 24 Trefferwürfel. Der Elementar befolgt seine Befehle, bis die Wirkungsdauer endet oder er getötet wird. Da die Kommunikation mit dem Wesen auf telepathischem Weg erfolgt, besteht keine Gefahr, dass ein Befehl missverstanden wird, und es ist auch nicht nötig, dass der Magier die Sprache des beschworenen Wesens beherrscht.~
+@32003 = ~Niederen Erdelementar beschwören (Herbeirufung/Beschwörung)
+
+Grad: 5
+Reichweite: 15 m
+Dauer: 1 Phase + 1 Runde/Stufe
+Zeitaufwand: 9
+Bereich: Speziell
+Rettungswurf: Nein
+
+Mit diesem Zauber ruft der Magier einen Erdelementar mit 8 Trefferwürfeln herbei, der alle <PRO_HISHER>e Befehle befolgt, bis er gebannt wird, die Wirkungsdauer des Zaubers endet oder der Elementar stirbt.~
+@32004 = ~Niederen Luftelementar beschwören (Herbeirufung/Beschwörung)
+
+Grad: 5
+Reichweite: 15 m
+Dauer: 1 Phase + 1 Runde/Stufe
+Zeitaufwand: 9
+Bereich: Speziell
+Rettungswurf: Nein
+
+Mit diesem Zauber ruft der Magier einen Luftelementar mit 8 Trefferwürfeln herbei, der alle <PRO_HISHER>e Befehle befolgt, bis er gebannt wird, die Wirkungsdauer des Zaubers endet oder der Elementar stirbt.~
+@32005 = ~Niederen Feuerelementar beschwören (Herbeirufung/Beschwörung)
+
+Grad: 5
+Reichweite: 15 m
+Dauer: 1 Phase + 1 Runde/Stufe
+Zeitaufwand: 9
+Bereich: Speziell
+Rettungswurf: Nein
+
+Mit diesem Zauber ruft der Magier einen Feuerelementar mit 8 Trefferwürfeln herbei, der alle <PRO_HISHER>e Befehle befolgt, bis er gebannt wird, die Wirkungsdauer des Zaubers endet oder der Elementar stirbt.~
+@32006 = ~Niederen Wasserelementar beschwören (Herbeirufung/Beschwörung)
+
+Grad: 5
+Reichweite: 15 m
+Dauer: 1 Phase + 1 Runde/Stufe
+Zeitaufwand: 9
+Bereich: Speziell
+Rettungswurf: Nein
+
+Mit diesem Zauber ruft der Magier einen Wasserelementar mit 8 Trefferwürfeln herbei, der alle <PRO_HISHER>e Befehle befolgt, bis er gebannt wird, die Wirkungsdauer des Zaubers endet oder der Elementar stirbt.~
+@32007 = ~Wasserelementar beschwören (Herbeirufung/Beschwörung)
+
+Grad: 6
+Reichweite: Sichtweite
+Dauer: 1 Phase/Stufe
+Zeitaufwand: 9
+Bereich: Speziell
+Rettungswurf: Nein
+
+Mit Hilfe dieses Zaubers öffnet der Magier ein spezielles Tor zur Wasserebene, durch das ein Wasserelementar in der Nähe des Magiers erscheint. Zu 60% verfügt der Elementar über 12 Trefferwürfel, zu 35% über 18 Trefferwürfel und zu 5% über 24 Trefferwürfel. Der Elementar befolgt er all seine Befehle, bis die Wirkungsdauer endet oder er getötet wird. Da die Kommunikation mit dem Wesen auf telepathischem Weg erfolgt, besteht keine Gefahr, dass ein Befehl missverstanden wird, und es ist auch nicht nötig, dass der Magier die Sprache des beschworenen Wesens beherrscht.~
+@32008 = ~Niederer Wasserelementar~
+@32009 = ~Wasserelementar~
+@32010 = ~Höherer Wasserelementar~
+@32011 = ~Älterer Wasserelementar~
+@32012 = ~Niederen Luftlementar beschwören~
+@32013 = ~Niederen Erdelementar beschwören~
+@32014 = ~Niederen Feuerelementar beschwören~
+@32015 = ~Wasserelementar beschwören~
+@32016 = ~Niederen Luftelementar beschwören (Herbeirufung/Beschwörung)
+
+Grad: 5
+Reichweite: Sichtweite
+Dauer: 1 Runde/Stufe
+Zeitaufwand: 9
+Bereich: Speziell
+Rettungswurf: Nein
+
+Mit diesem Zauber ruft der Magier einen Luftelementar mit 8 Trefferwürfeln herbei und unterwirft ihn <PRO_HISHER>em Willen. Dieser Elementar kämpft im Namen des Zaubernden, bis die Dauer des Zaubers abläuft oder der Elementar zerstört wird.~
+@32017 = ~Niederen Erdelementar beschwören (Herbeirufung/Beschwörung)
+
+Grad: 5
+Reichweite: Sichtweite
+Dauer: 1 Runde/Stufe
+Zeitaufwand: 9
+Bereich: Speziell
+Rettungswurf: Nein
+
+Mit diesem Zauber ruft der Magier einen Erdelementar mit 8 Trefferwürfeln herbei und unterwirft ihn <PRO_HISHER>em Willen. Dieser Elementar kämpft im Namen des Zaubernden, bis die Dauer des Zaubers abläuft oder der Elementar zerstört wird.~
+@32018 = ~Niederen Feuerelementar beschwören (Herbeirufung/Beschwörung)
+
+Grad: 5
+Reichweite: Sichtweite
+Dauer: 1 Runde/Stufe
+Zeitaufwand: 9
+Bereich: Speziell
+Rettungswurf: Nein
+
+Mit diesem Zauber ruft der Magier einen Feuerelementar mit 8 Trefferwürfeln herbei und unterwirft ihn <PRO_HISHER>em Willen. Dieser Elementar kämpft im Namen des Zaubernden, bis die Dauer des Zaubers abläuft oder der Elementar zerstört wird.~
+@32019 = ~Niederen Wasserelementar beschwören (Herbeirufung/Beschwörung)
+
+Grad: 5
+Reichweite: Sichtweite
+Dauer: 1 Runde/Stufe
+Zeitaufwand: 9
+Bereich: Speziell
+Rettungswurf: Nein
+
+Mit diesem Zauber ruft der Magier einen Wasserelementar mit 8 Trefferwürfeln herbei und unterwirft ihn <PRO_HISHER>em Willen. Dieser Elementar kämpft im Namen des Zaubernden, bis die Dauer des Zaubers abläuft oder der Elementar zerstört wird.~
+@32020 = ~Niederen Wasserelementar beschwören~
+@32100 = ~Tor (Herbeirufung/Beschwörung)
+
+Grad: 9
+Sphäre: Herbeirufung
+Reichweite: 0
+Dauer: 33 Runden
+Zeitaufwand: 9
+Bereich: Speziell
+Rettungswurf: Nein
+
+Mit Hilfe dieses Zaubers ruft der Zauberwirker ein mächtiges Wesen von einer anderen Ebene herbei, und zwar einen Balor oder ein Höllenschlundscheusal. Das Wesen greift <PRO_HISHER> Feinde an, und wenn <PRO_HESHE> nicht sehr vorsichtig ist, auch <PRO_HIMHER> selbst. Der Priester muss zuerst "Schutz vor Bösem" auf sich und <PRO_HIMHER> Gefährten wirken, oder das Scheusal bemerkt sie und reißt alle in Stücke, um sich dann an <PRO_HISHER>en Überresten zu laben.~
+@32101 = ~Tor (Herbeirufung/Beschwörung)
+
+Grad: 7
+Sphäre: Herbeirufung
+Reichweite: 0
+Dauer: 33 Runden
+Zeitaufwand: 5
+Bereich: Speziell
+Rettungswurf: Nein
+
+Mit Hilfe dieses Zaubers ruft der Zauberwirker ein mächtiges Wesen von einer anderen Ebene herbei, und zwar einen Balor oder ein Höllenschlundscheusal. Das Wesen greift <PRO_HISHER> Feinde an, und wenn <PRO_HESHE> nicht sehr vorsichtig ist, auch <PRO_HIMHER> selbst. Der Priester muss zuerst "Schutz vor Bösem" auf sich und <PRO_HIMHER> Gefährten wirken, oder das Scheusal bemerkt sie und reißt alle in Stücke, um sich dann an <PRO_HISHER>en Überresten zu laben.~
+@32102 = ~Scheusal beschwören (Herbeirufung/Beschwörung)
+
+Grad: 8
+Reichweite: 0
+Dauer: 15 Runden
+Zeitaufwand: 9
+Bereich: Speziell
+Rettungswurf: Nein
+
+Das ist eine mächtige Variante des Zaubers des 7. Grades "Caco-Scheusal". Er beschwört einen tobenden Dämonen. Der Dämon greift jedes Wesen in Reichweite an, das nicht durch "Schutz vor Bösem" geschützt ist. Nur verzweifelte oder lebensmüde Zauberer setzen diesen Zauber ein.~
+@32103 = ~Caco-Scheusal (Herbeirufung/Beschwörung)
+
+Grad: 7
+Reichweite: 0
+Dauer: 15 Runden
+Zeitaufwand: Speziell
+Bereich: Speziell
+Rettungswurf: Nein
+
+Der Zauber teleportiert einen mächtigen Dämon herbei, der sofort in Raserei verfällt und jedes Wesen, das er sieht, angreift und tötet. Jeder, der unter der Wirkung eines Zaubers oder einer Schriftrolle zum Schutz vor dem Bösen steht, wird von dem Unhold nicht angegriffen. Dies ist ein äußerst gefährlicher Zauber, den man nur in Zeiten höchster Not einsetzen sollte.~
+@40013 = ~Säuresturm
+(Hervorrufung)
+Stufe: 7
+Reichweite: Sichtweite des Zaubernden
+Dauer: 1 Runde/Stufe
+Zeitaufwand: 7
+Wirkungsbereich: 4m-Radius
+Sicherheitswurf: Speziell
+
+Dieser Zauber entfesselt einen säurehaltigen Wolkenbruch im Wirkungsbereich. Das Opfer erleidet zunächst 10W6 Punkte Säureschaden. Nach dem anfänglichen Schaden muss dem Opfer ein Rettungswurf gegen Zauber gelingen, um weiteren Schaden zu vermeiden. Gelingt dies nicht, erleidet das Opfer in den folgenden Runden weiterhin Säureschaden, wobei es in jeder Runde zwei Würfel weniger Schaden erleidet: also 8Wd6 Schaden in der ersten Runde, 6W6 in der zweiten Runde, 4W6 in der dritten Runde, 2W6 in der vierten Runde, und der Zauber endet in der fünften Runde. Wenn Ihr Euch aus dem Wirkungsbereich herausbewegt, wird der Schaden nicht aufgehalten.~
+@40014 = ~Dieser Zauber zerstört auch die antimagische Sphäre, die durch eine Schriftrolle "Schutz vor Magie" oder den Zauber "Antimagische Hülle" geschaffen wurde.~
+@40100 = ~Undurchdringliche Heiligkeit des Geistes
+(Bannzauber)
+
+Stufe: 7
+Sphäre: Schutz
+Reichweite: 0
+Dauer: ca. 8 Stunden
+Zeitaufwand: 9
+Wirkungsbeeich: Der Zaubernde
+Rettungswurf: Keiner
+
+Dieser Zauber stählt den Geist des Zaubernden gegen jeglichen äußeren Einfluss. Er hat drei Effekte. Erstens ist der Zaubernde immun gegen Bezauberung, Verwirrung, Angst, Schwäche, Halt, Schlaf, Labyrinth, Berserker und Rausch, solange dieser Zauber wirkt. Zweitens wird die Konzentration des Zaubernden erhöht, so dass <PRO_HESHE> keine Chance hat, Fehler durch Effekte wie Magie fehlwirken zu wirken (<PRO_HISHER>e Zauber können immer noch durch Schaden unterbrochen werden). Schließlich kann der Zaubernde durch verstärkte Willenskraft <PRO_HISHER>e magische Verteidigungen und Schutzmaßnahmen vor einem einzigen magischen Angriff wie Durchbruch oder Zauberstoß schützen.~
+@40200 = ~Mordenkainens Kraft-Geschosse
+(Anrufung)
+
+Stufe: 4
+Reichweite: Sichtweite des Zaubernden
+Dauer: Sofort
+Wirkzeit: 4
+Wirkungsbereich: 1,5 m Radius
+Rewttungswurf: Speziell
+
+Dieser Zauber erschafft eine leuchtende Kugel aus magischer Energie, die aus der Hand des Zaubernden hervorschießt, um ihr Ziel unfehlbar zu treffen, ähnlich wie bei einem Zauber "Magische Geschosse". Der Zauberer erschafft ein Geschoss auf der 7. Stufe und ein zusätzliches Geschoss auf jeder 3. Stufe nach der 7. Stufe, bis zu einem Maximum von 4 Geschossen - mit anderen Worten: 2 Geschosse auf der 10. Stufe, 3 auf der 13. und 4 auf der 16. Jedes Geschoss fügt dem Ziel 2W4 Schadenspunkte zu und explodiert dann in einem 1,5 m Radius, der 1 Schadenspunkt pro Stufe des Zaubernden verursacht, bis zu einem Maximum von 15 Punkten - zum Beispiel könnte ein Zauberer der Stufe 12 zwei Kraft-Geschosse beschwören, von denen jedes 2W4+12 Punkte Magieschaden verursacht. Kreaturen, die Schaden erleiden, können einen Rettungswurf gegen Zauber versuchen, um die Stoßverletzung zu negieren, aber der Aufprall des Geschosses selbst erlaubt keinen Rettungswurf. Der Zauberschild der 1. Stufe eines Zauberers absorbiert die Kraftgeschosse schadlos, einschließlich der Stoßverletzung.~
+@40300 = ~Göttlicher Schutz~
+@40301 = ~Größerer Göttlicher Schutz~
+@40302 = ~Göttlicher Schutz
+(Herbeirufung)
+
+Stufe: 5
+Sphäre: Wächter
+Reichweite: Berührung
+Dauer: 3 Runden
+Wirkzeit: 1
+Wirkungsbereich: Der Zaubernde
+Rettungswurf: Keiner
+
+Dieser Zauber gewährt dem Zaubernden für die Dauer des Zaubers Immunität gegen Schaden.~
+@40303 = ~Größerer Göttlicher Schutz
+(Herbeirufung)
+
+Stufe: 7
+Sphäre: Wächter
+Reichweite: Berührung
+Dauer: 3 Runden
+Wirkzeit: 1
+Wirkungsbereich: Der Zaubernde
+Rettungswurf: Keiner
+
+Dieser Zauber gewährt dem Zaubernden 100% Magieresistenz und Immunität gegen Schaden für die Dauer des Zaubers.~
+@40400 = ~Knochenwächter erschaffen~
+@40401 = ~Knochenwächter erschaffen
+(Nekromantie)
+
+Stufe: 9
+Reichweite: 6 m
+Dauer: 8 Runden + 1 Runde/Stufe
+Wirkzeit: 9
+Wirkungsbereich: Speziell
+Rettungswurf: Keiner
+
+Mit dem Wirken dieses Zaubers ruft der Zauberer 1W2 Knochenwächter herbei. Diese untoten Monstrositäten erscheinen in Reichweite des Zaubers und können angewiesen werden, die Gegner des Zaubernden anzugreifen, bis die Dauer des Zaubers abläuft oder die Monster zerstört sind.~
+@40402 = ~Knochenwächter~
+@40500 = ~Dornenspray
+(Veränderung)
+Stufe: 4
+Sphäre: Pflanze
+Reichweite: 9 m
+Dauer: Sofort
+Wirkzeit: 3
+Wirkungsbereich: 5 m Kegel mit 90-Grad-Bogen
+Rettungswurf: keiner
+
+Mit diesem Zauber kann der Zaubernde einen Sprühnebel aus Widerhaken, Spitzen, Dornen und Stacheln aus <PRO_HISHER>s Hand hervorquellen lassen. Der Dornenstrahl bedeckt einen Kegel von 5 m Länge und fügt allen Kreaturen im Wirkungsbereich 4W10 Punkte Durchdbohrungs-Schaden zu.~
+@40600 = ~Knochenkreis
+(Nekromantie)
+
+Stufe: 3
+Sphäre: Wächter, Schöpfung
+Reichweite: 0
+Dauer: 1 Runde pro Stufe
+Wirkzeit: 3
+Wirkungsbereich: 1 m Radius
+Rettungswurf: Keiner
+
+Dieser Zauber beschwört eine Barriere aus schwebenden Knochen herauf, die sich schnell um den Zaubernden drehen, der sich für die Dauer des Zaubers nicht bewegen kann. Jeder, der den Weg der Knochen betritt, erleidet pro Runde 1W6 Quetschungsschaden und 1W6 Hiebschaden. Der Knochenkreis kann nicht von Charakteren mit guter Ausrichtung gewirkt werden.~
+@40700 = ~Schließlich ist der Priester vor mehreren mächtigen Beschwörungen geschützt, nämlich vor "Brechen", "Magie entfernen" und "Gefangenschaft".~
+@41000 = ~Er kann nicht von bösartig gesinnten Charakteren gewirkt werden.~
+@41001 = ~Er kann nicht von bösartig gesinnten Charakteren gewirkt werden.~
+@41002 = ~Er kann nicht von bösartig gesinnten Charakteren gewirkt werden.~
+@41003 = ~Er kann nicht von bösartig gesinnten Charakteren gewirkt werden.~
+@50000 = ~Zauberbuch der überwältigenden Großartigkeit~
+@50001 = ~Schon ein Blick in dieses Buch genügt, um dem Leser die Kenntnis aller bekannten Zaubersprüche und den gottgleichen Intellekt zu verleihen, den er braucht, um sie alle zu verstehen. Es verschwindet nach einmaligem Gebrauch.
+
+STATISTIK:
+
+Speziell: Das Buch wird bei der Benutzung verbraucht
+Verwendung: In die Gürteltasche legen
+
+Gewicht: 25~

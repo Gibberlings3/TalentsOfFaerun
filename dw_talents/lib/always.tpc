@@ -13,139 +13,137 @@ OUTER_SPRINT sfo_marker_prefix "dw-" // your modder prefix, possibly followed by
 
 PRINT "Loading SFO..."
 SILENT
+OUTER_SPRINT sfo_extra_tra_folders "lang_som"
 INCLUDE "%MOD_FOLDER%/%sfo_library_path%/sfo_init.tpc"
 VERBOSE
 PRINT "...done"
-ACTION_IF !(COMPONENT_NUMBER=batch_mode_component_number) BEGIN
-	// anything else this specific mod needs
+
+// anything else this specific mod needs
 
 
-	// set path for lua functions
+// set path for lua functions
 
-	OUTER_SPRINT lua_path lua
-	////////////////////////////////////////////////////////////////////////////////
-	// third-party content check
-	////////////////////////////////////////////////////////////////////////////////
+OUTER_SPRINT lua_path lua
+////////////////////////////////////////////////////////////////////////////////
+// third-party content check
+////////////////////////////////////////////////////////////////////////////////
 
-		// Detect Spell Revisions
+	// Detect Spell Revisions
 
-		ACTION_IF FILE_EXISTS_IN_GAME ~dvimhere.mrk~ THEN BEGIN
-		   OUTER_SET demivrgvs=1
-		END ELSE BEGIN
-		   OUTER_SET ~demivrgvs~=0
-		END
-		
-		// detect IWD spellsystem
-		
-		LAF check_label STR_VAR label=dw#iwdspells_arcane RET dw_iwd_arcane=value END
-		ACTION_IF ( (MOD_IS_INSTALLED "iwdification.tp2" 30) || dw_iwd_arcane || is_iwd ) BEGIN
-			OUTER_SET iwd_arcane=1
-		END ELSE BEGIN
-			OUTER_SET iwd_arcane=0
-		END
-		LAF check_label STR_VAR label=dw#iwdspells_divine RET dw_iwd_divine=value END
-		ACTION_IF ( (MOD_IS_INSTALLED "iwdification.tp2" 40) || dw_iwd_divine || is_iwd ) BEGIN
-			OUTER_SET iwd_divine=1
-		END ELSE BEGIN
-			OUTER_SET iwd_divine=0
-		END
+	ACTION_IF FILE_EXISTS_IN_GAME ~dvimhere.mrk~ THEN BEGIN
+	   OUTER_SET demivrgvs=1
+	END ELSE BEGIN
+	   OUTER_SET ~demivrgvs~=0
+	END
+	
+	// detect IWD spellsystem
+	
+	LAF check_label STR_VAR label=dw#iwdspells_arcane RET dw_iwd_arcane=value END
+	ACTION_IF ( (MOD_IS_INSTALLED "iwdification.tp2" 30) || dw_iwd_arcane || is_iwd ) BEGIN
+		OUTER_SET iwd_arcane=1
+	END ELSE BEGIN
+		OUTER_SET iwd_arcane=0
+	END
+	LAF check_label STR_VAR label=dw#iwdspells_divine RET dw_iwd_divine=value END
+	ACTION_IF ( (MOD_IS_INSTALLED "iwdification.tp2" 40) || dw_iwd_divine || is_iwd ) BEGIN
+		OUTER_SET iwd_divine=1
+	END ELSE BEGIN
+		OUTER_SET iwd_divine=0
+	END
 
 
-	////////////////////////////////////////////////////////////////////////////////
-	// mark up sonic spells
-	////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+// mark up sonic spells
+////////////////////////////////////////////////////////////////////////////////
 
-	LAF check_label STR_VAR label="dw-sonic-immunity" RET value END
+LAF check_label STR_VAR label="dw-sonic-immunity" RET value END
+ACTION_IF !value BEGIN
+	LAF make_label STR_VAR label="dw-sonic-immunity" END
+	INCLUDE "%MOD_FOLDER%/lib/sonic_immunity.tph"
+	LAF sonic_immunity END
+END
+
+////////////////////////////////////////////////////////////////////////////////
+// apply iwd fixes
+////////////////////////////////////////////////////////////////////////////////
+
+ACTION_IF is_iwd BEGIN
+	LAF check_label STR_VAR label="dw_fixed_iwd_bugs" RET value END
 	ACTION_IF !value BEGIN
-		LAF make_label STR_VAR label="dw-sonic-immunity" END
-		INCLUDE "%MOD_FOLDER%/lib/sonic_immunity.tph"
-		LAF sonic_immunity END
+		LAF make_label STR_VAR label="dw_fixed_iwd_bugs" END
+		INCLUDE "%MOD_FOLDER%/iwdspells/lib/iwdfix.tph"
+		LAF iwd_spell_fixes END
 	END
 
-	////////////////////////////////////////////////////////////////////////////////
-	// apply iwd fixes
-	////////////////////////////////////////////////////////////////////////////////
+END
 
-	ACTION_IF is_iwd BEGIN
-		LAF check_label STR_VAR label="dw_fixed_iwd_bugs" RET value END
-		ACTION_IF !value BEGIN
-			LAF make_label STR_VAR label="dw_fixed_iwd_bugs" END
-			INCLUDE "%MOD_FOLDER%/iwdspells/lib/iwdfix.tph"
-			LAF iwd_spell_fixes END
-		END
-	
-	END
-	
-	////////////////////////////////////////////////////////////////////////////////
-	// free up stats
-	////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+// free up stats
+////////////////////////////////////////////////////////////////////////////////
 
-	LAF check_label STR_VAR label="dw-free_up_spellstates" RET value END
+LAF check_label STR_VAR label="dw-free_up_spellstates" RET value END
+ACTION_IF !value BEGIN
+	LAF make_label STR_VAR label=dw-free_up_spellstates END
+	INCLUDE "%MOD_FOLDER%/lib/reroute_stats.tph"
+	LAF reroute_stats END
+END
+
+////////////////////////////////////////////////////////////////////////////////
+// experimental: fix vanilla UI bugs 
+////////////////////////////////////////////////////////////////////////////////
+
+
+LAF check_label STR_VAR label="dw-fixed_vanilla_ui_bugs" RET value END
+ACTION_IF !value BEGIN
+	LAF make_label STR_VAR label="dw-fixed_vanilla_ui_bugs" END
+	COPY_EXISTING "ui.menu" override
+		REPLACE_TEXTUALLY ~SequenceOnce "~ ~-- SequenceOnce "~
+		REPLACE_TEXTUALLY ~clickable false~ ~clickable lua "false"~
+END
+
+
+////////////////////////////////////////////////////////////////////////////////
+// read in resource-id data
+////////////////////////////////////////////////////////////////////////////////
+ACTION_TIME indirect_load_timer BEGIN
+	LAM indirect_load 
+END
+
+////////////////////////////////////////////////////////////////////////////////
+// make sure any spell has a scroll (we want them present in advance so that
+// the sphere/school systems can glom onto them)
+////////////////////////////////////////////////////////////////////////////////
+ACTION_TIME scroll_make_timer BEGIN
+	LAF check_label STR_VAR label="dw_made_all_scrolls" RET value END
 	ACTION_IF !value BEGIN
-		LAF make_label STR_VAR label=dw-free_up_spellstates END
-		INCLUDE "%MOD_FOLDER%/lib/reroute_stats.tph"
-		LAF reroute_stats END
+		LAF make_label STR_VAR label="dw_made_all_scrolls" END
+//	LAF spl_make_all_scrolls END
 	END
+END
 
-	////////////////////////////////////////////////////////////////////////////////
-	// experimental: fix vanilla UI bugs 
-	////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+// Make splconv generate a new array of protection spells
+////////////////////////////////////////////////////////////////////////////////
 
-
-	LAF check_label STR_VAR label="dw-fixed_vanilla_ui_bugs" RET value END
-	ACTION_IF !value BEGIN
-		LAF make_label STR_VAR label="dw-fixed_vanilla_ui_bugs" END
-		COPY_EXISTING "ui.menu" override
-			REPLACE_TEXTUALLY ~SequenceOnce "~ ~-- SequenceOnce "~
-			REPLACE_TEXTUALLY ~clickable false~ ~clickable lua "false"~
-	END
+ACTION_IF FILE_EXISTS "%data_loc_shared%/splconv.txt" BEGIN
+	DELETE "%data_loc_shared%/splconv.txt"
+END
 
 
-	////////////////////////////////////////////////////////////////////////////////
-	// read in resource-id data
-	////////////////////////////////////////////////////////////////////////////////
-	ACTION_TIME indirect_load_timer BEGIN
-		LAM indirect_load 
-	END
+////////////////////////////////////////////////////////////////////////////////
+// load shared tra strings
+////////////////////////////////////////////////////////////////////////////////
 
-	////////////////////////////////////////////////////////////////////////////////
-	// make sure any spell has a scroll (we want them present in advance so that
-	// the sphere/school systems can glom onto them)
-	////////////////////////////////////////////////////////////////////////////////
-	ACTION_TIME scroll_make_timer BEGIN
-		LAF check_label STR_VAR label="dw_made_all_scrolls" RET value END
-		ACTION_IF !value BEGIN
-			LAF make_label STR_VAR label="dw_made_all_scrolls" END
-	//	LAF spl_make_all_scrolls END
-		END
-	END
+LOAD_TRA "%MOD_FOLDER%/lang/english/shared.tra" "%MOD_FOLDER%/lang/%LANGUAGE%/shared.tra"
 
-	////////////////////////////////////////////////////////////////////////////////
-	// Make splconv generate a new array of protection spells
-	////////////////////////////////////////////////////////////////////////////////
-	
-	ACTION_IF FILE_EXISTS "%data_loc_shared%/splconv.txt" BEGIN
-		DELETE "%data_loc_shared%/splconv.txt"
-	END
+////////////////////////////////////////////////////////////////////////////////
+// quick start for debugging
+////////////////////////////////////////////////////////////////////////////////
 
-
-	////////////////////////////////////////////////////////////////////////////////
-	// load shared tra strings
-	////////////////////////////////////////////////////////////////////////////////
-	
-	LOAD_TRA "%MOD_FOLDER%/lang/english/shared.tra" "%MOD_FOLDER%/lang/%LANGUAGE%/shared.tra"
-
-	////////////////////////////////////////////////////////////////////////////////
-	// quick start for debugging
-	////////////////////////////////////////////////////////////////////////////////
-
-	LAF check_ini STR_VAR ini=debug_quickstart RET value1=value END
-	LAF check_label STR_VAR label="dw-debug_quickstart" RET value2=value END
-	ACTION_IF value1 && !value2 BEGIN
-		LAF make_label STR_VAR label=dw-debug_quickstart END
-		INCLUDE "%MOD_FOLDER%/lib/debug_quickstart.tpa"
-		LAF debug_quickstart END
-	END
-	
-
+LAF check_ini STR_VAR ini=debug_quickstart RET value1=value END
+LAF check_label STR_VAR label="dw-debug_quickstart" RET value2=value END
+ACTION_IF value1 && !value2 BEGIN
+	LAF make_label STR_VAR label=dw-debug_quickstart END
+	INCLUDE "%MOD_FOLDER%/lib/debug_quickstart.tpa"
+	LAF debug_quickstart END
 END

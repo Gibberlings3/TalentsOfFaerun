@@ -344,7 +344,7 @@ BACKUP "weidu_external/backup/[your mod folder name]" in your tp2.
    END
    
    ACTION_IF !VARIABLE_IS_SET lua_loc BEGIN
-		OUTER_SPRINT lua_loc lua
+		OUTER_SPRINT lua_loc "%sfo_library_path%/lua"
    END
 
    ACTION_IF !VARIABLE_IS_SET external_loc BEGIN
@@ -353,6 +353,10 @@ BACKUP "weidu_external/backup/[your mod folder name]" in your tp2.
 
    ACTION_IF !VARIABLE_IS_SET sfo_tra_path BEGIN
       OUTER_SPRINT sfo_tra_path lang
+   END
+   
+   ACTION_IF !VARIABLE_IS_SET sfo_extra_tra_folders BEGIN
+	OUTER_SPRINT sfo_extra_tra_folders ""
    END
 
    ACTION_IF !VARIABLE_IS_SET sfo_iconv_path BEGIN
