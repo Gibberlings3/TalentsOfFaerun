@@ -201,6 +201,21 @@ END
 
 DEFINE_ACTION_FUNCTION build_kit_tables BEGIN
 
+		
+	// parse kittable to work out which kits are actually available to PCs at all
+	LAF 2da_read STR_VAR file=kittable.2da RET_ARRAY kittable_rows=rows kittable_cols=columns kittable_array=array END
+	ACTION_PHP_EACH kittable_array AS ind=>file BEGIN
+		ACTION_IF FILE_EXISTS_IN_GAME "%file%.2da" BEGIN
+			COPY_EXISTING - "%file%.2da" nowhere
+				READ_2DA_ENTRIES_NOW "kit_entries_%file%" 2
+				FOR (row=0;row<"kit_entries_%file%";++row) BEGIN
+					READ_2DA_ENTRY_FORMER "kit_entries_%file%" row 1 kit_number
+					SET $kit_available_for_pc("%kit_number%")=1
+				END
+		END
+	END
+		
+
 	// parse clsrcreq to get the kit/race maps
 	
 	COPY_EXISTING "clsrcreq.2da" override
@@ -250,7 +265,7 @@ DEFINE_ACTION_FUNCTION build_kit_tables BEGIN
 			READ_2DA_ENTRY_FORMER kitlist_data row 0 kit_num
 			READ_2DA_ENTRY_FORMER kitlist_data row 8 class_num
 			TO_UPPER kit
-			PATCH_IF IS_AN_INT class_num BEGIN
+			PATCH_IF IS_AN_INT class_num && IS_AN_INT $kit_available_for_pc("%kit_num%") BEGIN
 			  SPRINT class $class("%class_num%")
 			  PHP_EACH racelist AS race=>discard BEGIN
 				PATCH_IF VARIABLE_IS_SET $kit_race("%kit%" "%race%") BEGIN
@@ -263,9 +278,9 @@ DEFINE_ACTION_FUNCTION build_kit_tables BEGIN
 			END
 		END
 	BUT_ONLY
-		
+
 	
-	// parse kittable to generate the actual tables
+	// parse kittable again to generate the actual tables (older code, doesn't use sfo2e, no point reinventing the wheel though)
 	
 	COPY_EXISTING kittable.2da override
 		COUNT_2DA_COLS colcount

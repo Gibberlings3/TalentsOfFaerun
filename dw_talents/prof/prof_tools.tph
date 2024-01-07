@@ -39,11 +39,15 @@ dwKitExtraProfs={}
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///	change a kit's parent class for the purposes of choosing initial proficiencies
 /// (the new class should give the same number of profs as the old one; that means it's probably going to be a bespoke virtual class)
+///
+/// optionally, known_weapon_parent is stored to determine the base-class usability proficiencies of the kit (as opposed to the ones it
+/// gets for free)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 DEFINE_ACTION_FUNCTION prof_redirect_kit_parent
 	STR_VAR kit=""
 			parent=""
+			known_weapon_parent=""
 BEGIN
 	// initialize if necessary
 	LAF initialize_prof_component END
@@ -58,6 +62,13 @@ BEGIN
 		OUTER_SET parent_number=$virtual_class_array("%parent%")
 	END
 	APPEND "m_dw_prd.lua" "dwProfKitRedirect[%kit_id%]=%parent_number%%WNL%"
+	// sort out known-weapon parent
+	ACTION_IF "%known_weapon_parent%" STR_CMP "" BEGIN
+		ACTION_IF !FILE_EXISTS_IN_GAME "%data_loc_shared%/weapprof_parent_class_override.txt" BEGIN
+			COPY ".../stratagems-inline/blank" "%data_loc_shared%/weapprof_parent_class_override.txt"
+		END
+		APPEND_OUTER "%data_loc_shared%/weapprof_parent_class_override.txt" "%kit%%TAB%%known_weapon_parent%"
+	END
 
 END
 

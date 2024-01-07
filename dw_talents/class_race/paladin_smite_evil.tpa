@@ -6,18 +6,25 @@ DEFINE_ACTION_FUNCTION paladin_smite_evil BEGIN
 	LAF resolve_statdesc STR_VAR string bam="%PALADIN_SMITE_EVIL%C" RET stat_num END
 	LAF ds_resolve_stat STR_VAR id=PALADIN_SMITE_EVIL RET stat_ind END
 
-	// make the payload spell
+	// make the payload spell and the cosmetic magic column
 	
 	
 	spl.make[%spl_smite_evil_payload%]
 	[
 		m_name:=@705
 		m.ab.add{}
-		m.ab.alter{s_level=1 s_projectile=66}
+		m.ab.alter{s_level=1}
 		m.ab.clone{s_level=entry_index*2+3|number:i=14 match="s_level=1"}
-		m.ab_fx.add{s_opcode=324 s_target=2 s_timing=0 s_duration=1 s_parameter2=38 s_resource:="%spl_smite_evil_payload%"}
+		m.ab_fx.add{s_opcode=324 s_target=1 s_timing=0 s_duration=1 s_parameter2=38 s_resource:="%spl_smite_evil_payload%"}
 		m.ab_fx.add{s_opcode=12 s_target=1 s_dispel_resist=0 s_parameter2b=64 s_timing=1 s_dicenumber=(p_level+1)/2 s_dicesize=6}
-		m.ab_fx.add{s_opcode=174 s_target=2 s_timing=1 s_resource:="#eff_p15"}
+		m.ab_fx.add{s_opcode=174 s_target=1 s_timing=1 s_resource:="#eff_p15"}
+		m.ab_fx.add{s_opcode=146 s_target=1 s_parameter2=1 s_resource:="%spl_smite_evil_cosmetic%"}
+	]
+
+	spl.make[%spl_smite_evil_cosmetic%]
+	[
+		m.ab.add{}
+		m.ab.alter{s_level=1 s_projectile=66}
 	]
 	
 	// make an extra-damage copy of the payload spell for undead hunters/cavaliers
@@ -34,8 +41,14 @@ DEFINE_ACTION_FUNCTION paladin_smite_evil BEGIN
 	spl.copy[%spl_smite_evil_payload%=>%spl_smite_good_payload%]
 	[
 		m_name:=@712
-		m.ab_fx.alter{ s_parameter2=32 s_resource:="%spl_smite_good_payload%"| match="s_opcode=324"}
-		m.ab.alter{s_projectile=195}
+		m.ab_fx.alter{ s_parameter2=35 s_resource:="%spl_smite_good_payload%"| match="s_opcode=324"}
+		m.ab_fx.alter{ s_resource:="%spl_smite_good_cosmetic%"|match="s_opcode=146"}
+	]
+
+	spl.make[%spl_smite_good_cosmetic%]
+	[
+		m.ab.add{}
+		m.ab.alter{s_level=1 s_projectile=195}
 	]
 	
 	// make undead-hunter and cavalier versions
@@ -83,7 +96,7 @@ DEFINE_ACTION_FUNCTION paladin_smite_evil BEGIN
 		k.kit_grant_powers{%spl_smite_evil_undead_hunter% 1}		
 		new:=@717
 		adv:=@714
-		k_description=k_description.patch{REPLACE_TEXTUALLY "^%adv%" "%adv%%WNL%%new%"}
+		k_description=k_clastext_descstr.patch{REPLACE_TEXTUALLY "^%adv%" "%adv%%WNL%%new%"}
 
 	]
 	kit.edit[BLACKGUARD|edit_strrefs_in_place:i=1]
@@ -147,7 +160,7 @@ BEGIN
 
 	spl.edit[%payload%]
 	[
-		m.ab_fx.add{s_opcode=146 s_target=2 s_timing=1 s_parameter2=1 s_resource:="%removal%"}
+		m.ab_fx.add{s_opcode=146 s_target=1 s_timing=1 s_parameter2=1 s_resource:="%removal%"|insert_point:i=0}
 	]
 
 	// edit the main spell itself

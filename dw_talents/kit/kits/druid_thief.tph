@@ -32,7 +32,7 @@ DEFINE_ACTION_FUNCTION druid_thief BEGIN
 	
 	// log for prof component
 	
-	LAF prof_redirect_kit_parent STR_VAR kit parent=DRUID_THIEF END
+	LAF prof_redirect_kit_parent STR_VAR kit parent=DRUID_THIEF known_weapon_parent=DRUID END
 
 
 END
@@ -78,7 +78,7 @@ DEFINE_ACTION_FUNCTION silent_avenger RET kit BEGIN
 	// log for prof component
 	
 	LAF include STR_VAR file=prof_tools.tph locbase=prof END
-	LAF prof_redirect_kit_parent STR_VAR kit parent=DRUID_THIEF END
+	LAF prof_redirect_kit_parent STR_VAR kit parent=DRUID_THIEF known_weapon_parent=DRUID END
 
 
 

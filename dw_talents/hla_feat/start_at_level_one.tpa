@@ -1,20 +1,30 @@
 DEFINE_ACTION_FUNCTION start_at_level_one BEGIN
 
+	// handle mage/bard spells - do this first, before we clear out the xp line
+	
+	LAF level_one_find_starting_xp RET xp END
+	LAF level_one_set_spell_table INT_VAR xp STR_VAR class=mage table=MXSPLWIZ END
+	LAF level_one_set_spell_table INT_VAR xp STR_VAR class=bard table=MXSPLBRD END
+
+	//main part
+
 	ACTION_CLEAR_ARRAY startare2das 
 	OUTER_SPRINT $startare2das("STARTARE") ""
 	OUTER_SPRINT $startare2das("STARTBP") ""
-	LAF 2da_read STR_VAR file=campaign.2da RET_ARRAY campaign_rows=rows campaign_array=array END
-	ACTION_PHP_EACH campaign_rows AS row=>discard BEGIN
-		OUTER_SPRINT 2da $campaign_array("%row%" STARTARE)
-		ACTION_TO_UPPER 2da
-		OUTER_SPRINT $startare2das("%2da%") ""
+	ACTION_IF FILE_EXISTS_IN_GAME "campaign.2da" BEGIN
+		LAF 2da_read STR_VAR file=campaign.2da RET_ARRAY campaign_rows=rows campaign_array=array END
+		ACTION_PHP_EACH campaign_rows AS row=>discard BEGIN
+			OUTER_SPRINT 2da $campaign_array("%row%" STARTARE)
+			ACTION_TO_UPPER 2da
+			OUTER_SPRINT $startare2das("%2da%") ""
+		END
 	END
 	
 	ACTION_PHP_EACH startare2das AS file=>discard BEGIN
 		LAF start_at_level_one_core STR_VAR file END
 	END
 
-
+	
 
 END
 
@@ -36,6 +46,120 @@ BEGIN
 		LPF 2da_write STR_VAR array=start_array default="BADVAL" END
 	BUT_ONLY
 	IF_EXISTS
+
+END
+
+DEFINE_ACTION_FUNCTION level_one_find_starting_xp RET xp BEGIN
+
+
+	ACTION_IF GAME_IS "IWDEE" BEGIN
+		OUTER_SPRINT startare startare
+		LAF check_ini STR_VAR ini=start_iwd section=default_start RET value END
+		ACTION_IF value STR_EQ "how" BEGIN
+			OUTER_SPRINT line START_MP_XP
+		END ELSE BEGIN
+			OUTER_SPRINT line START_XP
+		END
+	END ELSE
+	ACTION_IF GAME_IS "EET" BEGIN
+		OUTER_SPRINT line START_XP
+		LAF check_ini STR_VAR ini=start_eet section=default_start RET value END
+		ACTION_MATCH "%value%" WITH
+		sod BEGIN
+			OUTER_SPRINT startare sodstrta
+		END
+		soa BEGIN
+			OUTER_SPRINT startare startare	
+		END
+		tob BEGIN
+			OUTER_SPRINT startare 25starta
+		END
+		bp bp1 BEGIN
+			OUTER_SPRINT startare startbp_
+		END
+		bp2 BEGIN
+			OUTER_SPRINT startare startbp
+		END
+		bg bg1 BEGIN
+			OUTER_SPRINT startare bgstarta
+		END
+		DEFAULT
+			WARN "hla_feat function start_at_level_1: unrecognized value %value% for ini start_eet, assuming BG"
+		END
+	END ELSE
+	ACTION_IF GAME_IS "BG2EE" BEGIN
+		LAF check_ini STR_VAR ini=start_bg2 section=default_start RET value END
+		ACTION_MATCH "%value%" WITH
+		bp2 BEGIN
+			OUTER_SPRINT startare startbp
+			OUTER_SPRINT line START_XP
+		END
+		tob BEGIN
+			OUTER_SPRINT startare startare
+			OUTER_SPRINT line START_MP_XP		
+		END
+		DEFAULT
+			OUTER_SPRINT startare startare
+			OUTER_SPRINT line START_XP		
+		END
+	END ELSE BEGIN // assume BGEE
+		LAF check_ini STR_VAR ini=start_bg section=default_start RET value END
+		ACTION_MATCH "%value%" WITH
+		bp bp1 BEGIN
+			OUTER_SPRINT startare startbp
+			OUTER_SPRINT line START_XP
+		END
+		sod BEGIN
+			ACTION_IF GAME_INCLUDES "SOD" BEGIN
+				OUTER_SPRINT startare sodstrta
+			END ELSE BEGIN
+				WARN "ini value start_bg is set to sod but sod is not installed; reverting to bg"
+				OUTER_SPRINT startare startare
+			END
+			OUTER_SPRINT line START_XP		
+		END
+		DEFAULT
+			OUTER_SPRINT startare startare
+			OUTER_SPRINT line START_XP				
+		END
+	END
+	LAF 2da_read STR_VAR file="%startare%.2da" RET_ARRAY startare_array=array END
+	OUTER_SET xp=$startare_array("%line%" VALUE)
+
+
+
+END
+
+DEFINE_ACTION_FUNCTION level_one_set_spell_table
+	INT_VAR xp=0
+	STR_VAR table=""
+			class=""
+BEGIN
+	// restore backup if appropriate, else make one
+	ACTION_IF FILE_EXISTS "%data_loc%/%table%_backup.2da" BEGIN
+		COPY "%data_loc%/%table%_backup.2da" "override/%table%.2da"
+	END ELSE BEGIN
+		COPY_EXISTING  "%table%.2da" "%data_loc%/%table%_backup.2da"
+	END
+	// find level
+	LAF level_at_xp INT_VAR xp STR_VAR class RET level END
+	// make changes
+	COPY_EXISTING "%table%.2da" override
+		LPF 2da_read RET_ARRAY spell_array=array spell_rows=rows spell_cols=columns END
+		proceed=0
+		PHP_EACH spell_rows AS row=>discard BEGIN
+			proceed=proceed|| (row=level)
+		END
+		PATCH_IF proceed BEGIN
+			PHP_EACH spell_cols AS col=>discard BEGIN	
+				SET $spell_array("1" "%col%")=$spell_array("%level%" "%col%")
+			END
+		END
+		LPF 2da_sort STR_VAR rows=numerically array=spell_array RET_ARRAY spell_array=array END
+		LPF 2da_write STR_VAR array=spell_array END
+	BUT_ONLY
+
+
 
 END
 

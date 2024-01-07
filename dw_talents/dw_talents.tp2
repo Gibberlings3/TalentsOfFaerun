@@ -1,7 +1,7 @@
 BACKUP ~weidu_external/backup/dw_talents~
 AUTHOR "DavidW"
 //MODDER setup_tra none area_variables none missing_extern none missing_resref none ict2_actions none missing_eval none overwriting_file none fun_args warn
-VERSION ~Beta 2~
+VERSION ~Beta 3~
 
 AUTO_EVAL_STRINGS
 README "dw_talents/doc/readme-dw_talents.html"
@@ -26,15 +26,10 @@ LANGUAGE ~English~
 /*
 BEGIN "test" DESIGNATED 0
 
-//LAF ui_spell_system_setup END
-LAF spell_system_extension_setup END
-
-BEGIN "test precursor" DESIGNATED 10
-
-BEGIN "extra test" DESIGNATED 20
-
-LAF ui_spell_system_spheres END
+LAF run STR_VAR file=test location=test END
 */
+
+
 //////////////////////////////////////////////////////////////////////
 
 
@@ -202,7 +197,7 @@ REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 2040 @1090
 //REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2040 @1090
 FORBID_COMPONENT ~stratagems/setup-stratagems.tp2~ 5900 @2001
 REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_2000_installed @1090
-REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~1160~ @96
+//REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~1160~ @96
 
 LAF run STR_VAR file=install_spell_resources version=shapeshift location=spell END
 
@@ -399,10 +394,10 @@ LAF run STR_VAR file=paladin location=class_race END
 BEGIN @503 DESIGNATED 40300 /*LABEL dw_revised_smite_evil */ GROUP @5
 
 REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
-REQUIRE_PREDICATE (GAME_IS "iwdee" || MOD_IS_INSTALLED "dw_talents/dw_talents.tp2" 40200 || MOD_IS_INSTALLED "iwdification.tp2" 100) @78
+REQUIRE_PREDICATE (GAME_IS "iwdee" || MOD_IS_INSTALLED "dw_talents/dw_talents.tp2" 40200 || MOD_IS_INSTALLED "iwdification.tp2" 100 || IS_AN_INT dw_talents_component_40200_installed) @78
 FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
-FORBID_COMPONENT "dw_talents/dw_talents.tp2" 40301 @79
-REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_40301_installed @79
+FORBID_COMPONENT "dw_talents/dw_talents.tp2" 40310 @79
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_40310_installed @79
 
 LAF run STR_VAR file=paladin_smite_evil location=class_race END
 
@@ -478,7 +473,7 @@ LAF run STR_VAR file=rebalance_traps location=class_race tra=kit_rebalance END
 //////////////////////////////////////////////////////////////////////
 
 BEGIN @507 DESIGNATED 40600 GROUP @5
-REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~1160~ @96
+REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~1150~ @96
 
 REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
 

@@ -19,13 +19,97 @@
 </p>
 <p>[blah]</p>
 </div>
-<div class="ribbon_rectangle_h3"><a name="setup" id="setup"></a><h3>1.1 Setting up WEIDU</h3> </div>
+<div class="ribbon_rectangle_h3"><a name="setup" id="setup"></a><h3>1.1 Setting up SFO</h3> </div>
     <div class="ribbon_triangle_h2-l"></div>
     <div class="ribbon_triangle_h2-r"></div>
 
 <div class="section">
 <p>
-SFO (which technically stands for 'Stratagems Functional Overlay', since I originally developed it for my Sword Coast Stratagems mod) is a large function library and modding environment
+SFO (which technically stands for 'Stratagems Functional Overlay', since I originally developed it for my Sword Coast Stratagems mod) is a large function library and modding environment built inside WEIDU. To use it in your mod:
+<ol>
+<li>Make sure your mod has the line 'AUTO_EVAL_STRINGS' in its preamble. SFO requires AUTO_EVAL_STRINGS to function.</li>
+<li>Include the 'sfo' folder in your mod. You can get an up-to-date copy from my mod 'Talents of Faerun', available at gibberlings3.net. <strong>Do not</strong> use the 'sfo' folder from my mod 'Sword Coast Stratagems' (SCS), which is an earlier version. (You can use the 'sfo2e' folder from SCS, which is the new version of SFO, but you should rename it 'sfo' when you put it into your mod.)</li>
+<li>Include the line
+<div class="code">
+<pre><code>INCLUDE "sfo/sfo_init.tpc"
+</code></pre>
+</div>
+in your ALWAYS block.
+</li>
+</ol>
+</div>
+<div class="ribbon_rectangle_h3"><a name="setup" id="setup"></a><h3>1.2 Automatic handling of tra files</h3> </div>
+    <div class="ribbon_triangle_h2-l"></div>
+    <div class="ribbon_triangle_h2-r"></div>
+
+<div class="section">
+<p>SFO automatically handles your tra files (using the 'charset_wrapper' function, which is called automatically when you run it. If:
+<ul>
+<li>You keep your tra files in the 'tra', 'lang', or 'language' file</li>
+<li>You encode your tra files in UTF-8 (the encoding used by the Enhanced Edition)</li>
+<li>You keep the strings used by your TP2 itself (like component names and incompatibility messages) in 'setup.tra'</li>
+<li>You keep the 'iconv' folder, used for conversions to or from UTF-8, in the same directory as your tra files</li>
+<li>You don't want to load any tra files up front and will use LOAD_TRA/WITH_TRA to load your tra files as and when you need them</li>
+<li>The language in which all your strings are guaranteed to be present is English</li>
+</ul>
+then you don't need to do anything: all your tra files will be moved to weidu_external/lang/%MOD_FOLDER%, and if necessary (on non-Enhanced Edition installs) converted from UTF-8. The variable 'sfo_tra_path' will be set to the location of your tra files, so you can just do
+<div class="code">
+<pre><code>LOAD_TRA "%sfo_tra_loc%/english/my_tra.tra" "%sfo_tra_loc%/%LANGUAGE%/my_tra.tra
+</code></pre>
+</div>
+(or the equivalent WITH_TRA syntax) to use a specific tra file.</p>
+
+<p>If one or more of these isn't correct, you can change the defaults by setting various variables before INCLUDEing sfo_init.tpc. Here's the full syntax:
+<div class="code">
+<pre><code>OUTER_SPRINT sfo_tra_path "tra" 	// the location of your tra files, relative to MOD_FOLDER
+OUTER_SET sfo_from_utf8=1 		// set to 0 if your tra files are encoded in oBG2 style 
+					//and need converting to UTF-8 on enhanced-edition installs
+OUTER_SPRINT sfo_setup_tra "setup" 	// set to the name (without .tra) of the file in which your tp2 component names, 
+					//component-compatibility messages, component group names, etc live
+OUTER_SPRINT sfo_iconv_path "tra/iconv" // set to the location (relative to MOD_FOLDER) of iconv.exe
+OUTER_SPRINT sfo_tra_load ""		// set to a space-separated list of names (.tra is optional) of 
+					//tra files that you want loaded after conversion/copyover
+OUTER_SPRINT sfo_default_language "english" // set to the language in which you are developing the mod
+OUTER_SPRINT sfo_extra_tra_folders ""	// set to a space-separated list of additional folders that also contain 
+					//tra files (you still need to avoid namespace conflict)
+
+INCLUDE "sfo/sfo_init.tpc"
+</code></pre>
+</div>
+
+</div>
+<div class="ribbon_rectangle_h3"><a name="setup" id="setup"></a><h3>1.3 Automatic handling of ini file</h3> </div>
+    <div class="ribbon_triangle_h2-l"></div>
+    <div class="ribbon_triangle_h2-r"></div>
+
+<div class="section">
+SFO will automatically look for an ini file for the mod (a file of fine-grained configuration options). By default, it assumes this file is located in %MOD_FOLDER% and is called %MOD_FOLDER%.ini (e.g., SCS's ini file is called stratagems.ini and lives in the main stratagems folder). You can override this with this syntax:
+<div class="code">
+<pre><code>OUTER_SPRINT sfo_ini_file "mymod.ini" // the name of your ini file
+OUTER_SPRINT sfo_ini_file_location "mymod" // the folder in which your ini file is kept
+
+INCLUDE "sfo/sfo_init.tpc"
+</code></pre>
+</div></p>
+<p>The ini file should fit the normal ini file format, e.g.
+<div class="code">
+<pre><code>[spell tweaks]
+disable_antimagic_shell=1
+nerf_chain_lightning=1
+
+[gameplay tweaks]
+remove_halflings=0
+revised_proficiencies=1
+</code></pre>
+</div>
+</p>
+<p>You can check the ini file with the (dimorphic) SFO function 'check_ini'. The syntax is
+<div class="code">
+<pre><code>LAF check_ini STR_VAR ini="remove_halflings" section="gameplay tweaks" RET value END
+</code></pre>
+</div>
+If the remove_halflings ini key exists in section "gameplay tweaks", this returns its value. If not, it returns zero, and outputs a WARNING that the ini value has been checked but is not set (you can set INT_VAR silent=1 to disable this warning). If you leave out the 'section' STR_VAR, the function returns the value of the key wherever it appears (if it appears more than once, you get the last value to appear).</p>
+<p>The ini file is loaded once, so checks of it are just memory operations (i.e., effectively instant).</p>
 
 WEIDU (created by Wesley Weimer, heavily developed by Valerio Biggiani ("TheBigg") and maintained currently by Wisp) is the standard modding tool for writing and installing IE mods. To set it up:
 <ul>

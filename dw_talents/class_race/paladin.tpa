@@ -15,7 +15,7 @@ DEFINE_ACTION_FUNCTION paladin BEGIN
 			REPLACE_TEXTUALLY "%old2%" "%new2%"
 		}
 		m.ab.alter{s_target=5}
-		m.ab_fx.alter{s_target=1;;s_duration=s_duration>0?1440:0}
+		m.ab_fx.alter{s_target=1;;s_duration=s_duration>=6?1440:0}
 	]
 	
 	// Detect Evil becomes at-will

@@ -82,6 +82,114 @@ BEGIN
 
 END
 
+/////////////////////////////////////////////////////////////////////////////////////////
+//// Interfaces into main function that allow one-off additions
+//////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION add_subrace
+	INT_VAR
+		COLOR_SKIN="-1"
+		COLOR_HAIR="-1"
+		COLOR_MAJOR="-1"
+		COLOR_MINOR="-1"
+		STR=0
+		DEX=0
+		CON=0
+		INT=0
+		WIS=0
+		CHA=0
+		EXTRA_PROF=0
+		PP=0
+		OL=0
+		FT=0
+		MS=0
+		HS=0
+		DI=0
+		ST=0
+	STR_VAR
+		subrace=""
+		NAME=""
+		DESC=""
+		PARENT=""
+		FINAL_RACE="*"
+		ICON="-1"
+		ICON_STRREF="-1"
+		BIO_OLD="-1"
+		BIO_NEW="-1"
+		SPL_INIT=""
+		SPL_RECUR=""
+BEGIN
+	OUTER_SPRINT var_row "%TAB%"
+	OUTER_SPRINT val_row "%subrace%%TAB%"
+	ACTION_FOR_EACH var IN NAME DESC PARENT FINAL_RACE ICON ICON_STRREF COLOR_SKIN COLOR_HAIR COLOR_MAJOR COLOR_MINOR STR DEX CON INT WIS CHA EXTRA_PROF PP OL FT MS HS DI ST BIO_OLD BIO_NEW SPL_INIT SPL_RECUR
+	BEGIN
+		ACTION_IF !VARIABLE_IS_SET "%var%" BEGIN
+			FAIL "add_subrace has variable mismatch"
+		END
+		OUTER_SPRINT var_row "%var_row%%var%%TAB%"
+		OUTER_SPRINT val EVAL "%%var%%"
+		OUTER_SPRINT val_row "%val_row%%val%%TAB%"		
+	END
+	COPY ".../stratagems-inline/blank" "%workspace%/temp_table.2da"
+	APPEND_OUTER "%workspace%/temp_table.2da" "2DA V1.0%WNL%*%WNL%%var_row%%WNL%%val_row%"
+	LAF add_to_subrace_tables STR_VAR subrace_table="temp_table.2da" table_path="%workspace%" END
+END
+
+DEFINE_ACTION_FUNCTION add_race
+	INT_VAR
+	STR_VAR
+		race=""
+		NAME=""
+		DESCSTR=""
+		UPPERCASE=""
+		BIOGRAPHY=""
+BEGIN
+	OUTER_SPRINT var_row "%TAB%"
+	OUTER_SPRINT val_row "%subrace%%TAB%"
+	ACTION_FOR_EACH var IN NAME DESCSTR UPPERCASE BIOGRAPHY
+	BEGIN
+		ACTION_IF !VARIABLE_IS_SET "%var%" BEGIN
+			FAIL "add_subrace has variable mismatch"
+		END
+		OUTER_SPRINT var_row "%var_row%%var%%TAB%"
+		OUTER_SPRINT val EVAL "%%var%%"
+		OUTER_SPRINT val_row "%val_row%%val%%TAB%"		
+	END
+	COPY ".../stratagems-inline/blank" "%workspace%/temp_table.2da"
+	APPEND_OUTER "%workspace%/temp_table.2da" "2DA V1.0%WNL%*%WNL%%var_row%%WNL%%val_row%"
+	LAF add_to_subrace_tables STR_VAR race_table="temp_table.2da" table_path="%workspace%" END
+
+END
+
+DEFINE_ACTION_FUNCTION add_pseudorace
+	INT_VAR
+	STR_VAR
+		NAME="-1"
+		DESC="-1"
+		REAL_RACE="-1"
+BEGIN
+	OUTER_SPRINT var_row "%TAB%"
+	OUTER_SPRINT val_row "%subrace%%TAB%"
+	ACTION_FOR_EACH var IN NAME DESC REAL_RACE
+	BEGIN
+		ACTION_IF !VARIABLE_IS_SET "%var%" BEGIN
+			FAIL "add_subrace has variable mismatch"
+		END
+		OUTER_SPRINT var_row "%var_row%%var%%TAB%"
+		OUTER_SPRINT val EVAL "%%var%%"
+		OUTER_SPRINT val_row "%val_row%%val%%TAB%"		
+	END
+	COPY ".../stratagems-inline/blank" "%workspace%/temp_table.2da"
+	APPEND_OUTER "%workspace%/temp_table.2da" "2DA V1.0%WNL%*%WNL%%var_row%%WNL%%val_row%"
+	LAF add_to_subrace_tables STR_VAR pseudorace_table="temp_table.2da" table_path="%workspace%" END
+
+END
+
+DEFINE_ACTION_FUNCTION disable_subrace
+	STR_VAR subrace=""
+BEGIN
+	LAF add_to_subrace_tables STR_VAR disabled="%subrace%" END
+END
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Helper functions for the main function
@@ -142,7 +250,6 @@ operate on the subrace tables toactually construct the subraces
 
 DEFINE_ACTION_FUNCTION build_subraces 
 	INT_VAR tlk_signal_start=900000
-	STR_VAR locbase=""
 BEGIN
 
 	// set names for some internally-used spells
@@ -199,6 +306,8 @@ BEGIN
 			++id
 		END
 	BUT_ONLY
+	
+
 	// load subrace data into memory, resolve statdesc entries as we go
 	LAF load_subrace_2da_table 
 		INT_VAR tlk_signal_start
@@ -223,6 +332,11 @@ IDS V1.0
 		LPF 2da_write STR_VAR array=output_array END
 
 
+	/// make a function
+	
+	LAF build_subrace_id_function END
+
+
 	// general setup of ui.menu and installation of new LUA objects and functions
 
 	LAF add_subraces_lua_setup END
@@ -237,9 +351,7 @@ IDS V1.0
 
 
 	// adjust for Strength (to allow for exceptional Strength)
-	
 	LAF add_subraces_handle_strength RET_ARRAY subrace_data END
-
 
 
 	// write the data into LUA tables
@@ -500,8 +612,7 @@ DEFINE_PATCH_FUNCTION edit_race_menu BEGIN
 
 	// redirect the done button
 	
-	REPLACE_TEXTUALLY ~createCharScreen:OnRaceSelectButtonClick(chargen.races\[currentChargenRace\]\.id)~ ~dwOnRaceSelectButtonClick(chargen.races[currentChargenRace].id)~
-	REPLACE_TEXTUALLY ~Infinity_PopMenu(); createCharScreen:OnDoneButtonClick()~ ~dwOnRaceDoneButtonClick(chargen.races[currentChargenRace].id)~
+	REPLACE_TEXTUALLY ~Infinity_PopMenu()[ %TAB%;%WNL%%MNL%%LNL%]+createCharScreen:OnDoneButtonClick()~ ~dwOnRaceDoneButtonClick(chargen.races[currentChargenRace].id)~
 
 
 END
@@ -1085,15 +1196,20 @@ BEGIN
 			icon_id=$subrace_data("%ind%" icon_id)
 			PATCH_IF icon_id>=0 BEGIN
 				LPF ADD_SPELL_EFFECT INT_VAR opcode=142 target=2 parameter2=icon_id timing=9 END
-				PATCH_IF VARIABLE_IS_SET $subrace_icon_to_block("%ind%") BEGIN
-					LPF CLONE_EFFECT INT_VAR match_opcode=142 opcode=169 parameter2=$subrace_icon_to_block("%ind%") END
-					LPF CLONE_EFFECT INT_VAR match_opcode=142 opcode=240 parameter2=$subrace_icon_to_block("%ind%") END
+				PATCH_IF VARIABLE_IS_SET $subrace_data("%ind%" "icon_to_block") BEGIN
+					LPF CLONE_EFFECT INT_VAR match_opcode=142 opcode=169 parameter2=$subrace_data("%ind%" "icon_to_block") END
+					LPF CLONE_EFFECT INT_VAR match_opcode=142 opcode=240 parameter2=$subrace_data("%ind%" "icon_to_block") END
 				END
 			END
 			// add a payload spell if needed
 			SPRINT resource $subrace_data("%ind%" spl_init)
 			PATCH_IF "%resource%" STR_CMP "-1" BEGIN
 				LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 timing=4 duration=1 STR_VAR resource END
+			END
+			// change race if appropriate
+			final_id="subrace_data_%ind%_final_id"
+			PATCH_IF !(final_id=race) BEGIN
+				LPF ADD_SPELL_EFFECT INT_VAR opcode=72 target=2 parameter1=final_id parameter2=2 timing=4 duration=1 END
 			END
 			// block further content for joinable NPCs
 			LPF ADD_SPELL_EFFECT INT_VAR opcode=318 target=2 timing=0 duration=1 parameter1=stat_ind parameter2=splprot_num STR_VAR resource="%spell%" END
@@ -1118,11 +1234,7 @@ BEGIN
 					LPF ADD_SPELL_EFFECT INT_VAR opcode target=2 parameter1=mod timing=4 duration=1 END // timing=4 seems necessary for these not to get overriden at the start of play
 				END								
 			END
-			// change race if appropriate
-			final_id="subrace_data_%ind%_final_id"
-			PATCH_IF !(final_id=race) BEGIN
-				LPF ADD_SPELL_EFFECT INT_VAR opcode=72 target=2 parameter1=final_id parameter2=2 timing=4 duration=1 END
-			END
+
 
 	END
 END
@@ -1303,7 +1415,63 @@ DEFINE_ACTION_FUNCTION build_str_ex_spell BEGIN
 		
 END
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+DEFINE_ACTION_FUNCTION build_subrace_id_function BEGIN
+
+	// build a function to report on them
+	
+	LAF 2da_read STR_VAR path="%data_loc_shared%" file=dw_subrace_ids.2da RET_ARRAY subrace_array=array subrace_rows=rows END
+	
+	OUTER_SPRINT data_subrace ""
+	OUTER_SPRINT data_race ""
+	ACTION_PHP_EACH subrace_rows AS row=>discard BEGIN
+		OUTER_SPRINT subrace_id $subrace_array("%row%" "SUBRACE_ID")
+		OUTER_SPRINT race_id $subrace_array("%row%" "RACE_ID")
+		ACTION_TO_UPPER row
+		OUTER_SPRINT data_subrace "%data_subrace%%TAB%%TAB%%row%=>%subrace_id%%WNL%"
+		OUTER_SPRINT data_race "%data_race%%TAB%%TAB%%row%=>%race_id%%WNL%"
+	END
+
+<<<<<<<<.../stratagems-inline/subrace_ids.tpa
+DEFINE_DIMORPHIC_FUNCTION subrace_ids
+	STR_VAR subrace=""
+	RET race_id subrace_id success
+BEGIN
+	OUTER_SET success=1
+	ACTION_CLEAR_ARRAY subrace_id_array
+	ACTION_CLEAR_ARRAY race_id_array
+	ACTION_DEFINE_ASSOCIATIVE_ARRAY subrace_id_array BEGIN
+%data_subrace%
+	END
+	ACTION_DEFINE_ASSOCIATIVE_ARRAY race_id_array BEGIN
+%data_race%
+	END
+	ACTION_TO_UPPER subrace
+	ACTION_IF VARIABLE_IS_SET $subrace_id_array("%subrace%") BEGIN
+		OUTER_SET subrace_id=$subrace_id_array("%subrace%")
+	END ELSE BEGIN
+		OUTER_SET success=0
+		OUTER_SET subrace_id=0
+	END	
+	ACTION_IF VARIABLE_IS_SET $race_id_array("%subrace%") BEGIN
+		OUTER_SET race_id=$race_id_array("%subrace%")
+	END ELSE BEGIN
+		OUTER_SET success=0
+		OUTER_SET race_id=0
+	END
+END
+>>>>>>>>	
+	
+	
+	COPY ".../stratagems-inline/subrace_ids.tpa" "%data_loc_shared%/subrace_ids.tpa"
+		EVALUATE_BUFFER
+
+
+
+
+END
 
 
 
@@ -1418,7 +1586,11 @@ function dwAddToAbilInString(text,abil_strref,add,colon,minimum)
 				num_new=minimum
 			end
 		end
-		text=string.gsub(text,abil_string.."%s*%d+",abil_string..num_new)
+		if (num_new==18 and not dwHideExStr) then
+		text=string.gsub(text,abil_string.."%s*%d+",abil_string..num_new)		
+		else
+		text=string.gsub(text,abil_string.."%s*%d+/?%d?%d?",abil_string..num_new)
+		end
 	end
 	return text
 end
@@ -1459,7 +1631,9 @@ function dwPassSubraceData()
 		discard_number=subrace_number - 1
 		if currentChargenRace then -- character creation
 			race=dwRaces[currentChargenRace]
-			subrace=subraceList(race.id)[currentChargenSubrace]
+			if subraceList(race.id) then
+				subrace=subraceList(race.id)[currentChargenSubrace]
+			end
 			if subrace then
 				signal=subrace.id
 				extraprof=subrace.extraprof

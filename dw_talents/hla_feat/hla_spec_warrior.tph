@@ -379,7 +379,12 @@ BEGIN
 	struct.ab_fx.add{s_opcode=324 s_target=2 s_parameter1=4 s_parameter2=103 s_resource:="%spl_hla_profane_fire%"|insert_point:i=0}
 	LPF struct_write STR_VAR struct END
 
-	// then we need to modify the secondary spell
+	//now icons
+
+	// new icon
+	LPF install_hla_icon STR_VAR resref="%SOURCE_RES%" icon=pfire END
+
+
 END
 
 
@@ -603,7 +608,7 @@ END
 
 DEFINE_ACTION_FUNCTION barbarian_rage_setup
 BEGIN
-  ACTION_IF !FILE_EXISTS_IN_GAME "dwbrvan.spl" BEGIN // only do once
+  ACTION_IF !FILE_EXISTS_IN_GAME "%spl_barbarian_rage_vanilla_payload%.spl" BEGIN // only do once
    // the basic strategy: "barbarian rage" becomes a wrap for various subspells.
    // We use DW_POWER_UPGRADE_F3 to indicate Tireless Rage, DW_POWER_UPGRADE_F4 to indicate Greater Rage,
    // DW_POWER_UPGRADE_F5 to indicate Supernatural Fury, DW_POWER_UPGRADE_F6 and DW_POWER_UPGRADE_F8 to indicate

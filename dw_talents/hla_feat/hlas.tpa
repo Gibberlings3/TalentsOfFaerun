@@ -5,7 +5,7 @@ DEFINE_ACTION_FUNCTION hlas STR_VAR version=0 BEGIN // version is for testing. v
 		LAF ui_externalize_hlas END
 		
 		component_loc:==spell
-		WITH_TRA "%MOD_FOLDER%/lang/english/spell.tra" "%MOD_FOLDER%/lang/%LANGUAGE%/spell.tra" BEGIN
+		WITH_TRA "%sfo_tra_loc%/english/spell.tra" "%sfo_tra_loc%/%LANGUAGE%/spell.tra" BEGIN
 			LAF run STR_VAR file=fiend_summoning END
 		END
 		component_loc:==fiend

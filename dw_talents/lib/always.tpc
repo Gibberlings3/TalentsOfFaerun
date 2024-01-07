@@ -14,6 +14,7 @@ OUTER_SPRINT sfo_marker_prefix "dw-" // your modder prefix, possibly followed by
 PRINT "Loading SFO..."
 SILENT
 OUTER_SPRINT sfo_extra_tra_folders "lang_som"
+OUTER_SPRINT sfo_tra_load "shared.tra"
 INCLUDE "%MOD_FOLDER%/%sfo_library_path%/sfo_init.tpc"
 VERBOSE
 PRINT "...done"
@@ -21,9 +22,6 @@ PRINT "...done"
 // anything else this specific mod needs
 
 
-// set path for lua functions
-
-OUTER_SPRINT lua_path lua
 ////////////////////////////////////////////////////////////////////////////////
 // third-party content check
 ////////////////////////////////////////////////////////////////////////////////
@@ -89,6 +87,19 @@ ACTION_IF !value BEGIN
 END
 
 ////////////////////////////////////////////////////////////////////////////////
+// put scrollbar on SoD UI
+////////////////////////////////////////////////////////////////////////////////
+
+ACTION_IF GAME_INCLUDES sod BEGIN
+	LAF check_label STR_VAR label="dw-added_sod_ui_scrollbar" RET value END
+	ACTION_IF !value BEGIN
+		LAF make_label STR_VAR label="dw-added_sod_ui_scrollbar" END
+		COPY_EXISTING "ui.menu" override
+			REPLACE_TEXTUALLY "var[ %TAB%]+currentChargenKit" "var currentChargenKit%WNL%%TAB%%TAB%scrollbar%TAB%'GUISCRC'"
+	END
+END
+
+////////////////////////////////////////////////////////////////////////////////
 // experimental: fix vanilla UI bugs 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -128,13 +139,6 @@ END
 ACTION_IF FILE_EXISTS "%data_loc_shared%/splconv.txt" BEGIN
 	DELETE "%data_loc_shared%/splconv.txt"
 END
-
-
-////////////////////////////////////////////////////////////////////////////////
-// load shared tra strings
-////////////////////////////////////////////////////////////////////////////////
-
-LOAD_TRA "%MOD_FOLDER%/lang/english/shared.tra" "%MOD_FOLDER%/lang/%LANGUAGE%/shared.tra"
 
 ////////////////////////////////////////////////////////////////////////////////
 // quick start for debugging

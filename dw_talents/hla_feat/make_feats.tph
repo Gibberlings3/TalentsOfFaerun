@@ -1123,3 +1123,36 @@ BEGIN
 	
 	END
 END
+
+
+///////////////////////////////////////////////////////////////////////////////////
+///Lightweight tool for icons
+///////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION install_hla_icon
+	STR_VAR location="resource"
+			icon=""
+			resref=""
+BEGIN
+	// find a 7-letter code
+	PATCH_IF (STRING_LENGTH "%resref%")<8 BEGIN
+		SPRINT name_base "%resref%"
+	END ELSE BEGIN/// take out the hyphen
+		INNER_PATCH_SAVE name_base "%resref%" BEGIN
+			REPLACE_TEXTUALLY "[^a-z0-9]" ""
+		END
+	END
+	PATCH_IF (STRING_LENGTH "%name_base%")=8 BEGIN
+		PATCH_WARN "install_hla_icon failed to find a suitable name for icons for %resref%"
+	END
+	INNER_ACTION BEGIN
+		COPY "%MOD_FOLDER%/%component_loc%/%location%/%icon%_b.bam" "override/%name_base%b.bam"
+		COPY "%MOD_FOLDER%/%component_loc%/%location%/%icon%_c.bam" "override/%name_base%c.bam" IF_EXISTS
+	END
+	LPF ALTER_SPELL_HEADER STR_VAR icon="%name_base%b" END
+	PATCH_IF FILE_EXISTS_IN_GAME "%name_base%c.bam" BEGIN
+		WRITE_ASCII 0x3a "%name_base%c" (8)
+	END
+	
+	
+END

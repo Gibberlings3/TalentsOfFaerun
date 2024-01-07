@@ -1,14 +1,22 @@
-DEFINE_ACTION_FUNCTION ui_externalize_hlas BEGIN
-
+DEFINE_ACTION_FUNCTION ui_externalize_hlas 
+	INT_VAR min=0
+			step=0
+BEGIN
+VERBOSE
   LAF check_label STR_VAR label=dw-hlas-externalized RET value END
   ACTION_IF !value BEGIN
     LAF make_label STR_VAR label=dw-hlas-externalized END
+
+	WITH_TRA "%MOD_FOLDER%/%lua_loc%/lang/english/sfo_lua.tra" "%MOD_FOLDER%/%lua_loc%/lang/%LANGUAGE%/sfo_lua.tra" BEGIN
+		OUTER_SET point_string=RESOLVE_STR_REF (@499)
+		OUTER_SET default_description_string=RESOLVE_STR_REF (@500)
+	END
 	
 	// make hla files unique
 
 	LAF kit_baseline_lua END
 
-	
+
 	// on IWD/BG, set up a UI and blank the luas; on BG2, edit the UI to remove the icon column
 	
 	ACTION_IF is_iwd BEGIN
@@ -27,7 +35,6 @@ DEFINE_ACTION_FUNCTION ui_externalize_hlas BEGIN
 		LAF bg2_hla_menu END
 	END
 
-	
 	
 	// install class/kit detection
 	
@@ -117,7 +124,7 @@ DEFINE_ACTION_FUNCTION ui_externalize_hlas BEGIN
 
 	// work out the low-level progression
 	
-	LAF set_basic_hla_progression END
+	LAF set_basic_hla_progression INT_VAR min step END
 	
   END
 END
@@ -167,10 +174,10 @@ DEFINE_PATCH_FUNCTION skip_hla_patch BEGIN
 
 	REPLACE_TEXTUALLY EXACT_MATCH 
 		~createCharScreen:IsHighLevelAbilitiesButtonClickable()~
-		~(createCharScreen:IsHighLevelAbilitiesButtonClickable() and dwNumberHLAs(true)>dwHLANumberOld)~
+		~(createCharScreen:IsHighLevelAbilitiesButtonClickable() and dwHLANumberOld and dwNumberHLAs(true)>dwHLANumberOld)~
 	REPLACE_TEXTUALLY EXACT_MATCH
 		~createCharScreen:IsDoneButtonClickable()~
-		~(createCharScreen:IsDoneButtonClickable() or (createCharScreen:IsHighLevelAbilitiesButtonClickable() and dwNumberHLAs(true)==dwHLANumberOld))~
+		~(createCharScreen:IsDoneButtonClickable() or (createCharScreen:IsHighLevelAbilitiesButtonClickable() and dwHLANumberOld and dwNumberHLAs(true)==dwHLANumberOld))~
 	REPLACE_TEXTUALLY 
 		~createCharScreen:OnDoneButtonClick()~
 		~dwHLAClickDoneButton()~
@@ -209,9 +216,6 @@ END
 
 DEFINE_ACTION_FUNCTION override_hla_name_description_setup BEGIN
 
-	WITH_TRA "%MOD_FOLDER%/lang/english/hla_feat.tra" "%MOD_FOLDER%/lang/%LANGUAGE%/hla_feat.tra" BEGIN
-		OUTER_SET default_description_string=RESOLVE_STR_REF (@500)
-	END
 	COPY_EXISTING "ui.menu" override
 		LPF UI_alter_object STR_VAR object=CHARGEN_HIGH_LEVEL_ABILITIES object_type=menu patch=override_name_patch END
 		LPF UI_replace_function INT_VAR inline=1 STR_VAR function=chargenHLADescription new_function_path="description_function.lua" END
@@ -242,14 +246,20 @@ END
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-DEFINE_ACTION_FUNCTION set_basic_hla_progression BEGIN
+DEFINE_ACTION_FUNCTION set_basic_hla_progression 
+	INT_VAR min=0
+			step=0
+BEGIN
 
 	OUTER_SET level_max=50 
-
-	LAF check_ini STR_VAR ini=hla_level_min RET min=value END
-	LAF check_ini STR_VAR ini=hla_level_step RET step=value END
+	ACTION_IF min=0 BEGIN
+		LAF check_ini STR_VAR ini=hla_level_min RET min=value END
+	END
+	ACTION_IF step=0 BEGIN
+		LAF check_ini STR_VAR ini=hla_level_step RET step=value END
+	END
 	OUTER_SPRINT data ""
-	OUTER_FOR (level=1;level<=50;++level) BEGIN
+	OUTER_FOR (level=0;level<=50;++level) BEGIN
 		OUTER_SET number = (level<min)? 0 : (1 + ( level - min ) / step )
 		OUTER_SPRINT data "%data%%TAB%[%level%]=%number%,%WNL%"
 	END
@@ -479,8 +489,13 @@ END
 
 DEFINE_PATCH_FUNCTION bg2_hla_menu_edit BEGIN
 
-	REPLACE_TEXTUALLY "width 15" "width 0"
-	REPLACE_TEXTUALLY "width 61" "width 76"
+	PATCH_IF MOD_IS_INSTALLED "leui.tp2" 0 BEGIN 
+		REPLACE_TEXTUALLY "width 16" "width 0"
+		REPLACE_TEXTUALLY "width 56" "width 70"		
+	END ELSE BEGIN
+		REPLACE_TEXTUALLY "width 15" "width 0"
+		REPLACE_TEXTUALLY "width 61" "width 76"	
+	END
 
 
 END
@@ -592,6 +607,7 @@ end
 function dwClassLevelOld()
 
 	data=characters[currentID].classlevel
+	if not data then return 1,1 end -- fail gracefully
 	_,_,class,level=string.find(data.first.details,"(%a[%a ]*): %levelstring% ([0-9]+)")
 	c1=dwParentClassByName(class)
 	if data.second then
@@ -628,6 +644,7 @@ end
 function dwClassLevelNew()
 
 	data=chargen.charInfo
+	if not data then return 1,1 end -- fail gracefully
 	start,stop,class,level=string.find(data,"(%a[%a ]*): %levelstring% ([0-9]+)")
 	c1=dwParentClassByName(class)
 	start,stop,class2,level2=string.find(data,"(%a[%a ]*): %levelstring% ([0-9]+)",stop)

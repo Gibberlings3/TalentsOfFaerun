@@ -41,6 +41,7 @@ DEFINE_ACTION_FUNCTION install_feats INT_VAR is_epic=0 STR_VAR feat_table="" loc
 	// get multiclass components
 	
 	LAF read_kit_component_table RET_ARRAY kit_component_1 kit_component_2 kit_component_3 kits_with_component END
+
 		
 	// pass through feat table
 	
@@ -484,22 +485,21 @@ BEGIN
 				
 			END
 		BUT_ONLY
-		ACTION_FOR_EACH mc IN FIGHTER_MAGE FIGHTER_CLERIC FIGHTER_DRUID FIGHTER_THIEF CLERIC_MAGE CLERIC_THIEF MAGE_THIEF CLERIC_RANGER BEGIN
-			LAF return_first_entry STR_VAR list="%mc%" separator="_" RET k1=entry k2=list END
-			OUTER_SPRINT $kit_component_1("%mc%") "%k1%"
-			OUTER_SPRINT $kit_component_2("%mc%") "%k2%"
-		END
-		ACTION_FOR_EACH mc IN FIGHTER_MAGE_CLERIC FIGHTER_MAGE_THIEF BEGIN
-			LAF return_first_entry STR_VAR list="%mc%" separator="_" RET k1=entry list END
-			LAF return_first_entry STR_VAR list separator="_" RET k2=entry k3=list END
-			OUTER_SPRINT $kit_component_1("%mc%") "%k1%"
-			OUTER_SPRINT $kit_component_2("%mc%") "%k2%"
-			OUTER_SPRINT $kit_component_3("%mc%") "%k3%"
-		
-		END
+
 	
 	END
-
+	ACTION_FOR_EACH mc IN FIGHTER_MAGE FIGHTER_CLERIC FIGHTER_DRUID FIGHTER_THIEF CLERIC_MAGE CLERIC_THIEF MAGE_THIEF CLERIC_RANGER BEGIN
+		LAF return_first_entry STR_VAR list="%mc%" separator="_" RET k1=entry k2=list END
+		OUTER_SPRINT $kit_component_1("%mc%") "%k1%"
+		OUTER_SPRINT $kit_component_2("%mc%") "%k2%"
+	END
+	ACTION_FOR_EACH mc IN FIGHTER_MAGE_CLERIC FIGHTER_MAGE_THIEF BEGIN
+		LAF return_first_entry STR_VAR list="%mc%" separator="_" RET k1=entry list END
+		LAF return_first_entry STR_VAR list separator="_" RET k2=entry k3=list END
+		OUTER_SPRINT $kit_component_1("%mc%") "%k1%"
+		OUTER_SPRINT $kit_component_2("%mc%") "%k2%"
+		OUTER_SPRINT $kit_component_3("%mc%") "%k3%"		
+	END
 
 
 END

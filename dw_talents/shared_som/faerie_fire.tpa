@@ -42,7 +42,7 @@ DEFINE_ACTION_FUNCTION faerie_fire BEGIN
 			WRITE_SHORT 0x1c 2
 			LPF ALTER_SPELL_HEADER INT_VAR location=2 speed=4 END
 		LAF extended_add_spell STR_VAR id=CLERIC_FAERIE_FIRE file="faerie_fire_priest" path="%workspace%" RET CLERIC_FAERIE_FIRE=resref END
-		APPEND "hidespl.2da" "%CLERIC_FAERIE_FIRE% 1 0 0"
+		APPEND "hidespl.2da" "%CLERIC_FAERIE_FIRE% 1 0"
 		LAF spl_make_scroll STR_VAR spell_resref="%CLERIC_FAERIE_FIRE%" END
 	END ELSE BEGIN
 		// if not, make sure it doesn't work in daylight

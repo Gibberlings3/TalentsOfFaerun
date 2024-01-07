@@ -246,7 +246,12 @@ END
 DEFINE_PATCH_FUNCTION WIZARD_TRUE_DOMINION BEGIN
 
 	LPF scs_style_hla END
-	SPRINT resref "%SOURCE_RES%"
+	
+	// new icon
+	LPF install_hla_icon STR_VAR resref="%SOURCE_RES%" icon=truedomi END
+
+
+
 	spell_duration=10*6
 	
 	// edit the main (wrap) spell
@@ -256,9 +261,6 @@ DEFINE_PATCH_FUNCTION WIZARD_TRUE_DOMINION BEGIN
 	LPF DELETE_EFFECT INT_VAR match_opcode=324 match_parameter2=15 END
 	// power=10, no saving throw, bypass MR	
 	LPF ALTER_EFFECT INT_VAR resist_dispel=3 savingthrow=0 power=10 END	
-	// new icon (pro tem, from IWD2)	
-	LPF ALTER_SPELL_HEADER STR_VAR icon="%resref%" END
-	
 	// redirect subspells
 	REPLACE_TEXTUALLY SPWI506 "%resref%" (8)
 	
@@ -287,7 +289,10 @@ DEFINE_PATCH_FUNCTION WIZARD_MASS_DOMINATION BEGIN
 
 	LPF scs_style_hla END
 	SPRINT resref "%SOURCE_RES%"
-	
+	// new icon
+	// new icon
+	LPF install_hla_icon STR_VAR resref="%SOURCE_RES%" icon=massdomi END
+
 	// power=10
 	
 	LPF ALTER_EFFECT INT_VAR power=10 END
@@ -702,6 +707,10 @@ END
 DEFINE_PATCH_FUNCTION WIZARD_THUNDERSTORM BEGIN
 
 	LPF scs_style_hla END
+	// new icon
+	LPF install_hla_icon STR_VAR resref="%SOURCE_RES%" icon=thunder END
+
+
 	// make the payload spell
 	INNER_ACTION BEGIN
 			
@@ -727,14 +736,6 @@ DEFINE_PATCH_FUNCTION WIZARD_THUNDERSTORM BEGIN
 	LPF ADD_SPELL_EFFECT INT_VAR opcode=146 target=2 timing=1 parameter2=1 STR_VAR resource="%spl_thunderstorm_payload%" END
 	LPF ADD_SPELL_EFFECT INT_VAR target=1 opcode=174 timing=1 STR_VAR resource=dw-thndr END
 	LPF scs_style_hla END
-
-	// new icon (pro tem, from IWD2)
-	
-	LPF ALTER_SPELL_HEADER STR_VAR icon="%spl_hla_thunderstorm%" END
-	
-	INNER_ACTION BEGIN
-		COPY "%MOD_FOLDER%/%component_loc%/resource/iwd2_sppr302b.bam" "override/%spl_hla_thunderstorm%.bam"
-	END
 
 
 END
@@ -926,17 +927,17 @@ END
 
 DEFINE_PATCH_FUNCTION WIZARD_GAZE_OF_THE_MEDUSA BEGIN
 
+	// new icon
+	LPF install_hla_icon STR_VAR resref="%SOURCE_RES%" icon=medusa END
+
+
 	LPF scs_style_hla END
 
 	savebonus="-2"
-
-	LPF ALTER_SPELL_HEADER INT_VAR target=5 speed=4 projectile=159 STR_VAR icon="%resref%" END // INAREANP
+	LPF ALTER_SPELL_HEADER INT_VAR target=5 speed=4 projectile=159 END // INAREANP
 	LPF ALTER_EFFECT INT_VAR savebonus resist_dispel=0 END
 
 
-	INNER_ACTION BEGIN
-		COPY "%MOD_FOLDER%/%component_loc%/resource/spwi615b_iwd2.bam" "override/%resref%.bam"
-	END
 
 
 END

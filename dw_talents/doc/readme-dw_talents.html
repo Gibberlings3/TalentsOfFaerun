@@ -32,7 +32,7 @@
         <strong> On the web: </strong><a href="https://www.gibberlings3.net/mods/tweaks/tof/">Home
         page</a>, <a href="https://www.gibberlings3.net/forums/forum/236-talents-of-faer&ucirc;n/">discussion
         forum</a>, <a href="https://www.gibberlings3.net/gallery/album/42-talents-of-faer&ucirc;n/">image gallery</a>, and <a href="https://discord.gg/yTzjMTb">Discord</a></p>
-      <p> <strong>Version beta 2</strong><br />
+      <p> <strong>Version beta 3</strong><br />
         <strong>Languages: </strong>English<br />
         <strong>Platforms: </strong>Windows, macOS, Linux </p>
       <p> Talents of Faer&ucirc;n (ToF) is a collection of about 85 mini-mods for the Enhanced Edition versions of Baldur's Gate, Baldur's Gate II, and Icewind Dale, partially inspired by existing mods and tabletop Dungeons and Dragons resources. It contains many optional tweaks to various parts of gameplay, focusing on expanding and rebalancing player character abilities. Features include 150-odd new high-level abilities, a new 'feat' system where lower-level characters gain abilities every few levels, revisions to existing kits, new classes, new kits for multi-class characters, new types of magical specialization, a dozen or so new spells, many spell tweaks, 20-odd new gods for clerics to worship, a subrace system, a revised system of cleric/druid spells, and tweaks to the rules for ability scores and proficiencies. </p>
@@ -284,6 +284,7 @@
       <p>The powers and weaknesses of these races and subraces are based on a mixture of D&amp;D 2nd and 3rd edition. They're 'balanced' in the sense that I don't think any race you choose will imbalance the wider game. I haven't made that much effort to strictly balance them one against another: a deep gnome, for instance, is probably just better than a rock gnome. A full list of races, subraces, and their powers can be found <a href="subdocuments_dw/tof_race.html">here</a>. </p>
       <p>Ideally, a component like this would also alter in-game dialog options and responses, so that NPCs react to your race/subrace&mdash;especially for 'exotic' races like tieflings or gray dwarves. I haven't (yet) done this, though.</p>
       <p>Two choices are barred on BG/BG2: you can't play as a drow (because it would break the plot of BG2 chapter 5) and you can't play as an aasimar (because I find a Bhaalspawn aasimar a bit implausible). If you want to ignore the story-based problems with these choices, you can reactivate them using dw_talents.ini; there's no mechanical problem with either.</p>
+	  <p>Modders might want to read <a href="dw_subdocuments/identifying_subraces.html">this document</a>, which discusses how to detect a subrace or apply it to an NPC.</p>
     </div>
     <div class="ribbon_rectangle_h3">
       <h3><a name="kit_change" id="kit_change"></a>Class and Kit Revisions</h3>
@@ -467,7 +468,7 @@
       <p>The component also permits <em>unkitted</em> characters who dual-class into mages to become specialists or wild mages. Again, existing racial restrictions are enforced; so are ability-score requirements (again, unless you have deactivated them via 'Eliminate Class/Race Restrictions and Most Class/Ability Score Restrictions').</p>
       <p>This component automatically installs the contents of the <a href="#tidy-up-class">'Tidy Up Class-Selection Menu' component</a>.</p>
       <p><strong>Bloodlines for Sorcerers</strong></p>
-	  <p>This component (inspired by Pathfinder's treatment of sorcerers) gives each sorcerer an arcane bloodline, tied to the source of their magic. The 'arcane' bloodline is the default, and functions just like sorcerers in the unmodded game. Other bloodlines (the list is: Celestial, Deepearth, Efreeti, Fiendish, Gravetouched, Rimefrost, Stormborn) gain an additional known spell at every level, thematically connected to their bloodline (some of these spells are from the cleric list) and in exchange are denied access to one school or elemental type of magic. (The list of sorcerous bloodlines is not currently documented except in-game; this should be fixed soon but until then you should be able to get the idea by looking at dw_talents/class_race/data/bloodlines.ini ).</p>
+	  <p>This component (inspired by Pathfinder's treatment of sorcerers) gives each sorcerer an arcane bloodline, tied to the source of their magic. The 'arcane' bloodline is the default, and functions just like sorcerers in the unmodded game. Other bloodlines (the list is: Celestial, Deepearth, Efreeti, Fiendish, Gravetouched, Rimefrost, Stormborn) gain an additional known spell at every level, thematically connected to their bloodline (some of these spells are from the cleric list) and in exchange are denied access to one school or elemental type of magic. The details of the sorcerous bloodlines can be found <a href="subdocuments_dw/bloodline_desc.html">here</a>.</p>
 	  
 	  
 	  <p><strong>Dragon Disciples can be Disciples of Any Chromatic Dragon (Red/Blue/Green/Black/White)</strong></p>
@@ -743,7 +744,8 @@
       <p><strong>Characters Choose Minor New Abilities Every Three Levels</strong></p>
       <p>This component is based on the 'feats' system in Icewind Dale II (and in 3rd edition D&amp;D). At 2nd level, and every three levels thereafter, a character chooses a special ability from a list. For instance: a character might gain a bonus to some saving throws or damage rolls, an extra use of a special ability, the ability to brew potions or scribe scrolls, or a new spell slot. The abilities are intended to be modest rather than dramatic, though I welcome feedback. The full list of special abilities can be seen <a href="subdocuments_dw/feat_doc.html">here</a>.</p>
       <p>Abilities are selected during the leveling process using a similar interface to the one used for High-Level Abilities in Baldur's Gate II. If you are playing Baldur's Gate II, the ability system merges into the High-Level Ability system when you become eligible for High-Level Abilities; normal abilities remain available as alternatives to High-Level Abilities as you continue to level.</p> 
-      <p>Multi-classed and dual-classed characters gain abilities only according to their highest level.</p>
+      <p>Multi-classed characters gain abilities only for one class (the one that normally levels most quickly). Dual-classed characters only gain abilities for their highest level.</p>
+	  <p>Engine limitations mean that abililities cannot be selected at character creation, even if you start at higher than 1st level (e.g. at the start of Shadows of Amn). To handle this, your character will begin at 1st level and then can be levelled up at the start of the game. There is a slight awkwardness here for bards and mages, who should be able to select spells from their spellbook at character creation but don't at level-up. This will be handled fine in BG2EE if you start in Shadows of Amn. If you plan to create a new character in Heart of Winter, Throne of Bhaal, Siege of Dragonspear, the EET version of Shadows of Amn, or the Black Pits 2, you will need to tell ToF this before you install it, by setting the appropriate ini value in dw_talents.ini. (Look in the default_start block; options are iwd, how, soa, tob, bg, sod, bp, bp2.) Failing to do so will grant you too few wizard spells on character creation. Engine limitations also mean that multi-classed mages will be given slightly too many spells at character creation.</p>
       <p><strong>Revised High-Level Ability system<br />
         </strong><em>Only available for BG2EE, EET</em></p>
       <p>This component substantially revises and expands the High-Level Abilities (HLAs) granted to characters every level after reaching 3 million XP. The existing set of 46 HLAs is expanded to (depending on how you count them) 187 HLAs, of which: </p>
@@ -1076,7 +1078,8 @@ There are, however, a number of exceptions. (All in-game documentation has been 
           <li>For Icewind Dale II: Black Isle.</li>
           <li>For hosting: Gibberlings Three, and especially CamDawg and Kat Bella (&quot;TheAceFes&quot;) </li>
           <li>For tools: Westley Weimer, Valerio Biggiani (&quot;the bigg&quot;), and Fredrik Lindgren (&quot;Wisp&quot;) for WEIDU; Jon Hauglid, devSin, argent77, and others (for Near Infinity)</li>
-          <li>For information about the game; Ascension64, for TobEx; the various contributors to the <a
+          <li>For designing many of the HLA icons: Lava.</li>
+		  <li>For information about the game; Ascension64, for TobEx; the various contributors to the <a
 href="https://gibberlings3.github.io/iesdp/">Infinity Engine Structure Description Project</a> </li>
           <li>For many insightful comments about the Infinity Engine kit system: SubtleDoctor.</li>
 		  <li>For proofreading this readme and cleaning up my execrable HTML: CamDawg.</li>
@@ -1130,6 +1133,7 @@ href="https://gibberlings3.github.io/iesdp/">Infinity Engine Structure Descripti
 <li>Installing the mage specialist memorization component by itself no longer breaks ui.menu.</li>
 <li>Multiclass subrace characters no longer receive their bonuses twice.</li>
 <li>Subrace abilities at level >1 should now be applied correctly.</li>
+<li>Added many component checks for compatibility with Tweaks Anthology.</li>
 <li>The fact that monks get to apply their Wisdom bonus to AC is now noted in the readme (it was already documented in-game).</li>
 <li>Added basic documentation for sorcerer bloodlines, since this was originally missing. (Fuller documentation to follow in a subsequent update.)</li>
 <li>Documented 'Rangers use Icewind Dale-style spell memorisation'.</li>
@@ -1139,6 +1143,54 @@ href="https://gibberlings3.github.io/iesdp/">Infinity Engine Structure Descripti
 </ul>
  </p>
 </div>
+
+<div class="ribbon_rectangle_h3"><h3>Version beta 3 (7th January 2024)</h3></div>
+    <div class="ribbon_triangle_h2-l"></div>
+    <div class="ribbon_triangle_h2-r"></div>
+<div class="section"> 
+
+
+<p> 
+<ul>
+<li>Unique icons for the HLAs that were using reused or IWD2 icons - huge thanks to Lava for the design work here.</li>
+<li>LUA functions now load correctly in ability-modifier and ability-pointbuy components.</li>
+<li>Zero-level multiclassed characters can now level to 1st level (after fixing a complicated interaction of the HLA system with the level-0 hack for NPC customization).</li>
+<li>Kit (and god) selection screens in SoD now have scrollbars.</li>
+<li>Fixed a glitch in the Tweaks/ToF component-compatibility code.</li>
+<li>Smite Evil component now installs properly on batch mode.</li>
+<li>Barbarian Rage is no longer broken by the 'revised HLAs' component.</li>
+<li>Sorcerer bloodlines are now documented properly.</li>
+<li>Favored Soul component no longer breaks scripts containing 'OriginalClass'.</li>
+<li>New HLA system should now install properly even if spell system tweaks are not present.</li>
+<li>Recoded 'Empowered Healing' to avoid various instabilities.</li>
+<li>Fixed a number of problems with the 'NPC Customization and Management' component.</li>
+<li>Fixed some problems with Smite Evil/Good.</li>
+<li>Drow/Svirfneblin MR is now set correctly if you create a character of level >1.</li>
+<li>Library functions can now handle kit and class names with ' or " (but not both!) in them.</li>
+<li>Library functions can now handle kits which have not been assigned a HLA luxxxx file.</li>
+<li>Fixed a bug that was preventing third-party-added priest spells from showing up.</li>
+<li>Fixed some bugs in the code that hides unwanted abilities from the action bar.</li>
+<li>If you install the low-level ability system, characters start at level 1 and can level up at the start of the game, so as to get their abilities.</li>
+<li>Werewolves were not getting their correct AC modifiers due to a library bug.</li>
+<li>Werewolf regeneration has been restored.</li>
+<li>Sorted out some anomalies with assigning subraces to joinable NPCs.</li>
+<li>NPC-only kits are no longer made available to the PC if you use 'remove class/race restrictions'.</li>
+<li>Certain subraces were getting duplicate icons.</li>
+<li>Fixed many small errors in class/kit/race descriptions.</li>
+<li>Made the UI edits a bit more robust, in part to improve compatibility with Lefruet's UI and with EEUITweaks.</li>
+<li>Deprecated the 'use IWD slow poison' spell tweak, as it would require systematic regimenting of BG/BG2 poisons.</li>
+<li>'Increase the accuracy of Mordenkainen's Force Blade' tweak should now install.</li>
+<li>Resolved some inconsistencies in the Stonefist spell's description and effect, and fixed the missing level in the description of 'Telekinesis'. </li>
+<li>Resolved an invalid string in Chromatic Orb if the 'Use IWD Chromatic Orb' component is used.</li>
+<li>'Use IWD Chromatic Orb' component now affects avenger and trap versions of Chromatic Orb.</li>
+<li>Breach no longer bypasses Spell Turning.</li>
+<li>Strength of Stone should now work correctly.</li>
+<li>IWD bardsong component now correctly adjusts bard kit descriptions.</li>
+<li>New divine spell descriptions now match EE spell-description conventions.</li>
+<li>Various minor library fixes.</li>
+</ul>
+ </p>
+
   </div>
 </div>
 </body>

@@ -6,6 +6,7 @@ DEFINE_ACTION_FUNCTION ui_spell_system_spheres
 			tra_path="%MOD_FOLDER%/lang"
 			base_tra=sfo_lua
 			base_tra_path="DEFAULT"
+			3p_folder=dw_tof3p
 BEGIN
 	ACTION_IF !VARIABLE_IS_SET marker_loc BEGIN
 		OUTER_SPRINT marker_loc "weidu_external/markers"
@@ -24,7 +25,6 @@ BEGIN
 	END	
 
 	ACTION_IF !FILE_EXISTS "%marker_loc%/dw#spheres_installed.mrk" BEGIN
-
 		COPY_EXISTING "misc01.itm" "%marker_loc%/dw#spheres_installed.mrk"
 		
 		// install spell system
@@ -42,6 +42,10 @@ BEGIN
 		
 		ACTION_SORT_ARRAY_INDICES sphere_ids LEXICOGRAPHICALLY 
 		
+		
+		// load any 3rd-party sphere data
+		LAM 3p_load_data
+		
 		// go through each sphere and create a list of its spells; generate that list in LUA; record the spheres for the description edits
 		ACTION_PHP_EACH sphere_ids AS name=>ids BEGIN
 			PRINT "processing %ids% sphere"
@@ -57,8 +61,17 @@ BEGIN
 						READ_2DA_ENTRY_FORMER ids_data row 0 temp
 						SPRINT $spells_here("%temp%") ""
 					END
+				// add 3p
+				ACTION_PHP_EACH sfo_3p_spheres AS spell=>sphere BEGIN
+					ACTION_IF "%sphere%" STR_EQ "%ids%" BEGIN
+						OUTER_SPRINT $spells_here("%spell%") ""
+					END
+				END
 				ACTION_PHP_EACH spells_here AS spell=>discard BEGIN
-					LAF RES_NUM_OF_SPELL_NAME INT_VAR silent=1 STR_VAR spell_name="CLERIC_%spell%" RET resref=spell_res END
+					ACTION_IF !(INDEX ("CLERIC" "%spell%")=0) BEGIN
+						OUTER_SPRINT spell "CLERIC_%spell%"
+					END
+					LAF RES_NUM_OF_SPELL_NAME INT_VAR silent=1 STR_VAR spell_name="%spell%" RET resref=spell_res END
 					ACTION_IF FILE_EXISTS_IN_GAME "%resref%.spl" BEGIN
 						ACTION_TO_UPPER resref
 						OUTER_SPRINT $spell_resrefs_here("%resref%") ""
@@ -85,8 +98,11 @@ BEGIN
 		
 		// read back in the lists of cleric and druid spells
 		
+		LAF data_priest_spells_by_type RET_ARRAY cleric_spells druid_spells END
+		/*
 		LAF get_spell_array STR_VAR list=cleric root=sppr RET_ARRAY cleric_array=this_array END
 		LAF get_spell_array STR_VAR list=druid root=sppr RET_ARRAY druid_array=this_array END
+		*/
 
 		// go through the cleric/druid lists for missing spells
 
@@ -94,10 +110,9 @@ BEGIN
 		OUTER_SPRINT all_name $sphere_name("all")
 		OUTER_SPRINT divine_name $sphere_name("divine")
 
-		ACTION_PHP_EACH cleric_array AS spell=>val BEGIN
-		  ACTION_IF val && !VARIABLE_IS_SET $exclude_from_spheres("%spell%") && !RESOURCE_CONTAINS "hidespl.2da" "%spell%[ %TAB%]1" BEGIN	
-			ACTION_IF !VARIABLE_IS_SET $spell_spheres("%spell%") BEGIN
-				ACTION_IF $druid_array("%spell%")=1 BEGIN
+		ACTION_PHP_EACH cleric_spells AS spell=>discard BEGIN
+		    ACTION_IF !VARIABLE_IS_SET $exclude_from_spheres("%spell%") && !VARIABLE_IS_SET $spell_spheres("%spell%") BEGIN
+				ACTION_IF VARIABLE_IS_SET $druid_spells("%spell%")=1 BEGIN
 					OUTER_SPRINT $spell_spheres("%spell%") "%all_name%"
 					APPEND "m_dw_ssd.lua" "dwSpellList['all']['%spell%']=true%WNL%"
 					OUTER_SPRINT $nonempty_spheres("all") ""
@@ -107,16 +122,13 @@ BEGIN
 					OUTER_SPRINT $nonempty_spheres("divine") ""
 				END
 			END
-		  END
 		END
-		ACTION_PHP_EACH druid_array AS spell=>val BEGIN
-		  ACTION_IF val && !VARIABLE_IS_SET $exclude_from_spheres("%spell%") && !RESOURCE_CONTAINS "hidespl.2da" "%spell%[ %TAB%]1" BEGIN	
-			ACTION_IF !VARIABLE_IS_SET $spell_spheres("%spell%") BEGIN
+		ACTION_PHP_EACH druid_spells AS spell=>discard BEGIN
+		    ACTION_IF !VARIABLE_IS_SET $exclude_from_spheres("%spell%") && !VARIABLE_IS_SET $spell_spheres("%spell%") BEGIN
 				OUTER_SPRINT $spell_spheres("%spell%") "%nature_name%"
 				APPEND "m_dw_ssd.lua" "dwSpellList['nature']['%spell%']=true%WNL%"
 				OUTER_SPRINT $nonempty_spheres("nature") ""
 			END
-		  END
 		
 		END
 		
@@ -220,7 +232,8 @@ BEGIN
 		ACTION_FOR_EACH class IN cleric fighter_cleric cleric_mage fighter_mage_cleric cleric_thief BEGIN
 			LAF set_spell_list STR_VAR class allow_priest="%sphere_defaults_cleric%" END	
 		END
-		
+		LAF 3p_kit_bonus_spells END
+		LAF 3p_kit_sphere END
 
 	END
 END

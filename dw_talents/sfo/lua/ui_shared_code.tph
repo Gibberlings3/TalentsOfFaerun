@@ -141,6 +141,7 @@ END
 
 DEFINE_ACTION_FUNCTION hide_this_displayed_ability STR_VAR string="" BEGIN
 	ACTION_IF !FILE_EXISTS_IN_GAME "m_dw_haf.lua" BEGIN
+		
 		LAF hide_displayed_ability_setup END
 	END
 	OUTER_WHILE "%string%" STRING_COMPARE "" BEGIN

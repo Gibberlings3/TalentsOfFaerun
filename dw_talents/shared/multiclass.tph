@@ -311,6 +311,10 @@ BEGIN
 				value=$ab_array("%kit_name%" "%label%")
 				PATCH_IF value>0 BEGIN
 					SET $ab_array("%kit%" "%label%")=value
+					SPRINT temp (AT tra_ref) 
+					INNER_PATCH_SAVE temp "%temp%" BEGIN
+						REPLACE_TEXTUALLY ABIL_VALUE "%value%"
+					END
 					SPRINT ability_min_string "%ability_min_string%%temp%%WNL%"
 				END
 			END
@@ -322,13 +326,16 @@ BEGIN
 	LAF 2daq_extract INT_VAR rowname_column=1 STR_VAR resref=kitlist row="%kit%" column=help RET desc_strref=value END
 	ACTION_GET_STRREF desc_strref desc
 	LAF make_barred_school_string STR_VAR barred_schools tra RET barred_string END
+	PRINT "desc old: %desc%"
 	OUTER_PATCH_SAVE desc "%desc%" BEGIN
 		REPLACE_TEXTUALLY "BARRED_SCHOOL_PLACEHOLDER" "%barred_string%"
 		REPLACE_TEXTUALLY "BONUS_SCHOOL_PLACEHOLDER" "%extra_spell_string%%WNL%%save_bonus_string%"
 	END
+	PRINT "desc_new: %desc%"
 	ACTION_IF enforce_ability_minimum BEGIN
 		OUTER_SPRINT desc "%desc%%WNL%%WNL%%ability_min_string%"
 	END
+	PRINT "desc_final: %desc%"
 	STRING_SET_EVALUATE desc_strref "%desc%"
 	
 	// if appropriate, enforce specialist learning
@@ -388,6 +395,7 @@ BEGIN
 	END
 	ACTION_TO_UPPER parent_class
 	// update dualclass status
+	OUTER_SET cleric_multiclass=0
 	ACTION_MATCH "%parent_class%" WITH
 	FIGHTER_MAGE_CLERIC FIGHTER_MAGE_THIEF BEGIN
 		OUTER_SET is_dualclass=0
@@ -395,6 +403,7 @@ BEGIN
 	CLERIC_MAGE CLERIC_RANGER CLERIC_THIEF BEGIN
 		ACTION_IF !("%kit%" STRING_MATCHES_REGEXP ".*_DRUID.*") BEGIN
 			OUTER_SET is_dualclass=0
+			OUTER_SET cleric_multiclass=1
 		END
 	END
 	DEFAULT
@@ -419,6 +428,9 @@ BEGIN
 			OUTER_SET this_class_num=$parent_classes("%this_kit%")
 			OUTER_PATCH "" BEGIN
 				LOOKUP_IDS_SYMBOL_OF_INT this_parent class this_class_num
+			END
+			ACTION_IF "%this_parent%" STR_EQ "druid" && cleric_multiclass BEGIN
+				OUTER_SPRINT this_parent "cleric"
 			END
 		END
 		ACTION_TO_UPPER this_parent

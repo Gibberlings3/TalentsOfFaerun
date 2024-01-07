@@ -63,8 +63,8 @@ BEGIN
 						PRINT "Generating description for kit %class_label%"
 					END
 					// check the description to check for class/kit status (defined by whether it has 'Advantages:' or 'CLASS FEATURES:' in it
-					ACTION_GET_STRREF desc_strref desc			
-					ACTION_IF INDEX ("^%adv_line%" "%desc%" )>=0 BEGIN
+					ACTION_GET_STRREF desc_strref desc	
+					ACTION_IF INDEX ("^%adv_line%" "%desc%" )>=0 || "%class_label%" STR_EQ "wild_mage" BEGIN
 						LAF update_kit_proficiency_description STR_VAR kit="%class_label%" END								
 					END ELSE
 					ACTION_IF INDEX ("^%feature_line%" "%desc%")>=0 BEGIN
@@ -684,7 +684,7 @@ BEGIN
 		BUT_ONLY
 	 END
 	 DEFAULT
-		OUTER_SPRINT mainclass " "
+		OUTER_SPRINT mainclass ""
 	 END
 	END ELSE BEGIN
 		OUTER_SPRINT mainclass $mainclass_string("%class%")
@@ -721,8 +721,17 @@ BEGIN
 			END
 		END
 	 END ELSE BEGIN
-		ACTION_IF "%kit%" STRING_EQUAL_CASE "sorcerer" BEGIN
+		ACTION_MATCH "%kit%" WITH
+		"sorcerer" BEGIN
 			OUTER_SPRINT kit mage
+		END
+		"dw_druid_\(mage\|ranger\|thief\)" BEGIN
+			OUTER_SPRINT kit druid
+		END
+		barbarian BEGIN
+			OUTER_SPRINT kit fighter
+		END
+		DEFAULT
 		END
 		ACTION_CLEAR_ARRAY weapon_array	
 		ACTION_IF !VARIABLE_IS_SET all_weapprof_loaded BEGIN
@@ -751,7 +760,7 @@ BEGIN
 				ACTION_IF (id<111 || id=115) BEGIN
 					ACTION_IF VARIABLE_IS_SET $all_weapprof_data("%kit%" "%id%") BEGIN
 						OUTER_SET $weapon_array("%id%")=$all_weapprof_data("%kit%" "%id%")
-					END
+					END 
 				END
 			END
 		END
@@ -1165,6 +1174,15 @@ BEGIN
 			OUTER_SPRINT begins_with_all @8
 			OUTER_SPRINT begins_with_some @9
 		END
+	END
+	ACTION_MATCH "%class%" WITH
+	"dw_druid_\(mage\|ranger\|thief\)" BEGIN
+		OUTER_SPRINT class "druid"
+	END
+	"barbarian" BEGIN
+		OUTER_SPRINT class "fighter"
+	END
+	DEFAULT
 	END
 
 	OUTER_SET class_num=IDS_OF_SYMBOL (class "%class%")

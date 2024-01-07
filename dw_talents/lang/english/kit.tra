@@ -82,7 +82,7 @@ RAGE: BARBARIAN_RAGE_PLACEHOLDER
 LIGHTNING OF TALOS: This spell conjures a bolt of lightning which unerringly strikes a single target, inflicting 1d6 points of electrical damage per level of the priest (maximum 15d6). A successful saving throw vs. spells halves the damage.
 
 Disadvantages:
--  May not wear armor heavier than splint mail.
+- May not wear armor heavier than splint mail.
 - Alignment restricted to neutral evil, chaotic evil, and chaotic neutral."
 
 @9="Sword of Selûne"
@@ -275,7 +275,7 @@ Advantages:
 - 9th level cleric: May cast True Seeing once per day, as the 5th level priest spell. An additional use of this power is gained at level 15 and every 6 levels thereafter.
 
 Disadvantages:
-Alignment restricted to chaotic good, neutral good, and chaotic neutral."
+- Alignment restricted to chaotic good, neutral good, and chaotic neutral."
 @27="Silverstar of Selûne"
 @28="SILVERSTAR OF SELÛNE: Selûne (pronounced: seh-LOON-ay), Our Lady of Silver, is the goddess of the moon, the stars, and those who use them to navigate. Her eternal foe is the evil Shar, goddess of darkness, night, loss, and forgetfulness. Selûne is often called the Moonmaiden for her connection to the silver moon that orbits Faerûn. 
 
@@ -292,7 +292,7 @@ Advantages:
 - 9th level: May cast True Seeing once per day, as the 5th level priest spell. An additional use of this power is gained at level 15 and every 6 levels thereafter.
 
 Disadvantages:
-Alignment restricted to chaotic good, neutral good, and chaotic neutral."
+- Alignment restricted to chaotic good, neutral good, and chaotic neutral."
 
 @31=~Less than a fortnight after your initiation into the Temple of Moradin, you were summoned before the High Forgesmith of your order. In a cordial, if somewhat cold meeting, you were assigned your first duty as a full member of the temple: to make a pilgrimage to the North and see if you could bring the word of Moradin to dwarven settlers in the frontier towns. Almost as an afterthought, he informed you of his "concerns" over portents and omens concerning events transpiring in the North, and it was the belief of the temple that a representative of their interests there might serve to maintain peace in the region.
 
@@ -519,7 +519,7 @@ Disadvantages:
 @64="Heartwarder of Sune"
 @65="HEARTWARDER OF SUNE: Sune (pronounced: SUE-nee) Firehair is said to be the fairest of all the powers. When she is represented, she is shown as the most beautiful woman in the Realms, with sweeping, radiant, red hair and incredible charms. The Sunite faith is a popular one in large metropolitan areas and among the nobility. Those of a literary or artistic bent, as well as people falling in love or looking for lifemates, often venerate the Lady Firehair.
 
-Sune's speciality priests, known as Heartwarders of Sune, are aesthetes and hedonists who actively seek out pleasure and beauty in all things, and who nurture the creation of beautiful objects.  They are typically found in large cities in the company of the cultural elite.  Most are active patrons of the arts, and all play the role of matchmaker for persons in all levels of society.  Many are employed as artists, crafters, performers, or instructors, though a few travel the world to promote beauty and love.
+Sune's speciality priests, known as Heartwarders of Sune, are aesthetes and hedonists who actively seek out pleasure and beauty in all things, and who nurture the creation of beautiful objects. They are typically found in large cities in the company of the cultural elite. Most are active patrons of the arts, and all play the role of matchmaker for persons in all levels of society. Many are employed as artists, crafters, performers, or instructors, though a few travel the world to promote beauty and love.
 
 Advantages:
 - +2 Charisma
@@ -813,7 +813,7 @@ The priesthood of Lolth is exclusively female, and is organized into noble house
 Advantages:
 - SPHERE_PLACEHOLDER
 - MAGE_SPELL_PLACEHOLDER
-- May learn the following additional priest spells:  Web of Lolth (2nd level, variant of Web that does not affect drow or worshippers of Lolth), Summon Spiders (3rd level, variant of Summon Insects), Spider Swarm (5th level, variant of Insect Plague), Creeping Doom (7th level; summons spiders rather than insects).
+- May learn the following additional priest spells: Web of Lolth (2nd level, variant of Web that does not affect drow or worshippers of Lolth), Summon Spiders (3rd level, variant of Summon Insects), Spider Swarm (5th level, variant of Insect Plague), Creeping Doom (7th level; summons spiders rather than insects).
 - 5th level: May cast Remove Magic once per day, as the 3rd level mage spell. An additional use is gained at 11th level and every 6 levels thereafter.
 - 8th level: May cast True Seeing once per day, as the 5th level priest spell. An additional use is gained at 16th level and every 8 levels thereafter.
 - 10th level: May cast Mental Domination once per day, as the 4th level priest spell. Males have a -4 penalty to their saving throw.
@@ -912,7 +912,7 @@ Disadvantages:
 - Alignment must be Chaotic Neutral, Neutral Evil, or Chaotic Evil."
 
 @108="Talon of Malar"
-@109="TALON OF MALAR: Malar(pronounced: MAH-larr)  the Beastlord is the god of the savage wild. He is worshipped by hunters who revel in the kill or who hunt for sport or to excess, evil rangers, sentient carnivores, and lycanthropes. Those who suffer the depradations of wild beasts attempt to placate the Beastlord with offerings of freshly killed and bloody meat, but Malar rarely recognizes their entreaties. In his more favorable aspects he is revered by beings who identify with the untamed nature, grace, and amorality of predators.
+@109="TALON OF MALAR: Malar(pronounced: MAH-larr) the Beastlord is the god of the savage wild. He is worshipped by hunters who revel in the kill or who hunt for sport or to excess, evil rangers, sentient carnivores, and lycanthropes. Those who suffer the depradations of wild beasts attempt to placate the Beastlord with offerings of freshly killed and bloody meat, but Malar rarely recognizes their entreaties. In his more favorable aspects he is revered by beings who identify with the untamed nature, grace, and amorality of predators.
 
 Worship of Malar centers around the hunt and tends to consist of personal prayers to the Beastlord offered before the chase, during pursuit, and while drinking a toast over the slain quarry.
 
@@ -1087,7 +1087,7 @@ Advantages:
 
 Disadvantages:
 - BARRED_SCHOOL_PLACEHOLDER
-Alignment restricted to chaotic good, neutral good, and chaotic neutral."
+- Alignment restricted to chaotic good, neutral good, and chaotic neutral."
 @126="Transmuter of Selûne"
 @127="TRANSMUTER OF SELÛNE: Selûne (pronounced: Seh-LOON-ay), Our Lady of Silver, is the goddess of the moon, the stars, and those who use them to navigate. Her eternal foe is the evil Shar, goddess of darkness, night, loss, and forgetfulness. Selûne is often called the Moonmaiden for her connection to the silver moon that orbits Faerûn. She is the goddess of the moon and travelers. Selûne's home plane is The Gates of the Moon with her home a shining hall of silver called Argentil.
 
@@ -1104,7 +1104,7 @@ Advantages:
 
 Disadvantages:
 - BARRED_SCHOOL_PLACEHOLDER
-Alignment restricted to chaotic good, neutral good, and chaotic neutral."
+- Alignment restricted to chaotic good, neutral good, and chaotic neutral."
 @128="Enchanter of Cyric"
 @129="ENCHANTER OF CYRIC: Cyric (pronounced: SEER-ick) is a megalomaniacal deity with an immense following. One of the three greater powers of evil on Faerûn, he is petty and self-centered, and enjoys misleading individuals of all inclinations so that they perform acts that ruin their lives or so that they make fatal mistakes. He drinks the tears of disillusioned dreamers and broken-hearted lovers. He is not above an alliance with another deity as long as he thinks he can betray the other divine power and come out ahead.
 
@@ -2017,7 +2017,7 @@ Disadvantages:
 @216="NIGHTSTALKER OF MALAR
 (Stalker/Priest of Malar)
 
- Malar(pronounced: MAH-larr)  the Beastlord is the god of the savage wild. He is worshipped by hunters who revel in the kill or who hunt for sport or to excess, evil rangers, sentient carnivores, and lycanthropes. Those who suffer the depradations of wild beasts attempt to placate the Beastlord with offerings of freshly killed and bloody meat, but Malar rarely recognizes their entreaties. In his more favorable aspects he is revered by beings who identify with the untamed nature, grace, and amorality of predators.
+ Malar(pronounced: MAH-larr) the Beastlord is the god of the savage wild. He is worshipped by hunters who revel in the kill or who hunt for sport or to excess, evil rangers, sentient carnivores, and lycanthropes. Those who suffer the depradations of wild beasts attempt to placate the Beastlord with offerings of freshly killed and bloody meat, but Malar rarely recognizes their entreaties. In his more favorable aspects he is revered by beings who identify with the untamed nature, grace, and amorality of predators.
 
 Some black-hearted rangers worship Malar. His Nightstalkers specialize in the silent kill, appearing out of the shadows like wraiths.
 
@@ -2247,7 +2247,7 @@ Casting Time: 1 round
 Area of Effect: Caster
 Saving Throw: None
 
-Upon casting this spell, the priest receives a resistance to all magic.  The resistance conferred is 2% per level of the cleric up to a maximum of 40% at 20th level.  This resistance is set so if the target already has more magic resistance than the cleric would confer, it will actually lower it to the set value.  This effect will last for the duration of the spell or until dispelled.~
+Upon casting this spell, the priest receives a resistance to all magic. The resistance conferred is 2% per level of the cleric up to a maximum of 40% at 20th level. This resistance is set so if the target already has more magic resistance than the cleric would confer, it will actually lower it to the set value. This effect will last for the duration of the spell or until dispelled.~
 
 // Divine Remix string 10322
 @1002 = ~Less than a fortnight after your initiation ceremony into the Temple of Selûne, you were summoned before the Silverbrow of your order. In warm words fitting for a follower of Our Lady of Silver, she gave you your first assignment as a member of the clergy: to travel to the frontier towns of the North and bring the guidance of the Moonmaiden to the people that make the harsh environments their home. Almost as an afterthought, she spoke to you of portents and omens concerning events transpiring in the North, and it was the belief of the temple that a representative of their interests there might serve to soothe potential troubles in the region.
@@ -2605,7 +2605,7 @@ Chaos of Battle applies bonuses to all allies and penalties to all enemies withi
 @2030="Holy Symbol of Azuth"
 @2031="Only the most worthy and devoted servants of the Patron of Wizards are granted these powerful holy symbols."
 @2032 ="Holy Symbol of Shar"
-@2033 ="Shar rewards her most powerful servants with a Holy Symbol, a ring bearing her personal device of a black circle lined with purple. When worn, the symbol empowers the Nightcloak with Shar's power.  "
+@2033 ="Shar rewards her most powerful servants with a Holy Symbol, a ring bearing her personal device of a black circle lined with purple. When worn, the symbol empowers the Nightcloak with Shar's power."
 @2034 ="Holy Symbol of Gruumsh"
 @2035 ="Only the most worthy and devoted servants of the One-Eyed God are granted these powerful holy symbols."
 @2036 =~Holy Symbol of Corellon~
@@ -2820,7 +2820,7 @@ Advantages:
 - 9th level: May cast True Seeing once per day, as the 5th level priest spell. An additional use of this power is gained at level 15 and every 6 levels thereafter.
 
 Disadvantages:
-Alignment restricted to chaotic good, neutral good, and chaotic neutral."
+- Alignment restricted to chaotic good, neutral good, and chaotic neutral."
 @4037="Selûne"
 @4038="a temple of the Moonmaiden"
 @4039="Favored Soul of Mask"
@@ -2899,7 +2899,8 @@ DREAD BLAST: the caster creates a ray of negative energy that deals 4d8 damage +
 - 7th level: May cast Invisible Stalker once per day, as the 6th level wizard spell.
 - 12th level: May cast Finger of Death once per day, as the 7th level cleric spell.
 
-Disadvantages: Alignment restricted to Lawful Evil, Neutral Evil, or Chaotic Evil."
+Disadvantages: 
+- Alignment restricted to Lawful Evil, Neutral Evil, or Chaotic Evil."
 @4053="Bhaal"
 @4054="Favored Soul of Bane"
 @4055="FAVORED SOUL OF BANE: The most feared and reviled deity in the Forgotten Realms, Bane is the lord of strife, hatred, and tyranny. His followers fight each other almost as much as enemy faiths, which is one of the prime reasons their devious priesthood has not dominated the Realms.
@@ -2958,10 +2959,11 @@ DREAD BLAST: the priest creates a ray of negative energy that deals 4d8 damage +
 - 10th level: May cast Invisible Stalker once per day, as the 6th level wizard spell.
 - 12th level: May cast Chaos once per day, as the 5th level wizard spell. An additional use is gained at level 18 and every 6 levels thereafter.
 
-Disadvantages: Alignment restricted to Chaotic Neutral, Lawful Evil, Neutral Evil, or Chaotic Evil."
+Disadvantages: 
+- Alignment restricted to Chaotic Neutral, Lawful Evil, Neutral Evil, or Chaotic Evil."
 @4065="Cyric"
 @4066="Favored Soul of Xvim"
-@4067="FAVORED SOUL OF IYACHTU XVIM: Iyachtu Xvim  (pronounced: Ee-YAK-too XVIHM) is said to the result of a union between the Black Lord, Bane, and a greater or a true tanar'ri, and thus the blood of Bane runs through his veins. Another tale says he is the spawn of the Black Lord and a corrupted Paladin. Also called the Godson and the Son of Bane, Xvim has served as Bane's instrument in the Realms, carrying out the will of his father. He appears either as a gaunt, naked man with a great scimitar or a black cloud with glowing green eyes.
+@4067="FAVORED SOUL OF IYACHTU XVIM: Iyachtu Xvim (pronounced: Ee-YAK-too XVIHM) is said to the result of a union between the Black Lord, Bane, and a greater or a true tanar'ri, and thus the blood of Bane runs through his veins. Another tale says he is the spawn of the Black Lord and a corrupted Paladin. Also called the Godson and the Son of Bane, Xvim has served as Bane's instrument in the Realms, carrying out the will of his father. He appears either as a gaunt, naked man with a great scimitar or a black cloud with glowing green eyes.
 
 Xvim was imprisoned under Zhentil Keep during the Time of Troubles, where he was held for ten years. He managed to free himself when Zhentil Keep fell during the Cyrinishad fiasco, where he also managed to steal the portfolios of Tyranny and Hatred away from Cyric. He is now the god of Fear, Hatred, Malice, and Tyranny. He is working toward fully taking the place of his father, Bane, which makes him a bitter enemy of Cyric. His following is strongest in the East, particularly in Thay, but his priesthood is rapidly spreading throughout the Realms. 
 

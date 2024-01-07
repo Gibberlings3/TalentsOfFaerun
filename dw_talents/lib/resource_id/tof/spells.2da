@@ -260,10 +260,12 @@ spl_set_str_ex_to_100						dw-ex00
 spl_paladin_lower_saves						dw-plls
 spl_helpless_reflex_save					dw-hlpr
 spl_smite_evil_payload						dw-smpl
+spl_smite_evil_cosmetic						dw-smcs
 spl_smite_evil_extra_damage					dw-smex
 spl_smite_evil_undead_hunter_payload		dw-smup
 spl_smite_evil_cavalier_payload				dw-smcp
 spl_smite_good_payload						dw-smgp
+spl_smite_good_cosmetic						dw-smgc
 spl_smite_evil_undead_hunter				dw-smuh
 spl_smite_evil_cavalier						dw-smca
 spl_smite_good								dw-smbg

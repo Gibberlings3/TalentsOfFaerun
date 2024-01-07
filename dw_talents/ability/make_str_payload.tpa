@@ -70,9 +70,9 @@ function displayAttr(index)
 end
 >>>>>>>>
 
-	LAF UI_install_function STR_VAR new_function_path="%MOD_FOLDER%/%lua_loc%/code/ui_adjust_abilities.lua" lua_file="m_dw_shr" search_string=dwGetAbilityValue END
+	LAF UI_install_function STR_VAR new_function_path="%MOD_FOLDER%/%lua_loc%/code/adjust_abilities.lua" lua_file="m_dw_shr" search_string=dwGetAbilityValue END
 	COPY_EXISTING ui.menu override
-		LPF UI_alter_object STR_VAR object=CHARGEN_ABILITIES object_type=menu patch=UI_chargen_abil_display END
+		LPF UI_alter_object INT_VAR silent=1 STR_VAR object=CHARGEN_ABILITIES object_type=menu patch=UI_chargen_abil_display END
 		LPF UI_replace_function INT_VAR inline=1 STR_VAR function=DisplayAttr new_function_path="display_attr.txt" END
 	BUT_ONLY
 	

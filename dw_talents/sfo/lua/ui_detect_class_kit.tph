@@ -26,6 +26,7 @@ DEFINE_ACTION_FUNCTION ui_detect_class_kit STR_VAR version="" BEGIN // version 1
 
 	// edit the menu to keep currentID up-to-date
 	// (it's updated when you hit the character screen, but for some reason the inventory and mage/priest spell screens use id, not currentID)
+	// likewise id gets updated when you use the select portrait but currentID doesn't
 	
 	ACTION_IF !FILE_EXISTS "weidu_external/markers/dw-update-currentID.mrk" BEGIN
 		COPY_EXISTING "spwi304.spl" "weidu_external/markers/dw-update-currentID.mrk" 
@@ -33,6 +34,7 @@ DEFINE_ACTION_FUNCTION ui_detect_class_kit STR_VAR version="" BEGIN // version 1
 			PATCH_FOR_EACH object IN MAGE PRIEST INVENTORY BEGIN
 				LPF UI_alter_object STR_VAR object object_type=menu patch=update_currentID END
 			END
+			REPLACE_TEXTUALLY "Infinity_OnPortraitLClick(\([0-9]\))" "Infinity_OnPortraitLClick(\1); currentID=id"
 		BUT_ONLY
 	END
 	
@@ -46,6 +48,11 @@ DEFINE_ACTION_FUNCTION ui_detect_class_kit STR_VAR version="" BEGIN // version 1
 			REPLACE_TEXTUALLY EXACT_MATCH
 				"createCharScreen:OnAlignmentSelectButtonClick(chargen.alignment[currentChargenAlignment].id)"
 				"dwChargenAlignment=chargen.alignment[currentChargenAlignment].id;createCharScreen:OnAlignmentSelectButtonClick(chargen.alignment[currentChargenAlignment].id)"
+			// this last one for Lefruet
+			REPLACE_TEXTUALLY EXACT_MATCH
+				"createCharScreen:OnAlignmentSelectButtonClick(allChargenAlignments[currentChargenAlignment].id)"
+				"dwChargenAlignment=chargen.alignment[currentChargenAlignment].id;createCharScreen:OnAlignmentSelectButtonClick(allChargenAlignments[currentChargenAlignment].id)"
+
 		BUT_ONLY
 	END
 
@@ -100,7 +107,14 @@ DEFINE_ACTION_FUNCTION ui_detect_class_kit STR_VAR version="" BEGIN // version 1
 				READ_2DA_ENTRY_FORMER clastext_data row 1 id
 				READ_2DA_ENTRY_FORMER clastext_data row 5 name_strref
 				GET_STRREF name_strref name
-				SPRINT class_by_name "%class_by_name%%TAB%['%name%']=%id%,%WNL%"
+				PATCH_IF INDEX ("'" "%name%")<0 BEGIN
+					SPRINT class_by_name "%class_by_name%%TAB%['%name%']=%id%,%WNL%"
+				END ELSE
+				PATCH_IF INDEX (~"~ "%name%")<0 BEGIN
+					SPRINT class_by_name ~%class_by_name%%TAB%["%name%"]=%id%,%WNL%~				
+				END ELSE BEGIN
+					PATCH_FAIL ~class name %name% contains both " and ' (seriously?...). ui_detect_class_kit can't handle that.~
+				END
 				PATCH_IF VARIABLE_IS_SET $fallen_strrefs("FALLEN_%label%") BEGIN
 					SPRINT fallen_name $fallen_strrefs("FALLEN_%label%")
 					SPRINT class_by_name "%class_by_name%%TAB%['%fallen_name%']=%id%,%WNL%"
@@ -124,13 +138,34 @@ DEFINE_ACTION_FUNCTION ui_detect_class_kit STR_VAR version="" BEGIN // version 1
 			PATCH_IF IS_AN_INT name_strref && "%label%" STR_CMP "LATHANDER_X" BEGIN
 				GET_STRREF name_strref name
 				READ_2DA_ENTRY_FORMER kitlist_data row 8 parent
-				SPRINT kit_by_name "%kit_by_name%%TAB%['%name%']=%id%,%WNL%"
+				PATCH_IF INDEX ("'" "%name%")<0 BEGIN
+					SPRINT kit_by_name "%kit_by_name%%TAB%['%name%']=%id%,%WNL%"
+				END ELSE
+				PATCH_IF INDEX (~"~ "%name%")<0 BEGIN
+					SPRINT kit_by_name ~%kit_by_name%%TAB%["%name%"]=%id%,%WNL%~				
+				END ELSE BEGIN
+					PATCH_FAIL ~kit name %name% contains both " and ' (seriously?...). ui_detect_class_kit can't handle that.~
+				END
 				PATCH_IF VARIABLE_IS_SET $fallen_strrefs("FALLEN_%label%") BEGIN
 					SPRINT name $fallen_strrefs("FALLEN_%label%")
-					SPRINT kit_by_name "%kit_by_name%%TAB%['%name%']=%id%,%WNL%"
+					PATCH_IF INDEX ("'" "%name%")<0 BEGIN
+						SPRINT kit_by_name "%kit_by_name%%TAB%['%name%']=%id%,%WNL%"
+					END ELSE
+					PATCH_IF INDEX (~"~ "%name%")<0 BEGIN
+						SPRINT kit_by_name ~%kit_by_name%%TAB%["%name%"]=%id%,%WNL%~				
+					END ELSE BEGIN
+						PATCH_FAIL ~kit name %name% contains both " and ' (seriously?...). ui_detect_class_kit can't handle that.~
+					END	
 				END
 				SPRINT parentname $classname("%parent%")
-				SPRINT kit_parent "%kit_parent%%TAB%[%id%]='%parentname%',%WNL%"
+				PATCH_IF INDEX ("'" "%parentname%")<0 BEGIN
+					SPRINT kit_parent "%kit_parent%%TAB%[%id%]='%parentname%',%WNL%"
+				END ELSE
+				PATCH_IF INDEX (~"~ "%name%")<0 BEGIN
+					SPRINT kit_parent ~%kit_parent%%TAB%[%id%]="%parentname%",%WNL%~			
+				END ELSE BEGIN
+					PATCH_FAIL ~class name %parent_name% contains both " and ' (seriously?...). ui_detect_class_kit can't handle that.~
+				END				
 			END
 		END
 	BUT_ONLY
@@ -147,6 +182,7 @@ DEFINE_ACTION_FUNCTION ui_detect_class_kit STR_VAR version="" BEGIN // version 1
 			SPRINT race_by_strref "%race_by_strref%%TAB%[%name%]=%id%,"
 		END
 	BUT_ONLY
+
 	
 	// install
 	
@@ -357,7 +393,12 @@ function dwFindClassKit(var)
 	classtext='IN_CHARGEN'
  else
 	if not characters[currentID] then
-		return 0,0 -- fail gracefully
+		-- try toggling character screen on and off
+		e:GetActiveEngine():OnLeftPanelButtonClick(4)
+		e:GetActiveEngine():OnLeftPanelButtonClick(0)
+		if not characters[currentID] then
+			return 0,0 -- fail gracefully
+		end
 	end
 	kittext=characters[currentID].class
 	if kittext then

@@ -284,6 +284,7 @@ BEGIN
 		OUTER_SPRINT title (AT title_tra)
 	END
 	OUTER_SET title_strref=RESOLVE_STR_REF ("%title%")
+	OUTER_SET class_id=IDS_OF_SYMBOL (class "%class%")
 	ACTION_IF virtual BEGIN
 		ACTION_IF !RESOURCE_CONTAINS "m_dw_vcd.lua" "dwChargenClassKitTitleData\['%class%'\]=%title_strref%%WNL%" BEGIN
 			APPEND "m_dw_vcd.lua" "dwChargenClassKitTitleData['%class%']=%title_strref%%WNL%"
@@ -531,7 +532,7 @@ BEGIN
 	
  ACTION_IF !FILE_EXISTS_IN_GAME "m_dw_vcf.lua" BEGIN	
 	
-  WITH_TRA "%scs_tra_loc%/english/virtual_class.tra" "%scs_tra_loc%/%LANGUAGE%/virtual_class.tra" BEGIN
+  WITH_TRA "%MOD_FOLDER%/%lua_loc%/lang/english/virtual_class.tra" "%MOD_FOLDER%/%lua_loc%/lang/%LANGUAGE%/virtual_class.tra" BEGIN
 	
 	
 // install LUA
@@ -559,11 +560,11 @@ BEGIN
 		LPF UI_alter_function STR_VAR function=classOrGeneralHelp patch=chargen_class_sub END
 		LPF UI_alter_object STR_VAR object=CHARGEN_KIT object_type=menu patch=chargen_kit_sub END
 		LPF UI_replace_function STR_VAR function=kitOrGeneralHelp new_function_path="%workspace%/kit_or_general_help.lua" END
-		PATCH_IF GAME_IS "IWDEE" BEGIN
-			LPF UI_alter_function STR_VAR function=buildCharacterDetails patch=chardesc_sub END
+		PATCH_FOR_EACH function IN buildCharacterDetails updateAttrTable getClassString buildRecordInfos BEGIN
+			PATCH_IF INDEX_BUFFER ("%function%")>=0 BEGIN
+				LPF UI_alter_function STR_VAR function patch=chardesc_sub END
+			END
 		END
-		LPF UI_alter_function STR_VAR function=updateAttrTable patch=chardesc_sub END
-		LPF UI_alter_function STR_VAR function=getClassString patch=chardesc_sub END
 		LPF UI_alter_object STR_VAR object=CHARGEN_GENDER object_type=menu patch=chargen_gender_sub END
   // setup dual-classing kits if not already present (we share some functions)
   
@@ -689,6 +690,10 @@ BEGIN
 
 	REPLACE_TEXTUALLY ~createCharScreen:OnGenderSelectButtonClick(1)~ ~dwGender='male'; createCharScreen:OnGenderSelectButtonClick(1)~
 	REPLACE_TEXTUALLY ~createCharScreen:OnGenderSelectButtonClick(2)~ ~dwGender='female'; createCharScreen:OnGenderSelectButtonClick(2)~
+	// for leUI
+	REPLACE_TEXTUALLY EXACT_MATCH 
+		~createCharScreen:OnGenderSelectButtonClick(gender)~
+		~if gender==1 then dwGender='male' else dwGender='female' end; createCharScreen:OnGenderSelectButtonClick(gender)~
 
 END
 
@@ -699,6 +704,9 @@ BEGIN
 //	REPLACE_TEXTUALLY ~onOpen.*[%WNL%%LNL%%MNL%]\([^"]\)*"~ ~onOpen%WNL%\1"%WNL%\1dwSingleClassList=dwMakeSingleClassList(chargen.class)%WNL%~
 	REPLACE_TEXTUALLY ~onOpen\([^"]\)*"~ ~onOpen%WNL%\1"%WNL%\1dwMulticlassSelect=nil%WNL%\1dwSingleClassList=dwMakeSingleClassList(chargen.class)%WNL%~
 	REPLACE_TEXTUALLY ~createCharScreen:OnClassSelectButtonClick(dwSingleClassList\[currentChargenClass\]\.id)~ ~dwChargenClassId,dwMulticlassSelect=dwOnClassSelectButtonClick(currentChargenClass)~ 
+	// this next line is for LeUI
+	REPLACE_TEXTUALLY ~createCharScreen:OnClassSelectButtonClick(allChargenClasses\[currentChargenClass\]\.id)~ ~dwChargenClassId,dwMulticlassSelect=dwOnClassSelectButtonClick(currentChargenClass)~ 
+
 	REPLACE_TEXTUALLY EXACT_MATCH
 	~createCharScreen:IsDoneButtonClickable()~
 	~createCharScreen:IsDoneButtonClickable() or dwMulticlassSelect~
@@ -734,14 +742,14 @@ DEFINE_PATCH_FUNCTION chargen_kit_sub//internal
 \1	Infinity_PopMenu()
 \1	createCharScreen:OnDoneButtonClick()
 \1else
-
+\1	dwChargenKitId=nil
 \1  if not (dwKitList[1].id==0) then
 \1  %TAB%	currentChargenKit=nil
 \1  end
 \1end
 ~
 	REPLACE_TEXTUALLY ~"Infinity_FetchString(dwKitList\[rowNumber\]\.name)"~ ~"dwChargenKitName(dwKitList[rowNumber])"~
-	//REPLACE_TEXTUALLY ~createCharScreen:IsDoneButtonClickable()~ ~createCharScreen:IsDoneButtonClickable() and currentChargenKit~
+	REPLACE_TEXTUALLY ~createCharScreen:IsDoneButtonClickable()~ ~(createCharScreen:IsDoneButtonClickable() and currentChargenKit)~
 	REPLACE_TEXTUALLY ~Infinity_PopMenu(); +createCharScreen:OnDoneButtonClick()~
 	
 ~

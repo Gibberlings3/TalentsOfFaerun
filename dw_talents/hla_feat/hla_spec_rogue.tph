@@ -369,6 +369,9 @@ END
 
 DEFINE_PATCH_FUNCTION BARD_BREAK_ENCHANTMENT 
 BEGIN
+	// new icon
+	LPF install_hla_icon STR_VAR resref="%SOURCE_RES%" icon=breakenchantment END
+
 
 	INNER_ACTION BEGIN
 	
@@ -377,7 +380,7 @@ BEGIN
 		COPY "%MOD_FOLDER%/%component_loc%/resource/hla/BARD_SOUND_BURST/rr#bhl03.spl" "override/%spl_bard_break_enchantment_payload%.spl"
 				SAY 0x8 @3143
 				SAY 0x50 @3144
-				LPF ALTER_SPELL_HEADER INT_VAR target=1 projectile=1 STR_VAR icon="rr#bf01" END
+				LPF ALTER_SPELL_HEADER INT_VAR target=1 projectile=1 END
 				LPF DELETE_EFFECT END
 				LPF ADD_SPELL_EFFECT INT_VAR opcode=220 target=2 parameter1=10 parameter2=4 timing=1 END // remove spell school: enchantment
 				LPF ADD_SPELL_EFFECT INT_VAR opcode=141 target=2 timing=1 parameter2=10 END // lighting effects
@@ -399,7 +402,10 @@ END
 
 DEFINE_PATCH_FUNCTION BARD_CALL_SPIRIT_WARRIOR
 BEGIN
-	LPF ALTER_SPELL_HEADER STR_VAR icon="rr#bf03" END
+
+	// new icon
+	LPF install_hla_icon STR_VAR resref="%SOURCE_RES%" icon=callspiritwarrior END
+
 	LPF DELETE_EFFECT END
 	LPF ADD_SPELL_EFFECT INT_VAR opcode=174 target=1 timing=1 STR_VAR resource=EFF_M13 END
 	LPF ADD_SPELL_EFFECT INT_VAR opcode=177 target=1 parameter2=2 duration=60 STR_VAR resource=rr#wspi END

@@ -35,7 +35,7 @@ DEFINE_ACTION_FUNCTION druid_mage BEGIN
 	
 	// log for prof component
 	
-	LAF prof_redirect_kit_parent STR_VAR kit parent=DRUID_MAGE END
+	LAF prof_redirect_kit_parent STR_VAR kit parent=DRUID_MAGE known_weapon_parent=DRUID END
 
 
 END

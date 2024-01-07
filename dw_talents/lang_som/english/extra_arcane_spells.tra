@@ -35,7 +35,7 @@ Casting Time: 1
 Area of Effect: The caster
 Saving Throw: None
 
-When this spell is cast, the caster calls up a small Earth Elemental and merges <PRO_HISHER> form with it, gaining a portion of its strength and resilience. As long as the spell is in effect, the caster receives a +2 bonus to Armor Class. The elemental energies can be discharged at any time in a powerful punch, directed at any creature adjacent to the caster. The punch automatically hits and does 1d6 points of crushing damage per two levels (to a maximum of 5d6 at 10th level), and the target must make a save vs. spell or be stunned for 1 round. Discharging the spell in this way ends it. The punch does not count as a magical weapon."
+When this spell is cast, the caster calls up a small Earth Elemental and merges <PRO_HISHER> form with it, gaining a portion of its strength and resilience. As long as the spell is in effect, the caster receives a +2 bonus to Armor Class. The elemental energies can be discharged at any time in a powerful punch, directed at any creature adjacent to the caster. The punch automatically hits and does 1d6 points of crushing damage plus 1d6 per two levels (to a maximum of 6d6 at 10th level), and the target must make a save vs. spell or be stunned for 1 round. Discharging the spell in this way ends it. The punch does not count as a magical weapon."
 
 @7="Stone Fist"
 
@@ -47,7 +47,7 @@ Equipped abilities:
 â€“ +2 to Armor Class
 
 THAC0: Hits automatically
-Damage: 3d6 + 1d6 per two levels above 3rd (maximum 6d6)
+Damage: 1d6 + 1d6 per two levels (maximum 6d6)
 Damage type: Missile
 Speed Factor: 0
 Special: the spell ends once you make an attack
@@ -139,6 +139,7 @@ Upon casting this spell, a shard of elemental ice appears in the caster's hand a
 @42="Telekinesis
 (Alteration)
 
+Level: 5
 Range: Visual range of the caster
 Duration: 3 seconds
 Casting Time: 5

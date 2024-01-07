@@ -1,3 +1,5 @@
+// require point_string and default_description_string from ui_externalize_hlas
+
 DEFINE_ACTION_FUNCTION bg_hla_menu BEGIN
 
 	COPY_EXISTING "ui.menu" override
@@ -7,8 +9,7 @@ DEFINE_ACTION_FUNCTION bg_hla_menu BEGIN
 					replace=".../stratagems-inline/bg_hla_menu.menu"
 		END
 		SET hla_string=RESOLVE_STR_REF (@500)
-		REPLACE_TEXTUALLY 63817 "%hla_string%"
-		SET point_string=RESOLVE_STR_REF (@499)
+		REPLACE_TEXTUALLY 63817 "%default_description_string%"
 		REPLACE_TEXTUALLY 65343 "%point_string%"
 
 
@@ -23,8 +24,7 @@ DEFINE_ACTION_FUNCTION sod_hla_menu BEGIN
 					object_type=menu
 					patch=ui_info_replace_sod
 		END
-		SET hla_string=RESOLVE_STR_REF (@500)
-		REPLACE_TEXTUALLY 63817 "%hla_string%"
+		REPLACE_TEXTUALLY 63817 "%default_description_string%"
 
 
 END
@@ -67,8 +67,7 @@ DEFINE_ACTION_FUNCTION iwd_hla_menu BEGIN
 			STR_VAR function=chargenHLAPlusMinusFrame
 					new_function_path="hlafunction.lua"
 		END
-		SET hla_string=RESOLVE_STR_REF (@500)
-		REPLACE_TEXTUALLY 63817 "%hla_string%"
+		REPLACE_TEXTUALLY 63817 "%default_description_string%"
 
 
 END

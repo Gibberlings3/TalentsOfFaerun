@@ -10,20 +10,6 @@ and item alterations then enforces those lists on all classes and kits.
 */
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/*
-
-document{bulk_define_spell_list}
-{
-Given a path (or, on SFO installs, a location/locbase), and either an array key=>tra_ref, or a file in the path each of whose rows is 'key tra_ref', 
-load each of key.txt as a list of spell ids or resrefs, add each to a spell list with key 'key' and name given by the tra ref in the current tra file.
-}
-
-*/
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*
@@ -325,7 +311,7 @@ BEGIN
 		OUTER_SPRINT data ""
 		OUTER_WHILE "%list%" STRING_CONTAINS_REGEXP "^ *$" BEGIN
 			LAF return_first_entry STR_VAR list RET entry list END
-			ACTION_IF !silent && !VARIABLE_IS_SET $spell_lists("%entry%") BEGIN
+			ACTION_IF !silent && !VARIABLE_IS_SET $spell_lists("%entry%") && !("%entry%" STR_EQ "every_spell") BEGIN
 				WARN "You are trying to assign spell list %entry%, but it does not exist."
 			END
 			ACTION_IF "%entry%" STRING_EQUAL_CASE no_change BEGIN
@@ -460,15 +446,22 @@ DEFINE_ACTION_FUNCTION ui_spell_system_setup BEGIN
 		// first extract the 'show specialist message' label from CHARGEN_CHOOSE_SPELLS, and build variants for the two memorized-spell labels
 		LPF UI_return_object STR_VAR object=CHARGEN_CHOOSE_SPELLS object_type=menu RET object_data END
 		INNER_PATCH "%object_data%" BEGIN
-			LPF UI_return_object STR_VAR object="shouldShowSpecialistMessage()" object_type=label object_name_field=enabled RET message_label=object_data END
+			PATCH_IF INDEX_BUFFER ("shouldShowSpecialistMessage") >=0 BEGIN
+				LPF UI_return_object STR_VAR object="shouldShowSpecialistMessage()" object_type=label object_name_field=enabled RET message_label=object_data END
+				memo_label=1
+			END ELSE BEGIN
+				memo_label=0
+			END
 		END
-		INNER_PATCH_SAVE priest_memo_label "label {%WNL%%message_label%%WNL%}%WNL%" BEGIN
-			REPLACE_TEXTUALLY "shouldShowSpecialistMessage()" "chargen.extraSpells==0 and not dwChargenSpecialistRequirementsSatisfied(priestSpells)"
-			REPLACE_TEXTUALLY "text lua.*" ~text lua "dwSpecialistMemoMessage()"~
+		PATCH_IF memo_label BEGIN
+			INNER_PATCH_SAVE priest_memo_label "label {%WNL%%message_label%%WNL%}%WNL%" BEGIN
+				REPLACE_TEXTUALLY "shouldShowSpecialistMessage()" "chargen.extraSpells==0 and not dwChargenSpecialistRequirementsSatisfied(priestSpells)"
+				REPLACE_TEXTUALLY "text lua.*" ~text lua "dwSpecialistMemoMessage()"~
+			END
+			INNER_PATCH_SAVE mage_memo_label "%priest_memo_label%" BEGIN
+				REPLACE_TEXTUALLY "priestSpells" "mageSpells"
+			END	
 		END
-		INNER_PATCH_SAVE mage_memo_label "%priest_memo_label%" BEGIN
-			REPLACE_TEXTUALLY "priestSpells" "mageSpells"
-		END	
 	
 		// these are common to all menus
 		LPF UI_alter_object STR_VAR object=CHARGEN_MEMORIZE_PRIEST object_type=menu patch=memorize_priest_spells_edit END
@@ -477,9 +470,11 @@ DEFINE_ACTION_FUNCTION ui_spell_system_setup BEGIN
 		LPF UI_alter_function STR_VAR function=specialistFrame patch=specialist_spell_edit END
 		LPF UI_alter_object STR_VAR object=CHARGEN_MEMORIZE_MAGE object_type=menu patch=chargen_memorize_mage_spells END
 		LPF UI_alter_object STR_VAR object=ITEM_DESCRIPTION object_type=menu patch=learn_spell_bonus_patch END
-		LPF UI_alter_function STR_VAR function=shouldShowSpecialistMessage patch=edit_specialist_message_function END
-		LPF UI_insert_into_object STR_VAR object=CHARGEN_MEMORIZE_PRIEST object_type=menu insert_data="%priest_memo_label%" END
-		LPF UI_insert_into_object STR_VAR object=CHARGEN_MEMORIZE_MAGE object_type=menu insert_data="%mage_memo_label%" END
+		PATCH_IF memo_label BEGIN
+			LPF UI_alter_function STR_VAR function=shouldShowSpecialistMessage patch=edit_specialist_message_function END
+			LPF UI_insert_into_object STR_VAR object=CHARGEN_MEMORIZE_PRIEST object_type=menu insert_data="%priest_memo_label%" END
+			LPF UI_insert_into_object STR_VAR object=CHARGEN_MEMORIZE_MAGE object_type=menu insert_data="%mage_memo_label%" END
+		END
 		LPF UI_alter_object STR_VAR object=MAGE object_type=menu patch=mage_spellbook_hack END
 		LPF UI_alter_object STR_VAR object=PRIEST object_type=menu patch=priest_spellbook_hack END
 		
@@ -678,8 +673,16 @@ END
 DEFINE_PATCH_FUNCTION learn_spell_bonus_patch//internal
 BEGIN
 
-	REPLACE_TEXTUALLY ~\(onOpen[^"]*"\)~ ~\1%WNL%%TAB%dwLearnChance()~
-	REPLACE_TEXTUALLY ~\(onClose[^"]*"\)~ ~\1%WNL%%TAB%dwLearnChanceCancel()~
+	PATCH_IF INDEX_BUFFER ("onOpen") >=0 BEGIN
+		REPLACE_TEXTUALLY ~\(onOpen[^"]*"\)~ ~\1%WNL%%TAB%dwLearnChance()~
+	END ELSE BEGIN
+		REPLACE_TEXTUALLY "\(name +'ITEM_DESCRIPTION'\)" ~\1%WNL%OnOpen%WNL%"%WNL%%TAB%dwLearnChance()%WNL%"~
+	END
+	PATCH_IF INDEX_BUFFER ("onClose") >=0 BEGIN
+		REPLACE_TEXTUALLY ~\(onClose[^"]*"\)~ ~\1%WNL%%TAB%dwLearnChanceCancel()~
+	END ELSE BEGIN
+		REPLACE_TEXTUALLY ~\(onOpen[^"]*"[^"]*"\)~ ~\1%WNL%onClose%WNL%"%WNL%%TAB%dwLearnChanceCancel()%WNL%"~
+	END
 
 END
 
@@ -691,6 +694,7 @@ END
 DEFINE_PATCH_FUNCTION priest_spellbook_hack//internal
 BEGIN
 	REPLACE_TEXTUALLY EXACT_MATCH "priestName" "priestName..dwRefreshPriestHack()"
+	REPLACE_TEXTUALLY EXACT_MATCH "characters[id].name" "characters[id].name..dwRefreshPriestHack()"  //LEUI
 END
 
 DEFINE_PATCH_FUNCTION mage_spellbook_hack//internal
@@ -748,7 +752,10 @@ document{get_spell_array}
 {
 Given 'root' either SPPR or SPWI, and 'list' a list of spell-list keys,
 return an array of all spells with that root, in the format resref=>[01],
-with the value being 0 iff the spell is in one of the lists
+with the value being 1 iff the spell is in one of the lists.
+
+If list is 'cleric' or 'druid', instead parse the spell directly and check its
+usability fla
 
 }
 */
@@ -1206,7 +1213,6 @@ DEFINE_ACTION_FUNCTION no_int_max_spells BEGIN
 		LAF make_label STR_VAR label=dw#remove_int_max_spells END
 		
 		// wipe the constraints from INTMOD
-		
 		COPY_EXISTING "intmod.2da" override
 			COUNT_2DA_COLS colcount
 			COUNT_2DA_ROWS colcount rowcount
@@ -1230,9 +1236,10 @@ DEFINE_ACTION_FUNCTION no_int_max_spells BEGIN
 		
 		LAF check_ini STR_VAR ini=retain_erase_for_exploit_purposes RET value END
 		ACTION_IF !value BEGIN
+		  
 		  COPY_EXISTING "ui.menu" override
-		    PATCH_IF is_iwd BEGIN
-				LPF UI_alter_function STR_VAR function=showSpellDetails patch=remove_erase_iwd END
+		    PATCH_IF INDEX_BUFFER (~"SPELL_DESCRIPTION"~)>=0 BEGIN // IWD or LEUI
+				LPF UI_alter_object STR_VAR object=SPELL_DESCRIPTION patch=remove_erase_iwd END
 			END ELSE BEGIN
 				LPF UI_alter_object STR_VAR object=MAGE patch=remove_erase_bg END	  
 		    END
@@ -1243,7 +1250,7 @@ END
 
 DEFINE_PATCH_FUNCTION remove_erase_iwd //internal
 BEGIN
-	REPLACE_TEXTUALLY "showEraseButton.*" "showEraseButton = false"
+	REPLACE_TEXTUALLY ~isWizSpellMode() and showEraseButton~ ~false~
 END
 
 DEFINE_PATCH_FUNCTION remove_erase_bg //internal
@@ -1257,6 +1264,7 @@ END
 document{set_spell_learn_modifiers}
 {
 Set the externalized modifications to the chance of learning a spell. Specify 'kit' (a rowname from kitlist) and 'modifiers' (the actual LUA list of modifiers).
+'modifiers' should be a comma-separated list with elements of form 'list=integer', where 'list' is either a spell list or 'default' (applies to all spell lists not called out.)
 }
 
 */
@@ -1625,18 +1633,70 @@ function dwFindPriestSpellAllow()
 end
 function dwFindLearnedSpellBlock()
 	class,kit=dwFindClassKit()
+	blocklist_temp={}
+	count=0
 	if dwLearnedKitSpellBlock[kit] then
-		return dwLearnedKitSpellBlock[kit]
+		for k,v in pairs(dwLearnedKitSpellBlock[kit]) do
+			count=count+1
+			blocklist_temp[count]=v
+		end
+	end
+	if dwLearnedClassSpellBlock[class] then
+		for k,v in pairs(dwLearnedClassSpellBlock[class]) do
+			count=count+1
+			blocklist_temp[count]=v
+		end
+	end
+	if dwLearnedKitSpellAllow[kit] then
+		blocklist={}
+		count=0
+		for k,v in pairs(blocklist_temp) do
+			include=true
+			for k2,v2 in pairs(dwLearnedKitSpellAllow[kit]) do
+				if v==v2 then include=false end			
+			end
+			if include then
+				count=count+1
+				blocklist[count]=v
+			end
+		end
+		return blocklist
 	else
-		return dwLearnedClassSpellBlock[class]
+		return blocklist_temp
 	end
 end
 function dwFindPriestSpellBlock()
 	class,kit=dwFindClassKit()
+	blocklist_temp={}
+	count=0
 	if dwPriestKitSpellBlock[kit] then
-		return dwPriestKitSpellBlock[kit]
+		for k,v in pairs(dwPriestKitSpellBlock[kit]) do
+			count=count+1
+			blocklist_temp[count]=v
+		end
+	end
+	if dwPriestClassSpellBlock[class] then
+		for k,v in pairs(dwPriestClassSpellBlock[class]) do
+			count=count+1
+			blocklist_temp[count]=v
+		end
+	end
+	if dwPriestKitSpellAllow[kit] then
+		blocklist={}
+		count=0
+		for k,v in pairs(blocklist_temp) do
+			include=true
+			for k2,v2 in pairs(dwPriestKitSpellAllow[kit]) do
+				if v==v2 then include=false end			
+			end
+			if include then
+				count=count+1
+				blocklist[count]=v
+			end
+		end
+		return blocklist
 	else
-		return dwPriestClassSpellBlock[class]
+		return blocklist_temp
 	end
 end
 

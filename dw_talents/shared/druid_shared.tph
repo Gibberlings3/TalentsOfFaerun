@@ -110,7 +110,7 @@ DEFINE_ACTION_FUNCTION impose_druid_class_features INT_VAR enforce_alignment=1 u
 			
 	END
 
-	LAF hide_ability_button_for_kit STR_VAR buttons="%button%=>TURNUNDEAD" kit=DW_DRUID_MAGE END
+	LAF hide_ability_button_for_kit STR_VAR buttons="%button%=>TURNUNDEAD" kit END
 
 
 

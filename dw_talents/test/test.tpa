@@ -1,17 +1,55 @@
 DEFINE_ACTION_FUNCTION test STR_VAR version=0 BEGIN
 
+	LAM 3p_load_data
+	LAF 2da_read STR_VAR file=kitlist.2da rowname_column=ROWNAME RET_ARRAY kitlist_array=array END
+	
+	ACTION_PHP_EACH sfo_3p_kit AS k=>list BEGIN
+		ACTION_IF "%k_1%" STR_EQ "subrace_delete" BEGIN
+			OUTER_SPRINT kit "%k_0%"
+			ACTION_TO_UPPER kit
+			OUTER_SPRINT clab $kitlist_array("%kit%" ABILITIES)
+			COPY_EXISTING "%clab%.2da" override
+				WHILE "%list%" STR_CMP "" BEGIN
+					LPF return_first_entry STR_VAR list separator="," RET entry list END
+					REPLACE_TEXTUALLY "\(GA\|AP\)_%entry%" "****"
+				END
+				LPF 2da_prettier_print END
+			IF_EXISTS
+		END
+	END
 
+END
 
-
+DEFINE_ACTION_FUNCTION find_level_by_xp
+	INT_VAR xp=0
+	STR_VAR class=""
+BEGIN
+	OUTER_SET class_count=1
+	OUTER_PATCH "%class%" BEGIN
+		REPLACE_EVALUATE "_" BEGIN
+			++class_count
+		END
+		""
+	END
+	OUTER_SET xp=xp / class_count
+	LAF 2da_read STR_VAR file=xplevel.2da RET_ARRAY xp_array=array xp_rows=rows xp_cols=columns END
+	OUTER_SET level=0
+	ACTION_PHP_EACH xp_cols AS col=>discard BEGIN
+		OUTER_SET xp_here=$xp_array("%class%" "%col%")
+		ACTION_IF xp_here<=xp BEGIN
+			OUTER_SET level=col + 1
+		END
+		
+	END
 END
 
 DEFINE_ACTION_FUNCTION 2da_read_alt 
 	STR_VAR file=""
 	RET_ARRAY array columns rows 
 BEGIN
-	CLEAR_ARRAY array
-	CLEAR_ARRAY columns
-	CLEAR_ARRAY rows
+	ACTION_CLEAR_ARRAY array
+	ACTION_CLEAR_ARRAY columns
+	ACTION_CLEAR_ARRAY rows
 	COPY_EXISTING - "%file%.2da" nowhere
 		CLEAR_ARRAY lines
 		rowcount=0

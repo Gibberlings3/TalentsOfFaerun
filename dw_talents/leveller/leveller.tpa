@@ -3,7 +3,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 DEFINE_ACTION_FUNCTION leveller
 BEGIN
-
 	ACTION_TIME leveller_initialize BEGIN
      // configure spell-immunity
      
@@ -38,6 +37,7 @@ BEGIN
      LAF resolve_sectype STR_VAR sectype=autoleveller RET autoleveller_sectype=sectype_value END
      LAF resolve_sectype STR_VAR sectype=autoleveller2 RET autoleveller2_sectype=sectype_value END
 	END
+
 
      // provide spell choices for mages
 
@@ -466,7 +466,7 @@ BEGIN
 				// effect 6 - static
 			BUT_ONLY
 		END
-		kit.edit_all["%class%"|clab_only:i=1]
+		kit.edit_all[%class%|clab_only:i=1]
 		[
 			FOR (level=1;level<level_max;++level) BEGIN
 				k.kit_apply_powers{%prefix%%level% %level%}
@@ -1191,8 +1191,8 @@ DEFINE_ACTION_FUNCTION higher_level_pcs BEGIN
 
    // SoA start
 
-   LAF initial_xp_setter INT_VAR xp=89000 STR_VAR area=ar0602 prefix=dwstbg2 END
-   COPY_EXISTING "startare.2da" override REPLACE_TEXTUALLY 89000 0
+   LAF initial_xp_setter INT_VAR xp=90000 STR_VAR area=ar0602 prefix=dwstbg2 END
+   COPY_EXISTING "startare.2da" override REPLACE_TEXTUALLY 90000 0
 
 <<<<<<<< .../stratagems-inline/area-add.baf
 IF
@@ -1259,10 +1259,10 @@ BEGIN
 		LPF add_basic_spell_ability END
 	COPY_EXISTING "%prefix%b.spl" override
              PHP_EACH specifics_array AS class=>specifics BEGIN
-                 LPF ADD_SPELL_EFFECT INT_VAR opcode=72 target=2 timing=1 parameter1=specifics parameter2=4 END
-                 SET class_id= IDS_OF_SYMBOL (class "%class%")
-                 LPF ADD_SPELL_EFFECT INT_VAR opcode=blocking_opcode target=2 timing=0 duration=1 parameter1="%class_id%" parameter2=splprot_num STR_VAR resource="%prefix%b" END
+				 SPRINT resource "dwaulb%specifics%"
+                 LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 timing=1 parameter1=IDS_OF_SYMBOL (class "%class%") parameter2=105 STR_VAR resource END
              END
+			 LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 timing=1 STR_VAR resource="dw#level" END
         BUT_ONLY
         // if it doesn't exist already, create spell that applies the "level 1" power
         ACTION_IF !FILE_EXISTS_IN_GAME "dw#aule3.spl" BEGIN
@@ -1287,7 +1287,7 @@ BEGIN
            END
 
 			CREATE spl "dw#aule3"
-				LPF spl_add_basic_spell_ability END
+				LPF add_basic_spell_ability END
            COPY_EXISTING "dw#aule3.spl" override
                PHP_EACH class_to_leveller AS id=>resource BEGIN
                   SET parameter1=IDS_OF_SYMBOL (class "%id%")

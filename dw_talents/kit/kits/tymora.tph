@@ -87,30 +87,16 @@ DEFINE_ACTION_FUNCTION adventurer_of_tymora BEGIN
 	]
 	END
 	
-	ACTION_TIME at_sub BEGIN
 	LAF cleric_kit_substitutions STR_VAR kit god=tymora END
-	END
-	ACTION_TIME at_sphere BEGIN
 	LAF assign_spheres STR_VAR kit default=cleric subtract="combat necromantic evil" END
-	END
-	
-	ACTION_TIME at_bonus BEGIN
 	LAF assign_bonus_spells STR_VAR kit spells="LUCK MISLEAD LIMITED_WISH" class=cleric END
-	END
-
-	ACTION_TIME at_sym_strong BEGIN
 	LAF holy_symbol INT_VAR name=2013 follower=2014 STR_VAR kit desc_bam=dwtymphl inv_bam=dwtymihl bam_path=resource END
 	LAF adjust_cleric_stronghold STR_VAR lathander=all kit END
-	END
- 
-	ACTION_TIME at_mc_spec BEGIN
- 	LAF make_multiclass_specialist STR_VAR kit school=enchantment END
-	END
-	
-	ACTION_TIME at_mc_comp BEGIN
-	LAF set_multiclass_components STR_VAR kit components="dw_tymora_cleric enchanter"  END
-	END
 
+ 	LAF make_multiclass_specialist STR_VAR kit school=enchantment END
+	/*
+	LAF set_multiclass_components STR_VAR kit components="dw_tymora_cleric enchanter"  END
+	*/
 
 
 

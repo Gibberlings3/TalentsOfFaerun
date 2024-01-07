@@ -34,7 +34,7 @@ DEFINE_ACTION_FUNCTION druid_ranger BEGIN
 		
 	// log for prof component
 	
-	LAF prof_redirect_kit_parent STR_VAR kit parent=DRUID_RANGER END
+	LAF prof_redirect_kit_parent STR_VAR kit parent=DRUID_RANGER known_weapon_parent=DRUID END
 
 END
 
@@ -51,11 +51,9 @@ DEFINE_ACTION_FUNCTION night_wolf RET kit BEGIN
 		k_c_g=0
 		k_l_e=0
 		k_c_e=0
-		PATCH_PRINT "ook"
 		IF {is_iwd} {{k_bio=19429}} ELSE {{k_bio=15885}}
 		k.kit_apply_powers{spcl331 1|class=ranger}
 		k.kit_apply_powers{%c_to_d_apply_string%|class=cleric}	
-		PATCH_PRINT "blook"		
 		LPF check_label STR_VAR label="dw#rebalance_shapeshifter" RET value END
 		IF {value}
 		{{
@@ -85,7 +83,7 @@ DEFINE_ACTION_FUNCTION night_wolf RET kit BEGIN
 
 	// log for prof component
 	
-	LAF prof_redirect_kit_parent STR_VAR kit parent=DRUID_RANGER END
+	LAF prof_redirect_kit_parent STR_VAR kit parent=DRUID_RANGER known_weapon_parent=DRUID END
 
 
 

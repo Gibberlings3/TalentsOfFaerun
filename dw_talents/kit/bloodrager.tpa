@@ -92,6 +92,6 @@ DEFINE_ACTION_FUNCTION bloodrager BEGIN
 	ACTION_IF FILE_EXISTS "%data_loc_shared%/weapprof.2da" BEGIN
 		LAF externalize_weapprof END
 	END
-
+	LAF 3p_kit END
 
 END

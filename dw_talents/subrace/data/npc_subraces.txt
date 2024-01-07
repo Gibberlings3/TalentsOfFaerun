@@ -5,3 +5,9 @@ aerie		elf_winged
 c#solaufein	elf_drow
 sola		elf_drow
 gv#vynd		elf_drow
+l#dva		dwarf_gold
+l3petsy		halfling_lightfoot
+l#dendjelion	halfling_strongheart
+l#tip		halfling_lightfoot
+l#tviy		gnome_deep
+l#lanna		elf_wood

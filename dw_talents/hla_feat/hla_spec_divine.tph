@@ -327,7 +327,7 @@ END
 
 
 DEFINE_PATCH_FUNCTION CLERIC_AURA_OF_CONFUSION BEGIN
-
+	SPRINT resref "%SOURCE_RES%"
 	duration=120
 	INNER_ACTION BEGIN
 		pro.copy[INAREANP=>%pro_area_small_not_party%|missile_entry="dw-area_small_not_party"]
@@ -364,7 +364,8 @@ DEFINE_PATCH_FUNCTION CLERIC_AURA_OF_CONFUSION BEGIN
 		]
 		
 		LAF eff_make_casting_effect STR_VAR spell="%spl_aura_of_confusion_payload%" effect="%eff_aura_of_confusion%" END
-		COPY "%MOD_FOLDER%/hla_feat/resource/blue_chaos_b.bam" "override/%spl_hla_aura_of_confusion%.bam"
+
+
 		COPY "%MOD_FOLDER%/hla_feat/resource/cloak_of_chaos.bam" "override/dw-cloak.bam"
 
 	END
@@ -374,8 +375,9 @@ DEFINE_PATCH_FUNCTION CLERIC_AURA_OF_CONFUSION BEGIN
 	WRITE_BYTE 0x25 4
 	WRITE_BYTE 0x27 11
 	WRITE_BYTE 0x19 0x10
+	WRITE_ASCII 0x3a "%resref%c" (8)
 
-	LPF ALTER_SPELL_HEADER INT_VAR speed=3 target=1 range=30 STR_VAR icon="%spl_hla_aura_of_confusion%" END
+	LPF ALTER_SPELL_HEADER INT_VAR speed=3 target=1 range=30 END
 	LPF ADD_SPELL_EFFECT INT_VAR target=2 duration opcode=272 parameter1=1 parameter2=3 resist_dispel=2 STR_VAR resource="%eff_aura_of_confusion%" END
 	LPF ADD_SPELL_EFFECT INT_VAR target=2 duration opcode=142 parameter2=stat_num resist_dispel=2 END
 	LPF ADD_SPELL_EFFECT INT_VAR target=2 timing=1 opcode=326 STR_VAR resource="%spl_aura_of_confusion_cc%" END
@@ -384,6 +386,8 @@ DEFINE_PATCH_FUNCTION CLERIC_AURA_OF_CONFUSION BEGIN
 
 	LPF scs_style_hla END	
 
+	// new icon
+	LPF install_hla_icon STR_VAR resref icon=thunder END
 
 
 
@@ -554,6 +558,7 @@ END
 //////////////////////////////////////////////////////////////////////////////////////
 
 DEFINE_PATCH_FUNCTION CLERIC_FURY_OF_THE_PACK BEGIN
+	SPRINT resref "%SOURCE_RES%"
 
 	INNER_ACTION BEGIN
 
@@ -661,6 +666,12 @@ DEFINE_PATCH_FUNCTION CLERIC_FURY_OF_THE_PACK BEGIN
 		
 	END
 	
+	// icon (from Lava)
+
+	// new icon
+	LPF install_hla_icon STR_VAR resref icon=furyofthepack END
+
+	
 	// make primary spell
 
 	LPF struct_read RET_ARRAY m=struct END
@@ -676,7 +687,7 @@ DEFINE_PATCH_FUNCTION CLERIC_FURY_OF_THE_PACK BEGIN
 	END ELSE BEGIN
 		SPRINT projectile "1"
 	END
-	m.ab.alter{s_range=100 s_icon:=spin114 s_projectile:="%projectile%" s_casting_time=5 s_level=1 s_target:=LivingActor}
+	m.ab.alter{s_range=100 s_projectile:="%projectile%" s_casting_time=5 s_level=1 s_target:=LivingActor}
 	m.ab_fx.delete{}
 	m.ab_fx.add{s_opcode=174 s_target=2 s_duration=2 s_resource:=WWOLF03}
 	m.ab_fx.add{s_opcode=177 s_target=2 s_timing=4 s_duration=(entry_index/2)+1 s_parameter2=2 s_resource:=%eff_fury_of_the_pack%|number:i=12}

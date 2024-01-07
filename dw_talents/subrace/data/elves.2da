@@ -7,3 +7,4 @@ ELF_WILD		@6			@106			ELF				*			dwico52 @600		23			26			-1			-1			1	1	0	0	-1	-1
 ELF_WOOD		@12			@112			ELF				*			dwico52	@600		22			1			-1			-1			1	1	0	-1	0	-1	0			-1			-1		0	-5	10	5	10	0	0		-1			-1
 ELF_DROW		@5			@105			ELF				*			dwico63	R_63		43			0			-1			-1			0	1	-1	1	-1	1	0			@502		@510	0	-5	0	10	10	0	0		%spl_subrace_drow%		%spl_subrace_drow_recurring%
 ELF_WINGED		@25			-1				ELF				*			dwico52	@600		-1			-1			-1			-1			0	0	0	0	0	0	0			-1			-1		0	0	0	0	0	0	0		-1			-1
+ELF_DUSK		@26 		-1				ELF				*			dwico52	@600		-1			-1			-1			-1			0	0	0	0	0	0	0			-1			-1		0	0	0	0	0	0	0		-1			-1

@@ -187,7 +187,8 @@ END
 
 DEFINE_ACTION_FUNCTION parse_kitlist RET_ARRAY parent_class BEGIN
 	
-	COPY_EXISTING "kitlist.2da" "%workspace%"
+	// get main data from kitlist
+	COPY_EXISTING - "kitlist.2da" nowhere
 		COUNT_2DA_COLS colcount
 		READ_2DA_ENTRIES_NOW kitlist_contents colcount
 		FOR (row=0;row<kitlist_contents;++row) BEGIN
@@ -201,7 +202,14 @@ DEFINE_ACTION_FUNCTION parse_kitlist RET_ARRAY parent_class BEGIN
 				SPRINT $parent_class("%ident%") FIGHTER
 			END
 		END
-		
+	
+	//override if appropriate
+	ACTION_IF FILE_EXISTS "%data_loc_shared%/weapprof_parent_class_override.txt" BEGIN
+		LAF array_read STR_VAR path="%data_loc_shared%" file="weapprof_parent_class_override.txt" RET_ARRAY parent_class_override_array=array END
+		ACTION_PHP_EACH parent_class_override_array AS k=>v BEGIN
+			OUTER_SPRINT $parent_class("%k%") "%v%"
+		END
+	END
 END
 		
 		

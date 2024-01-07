@@ -72,6 +72,10 @@ DEFINE_ACTION_FUNCTION favored_soul BEGIN
 
 	// process scroll usability
 	LAF process_scroll_usability_now END
+	
+	
+	
+	LAF 3p_kit END
 
 END
 
@@ -274,7 +278,7 @@ DEFINE_ACTION_FUNCTION build_favored_soul_kit INT_VAR god=0 name=0 desc=0  god_g
 	
 	// log for prof component
 	
-	LAF prof_redirect_kit_parent STR_VAR kit parent=FAVORED_SOUL END
+	LAF prof_redirect_kit_parent STR_VAR kit parent=FAVORED_SOUL known_weapon_parent=CLERIC END
 
 
 
@@ -371,13 +375,13 @@ DEFINE_ACTION_FUNCTION favored_soul_detection_general BEGIN
 	
 		//  actual shaman references get subbed to exclude favored souls
 		
-		OUTER_SPRINT match "Class(\([^,]+\),SHAMAN)" 
+		OUTER_SPRINT match "^Class(\([^,]+\),SHAMAN)" 
 		OUTER_SPRINT replace "Class(\1,SHAMAN)|!CheckSpellState(\1,%favored_soul_splstate%)"
 		LAF disjunctive_substitution_bcs STR_VAR script match replace END
 		
 		// druid references get subbed to exclude favored souls
 
-		OUTER_SPRINT match "Class(\([^,]+\),\(DRUID_ALL\|DRUID\))" 
+		OUTER_SPRINT match "^Class(\([^,]+\),\(DRUID_ALL\|DRUID\))" 
 		OUTER_SPRINT replace "Class(\1,\2)|!CheckSpellState(\1,%favored_soul_splstate%)"
 		LAF disjunctive_substitution_bcs STR_VAR script match replace END
 
@@ -385,7 +389,7 @@ DEFINE_ACTION_FUNCTION favored_soul_detection_general BEGIN
 		
 		// cleric_all references *in*clude FS
 		
-		OUTER_SPRINT match "Class(\([^,]+\),\(CLERIC_ALL\|CLERIC\))" 
+		OUTER_SPRINT match "^Class(\([^,]+\),\(CLERIC_ALL\|CLERIC\))" 
 		OUTER_SPRINT replace "OR()Class(\1,\2)|CheckSpellState(\1,%favored_soul_splstate%)"
 		LAF disjunctive_substitution_bcs STR_VAR script match replace END
 
@@ -395,13 +399,13 @@ DEFINE_ACTION_FUNCTION favored_soul_detection_general BEGIN
 	
 		//  actual shaman references get subbed to exclude favored souls
 		
-		OUTER_SPRINT match "Class(\([^,]+\),SHAMAN)" 
+		OUTER_SPRINT match "^Class(\([^,]+\),SHAMAN)" 
 		OUTER_SPRINT replace "Class(\1,SHAMAN)|!CheckSpellState(\1,%favored_soul_splstate%)"
 		LAF disjunctive_substitution_dlg STR_VAR dialog match replace END
 		
 		// druid references get subbed to exclude favored souls
 
-		OUTER_SPRINT match "Class(\([^,]+\),\(DRUID_ALL\|DRUID\))" 
+		OUTER_SPRINT match "^Class(\([^,]+\),\(DRUID_ALL\|DRUID\))" 
 		OUTER_SPRINT replace "Class(\1,\2)|!CheckSpellState(\1,%favored_soul_splstate%)"
 		LAF disjunctive_substitution_dlg STR_VAR dialog match replace END
 
@@ -409,7 +413,7 @@ DEFINE_ACTION_FUNCTION favored_soul_detection_general BEGIN
 		
 		// cleric_all references *in*clude FS
 		
-		OUTER_SPRINT match "Class(\([^,]+\),\(CLERIC_ALL\|CLERIC\))" 
+		OUTER_SPRINT match "^Class(\([^,]+\),\(CLERIC_ALL\|CLERIC\))" 
 		OUTER_SPRINT replace "OR()Class(\1,\2)|CheckSpellState(\1,%favored_soul_splstate%)"
 		LAF disjunctive_substitution_dlg STR_VAR dialog match replace END
 

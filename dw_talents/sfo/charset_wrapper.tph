@@ -172,7 +172,6 @@ BEGIN
 						END ELSE BEGIN
 							OUTER_SPRINT tra "%extra_tra_path%/%default_language%/%BASH_FOR_FILE%"
 						END
-						PRINT "tra is %tra%; language is %LANGUAGE%; default language is %default_language%"
 						COPY "%tra%" "%out_path%/%LANGUAGE%"
 					END					
 				END

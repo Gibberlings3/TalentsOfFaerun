@@ -77,7 +77,7 @@ DEFINE_ACTION_FUNCTION paladin_extra_uses BEGIN
 	LAF 2daq_extract STR_VAR resref="clastext" row=BLACKGUARD column=DESCSTR RET desc_strref=value END
 	strref.patch[desc_strref]
 	[
-		REPLACE_TEXTUALLY "\(.*%smite_good_name%.*\)" "\1 %string_smite_good%"	
+		REPLACE_TEXTUALLY "\(.*%smite_good_name%.*\)" "\1 %string_smite_evil%"	
 	]
 
 

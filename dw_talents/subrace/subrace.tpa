@@ -53,7 +53,8 @@ DEFINE_ACTION_FUNCTION subrace BEGIN
 
 	// install
 	
-	LAF build_subraces STR_VAR locbase="subrace/lib_subrace" END
+
+	LAF build_subraces END
 
 	LAF assign_npc_subraces END
 	
@@ -203,7 +204,7 @@ DEFINE_ACTION_FUNCTION planetouched_subraces BEGIN
 		LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 timing=1 STR_VAR resource="%spl_subrace_genasi_earth%" END
 		LPF ADD_SPELL_EFFECT INT_VAR opcode=63 target=2 timing=9 END // infravision
 		LPF ADD_SPELL_EFFECT INT_VAR opcode=171 target=2 timing=9 STR_VAR resource="%spl_genasi_magic_stone%" END // magical stone
-		LPF ADD_SPELL_EFFECT INT_VAR opcode=169 target=2 timing=9 parameter2=171 END // immunity to petrification
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=169 target=2 timing=9 parameter2=171 END // immunity to petrification icon
 		PATCH_IF GAME_IS iwdee BEGIN
 			parameter1=38043
 		END ELSE BEGIN
@@ -361,7 +362,7 @@ DEFINE_ACTION_FUNCTION elf_subraces BEGIN
 
 	// faerie fire
 
-	LAF run STR_VAR file=faerie_fire locbase=shared END
+	LAF run STR_VAR file=faerie_fire locbase=shared_som END
 
 	// reputation penalty for drow
 	
@@ -374,7 +375,7 @@ DEFINE_ACTION_FUNCTION elf_subraces BEGIN
 	<<<<<<<< .../stratagems-inline/rep_penalty.baf
 	IF
 		!Global("dw-rep-2","GLOBAL",0)
-		ReputationGT(Player1,10)
+		ReputationGT(Player1,9)
 	THEN
 		RESPONSE #100
 			IncrementGlobal("dw-rep-2","GLOBAL",-1)
@@ -385,7 +386,7 @@ DEFINE_ACTION_FUNCTION elf_subraces BEGIN
 
 	IF
 		!Global("dw-rep-2","GLOBAL",0) // we only want this to happen once, not least because paladins fall below 8
-		!ReputationGT(Player1,10)
+		!ReputationGT(Player1,9)
 	THEN
 		RESPONSE #100
 			IncrementGlobal("dw-rep-2","GLOBAL",-1)
@@ -410,7 +411,7 @@ DEFINE_ACTION_FUNCTION elf_subraces BEGIN
 	CREATE spl "%spl_subrace_drow%"
 		LPF add_basic_spell_ability END
 		LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 timing=1 STR_VAR resource="%spl_subrace_drow%" END
-		LPF ADD_SPELL_EFFECT INT_VAR opcode=166 target=2 parameter1=base+inc parameter2=1 timing=9 END // MR
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=166 target=2 parameter1=base+inc timing=9 END // MR
 		LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 timing=9 STR_VAR resource="%spl_light_sensitivity%" END	// light sensitivity
 		LPF ADD_SPELL_EFFECT INT_VAR opcode=265 target=2 timing=9 parameter1="1" parameter2=1 STR_VAR resource=dw-rep-2 END
 		LPF ADD_SPELL_EFFECT INT_VAR opcode=171 target=2 timing=9 STR_VAR resource="%spl_faerie_fire%" END
@@ -429,7 +430,7 @@ DEFINE_ACTION_FUNCTION elf_subraces BEGIN
 	
 	LAF add_to_subrace_tables
 		STR_VAR subrace_table=elves
-				disabled=ELF_WINGED
+				disabled="ELF_WINGED ELF_DUSK"
 				table_path
 	END
 
@@ -562,7 +563,7 @@ DEFINE_ACTION_FUNCTION gnome_subraces BEGIN
 		LPF ADD_SPELL_EFFECT INT_VAR opcode=69 target=2 timing=9 END
 		LPF ADD_SPELL_EFFECT INT_VAR opcode=142 target=2 timing=9 parameter2=31 END
 		// magic resistance
-		LPF ADD_SPELL_EFFECT INT_VAR opcode=166 target=2 parameter1=base+inc parameter2=1 timing=9 END // MR	
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=166 target=2 parameter1=base+inc parameter2=0 timing=9 END // MR	
 		LPF ADD_SPELL_EFFECT INT_VAR opcode=142 target=2 timing=9 parameter2=63 END
 
 	CREATE spl "%spl_subrace_svirfneblin_recurring%"
@@ -885,8 +886,15 @@ DEFINE_ACTION_FUNCTION assign_npc_subraces BEGIN
 		ACTION_TO_LOWER dv
 		ACTION_IF VARIABLE_IS_SET $sfo_joinable_dvs("%dv%") BEGIN
 			OUTER_SPRINT $npc_subraces("%dv%") "%subrace%"
-		END
+		END	
+	END
 	
+	LAM 3p_load_data
+	ACTION_PHP_EACH sfo_3p_npc_subrace AS dv=>subrace BEGIN
+		ACTION_TO_LOWER dv
+		ACTION_IF VARIABLE_IS_SET $sfo_joinable_dvs("%dv%") BEGIN
+			OUTER_SPRINT $npc_subraces("%dv%") "%subrace%"
+		END
 	END
 
 	COPY_EXISTING_REGEXP ".*\.cre" override
@@ -898,9 +906,35 @@ DEFINE_ACTION_FUNCTION assign_npc_subraces BEGIN
 				SET parameter1=$subrace_id_array("%subrace_ident%" "subrace_id")
 				LPF ADD_CRE_EFFECT INT_VAR opcode=233 target=2 timing=9 parameter1 parameter2=subrace_stat END
 			END
+			PATCH_MATCH "%subrace%" WITH 
+			GNOME_DEEP ELF_DROW BEGIN
+				WRITE_BYTE 0x5d 0 // no hardcoded MR
+			END
+			DEFAULT
+			END
 		END
 	BUT_ONLY
 
+	// also remove from CLABs any 3p redundant effects
+
+	LAM 3p_load_data
+	LAF 2da_read STR_VAR file=kitlist.2da rowname_column=ROWNAME RET_ARRAY kitlist_array=array END
+	
+	ACTION_PHP_EACH sfo_3p_kit AS k=>list BEGIN
+		ACTION_IF "%k_1%" STR_EQ "subrace_delete" BEGIN
+			OUTER_SPRINT kit "%k_0%"
+			ACTION_TO_UPPER kit
+			OUTER_SPRINT clab $kitlist_array("%kit%" ABILITIES)
+			COPY_EXISTING "%clab%.2da" override
+				WHILE "%list%" STR_CMP "" BEGIN
+					LPF return_first_entry STR_VAR list separator="," RET entry list END
+					REPLACE_TEXTUALLY "\(GA\|AP\)_%entry%" "****"
+				END
+			IF_EXISTS
+		END
+	END
+
+END
 
 ////////////////////////////////////////////////////////////////////////////////
 DEFINE_ACTION_FUNCTION wizard_slayer_restrictions BEGIN
@@ -920,9 +954,6 @@ DEFINE_ACTION_FUNCTION wizard_slayer_restrictions BEGIN
 		REPLACE_TEXTUALLY "\(%disadvantages%.*[%WNL%%LNL%%MNL]\)\([^A-Za-z0-9]+\)\([A-Za-z0-9].*\)" "\1\2%extra%%WNL%\2\3" 
 	END
 	STRING_SET_EVALUATE desc_strref "%desc%"
-
-
-END
 
 
 END

@@ -130,14 +130,14 @@ Disadvantages:
 
 Advantages:
 - The Jester's song does not help allies. Instead, every opponent within 30 feet must save once per round to avoid falling under its effects:
-  1st level: Save vs. Spell at +2 or be distracted, and slowed (10%) or confused (10%). Distracted opponents suffer -2 to attack rolls, damage rolls, and AC.
+  1st level: Save vs. Spell at +2 or be distracted, and slowed (10%) or confused (10%). Distracted opponents suffer -2 to attack rolls, saving throws, and AC.
   5th level: Save vs. Spell at +2 or be distracted, and slowed (20%) or confused (20%).
   10th level: Save vs. Spell or be distracted, and (slowed (30%), or confused (30%).
   15th level: Save vs. Spell at -2 or be distracted, and slowed (40%), confused (40%), or knocked unconscious (20%).
   20th level: Save vs. Spell at -2 or be distracted, and confused and slowed (50%) or knocked unconscious (50%).
 
 Disadvantages:
-- BARD_SONG_PLACEHOLDER."
+- BARD_SONG_PLACEHOLDER"
 @19="None."
 @20="Does not know the songs available to regular Bards."
 @21="Distracted"
@@ -166,8 +166,6 @@ DEFENSIVE SPIN: During the next 4 rounds, the Blade is rooted to the spot and ga
 - 5th level: May use the Offensive Spin ability, as detailed below. An additional use is gained at 9th level and every 4 levels thereafter.
 
 OFFENSIVE SPIN: During the next 4 rounds, the Blade's movement rate doubles and <PRO_HESHE> gains a +2 bonus to hit and damage rolls as well as an extra attack per round. All attacks deal maximum damage for the duration. Offensive Spin may not be used in conjunction with the Haste or Improved Haste spells.
-
-
 
 Disadvantages:
 - Only has one half the normal Lore value.
@@ -223,7 +221,8 @@ Special Abilities:
 - Cold Resistance: 50%
 - Electricity Resistance: 50%
 - Acid Resistance: 50%
-- Magic Resistance: 50%"
+- Magic Resistance: 50%
+- Regenerates 1 hp per second"
 
 @37="Shapeshift: Greater Werewolf
 
@@ -239,11 +238,12 @@ Special Abilities:
 - Cold Resistance: 50%
 - Electricity Resistance: 50%
 - Acid Resistance: 50%
-- Magic Resistance: 40%"
+- Magic Resistance: 40%
+- Regenerates 1 hp per 2 seconds"
 
 
-@38="8th level" // must match, verbatim, the appropriate string in the Dragon Disciple description
-@39="15th level" // ditto
+@38="5th level" // must match, verbatim, the appropriate string in the Dragon Disciple description
+
 
 @40="7th level: Gains immunity to paralysis."
 @41="13th level: Gains immunity to charm."
@@ -313,11 +313,11 @@ WEREWOLF: AC 1, Strength 19, Dexterity 16, 2 attacks per round for 1d6 slashing 
 
 - 13th level : Now assumes the form of a greater werewolf when shapeshifting.
 
-GREATER WEREWOLF: AC -4, Strength 21, Dexterity 20, 3 attacks per round for 1d10 slashing damage (as +3 weapon), 40% magic resistance, 50% elemental resistance.
+GREATER WEREWOLF: AC -4, Strength 21, Dexterity 20, 3 attacks per round for 1d10 slashing damage (as +3 weapon), 40% magic resistance, 50% elemental resistance, regenerates 1 hit point per two seconds.
 
 - 19th level: Now assumes the form of a werewolf lord when shapeshifting.
 
-WEREWOLF LORD: AC -8, Strength 23, Dexterity 20, 3 attacks per round for 1d12 slashing damage (as +4 weapon), 50% magic resistance, 50% elemental resistance."
+WEREWOLF LORD: AC -8, Strength 23, Dexterity 20, 3 attacks per round for 1d12 slashing damage (as +4 weapon), 50% magic resistance, 50% elemental resistance, regenerates 1 hit point per second."
 
 @59="Breath Weapon damage increases to 4d8." // these must exactly match the strings in the unmodded Dragon Disciple description
 @60="Breath Weapon damage increases to 6d8."

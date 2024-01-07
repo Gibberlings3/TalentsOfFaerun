@@ -573,12 +573,12 @@ BEGIN
 			END
 		END
 		LPF DELETE_EFFECT INT_VAR match_opcode=0 END
-		PATCH_IF !ac=999 BEGIN
+		PATCH_IF !(ac=999) BEGIN
 			LPF ADD_ITEM_EQEFFECT INT_VAR opcode=0 target=1 timing=2 parameter1=ac parameter2=16 END
 		END
 		LPF DELETE_EFFECT INT_VAR match_opcode=54 END
-		PATCH_IF !thac0=999 BEGIN
-			LPF ADD_ITEM_EQEFFECT INT_VAR opcode=0 target=1 timing=2 parameter1=thac0 parameter2=1 END		
+		PATCH_IF !(thac0=999) BEGIN
+			LPF ADD_ITEM_EQEFFECT INT_VAR opcode=54 target=1 timing=2 parameter1=thac0 parameter2=1 END		
 		END
 		PATCH_IF !enchantment=0 BEGIN
 			WRITE_LONG 0x60 enchantment

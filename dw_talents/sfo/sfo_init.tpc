@@ -55,14 +55,20 @@ END
 ////////////////////////////////////////////////////////////////////////////
 
 ACTION_TIME sfo_setup_charsets BEGIN
-	ACTION_IF VARIABLE_IS_SET "LANGUAGE" && !VARIABLE_IS_SET sfo_charset_wrapper_run BEGIN
+	ACTION_IF VARIABLE_IS_SET "LANGUAGE" && !(VARIABLE_IS_SET sfo_charset_wrapper_run && FILE_EXISTS "%workspace%/dw_this_run_tra.mrk") BEGIN
+		ACTION_IF FILE_EXISTS "%workspace%/dw_this_run_tra.mrk" BEGIN
+			DELETE + "%workspace%/dw_this_run_tra.mrk" // will persist even if component does not install
+		END
+		COPY_EXISTING "misc01.itm" "%workspace%/dw_this_run_tra.mrk"
 		OUTER_SET sfo_charset_wrapper_run=1
 		LAF charset_wrapper
 			INT_VAR from_utf8=sfo_from_utf8
 					overwrite=1
 			STR_VAR tra_path="%sfo_tra_path%"
-					setup_tra="NULL_SKIP_ME"
+					setup_tra="%sfo_setup_tra%"
+					load="%sfo_tra_load%"
 					extra_tra_folders="%sfo_extra_tra_folders%"
+					default_language="%sfo_default_language%"
 			RET out_path 
 		END
 		OUTER_SPRINT sfo_tra_loc "%out_path%"

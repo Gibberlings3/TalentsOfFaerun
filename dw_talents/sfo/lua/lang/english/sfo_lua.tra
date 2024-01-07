@@ -46,6 +46,8 @@
 @130="May learn the following spells as priest spells:"
 @131="Automatically learns the following spells:"
 @132="Adds the following spells to <PRO_HISHER> spell book:"
+@499="Points Remaining"
+@500="You may choose abilities for your character from this list." 
 
 @900="Sphere:"
 @901="May learn priest spells from these spheres: "

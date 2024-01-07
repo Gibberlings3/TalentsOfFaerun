@@ -17,7 +17,7 @@ DEFINE_ACTION_FUNCTION feats BEGIN
 	LAF install_feats STR_VAR feat_table=feat_table.2da location=data END
 	LAF install_feats STR_VAR feat_table=ranger_hate_table.2da path="%data_loc%" END
 
-	//LAF run STR_VAR file=start_at_level_one END
+	LAF run STR_VAR file=start_at_level_one END
 
 
 
