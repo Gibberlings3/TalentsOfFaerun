@@ -326,16 +326,13 @@ BEGIN
 	LAF 2daq_extract INT_VAR rowname_column=1 STR_VAR resref=kitlist row="%kit%" column=help RET desc_strref=value END
 	ACTION_GET_STRREF desc_strref desc
 	LAF make_barred_school_string STR_VAR barred_schools tra RET barred_string END
-	PRINT "desc old: %desc%"
 	OUTER_PATCH_SAVE desc "%desc%" BEGIN
 		REPLACE_TEXTUALLY "BARRED_SCHOOL_PLACEHOLDER" "%barred_string%"
 		REPLACE_TEXTUALLY "BONUS_SCHOOL_PLACEHOLDER" "%extra_spell_string%%WNL%%save_bonus_string%"
 	END
-	PRINT "desc_new: %desc%"
 	ACTION_IF enforce_ability_minimum BEGIN
 		OUTER_SPRINT desc "%desc%%WNL%%WNL%%ability_min_string%"
 	END
-	PRINT "desc_final: %desc%"
 	STRING_SET_EVALUATE desc_strref "%desc%"
 	
 	// if appropriate, enforce specialist learning

@@ -164,19 +164,21 @@ END
 
 DEFINE_ACTION_FUNCTION parse_clastext RET_ARRAY is_class id BEGIN
 	
-	COPY_EXISTING "clastext.2da" "%workspace%"
+	COPY_EXISTING - "clastext.2da" nowhere
 		COUNT_2DA_COLS colcount
 		READ_2DA_ENTRIES_NOW clastext_contents colcount
 		FOR (row=0;row<clastext_contents;++row) BEGIN
 			READ_2DA_ENTRY_FORMER clastext_contents row 0 ident
 			READ_2DA_ENTRY_FORMER clastext_contents row 1 classid
 			READ_2DA_ENTRY_FORMER clastext_contents row 2 kitid
-			PATCH_IF "%kitid%" STRING_EQUAL_CASE 16384 BEGIN
-				SET $is_class("%ident%")=1
-				SET $id("%ident%")=classid
-			END ELSE BEGIN
-				LOOKUP_IDS_SYMBOL_OF_INT parent_class class classid
-				SPRINT $parent_class("%ident%") "%parent_class%"
+			PATCH_IF IS_AN_INT classid BEGIN
+				PATCH_IF "%kitid%" STRING_EQUAL_CASE 16384 BEGIN
+					SET $is_class("%ident%")=1
+					SET $id("%ident%")=classid
+				END ELSE BEGIN
+					LOOKUP_IDS_SYMBOL_OF_INT parent_class class classid
+					SPRINT $parent_class("%ident%") "%parent_class%"
+				END
 			END
 		END
 	BUT_ONLY

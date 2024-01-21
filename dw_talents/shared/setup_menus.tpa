@@ -1,8 +1,6 @@
 DEFINE_ACTION_FUNCTION setup_menus BEGIN
 
 	// include functions
-	INCLUDE "%MOD_FOLDER%/%lua_loc%/ui_virtual_class.tph"
-	INCLUDE "%MOD_FOLDER%/%lua_loc%/ui_detect_class_kit.tph"
 	
 	LAF check_label STR_VAR label=dw#setup_kit_menus RET value END
 	ACTION_IF !value BEGIN

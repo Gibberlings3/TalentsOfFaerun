@@ -22,6 +22,7 @@ DEFINE_ACTION_FUNCTION hlas STR_VAR version=0 BEGIN // version is for testing. v
 	LAF include STR_VAR file=make_feats.tph END
 	LAF include STR_VAR file=install_feats.tph END
 	
+
 	ACTION_IF version=0 || version=1 BEGIN
 		ACTION_FOR_EACH setup IN hla_setup hla_elemental_transformations missing_items poison empowered_healing item_crafting paladin_touch wand_scroll_use slippery_mind_avoid_death hla_elemental_summons hla_elemental_princes arcane_knowledge vanilla_adjustments BEGIN
 			LAF hla_feat_setup STR_VAR setup END
@@ -37,7 +38,8 @@ DEFINE_ACTION_FUNCTION hlas STR_VAR version=0 BEGIN // version is for testing. v
 	END
 	LAF install_feats INT_VAR is_epic=1 STR_VAR feat_table=ranger_hate_table_epic.2da path="%data_loc%" END
 
-	ACTION_IF version=0 || version=2 BEGIN
+
+	ACTION_IF (version=0 || version=2) BEGIN
 	
 		ACTION_FOR_EACH type IN arcane divine monk rogue shaman warrior summons shared BEGIN
 			ACTION_IF FILE_EXISTS "%MOD_FOLDER%/%component_loc%/hla_spec_%type%.tph" BEGIN

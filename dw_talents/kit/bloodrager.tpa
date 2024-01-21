@@ -2,6 +2,7 @@ DEFINE_ACTION_FUNCTION bloodrager BEGIN
 
 	// load required resources
 
+	LAF ui_spell_system_schools END
 	LAF run STR_VAR file=319ify_item_restrictions locbase=shared END
 	LAF run STR_VAR file=one_fewer_spell locbase=shared END
 	LAF run STR_VAR file=armored_mages locbase=shared END

@@ -37,7 +37,7 @@ DEFINE_ACTION_FUNCTION kit_ft BEGIN
 	
 	// NPCs
 	
-	LAF run STR_VAR file=npc_kits END
+	LAF 3p_kit END
 
 END
 

@@ -23,12 +23,12 @@ DEFINE_ACTION_FUNCTION mask_cleric BEGIN
 		k.kit_set_alignment{nn le ne ce}
 		if {is_iwd} {{k_bio:=@1007}}
 	]
-
 	LAF cleric_kit_substitutions STR_VAR kit god=mask END
 	LAF holy_symbol INT_VAR name=2006 follower=2007 category=7 STR_VAR bam_path=dr desc_bam=phelm29 inv_bam=cdislhly kit END
 	LAF adjust_cleric_stronghold STR_VAR talos=all kit END
 	LAF assign_spheres STR_VAR kit default=cleric subtract="good combat necromantic" add="moon" END
 	LAF assign_bonus_spells STR_VAR kit spells="SLEEP INVISIBILITY NON_DETECTION IMPROVED_INVISIBILITY SHADOW_DOOR POWER_WORD_SILENCE MASS_INVISIBILITY" END
+
 
 
 END

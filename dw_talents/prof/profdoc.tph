@@ -39,38 +39,40 @@ BEGIN
 	// main loop
 	SILENT
 	ACTION_PHP_EACH clastext_rows AS class_label=>discard BEGIN
-		OUTER_SET class_id=$clastext_array("%class_label%" CLASSID)
-		OUTER_SPRINT kit_id $clastext_array("%class_label%" KITID) // yes, it's an integer, but some (e.g. wild mage) are outside WEIDU's integer range
-		OUTER_SET desc_strref=$clastext_array("%class_label%" "DESCSTR")
-		ACTION_TO_LOWER class_label
-		ACTION_IF ("%kit_id%" STR_EQ 16384 || !only_classes) BEGIN // again, we have to treat this as a string because of overflow issues
-			OUTER_PATCH "" BEGIN
-				LOOKUP_IDS_SYMBOL_OF_INT parent_class class class_id
-			END
-			ACTION_MATCH "%class_label%" WITH
-			"FALLEN.*" "GRIZZLY_BEAR" "GODXX.*" "DW_DUMMY.*" BEGIN 
-			END
-			DEFAULT
-				ACTION_IF "%class_filter%" STRING_COMPARE "" BEGIN
-					OUTER_PATCH "" BEGIN
-						LPF "%class_filter%" STR_VAR parent_class RET proceed END
-					END
-				END ELSE BEGIN
-					OUTER_SET proceed=1
+		OUTER_SPRINT class_id $clastext_array("%class_label%" CLASSID)
+		ACTION_IF IS_AN_INT class_id BEGIN
+			OUTER_SPRINT kit_id $clastext_array("%class_label%" KITID) // yes, it's an integer, but some (e.g. wild mage) are outside WEIDU's integer range
+			OUTER_SET desc_strref=$clastext_array("%class_label%" "DESCSTR")
+			ACTION_TO_LOWER class_label
+			ACTION_IF ("%kit_id%" STR_EQ 16384 || !only_classes) BEGIN // again, we have to treat this as a string because of overflow issues
+				OUTER_PATCH "" BEGIN
+					LOOKUP_IDS_SYMBOL_OF_INT parent_class class class_id
 				END
-				ACTION_IF proceed BEGIN
-					ACTION_IF display_kits BEGIN
-						PRINT "Generating description for kit %class_label%"
-					END
-					// check the description to check for class/kit status (defined by whether it has 'Advantages:' or 'CLASS FEATURES:' in it
-					ACTION_GET_STRREF desc_strref desc	
-					ACTION_IF INDEX ("^%adv_line%" "%desc%" )>=0 || "%class_label%" STR_EQ "wild_mage" BEGIN
-						LAF update_kit_proficiency_description STR_VAR kit="%class_label%" END								
-					END ELSE
-					ACTION_IF INDEX ("^%feature_line%" "%desc%")>=0 BEGIN
-						LAF update_class_proficiency_description INT_VAR is_multiclass=0 STR_VAR class="%class_label%" parent_class END				
+				ACTION_MATCH "%class_label%" WITH
+				"FALLEN.*" "GRIZZLY_BEAR" "GODXX.*" "DW_DUMMY.*" BEGIN 
+				END
+				DEFAULT
+					ACTION_IF "%class_filter%" STRING_COMPARE "" BEGIN
+						OUTER_PATCH "" BEGIN
+							LPF "%class_filter%" STR_VAR parent_class RET proceed END
+						END
 					END ELSE BEGIN
-						LAF update_class_proficiency_description INT_VAR is_multiclass=1 STR_VAR class="%class_label%" parent_class END								
+						OUTER_SET proceed=1
+					END
+					ACTION_IF proceed BEGIN
+						ACTION_IF display_kits BEGIN
+							PRINT "Generating description for kit %class_label%"
+						END
+						// check the description to check for class/kit status (defined by whether it has 'Advantages:' or 'CLASS FEATURES:' in it
+						ACTION_GET_STRREF desc_strref desc	
+						ACTION_IF INDEX ("^%adv_line%" "%desc%" )>=0 || "%class_label%" STR_EQ "wild_mage" BEGIN
+							LAF update_kit_proficiency_description STR_VAR kit="%class_label%" END								
+						END ELSE
+						ACTION_IF INDEX ("^%feature_line%" "%desc%")>=0 BEGIN
+							LAF update_class_proficiency_description INT_VAR is_multiclass=0 STR_VAR class="%class_label%" parent_class END				
+						END ELSE BEGIN
+							LAF update_class_proficiency_description INT_VAR is_multiclass=1 STR_VAR class="%class_label%" parent_class END								
+						END
 					END
 				END
 			END

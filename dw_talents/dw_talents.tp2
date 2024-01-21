@@ -1,7 +1,7 @@
 BACKUP ~weidu_external/backup/dw_talents~
 AUTHOR "DavidW"
 //MODDER setup_tra none area_variables none missing_extern none missing_resref none ict2_actions none missing_eval none overwriting_file none fun_args warn
-VERSION ~Beta 3~
+VERSION ~Beta 4~
 
 AUTO_EVAL_STRINGS
 README "dw_talents/doc/readme-dw_talents.html"
@@ -23,6 +23,7 @@ LANGUAGE ~English~
 //////////////////////////////////////////////////////////////////////
 /// Test
 //////////////////////////////////////////////////////////////////////
+
 /*
 BEGIN "test" DESIGNATED 0
 
@@ -833,7 +834,7 @@ LAF run STR_VAR file=kit_c location=kit tra=kit END
 BEGIN @706 DESIGNATED 50500 GROUP @7
 REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
 FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
-REQUIRE_PREDICATE MOD_IS_INSTALLED "dw_talents/dw_talents.tp2" 50400 || !IS_AN_INT dw_talents_component_50400_installed @90
+REQUIRE_PREDICATE MOD_IS_INSTALLED "dw_talents/dw_talents.tp2" 50400 || IS_AN_INT dw_talents_component_50400_installed @90
 FORBID_COMPONENT "dw_talents/dw_talents.tp2" 81100 @93
 REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_81100_installed @93
 

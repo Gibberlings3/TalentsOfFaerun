@@ -846,7 +846,11 @@ DEFINE_ACTION_FUNCTION rebalance_shapeshifter BEGIN
 	ACTION_IF !is_iwd BEGIN
 		spl.edit[spcl643][m.ab_fx.alter{s_resource:=werewlf1|match="~%s_resource%~ STR_EQ brbrp"}]
 		spl.edit[spcl644][m.ab_fx.alter{s_resource:=werewlf2|match="~%s_resource%~ STR_EQ brbrp"}]
-		itm.copy[brbrp=>werewlf1 brbrp=>werewlf2][]
+		itm.copy[brbrp=>werewlf1][]
+		itm.copy[brbrp=>werewlf2]
+		[
+				m.fx.add{s_opcode=98 s_target=1 s_parameter1=2 s_parameter2=3 s_timing=2}
+		]
 	END
 
 // new powers
@@ -878,11 +882,6 @@ DEFINE_ACTION_FUNCTION rebalance_shapeshifter BEGIN
 	
 	// normal werewolf (basically unchanged)
 
-	ACTION_IF is_iwd BEGIN
-		OUTER_SPRINT weapon werewlf1
-	END ELSE BEGIN
-		OUTER_SPRINT weapon cdbrprp
-	END
 	
 	LAF make_shapeshift_spell
 		INT_VAR str=19
@@ -896,7 +895,7 @@ DEFINE_ACTION_FUNCTION rebalance_shapeshifter BEGIN
 				healing=1
 				resistmagic=20
 				grant_natural_form_spell=1
-		STR_VAR weapon
+		STR_VAR weapon=werewlf1
 				spell=spcl643
 				copy_spell=spcl643
 				damagetype=slashing
@@ -904,14 +903,6 @@ DEFINE_ACTION_FUNCTION rebalance_shapeshifter BEGIN
 	END
 	
 	// greater werewolf (again basically unchanged, but tweaked AC)
-	
-	ACTION_IF is_iwd BEGIN
-		OUTER_SPRINT weapon werewlf2
-	END ELSE BEGIN
-		OUTER_SPRINT weapon cdbrbrp2
-	END
-	COPY_EXISTING "%weapon%.itm" "override/%itm_shapeshifter_werewolf_lord%.itm"
-		LPF ALTER_EFFECT INT_VAR match_opcode=98 parameter2=1 END
 
 
 	LAF make_shapeshift_spell
@@ -931,7 +922,7 @@ DEFINE_ACTION_FUNCTION rebalance_shapeshifter BEGIN
 				resistelectricity=50
 				description=37
 				grant_natural_form_spell=1
-		STR_VAR weapon
+		STR_VAR weapon=werewlf2
 				spell=spcl644
 				copy_spell=spcl644
 				damagetype=slashing
@@ -940,7 +931,8 @@ DEFINE_ACTION_FUNCTION rebalance_shapeshifter BEGIN
 	
 	// werewolf lord
 	
-	COPY_EXISTING "%weapon%.itm" "override/%itm_shapeshifter_werewolf_lord%.itm"
+	COPY_EXISTING "werewlf2.itm" "override/%itm_shapeshifter_werewolf_lord%.itm"
+		LPF ALTER_EFFECT INT_VAR match_opcode=98 parameter2=1 END
 	
 	LAF make_shapeshift_spell
 		INT_VAR name=35

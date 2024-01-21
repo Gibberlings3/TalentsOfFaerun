@@ -1,13 +1,7 @@
 DEFINE_ACTION_FUNCTION subrace BEGIN
 
-	INCLUDE "%MOD_FOLDER%/%lua_loc%/ui_virtual_class.tph"
 	OUTER_SPRINT table_path "%MOD_FOLDER%/%component_loc%/data"
 
-	//include required libraries
-	INCLUDE "%MOD_FOLDER%/%lua_loc%/ui_add_subraces.tph"
-	INCLUDE "%MOD_FOLDER%/%lua_loc%/ui_virtual_class.tph"
-	INCLUDE "%MOD_FOLDER%/%lua_loc%/ui_shared_code.tph"
-	INCLUDE "%MOD_FOLDER%/%lua_loc%/ui_dual_class_kits.tph"
 	
 	// once-and-for-all, get the descriptions associated with the main races
 	
@@ -872,69 +866,6 @@ DEFINE_ACTION_FUNCTION subrace_resources_underdark BEGIN
 
 END
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-DEFINE_ACTION_FUNCTION assign_npc_subraces BEGIN
-
-
-	OUTER_SET subrace_stat=134
-	LAF 2da_read STR_VAR file=dw_subrace_ids.2da path="%data_loc_shared%" case=lower RET_ARRAY subrace_id_array=array END
-
-	LAF array_read STR_VAR file=npc_subraces.txt location=data RET_ARRAY npc_array=array END
-	ACTION_CLEAR_ARRAY npc_subraces 
-	ACTION_PHP_EACH npc_array AS dv=>subrace BEGIN
-		ACTION_TO_LOWER dv
-		ACTION_IF VARIABLE_IS_SET $sfo_joinable_dvs("%dv%") BEGIN
-			OUTER_SPRINT $npc_subraces("%dv%") "%subrace%"
-		END	
-	END
-	
-	LAM 3p_load_data
-	ACTION_PHP_EACH sfo_3p_npc_subrace AS dv=>subrace BEGIN
-		ACTION_TO_LOWER dv
-		ACTION_IF VARIABLE_IS_SET $sfo_joinable_dvs("%dv%") BEGIN
-			OUTER_SPRINT $npc_subraces("%dv%") "%subrace%"
-		END
-	END
-
-	COPY_EXISTING_REGEXP ".*\.cre" override
-		READ_ASCII 0x280 dv
-		TO_LOWER dv
-		PATCH_IF VARIABLE_IS_SET $npc_subraces("%dv%") BEGIN
-			SPRINT subrace_ident $npc_subraces("%dv%")
-			PATCH_IF VARIABLE_IS_SET $subrace_id_array("%subrace_ident%" "subrace_id") BEGIN
-				SET parameter1=$subrace_id_array("%subrace_ident%" "subrace_id")
-				LPF ADD_CRE_EFFECT INT_VAR opcode=233 target=2 timing=9 parameter1 parameter2=subrace_stat END
-			END
-			PATCH_MATCH "%subrace%" WITH 
-			GNOME_DEEP ELF_DROW BEGIN
-				WRITE_BYTE 0x5d 0 // no hardcoded MR
-			END
-			DEFAULT
-			END
-		END
-	BUT_ONLY
-
-	// also remove from CLABs any 3p redundant effects
-
-	LAM 3p_load_data
-	LAF 2da_read STR_VAR file=kitlist.2da rowname_column=ROWNAME RET_ARRAY kitlist_array=array END
-	
-	ACTION_PHP_EACH sfo_3p_kit AS k=>list BEGIN
-		ACTION_IF "%k_1%" STR_EQ "subrace_delete" BEGIN
-			OUTER_SPRINT kit "%k_0%"
-			ACTION_TO_UPPER kit
-			OUTER_SPRINT clab $kitlist_array("%kit%" ABILITIES)
-			COPY_EXISTING "%clab%.2da" override
-				WHILE "%list%" STR_CMP "" BEGIN
-					LPF return_first_entry STR_VAR list separator="," RET entry list END
-					REPLACE_TEXTUALLY "\(GA\|AP\)_%entry%" "****"
-				END
-			IF_EXISTS
-		END
-	END
-
-END
 
 ////////////////////////////////////////////////////////////////////////////////
 DEFINE_ACTION_FUNCTION wizard_slayer_restrictions BEGIN

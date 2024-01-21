@@ -1,22 +1,6 @@
 DEFINE_ACTION_FUNCTION test STR_VAR version=0 BEGIN
 
-	LAM 3p_load_data
-	LAF 2da_read STR_VAR file=kitlist.2da rowname_column=ROWNAME RET_ARRAY kitlist_array=array END
 	
-	ACTION_PHP_EACH sfo_3p_kit AS k=>list BEGIN
-		ACTION_IF "%k_1%" STR_EQ "subrace_delete" BEGIN
-			OUTER_SPRINT kit "%k_0%"
-			ACTION_TO_UPPER kit
-			OUTER_SPRINT clab $kitlist_array("%kit%" ABILITIES)
-			COPY_EXISTING "%clab%.2da" override
-				WHILE "%list%" STR_CMP "" BEGIN
-					LPF return_first_entry STR_VAR list separator="," RET entry list END
-					REPLACE_TEXTUALLY "\(GA\|AP\)_%entry%" "****"
-				END
-				LPF 2da_prettier_print END
-			IF_EXISTS
-		END
-	END
 
 END
 

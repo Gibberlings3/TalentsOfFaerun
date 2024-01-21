@@ -86,31 +86,6 @@ ACTION_IF !value BEGIN
 	LAF reroute_stats END
 END
 
-////////////////////////////////////////////////////////////////////////////////
-// put scrollbar on SoD UI
-////////////////////////////////////////////////////////////////////////////////
-
-ACTION_IF GAME_INCLUDES sod BEGIN
-	LAF check_label STR_VAR label="dw-added_sod_ui_scrollbar" RET value END
-	ACTION_IF !value BEGIN
-		LAF make_label STR_VAR label="dw-added_sod_ui_scrollbar" END
-		COPY_EXISTING "ui.menu" override
-			REPLACE_TEXTUALLY "var[ %TAB%]+currentChargenKit" "var currentChargenKit%WNL%%TAB%%TAB%scrollbar%TAB%'GUISCRC'"
-	END
-END
-
-////////////////////////////////////////////////////////////////////////////////
-// experimental: fix vanilla UI bugs 
-////////////////////////////////////////////////////////////////////////////////
-
-
-LAF check_label STR_VAR label="dw-fixed_vanilla_ui_bugs" RET value END
-ACTION_IF !value BEGIN
-	LAF make_label STR_VAR label="dw-fixed_vanilla_ui_bugs" END
-	COPY_EXISTING "ui.menu" override
-		REPLACE_TEXTUALLY ~SequenceOnce "~ ~-- SequenceOnce "~
-		REPLACE_TEXTUALLY ~clickable false~ ~clickable lua "false"~
-END
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -119,6 +94,12 @@ END
 ACTION_TIME indirect_load_timer BEGIN
 	LAM indirect_load 
 END
+
+////////////////////////////////////////////////////////////////////////////////
+// read in third-party data
+////////////////////////////////////////////////////////////////////////////////
+
+LAM 3p_load_data
 
 ////////////////////////////////////////////////////////////////////////////////
 // make sure any spell has a scroll (we want them present in advance so that

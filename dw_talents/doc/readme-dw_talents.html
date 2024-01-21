@@ -32,7 +32,7 @@
         <strong> On the web: </strong><a href="https://www.gibberlings3.net/mods/tweaks/tof/">Home
         page</a>, <a href="https://www.gibberlings3.net/forums/forum/236-talents-of-faer&ucirc;n/">discussion
         forum</a>, <a href="https://www.gibberlings3.net/gallery/album/42-talents-of-faer&ucirc;n/">image gallery</a>, and <a href="https://discord.gg/yTzjMTb">Discord</a></p>
-      <p> <strong>Version beta 3</strong><br />
+      <p> <strong>Version beta 4</strong><br />
         <strong>Languages: </strong>English<br />
         <strong>Platforms: </strong>Windows, macOS, Linux </p>
       <p> Talents of Faer&ucirc;n (ToF) is a collection of about 85 mini-mods for the Enhanced Edition versions of Baldur's Gate, Baldur's Gate II, and Icewind Dale, partially inspired by existing mods and tabletop Dungeons and Dragons resources. It contains many optional tweaks to various parts of gameplay, focusing on expanding and rebalancing player character abilities. Features include 150-odd new high-level abilities, a new 'feat' system where lower-level characters gain abilities every few levels, revisions to existing kits, new classes, new kits for multi-class characters, new types of magical specialization, a dozen or so new spells, many spell tweaks, 20-odd new gods for clerics to worship, a subrace system, a revised system of cleric/druid spells, and tweaks to the rules for ability scores and proficiencies. </p>
@@ -1192,6 +1192,29 @@ href="https://gibberlings3.github.io/iesdp/">Infinity Engine Structure Descripti
  </p>
 
   </div>
+  
+  <div class="ribbon_rectangle_h3"><h3>Version beta 4 (21st January 2024)</h3></div>
+    <div class="ribbon_triangle_h2-l"></div>
+    <div class="ribbon_triangle_h2-r"></div>
+<div class="section"> 
+<p>
+<ul>
+<li>Reasonably systematic rebuilding of the part of the UI system that detects a character's kit and class, to avoid problems caused by accents and other non-alphanumeric symbols in kit names. This should fix various serious UI glitches people (mostly people uing non-English installs) were encountering.</li>
+<li>Kit-editing functions no longer choke on externalized weapon proficiencies of lower-cased kits (don't ask, but it was stopping, e.g., Amber from being compatible)</li>
+<li>2da files now try to cope better with the proliferation of illegal 2da formats in the mod ecology.</li>
+<li>CLAB-editing functions no longer delete CLAB rows outside the "ABILITY[0-9]+" namespace.</li>
+<li>Fixed a logic error in the function that handles stripping mid-level effects off HLAs; inter alia this was confusing SR.</li>
+<li>Protection from Fire no longer gets an annoying animation glitch from 'IWD-inspired tweaks to BG spells'.</li>
+<li>Library files no longer get confused trying to read in saving throws when they are defined up to level 50 for some classes and level 40 for others.</li>
+<li>Fixed a library bug that meant Polymorph Self and Shapechange were losing their casting-bar icons.</li>
+<li>Hill Giant barbarian rage (from Polymorph Self) no longer persists once you shapechange to something else.</li>
+<li>Tweaked Chromatic orb now correctly gives no saving throw against damage.</li>
+<li>A few miscellaneous library bug fixes.</li>
+</ul>
+
+</div>
+  
+  
 </div>
 </body>
 </html>
