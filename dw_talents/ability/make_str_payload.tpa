@@ -30,7 +30,7 @@ DEFINE_ACTION_FUNCTION make_str_payload BEGIN
 					SET_2DA_ENTRY row 3 5 $bend_bars("%str%")
 				END
 				PATCH_IF VARIABLE_IS_SET $weight_limit("%str%") BEGIN
-					SET_2DA_ENTRY row 3 5 $weight_limit("%str%")
+					SET_2DA_ENTRY row 4 5 $weight_limit("%str%")
 				END
 			END
 		END
