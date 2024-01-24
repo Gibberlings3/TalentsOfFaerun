@@ -1,0 +1,4 @@
+@1="只能使用盗贼职业可用的武器（双手武器除外）。"  // must exactly match the appropriate string in BGEE strref 24234
+@2="只能使用盗贼职业可用的武器（双手武器除外）。"  // must exactly match the appropriate string in IWDEE strref 37256
+@3="只能使用盗贼职业可用的武器（双手武器除外）。"  // must exactly match the appropriate string in BG2EE strref 45867
+@4="只能使用盗贼职业可用的武器。"

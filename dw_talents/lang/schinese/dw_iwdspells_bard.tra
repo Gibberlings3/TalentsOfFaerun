@@ -1,0 +1,19 @@
+@1="可以使用吟游诗人战歌能力\。当吟游诗人战歌激活时具有以下效果：" // 1-4 must exactly match the appropriate strings from the BG2 description of the bard song (other than replacing '.' with '\.')
+@2="恢复士气到平均水平"
+@3="移除恐惧"
+@4="防护恐惧"
+
+
+
+@10="可以使用吟游诗人战歌能力演奏<PRO_HISHER>曲目中所有战歌"
+@11="从第1级开始可以演唱三英雄之颂。"
+@12="从第3级开始可以演唱库伦勇士传说。"
+@13="从第5级开始可以演唱太摩拉之曲。"
+@14="从第7级开始可以演唱柯蒂斯之歌。"
+@15="从第9级开始可以演唱海妖女的诱惑。"
+@16="从第11级开始可以演唱西斯战歌。"
+
+@20="不知道普通吟游诗人可用的战歌。"
+@21="无。" // must match the string used in kit descriptions to indicate that there are no disadvantages; see, e.g., Jester
+@22="缺点：" // must match appropriate string from kit descriptions
+@23="该能力替代当前吟游诗人战歌。" // must exactly match string from description of spcl920.spl

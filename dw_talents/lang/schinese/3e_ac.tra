@@ -1,0 +1,22 @@
+@1="基础攻击加值"
+@2="主手攻击加值"
+@3="护甲加值"
+@4="副手攻击加值"
+@5="攻击加值"
+@6="防御等级" // must exactly match the string used in description text for armor items
+@7="AC的护甲加值"
+@8="AC"
+@9="最大护甲加值"
+@10="最小基础防御等级" // match the local version of the string in Spell Revisions 'Armor' description
+@11="对抗远程武器为 2" // match the local version of the string in unmodded 'Shield' description
+@12="对远程武器额外 +2"
+@13="：设置为"
+@14="AC的盾牌加值"
+@15="AC的偏斜加值"
+@16="对远程攻击为 2" // match the local version of the string in 'amul15'
+@17="a base Armor Bonus"
+@18="基础护甲加值"
+@19="攻击加值增加"
+@20="防御护腕" // must exactly match the name of the in-game items (e.g. BRAC01 in IWDEE)
+@21="你不能装备一个以上能为防御等级提供偏斜加值的物品。"
+

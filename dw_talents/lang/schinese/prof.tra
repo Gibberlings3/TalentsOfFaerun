@@ -1,0 +1,3 @@
+
+@400="偏好武器："
+@401="优点：" // must exactly match the usual string from kit descriptions

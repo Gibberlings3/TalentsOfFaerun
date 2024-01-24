@@ -1,0 +1,40 @@
+@900="领域："
+@901="可以学习以下领域的牧师法术："
+
+@1000="空气"
+@1001="全部"
+@1002="动物"
+@1003="魅惑"
+@1004="战斗"
+@1005="预言系"
+@1006="神圣"
+@1007="土"
+@1008="精类"
+@1009="火"
+@1010="善良"
+@1011="治疗"
+@1012="月光"
+@1013="自然"
+@1014="死灵"
+@1015="植物"
+@1016="保护"
+@1017="召唤"
+@1018="日光"
+@1019="防护"
+@1020="水"
+@1021="邪恶"
+
+@1030="可以施展德鲁伊法术" // should be the first few words of the description of spellcasting for, e.g., rangers and druids
+@1031="可以施展牧师法术" // should be the first few words of the description of spellcasting for, e.g., paladins and clerics
+@1032="可以施展以下领域的牧师法术：魅惑、战斗、预言、神圣、邪恶、善良、治疗、死灵、保护、召唤以及防护"
+@1033="可以施展以下领域的牧师法术：空气、动物、预言、土、精类、火、治疗、月光、自然、植物、保护、日光以及水"
+@1034="可以施展以下领域的牧师法术：空气、动物、预言、土、火、治疗、月光、自然、植物、保护、日光、守护以及水"
+@1035="可以施展以下领域的牧师法术：战斗、神圣、治疗、保护以及善良"
+@1036="可以施展以下领域的牧师法术：动物、植物、治疗以及自然"
+@1037="可以施展以下领域的牧师法术：战斗、神圣、邪恶、死灵以及保护"
+
+@2027 = ~^\（等级：\）\( *.+\)~ // should be 1-7 or 'Quest'
+
+/*	OUTER_SPRINT cleric_spheres_default "all charm combat divination divine evil good healing necromantic protection summoning wards"
+	OUTER_SPRINT druid_spheres_default "all air animal divination earth fey fire healing moon nature plant protection sun water"
+E*/

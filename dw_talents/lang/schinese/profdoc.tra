@@ -1,0 +1,195 @@
+@1="所有近战类型的武器"
+@2="所有远程类型的武器"
+@3="所有类型的武器"
+@4="可以使用所有类型的武器"
+@5="可以使用下列类型的武器："
+@6="除了下列类型的武器"
+@7="所有战斗模式"
+@8="任何武器类型初始熟练度为专长（1星）。"
+@9="下列武器类型初始熟练度为专长（1星）："
+@11="任何武器类型熟练度达到专长（1星）。"
+@12="任何武器类型熟练度达到专精（2星）。"
+@13="任何武器类型熟练度达到大师（3星）。"
+@14="任何武器类型熟练度达到宗师（4星）。"
+@15="任何武器类型熟练度达到大宗师（5星）。"
+@21="下列武器类型熟练度达到专长（1星）："
+@22="下列武器类型熟练度达到专精（2星）："
+@23="下列武器类型熟练度达到大师（3星）："
+@24="下列武器类型熟练度达到宗师（4星）："
+@25="下列武器类型熟练度达到大宗师（5星）："
+@26="熟练度达到专长（1星）： "
+@27="熟练度达到专精（2星）： "
+@28="熟练度达到大师（3星）： "
+@29="熟练度达到宗师（4星）："
+@30="熟练度达到大宗师（5星）："
+
+@31="所有近战类型的武器达到专长（1星）。"
+@32="所有近战类型的武器达到专精（2星）。"
+@33="所有近战类型的武器达到大师（3星）。"
+@34="所有近战类型的武器达到宗师（4星）。"
+@35="所有近战类型的武器达到大宗师（5星）。"
+@41="所有远程类型的武器达到专长（1星）。"
+@42="所有远程类型的武器达到专精（2星）。"
+@43="所有远程类型的武器达到大师（3星）。"
+@44="所有远程类型的武器达到宗师（4星）。"
+@45="所有远程类型的武器达到大宗师（5星）。"
+
+@50="不能使用下列类型的武器："
+@51="下列武器类型熟练度只能达到专长（1星）："
+@52="下列武器类型熟练度只能达到专精（2星）："
+@53="下列武器类型熟练度只能达到大师（3星）："
+@54="下列武器类型熟练度只能达到宗师（4星）："
+@55="下列武器类型熟练度只能达到大宗师（5星）：" // not needed, of course!
+
+@60="不能使用任何类型的武器。" // quite a penalty!
+@61="任何武器类型熟练度只能达到长（1星）."
+@62="任何武器类型熟练度只能达到专精（2星）。"
+@63="任何武器类型熟练度只能达到大师（3星）。"
+@64="任何武器类型熟练度只能达到宗师（4星）："
+@65="任何武器类型熟练度只能达到大宗师（5星）。"// not needed, of course!
+
+@70="不能使用近战武器。May not use melee weapons." // probably not going to come up!
+@71="任何近战武器类型熟练度只能达到长（1星）."
+@72="任何近战武器类型熟练度只能达到专精（2星）。"
+@73="任何近战武器类型熟练度只能达到大师（3星）。"
+@74="任何近战武器类型熟练度只能达到宗师（4星）："
+@65="任何近战武器类型熟练度只能达到大宗师（5星）。" // not needed, of course!
+
+@80="不能使用远程武器（包括发射类和投掷类）。" // this is a slight risk, as we can't autodetect thrown weapons like daggers and axes!
+@81="任何远程武器类型熟练度只能达到长（1星）."
+@82="任何远程武器类型熟练度只能达到专精（2星）。"
+@83="任何远程武器类型熟练度只能达到大师（3星）。"
+@84="任何远程武器类型熟练度只能达到宗师（4星）："
+@65="任何远程武器类型熟练度只能达到大宗师（5星）。"// not needed, of course!
+
+@100="任何战斗模式能达到专精（2星），并且双武器模式可以分配3点。"
+@101="任何战斗模式能达到专长（1星）。"
+@102="任何战斗模式能达到专精（2星）。"
+@103="UNUSED_PLACEHOLDER"
+
+@111="下列能达到专长（1星）："
+@112="下列能达到专精（2星）："
+@113="下列能达到大师（3星）："
+
+@121="下列模式能达到专长（1星）： "
+@122="下列模式能达到专精（2星）："
+@123="UNUSED_PLACEHOLDER"
+
+
+@131="下列从专长（1星）开始："
+@132="下列从专精（2星）开始： "
+@133="下列从专长（1星）开始： " // pluralized version of @131
+@141="下列武器类型从专长（1星）开始："
+@142="下列武器类型从专精（2星）开始："
+@143="下列武器类型从专长（1星）开始：" // pluralized version of @141
+
+@151="战斗模式从专长（1星）开始："
+@152="下列战斗模式从专长（1星）开始："
+@153="战斗模式从专长（1星）开始：" // pluralized version of @151
+@154="下列战斗模式从专长（1星）开始：" // pluralized version of @152
+
+@160="可以使用的武器："
+
+// in the below, don't translate FIRST_LEVEL, INTERVAL and MAINCLASS
+
+@168="在第1级没有获得额外的武器熟练度用以分配；获得1点武器熟练度，以在MAINCLASS等级INTERVAL分配，并在此后的每个INTERVAL MAINCLASS等级分配另1点。"
+
+@170="获得 FIRST_LEVEL 额外武器熟练度用以第1级分配，另1点武器熟练度在 MAINCLASS 等级 INTERVAL 分配和此后的每个INTERVAL MAINCLAS 等级中分配。"
+@171="获得 FIRST_LEVEL 武器熟练度在第1级分配，另1点武器熟练度在 MAINCLASS 等级 INTERVAL 分配和此后的每个INTERVAL MAINCLASS 等级中分配。"
+@172="获得1点额外的武器熟练度在第1级分配，另1点武器熟练度在 MAINCLASS 等级 INTERVAL 分配和此后的每个INTERVAL MAINCLASS 等级中分配。"
+@173="获得1点武器熟练度分配在第1级分配，另1点武器精通度在 MAINCLASS 等级 INTERVAL 分配和此后的每个INTERVAL MAINCLASS 等级中分配。"
+
+@180="第1级获得1点额外武器熟练度"
+@181="第1级获得 PROF_NUMBER 点额外武器熟练度" // Don't translate PROF_NUMBER
+
+// these strings are search terms in the class/kit descriptions and must match what's used in the in-game text
+// these ones match IWD
+@201="专长（1星）"
+@202="专精（2星）"
+@203="大师（3星）"
+@204="宗师（4星）"
+@205="大宗师（5星）"
+@206="只能使用下列武器"
+@207="只能使用非刀刃类武器"
+@208="远程武器不能达到专精"
+@209="不能使用远程武器"
+@210="只能使用可用的武器" // from Monk
+@211="不能使用这些武器" // from my own code
+
+
+@250="优点："
+@251="缺点"
+@252="职业特性："
+
+// this string is a search term in the race descriptions and must match what's used in the in-game text for races and subraces
+
+@260="特征："
+
+// these ones match BG (if different)
+
+@301=NO_DIFFERENCE
+@302=NO_DIFFERENCE
+@303=NO_DIFFERENCE
+@304=NO_DIFFERENCE
+@305=NO_DIFFERENCE
+@306=NO_DIFFERENCE
+@307=NO_DIFFERENCE
+@308=NO_DIFFERENCE
+@309=NO_DIFFERENCE
+@310=NO_DIFFERENCE
+@311=NO_DIFFERENCE
+
+
+@350=NO_DIFFERENCE
+@351=NO_DIFFERENCE
+@352=NO_DIFFERENCE
+
+@360=NO_DIFFERENCE
+
+// these ones match BG2 (if different)
+
+@401=NO_DIFFERENCE
+@402=NO_DIFFERENCE
+@403=NO_DIFFERENCE
+@404=NO_DIFFERENCE
+@405=NO_DIFFERENCE
+@406=NO_DIFFERENCE
+@407=NO_DIFFERENCE
+@408=NO_DIFFERENCE
+@409=NO_DIFFERENCE
+@410=NO_DIFFERENCE
+@411=NO_DIFFERENCE
+
+
+@450=NO_DIFFERENCE
+@451=NO_DIFFERENCE
+@452=NO_DIFFERENCE
+
+@460=NO_DIFFERENCE
+
+// use these to swap out any lines in class descriptions that need to be swapped. Lines here should exactly match substrings of the vanilla description
+// and are swapped for the line exactly 100 steps further along in the tra
+
+@501="可以穿任何护甲和使用任何武器。" // exactly matches IWD fighter
+@502="NO_SWAP" // match BG fighter if different
+@503="NO_SWAP"// match BG2 fighter if different
+@504="他们使用的任何武器只能专精，而不能达到大师。" // main line used by warrior/x multiclasses
+@505="该人物使用的任何武器只能专精，而不能达到大师。" // ranger and FMC variant
+@506="，尽管武器仅限于牧师道德允许的武器"
+@507="，尽管武器仅限于德鲁伊道德允许的武器"
+@508="不能使用任何金属武器（例如：剑、矛，战锤或流星锤）。"
+@509="双武器模式可以分配3颗星。"
+@510="NO_SWAP"
+
+
+
+
+@601="可以穿任何护甲。"
+@602="可以穿任何护甲。"
+@603="可以穿任何护甲。"
+@604=""
+@605=""
+@606=""
+@607=""
+@608=""
+@609=""
