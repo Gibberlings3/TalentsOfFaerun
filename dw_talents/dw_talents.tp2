@@ -19,6 +19,10 @@ LANGUAGE ~English~
          ~english~
          ~dw_talents/lang/english/setup.tra~
 
+LANGUAGE ~Simplified Chinese by Lewis Liu~
+         ~schinese~
+         ~dw_talents/lang/schinese/setup.tra~
+
 
 //////////////////////////////////////////////////////////////////////
 /// Test
