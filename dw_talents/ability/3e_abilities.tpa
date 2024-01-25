@@ -187,6 +187,30 @@ DEFINE_ACTION_FUNCTION 3e_abilities STR_VAR version=1 BEGIN   /// 1 hybrid, 2 e3
 	ACTION_IF value BEGIN
 		LAF remove_ability_restrictions END
 	END
+	
+	// soften Con penalties for low-con creatures, to avoid killing them
+	
+	ACTION_CLEAR_ARRAY con_3e_adjust_map
+	ACTION_DEFINE_ASSOCIATIVE_ARRAY con_3e_adjust_map BEGIN
+		1=>5
+		2=>6
+		3=>7
+		4=>8
+		5=>8
+		6=>9
+		7=>10
+		8=>10
+		9=>10
+	END
+
+	COPY_EXISTING_REGEXP GLOB ".*\.cre" override
+		PATCH_IF (BYTE_AT 0x273) <=21 BEGIN // filter for PC classes
+			con=BYTE_AT 0x23d
+			PATCH_IF VARIABLE_IS_SET $con_3e_adjust_map("%con%") BEGIN
+				WRITE_BYTE 0x23d $con_3e_adjust_map("%con%")
+			END
+		END
+	BUT_ONLY
 
 	// install Force of Personality if appropriate
 	

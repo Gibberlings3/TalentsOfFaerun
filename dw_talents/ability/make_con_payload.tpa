@@ -24,6 +24,7 @@ DEFINE_ACTION_FUNCTION make_con_payload BEGIN
 		PHP_EACH rows AS con=>discard BEGIN
 			PATCH_IF IS_AN_INT con BEGIN
 				LPF 3e_abil_standard INT_VAR ability=con RET modifier END
+				modifier=(modifier < "-3") ? "-3" : modifier
 				SET $array("%con%" "OTHER")=modifier
 				SET $array("%con%" "WARRIOR")=modifier
 			END
