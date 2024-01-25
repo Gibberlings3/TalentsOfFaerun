@@ -7,6 +7,7 @@ DEFINE_ACTION_FUNCTION wand_scroll_use BEGIN
 	// load needed resources
 	
 	LAF include STR_VAR file=319ify_item_restrictions.tpa locbase=shared END
+	LAF edit_descriptions_setup END
 
 	// initialize
 	LAF 2daq_extract STR_VAR resref=clastext case=lower column=mixed RET_ARRAY clastext_array=array END
@@ -16,11 +17,6 @@ DEFINE_ACTION_FUNCTION wand_scroll_use BEGIN
 			APPEND "m_dw_itd.lua" "dwUnusable[%value%]={}" 
 		END
 	END
-
-	// make needed menu change
-	COPY_EXISTING "ui.menu" override
-		REPLACE_TEXTUALLY EXACT_MATCH "itemDesc.item.description" "dwItemDescription(itemDesc.item)"
-	BUT_ONLY
 	
 	// make a spell setting the specifics value to the no-scroll value
 	

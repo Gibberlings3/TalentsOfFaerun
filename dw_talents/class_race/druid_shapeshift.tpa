@@ -678,7 +678,7 @@ DEFINE_ACTION_FUNCTION avenger_shapeshift_build_forms BEGIN
 	[
 		m_name:=@78
 		m_description:=@79
-		m.ab.alter{s_target=1 s_projectile=winter_wolf_pro s_icon:=spwi503b}
+		m.ab.alter{s_target=4 s_projectile=winter_wolf_pro+1 s_icon:=spwi503b}
 		m.ab_fx.alter{s_resource:="%spl_shapeshift_winter_wolf_breath%"|match="s_opcode=324"}
 	]
 

@@ -38,7 +38,8 @@ EXTRA_USE_TC_PALADIN_SMITE_EVIL PALADIN_SMITE_EVIL 			grant			-1		-1		extra_use	
 EXTRA_USE_CAV_SMITE_EVIL		spl_smite_evil_cavalier   	grant			-1		-1		extra_use	*				99			CAVALIER_1		*				*			*			*			*									*				*				hide_kits		*					tof_smite
 EXTRA_USE_UH_SMITE_EVIL 		spl_smite_evil_undead_hunter grant			-1		-1		extra_use	*				99			UNDEAD_HUNTER_1	*				*			*			*			*									*				*				hide_kits		*					tof_smite
 EXTRA_USE_SMITE_GOOD			spl_smite_good				grant			-1		-1		extra_use	*				99			BLACKGUARD_1	*				*			*			*			*									*				*				*				*					tof_smite
-EXTRA_USE_LAY_ON_HANDS			PALADIN_LAY_ON_HANDS		grant			-1		-1		extra_use	*				99			PALADIN_1		*				*			*			*			INQUISITOR|UNDEAD_HUNTER			*				*				*				*					*						
+EXTRA_USE_LAY_ON_HANDS			PALADIN_LAY_ON_HANDS		grant			-1		-1		extra_use	*				99			PALADIN_1		*				*			*			*			INQUISITOR|UNDEAD_HUNTER|BLACKGUARD	*				*				*				*					*						
+EXTRA_USE_BLACKGUARD_ABSORB_HEALTH	BLACKGUARD_ABSORB_HEALTH	grant		-1		-1		extra_use	*				99			BLACKGUARD_1	*				*			*			*			*									*				*				*				*					*						
 EXTRA_USE_INQUIS_TRUE_SIGHT 	INQUIS_TRUE_SIGHT			grant			-1		-1		extra_use	*				99			INQUISITOR_9	*				*			*			*			*									*				*				*				*					*							
 EXTRA_USE_INQUIS_DISPEL_MAGIC 	INQUIS_DISPEL_MAGIC			grant			-1		-1		extra_use	*				99			INQUISITOR_3	*				*			*			*			*									*				*				*				*					*							
 BARDSONG_THREE_HEROES			#BARD1						grant			-1		-1		t_68		*				1			SKALD_1			JESTER_1		*			*			*			*									*				*				*				69					iwd_bardsong	

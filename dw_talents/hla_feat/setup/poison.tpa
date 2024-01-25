@@ -339,7 +339,12 @@ BEGIN
       m.ab_fx.add{s_opcode=139 s_timing=1 s_target=2 s_parameter1=RESOLVE_STR_REF (@171)} // display string
       m.ab_fx.add{s_opcode=172 s_target=1 s_resource:="dwpss%number%"}
       m.ab_fx.add{s_opcode=171 s_target=1 s_resource:="dwpss%number%"}   // remove and re-grant ability
-      m.ab_fx.add{s_opcode=282 s_target=1 s_timing=1 s_parameter1=number s_parameter2=(poison_stat - 156)}
+      m.ab_fx.add{s_opcode=282 s_target=1 s_timing=1 s_parameter1="%number%" s_parameter2=(poison_stat - 156)}
+	  PATCH_IF "%number%">0 BEGIN
+		  m.ab_fx.add{s_opcode=172 s_target=1 s_resource:="dwpss0"}
+		  m.ab_fx.add{s_opcode=171 s_target=1 s_resource:="dwpss0"}   // remove and re-grant ability
+	  
+	  END
    ]
    COPY "%MOD_FOLDER%/%component_loc%/resource/icon_poison/%icon%.bam" override
 END

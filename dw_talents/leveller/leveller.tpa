@@ -682,7 +682,7 @@ BEGIN
 	ACTION_IF !script_only BEGIN
 		cre.edit[%creature%]
 		[
-			m.fx.delete{s_opcode=233} // zap all profs
+			m.fx.delete{s_opcode=233 AND (s_parameter2<=115) AND (s_parameter2>=89)} // zap all profs in the appropriate range (don't just wipe all of them, we lose ToF subrace signals)
 			m.fx.add{s_target=2 s_timing=9 s_opcode=208 s_parameter1=1 s_parent_resource:=DW#AULEL} // min hp=1
 			m.fx.add{s_target=2 s_timing=9 s_opcode=328 s_parameter2=stat_ind_hp s_special=1 s_parent_resource:=DW#AULEL} //spellstate markers
 			m.fx.add{s_target=2 s_timing=9 s_opcode=328 s_parameter2=stat_ind s_special=1 s_parent_resource:=DW#AULEL} //spellstate markers

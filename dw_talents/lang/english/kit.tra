@@ -3313,6 +3313,7 @@ Weight: 0"
 @10234="Requires at least ABIL_VALUE Wisdom."
 @10235="Requires at least ABIL_VALUE Charisma."
 
+@11000="Any spellcaster (besides Favored Souls, Sorcerers, and Shamans) must memorize spells using the Rest button on the left panel after choosing their spells on the Mage Book or Priest Scroll pages."
 
 @20024="Backstab: [placeholder for rebalanced assassin backstab]"
 @20030="[Placeholder for rebalanced druid shapeshift]"

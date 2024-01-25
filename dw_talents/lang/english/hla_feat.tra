@@ -226,7 +226,7 @@ Characters with this ability can opt to use this poison when they activate their
 
 @170="Poison absorbed by Stoneskin"
 @171="You will apply this poison next time you use the Poison Weapon ability"
-@172="Some poisoners have learned how to brew poisons with other strange effects, replacing or supplementing the poison damage listed here. Characters who have learned these poisons may select them from the quick-access bar; the poison selected is the one that will be used next time they activate the Poison Weapon ability."
+@172="Some poisoners have learned how to brew poisons with other strange effects, replacing the poison damage listed here. Characters who have learned these poisons may select them from the quick-access bar; the poison selected is the one that will be used next time they activate the Poison Weapon ability."
 
 @499="Points Remaining"
 @500="You may choose abilities for your character from this list." 

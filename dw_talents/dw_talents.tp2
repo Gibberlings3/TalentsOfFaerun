@@ -1,6 +1,6 @@
 BACKUP ~weidu_external/backup/dw_talents~
 AUTHOR "DavidW"
-MODDER setup_tra none area_variables none missing_extern none missing_resref none ict2_actions none missing_eval none overwriting_file none fun_args warn
+//MODDER setup_tra none area_variables none missing_extern none missing_resref none ict2_actions none missing_eval none overwriting_file none fun_args warn
 VERSION ~Beta 5~
 
 AUTO_EVAL_STRINGS

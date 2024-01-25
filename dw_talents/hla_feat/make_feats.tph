@@ -560,6 +560,9 @@ BEGIN
 			ACTION_IF IDS_OF_SYMBOL (class "%entry%")>=0 BEGIN
 				LAF 2daq_extract STR_VAR resref=clastext row="%entry%" column=MIXED RET value END
 				ACTION_GET_STRREF value name
+				OUTER_PATCH_SAVE name "%name%" BEGIN
+					REPLACE_TEXTUALLY "{[^}]+}" ""
+				END
 				OUTER_SPRINT $exclude_array("%name%") ""
 			END
 			
@@ -668,7 +671,10 @@ BEGIN
 			LAF 2daq_extract INT_VAR rowname_column=1 STR_VAR resref=kitlist row=DRAGON_DISCIPLE column=MIXED RET strref=value END
 		END
 		LAF format_integer_as_th INT_VAR number RET number_string END
-		ACTION_GET_STRREF strref class
+		ACTION_GET_STRREF strref class		
+		OUTER_PATCH_SAVE class "%class%" BEGIN
+			REPLACE_TEXTUALLY "{[^}]+}" ""
+		END
 		OUTER_SPRINT string @1062
 		OUTER_PATCH_SAVE string "%string%" BEGIN
 			REPLACE_TEXTUALLY NUMBER "%number_string%"
@@ -705,7 +711,10 @@ BEGIN
 				ACTION_IF IS_AN_INT class_num BEGIN
 					OUTER_PATCH "" BEGIN
 						LOOKUP_IDS_SYMBOL_OF_INT class class class_num
-						TO_UPPER class
+						TO_UPPER class						
+						INNER_PATCH_SAVE class "%class%" BEGIN
+							REPLACE_TEXTUALLY "{[^}]+}" ""
+						END
 					END
 					OUTER_SPRINT kit $class_names("%class%")
 				END ELSE BEGIN
@@ -888,7 +897,10 @@ BEGIN
 			SPRINT name_strref $array("%row%" "MIXED")
 			PATCH_IF IS_AN_INT name_strref BEGIN
 				TO_UPPER kit
-				GET_STRREF name_strref name
+				GET_STRREF name_strref name				
+				INNER_PATCH_SAVE name "%name%" BEGIN
+					REPLACE_TEXTUALLY "{[^}]+}" ""
+				END
 				SPRINT $kit_names("%kit%") "%name%"
 			END
 		END
@@ -939,7 +951,10 @@ BEGIN
 			SPRINT name_strref $array("%row%" "MIXED")
 			PATCH_IF IS_AN_INT name_strref BEGIN
 				TO_UPPER kit
-				GET_STRREF name_strref name
+				GET_STRREF name_strref name			
+				INNER_PATCH_SAVE name "%name%" BEGIN
+					REPLACE_TEXTUALLY "{[^}]+}" ""
+				END
 				SPRINT $kit_names("%kit%") "%name%"
 			END
 		END

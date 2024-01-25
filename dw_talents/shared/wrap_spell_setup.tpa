@@ -22,12 +22,20 @@ DEFINE_ACTION_FUNCTION wrap_spell_setup BEGIN
 	END	
 	>>>>>>>>
 
-	ACTION_FOR_EACH script IN baldur baldur25 BEGIN
+	// get global scripts
+	ACTION_IF FILE_EXISTS_IN_GAME "campaign.2da" BEGIN
+		LAF 2daq_extract STR_VAR resref=campaign column=WORLDSCRIPT RET_ARRAY scripts=array END
+	END ELSE BEGIN
+		ACTION_CLEAR_ARRAY scripts
+	END
+	OUTER_SPRINT $scripts("BALDUR") ""
+	OUTER_SPRINT $scripts("BALDUR25") ""
+
+	ACTION_PHP_EACH scripts AS script=>discard BEGIN
 		ACTION_IF FILE_EXISTS_IN_GAME "%script%.bcs" BEGIN
 			EXTEND_TOP "%script%.bcs" ".../stratagems-inline/ab_install.baf"
-		END
+		END	
 	END
-	
 	
 	
 	

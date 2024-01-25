@@ -9,7 +9,12 @@ DEFINE_ACTION_FUNCTION favored_soul BEGIN
 	
 	// LAF label_original_classes END // do this now just as a timesaver for later components
 
+	// append the help description to include FSs
 	
+	OUTER_SPRINT caster_help @11000
+	COPY_EXISTING "L_%EE_LANGUAGE%.lua" override
+		REPLACE_TEXTUALLY "SPELL_MEMORIZATION_HELP[ %TAB%]*=.*" ~SPELL_MEMORIZATION_HELP = "%caster_help%",~
+
 	LAF find_shaman_spell_levels RET_ARRAY shaman_spell_levels END
 	LAF build_favored_soul_resistance_spells END
 
