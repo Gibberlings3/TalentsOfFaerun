@@ -12,10 +12,10 @@ DEFINE_ACTION_FUNCTION feats BEGIN
 	LAF read_in_feats STR_VAR location=data table=feat_table.2da RET_ARRAY feat_names END
 	LAF read_in_basic_requirements_map RET_ARRAY basic_requirements_map END
 	LAF 2da_process_table INT_VAR STR_VAR table=feat_table.2da location=data function=make_feats_core END
-	LAF run STR_VAR file=ranger_favored_enemy END
+	//LAF run STR_VAR file=ranger_favored_enemy END
 	LAF include STR_VAR file=install_feats.tph END
 	LAF install_feats STR_VAR feat_table=feat_table.2da location=data END
-	LAF install_feats STR_VAR feat_table=ranger_hate_table.2da path="%data_loc%" END
+	//LAF install_feats STR_VAR feat_table=ranger_hate_table.2da path="%data_loc%" END
 
 	LAF run STR_VAR file=start_at_level_one END
 

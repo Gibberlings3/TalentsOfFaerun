@@ -722,7 +722,7 @@ BEGIN
 			// ranger 2-weapon hardcoded proficiency
 			IF {is_ranger}
 			{{
-				m.cre_set_proficiencies{2weapon=>1}
+				m.cre_set_proficiencies{2weapon=>2}
 			}}
 		]
 	END

@@ -2,6 +2,7 @@ DEFINE_ACTION_FUNCTION subrace BEGIN
 
 	OUTER_SPRINT table_path "%MOD_FOLDER%/%component_loc%/data"
 
+	OUTER_SET how_compatibility=0
 	
 	// once-and-for-all, get the descriptions associated with the main races
 	
@@ -48,7 +49,7 @@ DEFINE_ACTION_FUNCTION subrace BEGIN
 	// install
 	
 
-	LAF build_subraces END
+	LAF build_subraces INT_VAR delay_mode=how_compatibility END
 
 	LAF assign_npc_subraces END
 	
@@ -59,6 +60,18 @@ DEFINE_ACTION_FUNCTION subrace BEGIN
 	// let scripts and dialogs recognise the new races
 	
 	LAF update_race_recognition END
+	
+	// if on IWD and not HOW-compatible, block HOW
+	
+	ACTION_IF is_iwd && !how_compatibility BEGIN
+	
+		OUTER_SET warning_strref=RESOLVE_STR_REF(@1000)
+		COPY_EXISTING "ui.menu" override
+			LPF UI_alter_object STR_VAR object=START object_type=menu patch=~~~~~  REPLACE_TEXTUALLY ~action[^a-z"]*"[^"]*startEngine:OnToBButtonClick(true)[^"]*"~ ~action "popupInfo(Infinity_FetchString(%warning_strref%))"~   ~~~~~ END
+
+	
+	
+	END
 	
 	
 END

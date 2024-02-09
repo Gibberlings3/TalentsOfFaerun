@@ -128,6 +128,8 @@
 @523=~Modified cleric stronghold quest for priests of any god except Lathander/Helm/Talos~
 @524=~Speciality mages automatically get one speciality spell at each level (where possible)~
 @525=~Bloodlines for sorcerers~
+@526=~Revised favored enemy for rangers: new enemy groups, and rangers reselect their favored enemy at 4th level and every third level thereafter~
+
 
 @600="Tidy up class-selection menu"
 

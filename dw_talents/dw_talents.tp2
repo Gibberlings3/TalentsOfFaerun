@@ -1,7 +1,7 @@
 BACKUP ~weidu_external/backup/dw_talents~
 AUTHOR "DavidW"
 //MODDER setup_tra none area_variables none missing_extern none missing_resref none ict2_actions none missing_eval none overwriting_file none fun_args warn
-VERSION ~Beta 5~
+VERSION ~Beta 6~
 
 AUTO_EVAL_STRINGS
 README "dw_talents/doc/readme-dw_talents.html"
@@ -28,8 +28,8 @@ LANGUAGE ~English~
 BEGIN "test" DESIGNATED 0
 
 LAF run STR_VAR file=test location=test END
-*/
 
+*/
 
 //////////////////////////////////////////////////////////////////////
 
@@ -468,6 +468,15 @@ REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_55300_installed @91
 REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_55400_installed @91
 
 LAF run STR_VAR file=rebalance_traps location=class_race tra=kit_rebalance END
+
+
+//////////////////////////////////////////////////////////////////////
+///	Rangers rechoose favored enemy
+//////////////////////////////////////////////////////////////////////
+
+BEGIN @526 DESIGNATED 40500 GROUP @5
+
+LAF run STR_VAR file=ranger_favored_enemy location=class_race tra=ranger_favored_enemy END
 
 //////////////////////////////////////////////////////////////////////
 ///	Revised druid shapeshift
@@ -1198,7 +1207,7 @@ REQUIRE_PREDICATE !(MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 4115) && 
 FORBID_COMPONENT "setup-stratagems.tp2" 4100 @73
 FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
 
-LAF run STR_VAR files=leveller location=leveller END
+LAF run STR_VAR files=leveller_2 location=leveller END
 
 //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////

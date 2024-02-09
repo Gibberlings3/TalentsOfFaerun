@@ -4,7 +4,6 @@ DEFINE_ACTION_FUNCTION multiclass_specialists BEGIN
 
   LAF run STR_VAR file=setup_menus locbase=shared END // also INCLUDEs the virtual_class tools
 
-	INCLUDE "%MOD_FOLDER%/%lua_loc%/ui_dual_class_kits.tph" 
 	LAF dual_class_kits END// doing this with the above label automatically allows dual-classing to specialists
 
 	// specialist menus for the various multiclasses

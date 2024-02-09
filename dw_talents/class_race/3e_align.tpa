@@ -147,6 +147,20 @@ DEFINE_ACTION_FUNCTION 3e_align BEGIN
 	COPY_EXISTING "fallen.2da" override
 		PRETTY_PRINT_2DA
 		
+	// ranger favored enemy is alignment-neutral
+	
+	COPY_EXISTING - "enginest.2da" nowhere
+		REPLACE_EVALUATE "STRREF_GUI_HELP_HATEDRACE[ %TAB%]+\([0-9]+\)" BEGIN
+			strref=MATCH1
+		END
+		""
+		
+	LAF check_label STR_VAR label=dw-rechoose_favored_enemy RET value END
+	ACTION_IF value BEGIN
+		STRING_SET_EVALUATE strref @13
+	END ELSE BEGIN
+		STRING_SET_EVALUATE strref @11		
+	END
 	
 	ACTION_IF is_bg2 BEGIN
 

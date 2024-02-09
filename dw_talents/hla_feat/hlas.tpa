@@ -33,11 +33,12 @@ DEFINE_ACTION_FUNCTION hlas STR_VAR version=0 BEGIN // version is for testing. v
 	
 	LAF check_label STR_VAR label=dw#feats_installed RET value END
 	
+	/*
 	ACTION_IF !value BEGIN
 		LAF install_feats INT_VAR is_epic=1 STR_VAR feat_table=ranger_hate_table.2da path="%data_loc%" END
 	END
 	LAF install_feats INT_VAR is_epic=1 STR_VAR feat_table=ranger_hate_table_epic.2da path="%data_loc%" END
-
+	*/
 
 	ACTION_IF (version=0 || version=2) BEGIN
 	

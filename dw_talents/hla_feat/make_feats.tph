@@ -879,6 +879,12 @@ BEGIN
 			""
 		END
 	BUT_ONLY
+	ACTION_PHP_EACH class_names AS id=>name BEGIN
+		OUTER_PATCH_SAVE name "%name%" BEGIN
+			REPLACE_TEXTUALLY "{[^}]*}" ""
+		END
+		OUTER_SPRINT $class_names("%id%") "%name%"
+	END
 	OUTER_SPRINT $class_names("FAVORED_SOUL") @1070
 END
 

@@ -34,6 +34,7 @@
 @71="Disadvantages:" // must exactly match the string used in the 'Wizard Slayer' kit description
 
 
+
 @101="HUMANS: Humans are the predominant race in Faerûn, and rule most of the significant empires and kingdoms in the Realms. Compared to most of the nonhuman races, who tend to get along with others of their own race reasonably well, the humans of Faerûn are divided into innumerable competing nations, states, sects, religions, bandit kingdoms, and tribes. Humans argue about anything, fight about most things they argue about, and hold dear among their many deities quite a few who actively encourage that type of behavior.
 
 Traits:"
@@ -344,3 +345,5 @@ This ability launches a ball of stinging mist to cloud the target's vision. The 
 @802="GNOMES: Kin to dwarves, gnomes are noticeably smaller than their distant cousins. Gnomes, as they proudly maintain, are also less rotund than dwarves. Most have dark tan or brown skin, white hair, and rather large noses. Gnomes have lively and sly senses of humor, especially for practical jokes. They have a love for nature that is only matched by their love for gems and jewelry. There are two racial divisions of gnomes within the realms: rock gnomes and deep gnomes (svirfneblin)."
 
 @803="HALFLINGS: Halflings stand about three feet tall, with florid skin and dark hair and eyes. Three major subraces of halfling dwell in Faerûn: the lightfoot halflings, the rare ghostwise halflings, and the strongheart halflings of Luiren in the south. Like the rock gnomes, many halflings live among the Big Folk in the human lands. They are resourceful and quick, perfectly at home among the sprawling human lands or living apart in their own settled communities. The halflings’ name for their race is the hin, although most accept “halfling” with a shrug and a smile."
+
+@1000="Starting the game in Heart of Winter is not compatible with the Subraces component of the Talents of Faerun mod, which you have installed."

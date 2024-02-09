@@ -1,0 +1,58 @@
+DEFINE_ACTION_FUNCTION ranger_favored_enemy BEGIN
+
+	// define new enemy types
+	
+	LAF clear_out_haterace END
+	LAF process_favored_enemy_ini STR_VAR file=ranger_favored_enemies.ini location=data END
+
+	// allow favored enemy reselection at levels 3N+1
+
+	OUTER_SPRINT levels ""
+	OUTER_FOR (n=1;n<=50;n+=3) BEGIN
+		OUTER_SPRINT levels "%levels%%n% "
+	END
+	LAF rechoose_ranger_favored_enemy STR_VAR levels END
+
+	// adjust the description onthe racial-enemy screen
+
+	COPY_EXISTING - "enginest.2da" nowhere
+		REPLACE_EVALUATE "STRREF_GUI_HELP_HATEDRACE[ %TAB%]+\([0-9]+\)" BEGIN
+			strref_desc=MATCH1
+		END
+		""
+		REPLACE_EVALUATE "STRREF_GUI_MIXED_HATED_RACE[ %TAB%]+\([0-9]+\)" BEGIN
+			strref_title=MATCH1
+		END
+		""
+	STRING_SET_EVALUATE strref_title @100	
+	LAF check_label STR_VAR label=dw-3e_align RET value END
+	ACTION_IF value BEGIN
+		STRING_SET_EVALUATE strref_desc @102
+	END ELSE BEGIN
+		STRING_SET_EVALUATE strref_desc @101	
+	END
+	
+	// adjust the description in the ranger class description
+	
+	LAF 2daq_extract STR_VAR resref=clastext row=RANGER column=DESCSTR RET strref_class=value END
+
+	ACTION_CLEAR_ARRAY old_map
+
+	ACTION_IF is_bg2 BEGIN
+		OUTER_SPRINT old @104
+	END ELSE
+	ACTION_IF is_bg BEGIN
+		OUTER_SPRINT old @105
+	END ELSE BEGIN // IWD
+		OUTER_SPRINT old @106
+	END
+	OUTER_SPRINT new @107
+	
+	ACTION_GET_STRREF strref_class descstring
+	OUTER_PATCH_SAVE descstring "%descstring%" BEGIN
+		REPLACE_TEXTUALLY EXACT_MATCH "%old%" "%new%"
+	END
+	STRING_SET_EVALUATE strref_class "%descstring%"
+
+END
+

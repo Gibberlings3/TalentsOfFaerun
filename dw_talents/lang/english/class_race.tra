@@ -2,6 +2,19 @@
 @2="MULTICLASS: A multiclassed character can use the abilities of two or more classes, gaining experience in each class equally."
 @10="Then... then you are unworthy to be the ranger of our village! By Mielikki, I've never seen a ranger of your sort!" // this is the first two sentences of BG2EE string 38115 - the third sentence, which refers to Fallen Rangers, has been omitted
 
+@11="Rangers tend to focus their efforts against some particular creature, often one that marauds their homeland. At first, every Ranger must select a racial enemy. Thereafter, whenever the Ranger encounters that enemy, <PRO_HESHE> gains bonuses to <PRO_HISHER> hit and damage rolls against them. Make your selection based on what would be an appropriate match for your character concept.
+
+EFFECTS: +4 bonus to hit and damage rolls vs. racial enemy."
+
+@12="In their role as protectors of good, Rangers tend to focus their efforts against some particular creature, often one that marauds their homeland or that has been a frequent foe in their recent travels. At first level, every Ranger must select a racial enemy. Thereafter, whenever the Ranger encounters that enemy, <PRO_HESHE> gains bonuses to <PRO_HISHER> hit and damage rolls against them. Make your selection based on what would be an appropriate match for your character concept. At fourth level, and every third level thereafter, you may change your racial enemy.
+
+EFFECTS: +4 bonus to hit and damage rolls vs. racial enemy."
+
+@13="Rangers tend to focus their efforts against some particular creature, often one that marauds their homeland or that has been a frequent foe in their recent travels. At first level, every Ranger must select a racial enemy. Thereafter, whenever the Ranger encounters that enemy, <PRO_HESHE> gains bonuses to <PRO_HISHER> hit and damage rolls against them. Make your selection based on what would be an appropriate match for your character concept. At fourth level, and every third level thereafter, you may change your racial enemy.
+
+EFFECTS: +4 bonus to hit and damage rolls vs. racial enemy."
+
+
 @100="The race of your character will determine what their base abilities can be, as well as assign possible intrinsic talents such as infravision." // This is the first sentence of BGEE string 17237
 @101="If you become dual-classed, you stop advancing in your current class and begin advancing in a second class."
 @102="Your character must have scores of 10 or higher in the prime requisites of the class you wish to change to."  

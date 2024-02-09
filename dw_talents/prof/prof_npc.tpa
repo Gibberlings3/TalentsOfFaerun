@@ -1,0 +1,276 @@
+DEFINE_ACTION_FUNCTION prof_npc BEGIN
+
+	// load prof data
+	
+	LAF prof_npc_load RET_ARRAY starting_profs_class starting_profs_race extra_profs_kit kit_weapons END
+	LAF 2da_read STR_VAR file=weapprof.2da path="%data_loc_shared%" rowname_column=ID RET_ARRAY weapprof_array=array END
+	LAF 2da_read STR_VAR file=profs.2da path="%data_loc_shared%" RET_ARRAY profs_array=array END
+	LAF 2da_read STR_VAR file=kitlist.2da RET_ARRAY kitlist_rows=rows kitlist_array=array END
+
+	// if appropriate, load race data
+	
+	ACTION_IF FILE_EXISTS_IN_GAME "m_dw_sbf.lua" BEGIN
+		LAF check_ini STR_VAR ini=subrace_stat RET subrace_stat=value END
+		OUTER_SET subraces=1
+		LAF 2da_read STR_VAR file=dw_subrace_ids.2da path="%data_loc_shared%" RET_ARRAY subrace_ids_array=array subrace_ids_rows=rows END
+		LAF 2da_read STR_VAR file=dw_subrace_data.2da path="%data_loc_shared%" RET_ARRAY subrace_data_array=array END
+	END ELSE BEGIN
+		OUTER_SET subraces=0
+	END
+
+	// cycle through
+
+	COPY_EXISTING_REGEXP GLOB ".*\.cre" override
+		READ_ASCII DEATHVAR dv (0x20) NULL
+		PATCH_IF "%dv%" STR_CMP "" BEGIN
+			TO_LOWER dv
+		END
+		PATCH_IF VARIABLE_IS_SET $sfo_joinable_dvs("%dv%") BEGIN
+			LPF assign_npc_profs END
+		END
+	BUT_ONLY
+
+
+
+END
+
+// main patch for NPCs
+DEFINE_PATCH_FUNCTION assign_npc_profs
+BEGIN
+	// determine dual-classed status and class/kit data
+	is_dualclassed = (BYTE_AT 0x10) BAND 0b11111000
+	classid=BYTE_AT 0x273
+	PATCH_IF classid=IDS_OF_SYMBOL (class SORCERER) BEGIN
+		classid=1
+	END
+	PATCH_IF classid<=21 BEGIN // sanity
+		LPF FJ_CRE_EFF_V2 END
+		is_ranger = classid=IDS_OF_SYMBOL (class RANGER) || classid=IDS_OF_SYMBOL (class CLERIC_RANGER)
+		LOOKUP_IDS_SYMBOL_OF_INT class class classid
+		kitid=(SHORT_AT 0x244)*0x10000 + (SHORT_AT 0x246)
+		kit_number=0
+		PHP_EACH kitlist_rows AS row=>discard BEGIN
+			PATCH_IF IS_AN_INT $kitlist_array("%row%" "KITIDS") && $kitlist_array("%row%" "KITIDS")=kitid BEGIN
+				kit_number=row
+				SPRINT kit $kitlist_array("%row%" ROWNAME)
+			END
+		END
+		PATCH_IF kit_number=0 BEGIN
+			SPRINT kit "%class%"
+		END
+		TO_UPPER kit
+		// get number of profs
+		LPF determine_prof_number INT_VAR is_dualclassed kit_number STR_VAR class RET prof_number prof_max abort END
+		// get subrace data
+		PATCH_IF subraces BEGIN
+			raceid=BYTE_AT 0x272
+			subraceid=0
+			extra_prof=0
+			GET_OFFSET_ARRAY fx_arr CRE_V10_EFFECTS
+			PHP_EACH fx_arr AS fx_ind=>fx_off BEGIN
+				PATCH_IF (LONG_AT (fx_off+0x8)) = 233 && (LONG_AT (fx_off+0x18))=subrace_stat BEGIN
+					subraceid=LONG_AT (fx_off+0x18)
+				END
+			END
+			PHP_EACH subrace_ids_rows AS subrace=>discard BEGIN
+				PATCH_IF $subrace_ids_array("%subrace%" "ORIGINAL_RACE")=raceid && $subrace_ids_array("%subrace%" "SUBRACE_ID")=subraceid BEGIN
+					SET extra_prof=$subrace_data_array("%subrace%" "EXTRA_PROF")
+				END
+			END
+			prof_number += extra_prof
+		END
+		PATCH_IF !abort BEGIN
+			// read current proficiencies, wipe them
+			LPF get_current_profs INT_VAR is_ranger RET_ARRAY current_profs END
+			// get starting profs
+			LPF determine_starting_profs INT_VAR is_dualclassed raceid kit_number STR_VAR class RET_ARRAY prof_alloc END
+			PATCH_IF is_ranger BEGIN
+				SET $prof_alloc("114")=2
+			END
+			// max out things you normally had profs in, starting with the highest
+
+			FOR (n=5;n>=1;n -= 1) BEGIN
+				PHP_EACH current_profs AS prof=>current_prof_num BEGIN
+					PATCH_IF current_prof_num>=n BEGIN				
+						current=$prof_alloc("%prof%")
+						max=$weapprof_array("%prof%" "%kit%")
+						max = max>prof_max? prof_max : max
+						PATCH_IF prof_number>0 AND $prof_alloc("%prof%")<max BEGIN
+							SET $prof_alloc("%prof%") += 1
+							prof_number -= 1				
+						END		
+					END
+				END
+				PATCH_IF prof_number=0 BEGIN
+					n=0
+				END
+			END
+			// actually do the allocation
+			PHP_EACH prof_alloc AS prof=>number BEGIN
+				PATCH_IF number>0 BEGIN
+					SET_BG2_PROFICIENCY prof number
+				END
+			END
+		END
+	END
+
+
+END
+
+DEFINE_PATCH_FUNCTION determine_starting_profs
+	INT_VAR is_dualclassed=0
+			raceid=0
+			kit_number=0
+	STR_VAR class=""
+	RET_ARRAY prof_alloc
+BEGIN
+	CLEAR_ARRAY prof_alloc	
+	FOR (prof=89;prof<=115;++prof) BEGIN
+		SET $prof_alloc("%prof%")=0
+		// from class
+		PATCH_IF !is_dualclassed BEGIN
+			classid=IDS_OF_SYMBOL (class "%class%")
+			PATCH_IF IS_AN_INT $starting_profs_class("%classid%" "%prof%") BEGIN
+				SET $prof_alloc("%prof%")=$starting_profs_class("%classid%" "%prof%")
+			END 
+		END ELSE BEGIN
+			SPRINT list "%class%"
+			WHILE "%list%" STR_CMP "" BEGIN				
+				LPF return_first_entry STR_VAR list separator="_" RET class_here=entry list END
+				classid=IDS_OF_SYMBOL (class "%class_here%")
+				PATCH_IF IS_AN_INT $starting_profs_class("%classid%" "%prof%") BEGIN
+					v1=$prof_alloc("%prof%")
+					v2=$starting_profs_class("%classid%" "%prof%")
+					SET $prof_alloc("%prof%")=v1>v2?v1:v2
+				END
+			END
+		END
+		// from race
+		PATCH_IF IS_AN_INT $starting_profs_race("%raceid%" "%prof%") BEGIN
+			v1=$prof_alloc("%prof%")
+			v2=$starting_profs_race("%raceid%" "%prof%")
+			SET $prof_alloc("%prof%")=v1>v2?v1:v2
+		END	
+		// from kit
+		PATCH_IF IS_AN_INT $kit_weapons("%kit_number%" "%prof%") BEGIN
+			SET $prof_alloc("%prof%")+=$kit_weapons("%kit_number%" "%prof%")
+		END			
+	END
+END
+
+
+
+DEFINE_PATCH_FUNCTION determine_prof_number
+	INT_VAR is_dualclassed=0
+			kit_number=0
+	STR_VAR class=""
+	RET prof_number
+		prof_max
+		abort
+BEGIN
+	abort=0
+	level1=BYTE_AT 0x234
+	level2=BYTE_AT 0x235
+	level3=BYTE_AT 0x236
+	PATCH_IF level1=0 AND level2=0 AND level3=0 BEGIN
+		abort=1
+		prof_number=0
+		prof_max=0
+	END 
+	level = (level2>level1)? level2 : level1
+	level = (level3>level)? level3 : level
+	prof_max=3 + level / 3
+	prof_max=prof_max>5?5:prof_max
+	PATCH_IF !is_dualclassed BEGIN
+		TO_UPPER class
+		prof_number=$profs_array("%class%" "FIRST_LEVEL") + ( level / $profs_array("%class%" "RATE") )
+		PATCH_IF VARIABLE_IS_SET $extra_profs_kit("%kit_number%") BEGIN
+			prof_number += $extra_profs_kit("%kit_number%")
+		END
+	END ELSE BEGIN
+		levelnumber=0
+		prof_number=0
+		WHILE "%class%" STR_CMP "" BEGIN
+			++levelnumber
+			LPF return_first_entry STR_VAR list="%class%" separator="_" RET class_here=entry class=list END
+			prof_number += $profs_array("%class_here%" "FIRST_LEVEL") + ( "level%levelnumber%" / $profs_array("%class_here%" "RATE") )
+		END
+	END
+END
+
+// get creature's current proficiencies, then wipe them
+
+DEFINE_PATCH_FUNCTION get_current_profs
+	INT_VAR is_ranger=0
+	RET_ARRAY current_profs
+BEGIN
+	CLEAR_ARRAY current_profs
+	GET_OFFSET_ARRAY fx_arr CRE_V10_EFFECTS
+	PHP_EACH fx_arr AS fx_ind=>fx_off BEGIN
+		PATCH_IF LONG_AT (0x8+fx_off)=233 BEGIN
+			prof_type= LONG_AT (0x18+fx_off) 
+			prof_number= LONG_AT (0x14+fx_off)
+			PATCH_IF prof_type>=89 && prof_type<=115 BEGIN
+				SET $current_profs("%prof_type%")=prof_number
+				WRITE_LONG (0x8+fx_off) 999
+			END
+		END
+	END
+	PATCH_IF is_ranger && IS_AN_INT $current_profs("114") && $current_profs("114")=2 BEGIN
+		SET $current_profs("114")=0
+	END
+	LPF DELETE_EFFECT INT_VAR match_opcode=999 END
+END
+
+
+// trawl the lua for the data
+
+DEFINE_ACTION_FUNCTION prof_npc_load 
+	RET_ARRAY starting_profs_class starting_profs_race kit_weapons extra_profs_kit
+
+BEGIN
+
+	COPY_EXISTING - "m_dw_prd.lua" nowhere
+		LPF data_lines RET_ARRAY prd_lines=lines END
+		PHP_EACH prd_lines AS lnumber=>line BEGIN
+			INNER_PATCH "%line%" BEGIN
+				REPLACE_EVALUATE "dwStartingProfs\[\([0-9]+\)\]={\([^}]+\)}" BEGIN
+					prof=MATCH1
+					INNER_PATCH "%MATCH2%" BEGIN
+						REPLACE_EVALUATE "\[\([0-9]+\)\]=true" BEGIN
+							SET $starting_profs_class("%MATCH1%" "%prof%")=1
+						END
+						""
+					END
+				END
+				""
+				REPLACE_EVALUATE "dwRaceWeapons\[\([0-9]+\)\]={\([^}]+\)}" BEGIN
+					race=MATCH1
+					INNER_PATCH "%MATCH2%" BEGIN
+						REPLACE_EVALUATE "\[\([0-9]+\)\]=true" BEGIN
+							SET $starting_profs_race("%race%" "%MATCH1%")=1
+						END
+						""
+					END
+				END
+				""
+				REPLACE_EVALUATE "dwKitWeapons\[\([0-9]+\)\]={\([^}]+\)}" BEGIN
+					kit=MATCH1
+					INNER_PATCH "%MATCH2%" BEGIN
+						REPLACE_EVALUATE "\[\([0-9]+\)\]=true" BEGIN
+							SET $kit_weapons("%kit%" "%MATCH1%")=1
+						END
+						""
+					END
+				END
+				""
+				REPLACE_EVALUATE "dwKitExtraProfs\[\([0-9]+\)\]=\([0-9]+\)" BEGIN
+					SET $extra_profs_kit("%MATCH1%")=MATCH2
+				END
+				""
+			END
+		END
+		
+
+
+END

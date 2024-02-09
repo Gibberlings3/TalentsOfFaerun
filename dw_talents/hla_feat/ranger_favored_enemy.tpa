@@ -1,7 +1,9 @@
 DEFINE_ACTION_FUNCTION ranger_favored_enemy BEGIN
 
+
 	ACTION_IF !FILE_EXISTS "%data_loc%/ranger_hate_table.2da" BEGIN
 
+		
 		OUTER_SPRINT intro_string @600
 		OUTER_SPRINT extra_string @601
 		OUTER_SPRINT intro_string_epic @602
@@ -121,6 +123,7 @@ DEFINE_ACTION_FUNCTION build_ranger_clab_spell BEGIN
 	CREATE spl "%spl_ranger_initial_enemy%" 
 		LPF add_basic_spell_ability END
 		PHP_EACH hated_id AS id=>discard BEGIN
+			LPF ADD_SPELL_EFFECT INT_VAR timing=1 target=1 opcode=321 STR_VAR resource="dwhaa%id%" END
 			LPF ADD_SPELL_EFFECT INT_VAR timing=9 target=1 opcode=326 parameter1=id parameter2=splprot_value STR_VAR resource="dwhaa%id%" END
 			INNER_ACTION BEGIN
 				COPY_EXISTING "dwhaa00.spl" "override/dwhaa%id%.spl"

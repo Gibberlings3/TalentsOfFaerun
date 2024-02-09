@@ -17,6 +17,12 @@ DEFINE_ACTION_FUNCTION set_up_externalized_proficiencies BEGIN
 	
 		LAF check_ini INT_VAR silent=1 STR_VAR ini=discard_stat RET discard_stat=value END
 		OUTER_SET discard_stat=(discard_stat=0)?125:discard_stat
+		COPY_EXISTING - "enginest.2da" nowhere
+			REPLACE_EVALUATE "STRREF_GUI_MIXED_ADDITIONALWEAPPROFS[ %TAB%]+\([0-9]+\)" BEGIN
+				SET extra_prof_strref=MATCH1
+			END
+			""
+		
 		COPY ".../stratagems-inline/m_dw_epf.lua" override EVALUATE_BUFFER
 		
 		// set up main data page
@@ -140,6 +146,7 @@ DEFINE_ACTION_FUNCTION externalize_weapprof BEGIN
 	// kits
 	ACTION_PHP_EACH kitlist_rows AS kit=>discard BEGIN
 		OUTER_SPRINT kit_label $kitlist_array("%kit%" "ROWNAME")
+		ACTION_TO_UPPER kit_label
 		ACTION_IF IS_AN_INT $kitlist_array("%kit%" "LOWER") && VARIABLE_IS_SET $weapprof_cols("%kit_label%") BEGIN // avoid dummy rows
 			OUTER_SET kit_parent_number=$kitlist_array("%kit%" "CLASS")
 			OUTER_PATCH "" BEGIN
@@ -310,6 +317,7 @@ DEFINE_PATCH_FUNCTION externalize_prof_patch BEGIN
 	REPLACE_TEXTUALLY EXACT_MATCH "dwProficiencyTable[rowNumber].value" "chargen.proficiency[dwProficiencyLookup[rowNumber]].value"
 	REPLACE_TEXTUALLY ~onOpen\([^"]*\)"~ ~onOpen\1"%WNL%%TAB%dwProficiencyTable,dwProficiencyLookup,dwSpendableTotal=dwBuildProficiencyTable(chargen.proficiency)%WNL%~
 	REPLACE_TEXTUALLY ~\(OnOpen[^"]*"[^"]+\)"~ ~\1%WNL%%TAB%dwClearExcessProficiencies(dwSpendableTotal)%WNL%%TAB%dwProficienciesTotal=chargen.extraProficiencySlots%WNL%"~ // note that this is at the *end* of the OnOpen block, i.e. after any signal transmission
+	REPLACE_TEXTUALLY ~text lua[ %TAB%]+"proficiencyOrGeneralHelp()"~ ~text lua "dwFilterExcessProficiencies(proficiencyOrGeneralHelp())"~
 END
 
 DEFINE_PATCH_FUNCTION externalize_prof_function_patch BEGIN
@@ -364,7 +372,7 @@ function dwStartingProfAllowed(prof)
 		return true
 	end
   
-	if dwIsLevelling then
+	if dwIsLevelling and not dw_first_level_profs then
 		return true
 	end
   
@@ -375,6 +383,8 @@ function dwStartingProfAllowed(prof)
 		race=dwRaces[currentChargenRace]
 		subrace=subraceList(race.id)[currentChargenSubrace]
 		level_1_max = level_1_max + subrace.extraprof
+	else
+		level_1_max = level_1_max + dwFindSubraceData(characters[currentID]).extraprof
 	end
 	
   
@@ -503,5 +513,12 @@ function dwClearExcessProficiencies(count)
 
 end
 
+
+function dwFilterExcessProficiencies(str)
+	local intro=Infinity_FetchString(%extra_prof_strref%)
+	str=string.gsub(str,intro..":[^0-9]*[0-9][0-9]","")
+	str=string.gsub(str,intro..":[^0-9]*[7-9][0-9]*","")
+	return str
+end
 >>>>>>>>
 

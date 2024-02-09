@@ -32,7 +32,7 @@
         <strong> On the web: </strong><a href="https://www.gibberlings3.net/mods/tweaks/tof/">Home
         page</a>, <a href="https://www.gibberlings3.net/forums/forum/236-talents-of-faer&ucirc;n/">discussion
         forum</a>, <a href="https://www.gibberlings3.net/gallery/album/42-talents-of-faer&ucirc;n/">image gallery</a>, and <a href="https://discord.gg/yTzjMTb">Discord</a></p>
-      <p> <strong>Version beta 5</strong><br />
+      <p> <strong>Version beta 6</strong><br />
         <strong>Languages: </strong>English<br />
         <strong>Platforms: </strong>Windows, macOS, Linux </p>
       <p> Talents of Faer&ucirc;n (ToF) is a collection of about 85 mini-mods for the Enhanced Edition versions of Baldur's Gate, Baldur's Gate II, and Icewind Dale, partially inspired by existing mods and tabletop Dungeons and Dragons resources. It contains many optional tweaks to various parts of gameplay, focusing on expanding and rebalancing player character abilities. Features include 150-odd new high-level abilities, a new 'feat' system where lower-level characters gain abilities every few levels, revisions to existing kits, new classes, new kits for multi-class characters, new types of magical specialization, a dozen or so new spells, many spell tweaks, 20-odd new gods for clerics to worship, a subrace system, a revised system of cleric/druid spells, and tweaks to the rules for ability scores and proficiencies. </p>
@@ -284,6 +284,7 @@
       <p>The powers and weaknesses of these races and subraces are based on a mixture of D&amp;D 2nd and 3rd edition. They're 'balanced' in the sense that I don't think any race you choose will imbalance the wider game. I haven't made that much effort to strictly balance them one against another: a deep gnome, for instance, is probably just better than a rock gnome. A full list of races, subraces, and their powers can be found <a href="subdocuments_dw/tof_race.html">here</a>. </p>
       <p>Ideally, a component like this would also alter in-game dialog options and responses, so that NPCs react to your race/subrace&mdash;especially for 'exotic' races like tieflings or gray dwarves. I haven't (yet) done this, though.</p>
       <p>Two choices are barred on BG/BG2: you can't play as a drow (because it would break the plot of BG2 chapter 5) and you can't play as an aasimar (because I find a Bhaalspawn aasimar a bit implausible). If you want to ignore the story-based problems with these choices, you can reactivate them using dw_talents.ini; there's no mechanical problem with either.</p>
+	  <p>For technical reasons (which I admit I don't fully understand) <strong>this component does not work properly if you play Icewind Dale and start a new game in Heart of Winter</strong>. (It functions fine if you start in the main Icewind Dale campaign, or in any of the BG and BG2 start setups.) Starting in Heart of Winter is disabled.</p>
 	  <p>Modders might want to read <a href="dw_subdocuments/identifying_subraces.html">this document</a>, which discusses how to detect a subrace or apply it to an NPC.</p>
     </div>
     <div class="ribbon_rectangle_h3">
@@ -343,6 +344,10 @@
         <li>a 1st-level rogue's snare does 1d8+5 damage (previously 2d8+5)</li>
         <li>a 6th-level rogue's snare does 2d8+5 damage (previously 3d8+5) and slows the target for 5 rounds if they fail an unmodified save vs. spell (previously it was a save vs. spell at -4)</li>
       </ul>
+     <p><strong>Revised favored enemy for rangers: new enemy groups, and rangers reselect their favored enemy at 4th level and every third level thereafter</strong></p>
+	  <p>This component rearranges ranger racial enemy groups to make them somewhat more useful (for instance, the 'dragonkin' category includes dragons, wyverns, and basilisks) and renames them 'favored enemy', partly because they no longer correspond to single races. The component also allows rangers to change their favored enemy from time to time. (Minsc isn't stuck with gnolls forever, for instance.) You first get the chance at level 4, and then every 3 subsequent levels. The change is handled through the UI: you'll just be offered the chance to reselect your favored enemy when you level up.</p>
+	  
+	  
       <p><strong>Revised Druid Shapeshifting</strong></p>
       <p> This component significantly revises the druid's (and the Avenger's) shapeshift ability, somewhat inspired by Icewind Dale. Druids now gain one use of a general Shapeshift ability at third level, and then another use every three levels after that. The available forms vary by level, and are selected at the time the spell is cast: </p>
       <ul>
@@ -1231,9 +1236,35 @@ href="https://gibberlings3.github.io/iesdp/">Infinity Engine Structure Descripti
 <li>Removed an unnecessary line break from the bloodrager disadvantages list.</li>
 <li>The winter wolf breath weapon now has its projectile set correctly.</li>
 <li>Blackguards no longer get the Extra Lay On Hands feat, but get the Extra Absorb Health feat instead.</li>
+<li>Low-Constitution NPCs have been vaccinated and no longer drop dead if you install Revised Ability Scores.</li>
+<li>Constitution modifiers to hitpoints have been capped below at -3 per die, to avoid stillborn PCs.</li>
 </ul>
 
 </div>
+
+   <div class="ribbon_rectangle_h3"><h3>Version beta 6 (8th February 2024)</h3></div>
+    <div class="ribbon_triangle_h2-l"></div>
+    <div class="ribbon_triangle_h2-r"></div>
+<div class="section"> 
+<p>
+<ul>
+<li>Rewritten the 'Improved NPC customization and management' component from the ground up; hopefully it's now a lot more robust, but we'll see! (It also now allows rangers to choose their favored enemy.)</li>
+<li>Automatically assigned appropriate proficiencies to NPCs, if the revised proficiencies component is installed and NPC customization and management isn't.</li>
+<li>Fixed some bugs caused by interactions between various components that affect proficiencies.</li>
+<li>Fixed some more cosmetic issues where odd symbols were sometimes displayed next to class names.</li>
+<li>Blocked compatibility problems in IWD installs where the broken file '#bonecir.spl' has already been removed by another mod.</li>
+<li>Mantle spell tweak correctly lets ordinary Mantle protect against +3 weapons.</li>
+<li>Fixed some glitches with the monster summoning spell tweak.</li>
+<li>You can now dual-class into specialist mage kits.</li>
+<li>If you remove alignment restrictions, the select-favored-enemy screen no longer refers to rangers as 'protectors of good'.</li>
+<li>Svirfneblin should now get their magic resistance at higher levels.</li>
+<li>Noted that the subrace component is incompatible with starting a new game in Heart of Winter(!) and disabled that option if it is installed. (There is a possible, albeit awkward, workaround to this. I'm assuming few people use this option but if I'm wrong, let me know.)</li>
+<li>New component: rangers get revised favored-enemy categories, and can reselect their favored enemy every third level. (Yes, I should be fixing bugs before adding new components, but this one was a fairly straightforward spinoff from the new 'NPC customization and management.'</li>
+<li>Suppressed the (cosmetic, but annoying) display on levelling to 1st level that tells you you have 18 million trillion proficiencies.</li>
+</ul>
+
+</div>
+
   
 </div>
 </body>

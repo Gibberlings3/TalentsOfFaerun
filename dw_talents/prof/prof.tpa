@@ -100,6 +100,10 @@ DEFINE_ACTION_FUNCTION prof BEGIN
 		LAF update_all_proficiency_descriptions END
 	END
 	
+	// assign profs to NPCs
+	
+	LAF run STR_VAR file=prof_npc END
+	
 END
 
 
