@@ -1,6 +1,6 @@
 DEFINE_ACTION_FUNCTION wrap_spell_setup BEGIN
 
- ACTION_IF !FILE_EXISTS_IN_GAME "dw3ewrp.spl" BEGIN
+ ACTION_IF !FILE_EXISTS_IN_GAME "dw3ewrp.spl"  BEGIN
 
 		CREATE spl dw3ewrp 
 			LPF add_basic_spell_ability END
@@ -28,10 +28,10 @@ DEFINE_ACTION_FUNCTION wrap_spell_setup BEGIN
 	END ELSE BEGIN
 		ACTION_CLEAR_ARRAY scripts
 	END
-	OUTER_SPRINT $scripts("BALDUR") ""
-	OUTER_SPRINT $scripts("BALDUR25") ""
+	OUTER_SPRINT $scripts("SOA") "BALDUR"
+	OUTER_SPRINT $scripts("TOB") "BALDUR25"
 
-	ACTION_PHP_EACH scripts AS script=>discard BEGIN
+	ACTION_PHP_EACH scripts AS id=>script BEGIN
 		ACTION_IF FILE_EXISTS_IN_GAME "%script%.bcs" BEGIN
 			EXTEND_TOP "%script%.bcs" ".../stratagems-inline/ab_install.baf"
 		END	

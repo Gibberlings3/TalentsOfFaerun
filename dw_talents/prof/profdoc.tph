@@ -1478,9 +1478,9 @@ BEGIN
 	LAF get_class_style_use STR_VAR class RET_ARRAY style_array=style_string_array END
 	ACTION_CLEAR_ARRAY all_array
 	OUTER_SET ind=0
-	OUTER_SPRINT $all_array("%ind%") "%usability%"
+	OUTER_SPRINT $all_array("%ind%") "%usability%[PROFDOC_MARKER]"
 	OUTER_SET ind+=1
-	OUTER_SPRINT $all_array("%ind%") "%pip_line%"
+	OUTER_SPRINT $all_array("%ind%") "%pip_line%[PROFDOC_MARKER]"
 	OUTER_SET ind+=1
 	ACTION_IF FILE_EXISTS_IN_GAME "m_dw_prf.lua" BEGIN
 		LAF get_class_starting_prof STR_VAR class RET starting_prof_string END
@@ -1527,6 +1527,7 @@ BEGIN
 			END
 			"%output%"
 		END
+		REPLACE_TEXTUALLY ".*\[PROFDOC_MARKER\]%WNL%" ""
 		PHP_EACH all_array AS discard=>line BEGIN
 			REPLACE_TEXTUALLY "\(.*\)PLACEHOLDER_FOR_SUBSTITUTION" "\1%line%%WNL%\1PLACEHOLDER_FOR_SUBSTITUTION"
 		END

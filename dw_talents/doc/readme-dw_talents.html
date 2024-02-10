@@ -32,7 +32,7 @@
         <strong> On the web: </strong><a href="https://www.gibberlings3.net/mods/tweaks/tof/">Home
         page</a>, <a href="https://www.gibberlings3.net/forums/forum/236-talents-of-faer&ucirc;n/">discussion
         forum</a>, <a href="https://www.gibberlings3.net/gallery/album/42-talents-of-faer&ucirc;n/">image gallery</a>, and <a href="https://discord.gg/yTzjMTb">Discord</a></p>
-      <p> <strong>Version beta 6</strong><br />
+      <p> <strong>Version beta 7</strong><br />
         <strong>Languages: </strong>English<br />
         <strong>Platforms: </strong>Windows, macOS, Linux </p>
       <p> Talents of Faer&ucirc;n (ToF) is a collection of about 85 mini-mods for the Enhanced Edition versions of Baldur's Gate, Baldur's Gate II, and Icewind Dale, partially inspired by existing mods and tabletop Dungeons and Dragons resources. It contains many optional tweaks to various parts of gameplay, focusing on expanding and rebalancing player character abilities. Features include 150-odd new high-level abilities, a new 'feat' system where lower-level characters gain abilities every few levels, revisions to existing kits, new classes, new kits for multi-class characters, new types of magical specialization, a dozen or so new spells, many spell tweaks, 20-odd new gods for clerics to worship, a subrace system, a revised system of cleric/druid spells, and tweaks to the rules for ability scores and proficiencies. </p>
@@ -751,6 +751,7 @@
       <p>Abilities are selected during the leveling process using a similar interface to the one used for High-Level Abilities in Baldur's Gate II. If you are playing Baldur's Gate II, the ability system merges into the High-Level Ability system when you become eligible for High-Level Abilities; normal abilities remain available as alternatives to High-Level Abilities as you continue to level.</p> 
       <p>Multi-classed characters gain abilities only for one class (the one that normally levels most quickly). Dual-classed characters only gain abilities for their highest level.</p>
 	  <p>Engine limitations mean that abililities cannot be selected at character creation, even if you start at higher than 1st level (e.g. at the start of Shadows of Amn). To handle this, your character will begin at 1st level and then can be levelled up at the start of the game. There is a slight awkwardness here for bards and mages, who should be able to select spells from their spellbook at character creation but don't at level-up. This will be handled fine in BG2EE if you start in Shadows of Amn. If you plan to create a new character in Heart of Winter, Throne of Bhaal, Siege of Dragonspear, the EET version of Shadows of Amn, or the Black Pits 2, you will need to tell ToF this before you install it, by setting the appropriate ini value in dw_talents.ini. (Look in the default_start block; options are iwd, how, soa, tob, bg, sod, bp, bp2.) Failing to do so will grant you too few wizard spells on character creation. Engine limitations also mean that multi-classed mages will be given slightly too many spells at character creation.</p>
+	  <p>Joinable NPCs will also lack abilities if they join at level greater than 1. If you want to give them abilities I recommend using the 'NPC Customization and Management' component to set all joinable NPCs to level 1.</li>
       <p><strong>Revised High-Level Ability system<br />
         </strong><em>Only available for BG2EE, EET</em></p>
       <p>This component substantially revises and expands the High-Level Abilities (HLAs) granted to characters every level after reaching 3 million XP. The existing set of 46 HLAs is expanded to (depending on how you count them) 187 HLAs, of which: </p>
@@ -767,11 +768,10 @@
 title="Non-Player Characters">NPCs</acronym> and to make sure they keep up with your main character even if you swap them in and out of the group. When it is installed, NPCs (including mod-added NPCs) join your party at level zero. If you want, you can activate a special 'customize' power on their innate abilities to change their class and kit to whatever you like. After that, you can level the character to first level and choose their proficiencies, skills and the like. The character will continue leveling until they reach about the same level as your character. (The 'customize' power is unavailable once you increase above level zero.) </p>
       If you kick the NPC out of the party and subsequently re-recruit them, they will again start leveling until they reach about your character's level. (To be more precise: they are given that level which they would have if they had as much XP as you do; they get given exactly the right amount of XP to reach that level.)
       <p>(This component is identical to the equivalent component in Sword Coast Stratagems; it is included here because if you are using the Feat system, you may wish to start your characters at first level so that they gain feats properly.)</p>
-      <p>Engine limitations lead to some slight awkwardness with this component. Firstly, mages and bards have their spellbooks selected from a fixed list (you don't get to choose yourself). Secondly, if you have the Party AI disabled, you may occasionally notice minor glitches in the amount of experience your characters receive (this will be most noticeable if you use the customize program to change a character's class). Turning AI back on (even if only briefly) will resolve this (though it is possible to get a slightly-too-high level character if you change from single-class to multi-class and then level without AI on). Thirdly, a few NPCs in the game have illegal statistics (for instance, Coran has three proficiencies in bows); these will be lost if you use this component. Fourthly, wild mages will have to save and reload in order to get their special spells (Chaos Shield and the like.) Finally, it is not possible to let rangers choose their favored enemy.</p>
+      <p>Engine limitations lead to some slight awkwardness with this component. Firstly, mages and bards have their spellbooks selected from a fixed list (you don't get to choose yourself). Secondly, a few NPCs in the game have illegal statistics (for instance, Coran has three proficiencies in bows); these will be lost if you use this component. Thirdly, wild mages will have to save and reload in order to get their special spells (Chaos Shield and the like).</p>
       <p>The component should be able to allow for other mods that let humans multi-class, non-humans dual-class, and multi-class characters select kits. However, it is incompatible with any mod (notably the component of Tweaks Anthology) that removes the ability to dual-class from humans&mdash;basically because the component doesn't know what to do with the existing dual-classed humans in the game, like Imoen.</p>
-      <p>Some NPCs are only partially affected by this component: notably, Wilson the bear and the joinable vampire in BG2EE cannot be customized; nor can the sorcerer added in Baldur's Gate and the aasimar in Siege of Dragonspear.</p>
-      <p>This component makes very extensive use of features of the Enhanced Edition game engine, and so is not (and never will be) available for original BG/BG2.</p>
-      <p><b>Important note:</b> Dual-classed NPCs begin at level zero in their original class; you level them until they can't level any more, then dual-class them, then level them again. <b>Do not</b> delay dual-classing them&mdash;it is likely to break the game. (If you want to adventure with them in their original class, just respec them to that class.)</p>
+     <p>This component makes very extensive use of features of the Enhanced Edition game engine, and so is not (and never will be) available for original BG/BG2.</p>
+      <p><b>Important note:</b> Dual-classed NPCs begin at level zero in their original class; you level them until they can't level any more, then dual-class them, then level them again.</p>
     </div>
     <div class="ribbon_rectangle_h3">
       <h3><a name="rules" id="rules"></a>Rules Changes</h3>
@@ -1264,7 +1264,26 @@ href="https://gibberlings3.github.io/iesdp/">Infinity Engine Structure Descripti
 </ul>
 
 </div>
+   <div class="ribbon_rectangle_h3"><h3>Version beta 7 (10th February 2024)</h3></div>
+    <div class="ribbon_triangle_h2-l"></div>
+    <div class="ribbon_triangle_h2-r"></div>
+<div class="section"> 
+<p>
+<ul>
+<li>Fixed a residual bug with the proficiency system that was affecting dual-classed characters.</li>
+<li>Ability score modifiers should work on Siege of Dragonspear and throughout EET, for real this time.</li>
+<li>The pregenerated PCs are now set to 1st level if you install low-level abilities, and get their proficiencies assigned correctly if the revised proficiency system is used.</li>
+<li>Fixed even more cosmetic issues where odd symbols were sometimes displayed next to class names.</li>
+<li>Shadowdancers no longer get the Trapmaster ability</li>
+<li>Fixed a minor issue with the Wand of Spell Striking in the 'more consistent breach' spell tweak.</li>
+<li>Fixed a library bug which meant the new Fiendish Warding spell was given to some non-evil joinable NPCs.</li>
+<li>If you have installed the remove-alignment-restrictions components, Beastmaster documentation no longer assumes they are good-aligned.</li>
+<li>Installing both the 'wider grand mastery' and 'revised proficiency system' components no longer leads to duplicate lines in class descriptions.</li>
+<li>Elementalists cannot be installed unless you are using both the IWD spells and the new arcane spells. (This was always the design intention but an error in the ini file was blocking it.</li>
+<li>Water elementalists have overcome their self-doubt, and are now correctly documented as unable to use fire spells, instead of water spells.</li>
+</ul>
 
+</div>
   
 </div>
 </body>

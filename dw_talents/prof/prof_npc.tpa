@@ -1,15 +1,23 @@
-DEFINE_ACTION_FUNCTION prof_npc BEGIN
+DEFINE_ACTION_FUNCTION prof_npc STR_VAR version=both BEGIN
 
 	// load prof data
 	
 	LAF prof_npc_load RET_ARRAY starting_profs_class starting_profs_race extra_profs_kit kit_weapons END
-	LAF 2da_read STR_VAR file=weapprof.2da path="%data_loc_shared%" rowname_column=ID RET_ARRAY weapprof_array=array END
-	LAF 2da_read STR_VAR file=profs.2da path="%data_loc_shared%" RET_ARRAY profs_array=array END
+	ACTION_IF FILE_EXISTS "%data_loc_shared%/weapprof.2da" BEGIN
+		LAF 2da_read STR_VAR file=weapprof.2da path="%data_loc_shared%" rowname_column=ID RET_ARRAY weapprof_array=array END
+	END ELSE BEGIN
+		LAF 2da_read STR_VAR file=weapprof.2da rowname_column=ID RET_ARRAY weapprof_array=array END	
+	END
+	ACTION_IF FILE_EXISTS "%data_loc_shared%/profs.2da" BEGIN
+		LAF 2da_read STR_VAR file=profs.2da path="%data_loc_shared%" RET_ARRAY profs_array=array END
+	END ELSE BEGIN
+		LAF 2da_read STR_VAR file=profs.2da RET_ARRAY profs_array=array END	
+	END
 	LAF 2da_read STR_VAR file=kitlist.2da RET_ARRAY kitlist_rows=rows kitlist_array=array END
 
 	// if appropriate, load race data
 	
-	ACTION_IF FILE_EXISTS_IN_GAME "m_dw_sbf.lua" BEGIN
+	ACTION_IF FILE_EXISTS_IN_GAME "m_dw_sbd.lua" BEGIN
 		LAF check_ini STR_VAR ini=subrace_stat RET subrace_stat=value END
 		OUTER_SET subraces=1
 		LAF 2da_read STR_VAR file=dw_subrace_ids.2da path="%data_loc_shared%" RET_ARRAY subrace_ids_array=array subrace_ids_rows=rows END
@@ -20,15 +28,30 @@ DEFINE_ACTION_FUNCTION prof_npc BEGIN
 
 	// cycle through
 
-	COPY_EXISTING_REGEXP GLOB ".*\.cre" override
-		READ_ASCII DEATHVAR dv (0x20) NULL
-		PATCH_IF "%dv%" STR_CMP "" BEGIN
-			TO_LOWER dv
-		END
-		PATCH_IF VARIABLE_IS_SET $sfo_joinable_dvs("%dv%") BEGIN
+	ACTION_IF "%version%" STR_EQ "cre" || "%version%" STR_EQ "both" BEGIN
+		COPY_EXISTING_REGEXP GLOB ".*\.cre" override
+			READ_ASCII DEATHVAR dv (0x20) NULL
+			PATCH_IF "%dv%" STR_CMP "" BEGIN
+				TO_LOWER dv
+			END
+			PATCH_IF VARIABLE_IS_SET $sfo_joinable_dvs("%dv%") BEGIN
+				LPF assign_npc_profs END
+			END
+		BUT_ONLY
+	END 
+	ACTION_IF "%version%" STR_EQ "both" || "%version%" STR_EQ "chr" BEGIN
+		COPY_EXISTING_REGEXP GLOB ".*\.chr" override
+			// remove the chr header temporarily
+			READ_ASCII 0x0 header (0x64)
+			DELETE_BYTES 0x0 0x64
+			// main assignment
 			LPF assign_npc_profs END
-		END
-	BUT_ONLY
+			// put the chr header back
+			INSERT_BYTES 0x0 0x64
+			WRITE_ASCII 0x0 "%header%"
+		BUT_ONLY
+	
+	END
 
 
 
@@ -78,6 +101,8 @@ BEGIN
 				END
 			END
 			prof_number += extra_prof
+		END ELSE BEGIN
+			raceid=0
 		END
 		PATCH_IF !abort BEGIN
 			// read current proficiencies, wipe them
@@ -88,22 +113,34 @@ BEGIN
 				SET $prof_alloc("114")=2
 			END
 			// max out things you normally had profs in, starting with the highest
-
-			FOR (n=5;n>=1;n -= 1) BEGIN
-				PHP_EACH current_profs AS prof=>current_prof_num BEGIN
-					PATCH_IF current_prof_num>=n BEGIN				
-						current=$prof_alloc("%prof%")
-						max=$weapprof_array("%prof%" "%kit%")
-						max = max>prof_max? prof_max : max
-						PATCH_IF prof_number>0 AND $prof_alloc("%prof%")<max BEGIN
-							SET $prof_alloc("%prof%") += 1
-							prof_number -= 1				
-						END		
+			iter_count=0
+			WHILE iter_count<3 && prof_number>0 BEGIN
+				++iter_count
+				FOR (n=5;n>=1;n -= 1) BEGIN
+					PHP_EACH current_profs AS prof=>current_prof_num BEGIN
+						PATCH_IF current_prof_num>=n || iter_count=3 BEGIN				
+							current=$prof_alloc("%prof%")
+							max=$weapprof_array("%prof%" "%kit%")
+							max = max>prof_max? prof_max : max
+							PATCH_IF prof_number>0 AND $prof_alloc("%prof%")<max BEGIN
+								SET $prof_alloc("%prof%") += 1
+								prof_number -= 1				
+							END		
+						END
+					END
+					PATCH_IF prof_number=0 BEGIN
+						n=0
 					END
 				END
-				PATCH_IF prof_number=0 BEGIN
-					n=0
+				PATCH_IF iter_count=2 BEGIN
+					FOR (n=92;n<=107;++n) BEGIN // starting at 90 is a hack to deprioritize bastard swords and shortswords
+						SET $current_profs("%n%")=1
+					END
+					SET $current_profs("115")=1
 				END
+			END
+			PATCH_IF prof_number>0 BEGIN
+				LPF warning STR_VAR warning="prof_npc: %SOURCE_RES% has unspent proficiency points" END
 			END
 			// actually do the allocation
 			PHP_EACH prof_alloc AS prof=>number BEGIN
@@ -179,7 +216,11 @@ BEGIN
 	END 
 	level = (level2>level1)? level2 : level1
 	level = (level3>level)? level3 : level
-	prof_max=3 + level / 3
+	PATCH_IF MOD_IS_INSTALLED "dw_talents" 81100 BEGIN
+		prof_max=3 + level / 3
+	END ELSE BEGIN
+		prof_max=2 + level / 3	
+	END
 	prof_max=prof_max>5?5:prof_max
 	PATCH_IF !is_dualclassed BEGIN
 		TO_UPPER class
@@ -229,7 +270,6 @@ DEFINE_ACTION_FUNCTION prof_npc_load
 	RET_ARRAY starting_profs_class starting_profs_race kit_weapons extra_profs_kit
 
 BEGIN
-
 	COPY_EXISTING - "m_dw_prd.lua" nowhere
 		LPF data_lines RET_ARRAY prd_lines=lines END
 		PHP_EACH prd_lines AS lnumber=>line BEGIN
@@ -270,6 +310,7 @@ BEGIN
 				""
 			END
 		END
+	IF_EXISTS
 		
 
 

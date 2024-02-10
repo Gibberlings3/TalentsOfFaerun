@@ -1,8 +1,4 @@
 DEFINE_ACTION_FUNCTION test STR_VAR version=0 BEGIN
 
-	LAF clear_out_haterace END
-	WITH_TRA "%sfo_tra_loc%/%LANGUAGE%/ranger_favored_enemy.tra" BEGIN
-		LAF process_favored_enemy_ini STR_VAR file=ranger_favored_enemies.ini location=data locbase=class_race END
-	END
-
+	LAF ui_detect_class_kit END
 END

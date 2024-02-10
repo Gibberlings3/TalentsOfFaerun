@@ -11,7 +11,7 @@ Disadvantages:
 - May not learn or cast any spells related to water, ice, or cold. The complete list of such spells is: BLOCKED_SPELL_PLACEHOLDER.
 - Receives a -15% penalty when scribing scrolls of non-elemental spells."
 @3="Water Elementalist"
-@4="WATER ELEMENTALIST: A Mage who specializes in the use of water magic, at the cost of being unable to use spells related to the opposing elemental plane of Water.
+@4="WATER ELEMENTALIST: A Mage who specializes in the use of water magic, at the cost of being unable to use spells related to the opposing elemental plane of Fire.
 
 Advantages:
 - May cast one additional spell per level.

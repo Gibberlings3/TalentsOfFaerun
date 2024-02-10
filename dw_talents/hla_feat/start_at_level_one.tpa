@@ -24,6 +24,9 @@ DEFINE_ACTION_FUNCTION start_at_level_one BEGIN
 		LAF start_at_level_one_core STR_VAR file END
 	END
 
+	// handle CHR files
+	
+	LAF start_at_level_one_pregens END
 	
 
 END
@@ -158,7 +161,132 @@ BEGIN
 		LPF 2da_sort STR_VAR rows=numerically array=spell_array RET_ARRAY spell_array=array END
 		LPF 2da_write STR_VAR array=spell_array END
 	BUT_ONLY
+END
 
+DEFINE_ACTION_FUNCTION start_at_level_one_pregens BEGIN
+
+	// get data
+	LAM data_thac0
+	LAM data_saving_throws
+
+	// parse kitlist and hp table
+	LAF 2da_read STR_VAR file=kitlist.2da RET_ARRAY kitlist_rows=rows kitlist_array=array END
+	LAF 2da_read STR_VAR file=hpclass.2da RET_ARRAY hpclass_array=array END
+
+	ACTION_CLEAR_ARRAY thief_skills_offsets
+	ACTION_DEFINE_ASSOCIATIVE_ARRAY thief_skills_offsets BEGIN
+		hide_in_shadows=>0x45
+		detect_illusion=>0x64
+		set_traps=>0x65
+		lore=>0x66
+		open_locks=>0x67
+		move_silently=>0x68
+		find_traps=>0x69
+		pick_pockets=>0x6a
+	END
+
+	COPY_EXISTING_REGEXP ".*\.chr" override
+		// check if level 1; if so, skip
+		PATCH_IF !(BYTE_AT (0x234 + 0x64)=1) BEGIN
+			// remove the chr header temporarily
+			READ_ASCII 0x0 header (0x64)
+			DELETE_BYTES 0x0 0x64
+			// set level
+			classid=BYTE_AT 0x273
+			LOOKUP_IDS_SYMBOL_OF_INT class class classid
+			PATCH_MATCH "%classid%" WITH
+			".*_.*_.*" BEGIN
+				WRITE_BYTE 0x234 1
+				WRITE_BYTE 0x235 1
+				WRITE_BYTE 0x236 1
+			END
+			".*_.*" BEGIN
+				WRITE_BYTE 0x234 1
+				WRITE_BYTE 0x235 1
+				WRITE_BYTE 0x236 0		
+			END
+			DEFAULT
+				WRITE_BYTE 0x234 1
+				WRITE_BYTE 0x235 0
+				WRITE_BYTE 0x236 0		
+			END
+			// find kit
+			LPF cre_read_kit RET kitids=value END
+			PATCH_IF kitids=16384 || kitids=0 BEGIN
+				SPRINT kit "%class%"
+			END ELSE BEGIN
+				PHP_EACH kitlist_rows AS row=>discard BEGIN
+					PATCH_IF IS_AN_INT $kitlist_array("%row%" "KITIDS") && $kitlist_array("%row%" "KITIDS")=kitids BEGIN
+						SPRINT kit $kitlist_array("%row%" "ROWNAME")
+					END
+				END
+			END
+			TO_UPPER kit
+			// set hit points
+			SPRINT hptable $hpclass_array("%kit%" "TABLE")
+			INNER_ACTION BEGIN // not superefficient, but we're not editing many of these
+				LAF 2daq_extract STR_VAR resref="%hptable%" row=1 RET_ARRAY hp_array=array END
+			END
+			hp=$hp_array("SIDES")*$hp_array("ROLLS") + $hp_array("MODIFIER")
+			WRITE_SHORT 0x24 hp
+			WRITE_SHORT 0x26 hp
+			// set thief skills
+			PHP_EACH thief_skills_offsets AS skill=>discard BEGIN
+				SET $thief_skills("%skill%")=0
+			END
+			PATCH_MATCH "%class%" WITH
+			RANGER BEGIN
+				INNER_ACTION BEGIN
+					LAF 2daq_extract STR_VAR resref=SKILLSHM row=1 column=MOVE_SILENTLY RET value END
+				END
+				SET $thief_skills("move_silently")=value				
+			END
+			SHAMAN BEGIN
+				INNER_ACTION BEGIN
+					LAF 2daq_extract STR_VAR resref=SKILLSHM row=1 column=DETECT_ILLUSION RET value END
+				END
+				SET $thief_skills("detect_illusion")=value		
+			END
+			THIEF WHEN "%kit%" STR_EQ "SHADOWDANCER" BEGIN
+				SET $thief_skills("move_silently")=15
+				SET $thief_skills("hide_in_shadows")=15
+			END
+			THIEF BEGIN
+				SET $thief_skills("open_locks")=20
+				SET $thief_skills("find_traps")=20
+			
+			END
+			BARD BEGIN
+				INNER_ACTION BEGIN
+					LAF 2daq_extract STR_VAR resref=SKILLBRD row=1 column=PICK_POCKETS RET value END
+				END
+				SET $thief_skills("pick_pockets")=value
+			END
+			DEFAULT
+			END
+			PATCH_MATCH "%class%" WITH
+			".*MAGE.*" ".*THIEF.*" BEGIN
+				SET $thief_skills("lore")=3		
+			END
+			"BARD" BEGIN
+				SET $thief_skills("lore")=10		
+			END
+			DEFAULT
+				SET $thief_skills("lore")=1
+			END
+			// set saves and THAC0
+			LPF cre_enforce_saves_notstruct END
+			LPF cre_enforce_thac0_notstruct END
+			
+			// put the chr header back
+			INSERT_BYTES 0x0 0x64
+			WRITE_ASCII 0x0 "%header%"
+		END
+	
+	BUT_ONLY
+	
+	LAF run STR_VAR file=prof_npc locbase=prof version=chr END
+	
 
 
 END

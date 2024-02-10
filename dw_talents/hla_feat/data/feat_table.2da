@@ -20,7 +20,7 @@ PERCEPTIVE						dw-ftper					apply			43		44		*			*				3			DETECT_ILLUSION *				*
 NIMBLE_FINGERS					dw-ftnim					apply			59		60		*			*				3			PICK_POCKETS 	*				*			*			*			*									*				*				*				*					*
 DEVICE_MASTERY					dw-ftdev					apply			45		46		*			*				3			FIND_TRAPS	 	*				*			*			*			*									*				*				*				*					*
 LOREMASTER						dw-ftlor					apply			47		48		*			*				3			NONE		 	*				*			*			*			*									*				*				*				*					*
-TRAPMASTER						dw-fttrp					apply			49		50		*			*				3			SET_TRAPS	 	*				*			*			*			*									*				*				*				*					*
+TRAPMASTER						dw-fttrp					apply			49		50		*			*				3			SET_TRAPS	 	*				*			*			*			SHADOWDANCER						*				*				*				*					*
 TOUGHNESS						dw-fttgh					apply			51		52		*			*				99			NONE			*				*			*			*			*									*				*				*				* 					*
 GREAT_FORTITUDE					dw-ftgft					apply			53		54		*			*				1			NONE			*				*			*			*			*									*				*				*				* 					*
 LIGHTNING_REFLEXES				dw-ftlgt					apply			55		56		*			*				1			NONE			*				*			*			*			*									*				*				*				* 					*

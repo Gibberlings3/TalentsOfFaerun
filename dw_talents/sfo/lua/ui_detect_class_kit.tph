@@ -24,11 +24,15 @@ DEFINE_ACTION_FUNCTION ui_detect_class_kit STR_VAR version="" BEGIN // version 1
 
 		// find the 'inactive' string
 		
-		LAF 2da_read STR_VAR file=enginest.2da RET_ARRAY enginest_array=array END
-		OUTER_SET inactive_strref_long=$enginest_array(STRREF_GUI_MIXED_UNUSABLEEXPERIENCEENTRY STRREF)
+		COPY_EXISTING - "ENGINEST.2da" nowhere
+			REPLACE_EVALUATE "STRREF_GUI_MIXED_UNUSABLEEXPERIENCEENTRY[ %TAB%]+\([0-9]+\)" BEGIN
+				inactive_strref_long=MATCH1
+			END
+			""
 		ACTION_GET_STRREF inactive_strref_long inactive_string_long 
 		OUTER_PATCH_SAVE inactive_string "%inactive_string_long%" BEGIN
-			REPLACE_TEXTUALLY "<EXPERIENCE>[%WNL%%LNL%%MNL%]" ""
+			REPLACE_TEXTUALLY "<CLASS>.*[%WNL%%LNL%%MNL%]" ""
+			REPLACE_TEXTUALLY ".*<EXPERIENCE>[%WNL%%LNL%%MNL%]" ""
 		END
 		OUTER_SET inactive_strref=RESOLVE_STR_REF ("%inactive_string%")
 
@@ -121,6 +125,12 @@ DEFINE_ACTION_FUNCTION ui_detect_class_kit STR_VAR version="" BEGIN // version 1
 		READ_LONG 0xc name2
 		SPRINT $sfo_reserved_dk_duplicate_check("%name1%") ""
 		SPRINT $sfo_reserved_dk_duplicate_check("%name2%") ""
+	// we also specifically need to add the 'Stalker' spell
+	ACTION_IF VARIABLE_IS_SET CLERIC_STALKER BEGIN
+		COPY_EXISTING - "%CLERIC_STALKER%.spl" nowhere
+			READ_LONG 0x8 name
+			SPRINT $sfo_reserved_dk_duplicate_check("%name%") ""
+	END
 	// now go through clastext
 	ACTION_PHP_EACH clastext_rows AS row=>discard BEGIN
 		ACTION_IF IS_AN_INT $clastext_array("%row%" "MIXED") BEGIN
@@ -233,7 +243,7 @@ DEFINE_ACTION_FUNCTION ui_detect_class_kit STR_VAR version="" BEGIN // version 1
 	
 	COPY ".../stratagems-inline/m_dw_dkd.lua" override EVALUATE_BUFFER
 
-	// previously I supported the 'great druid' title change but I think my method was a bit unrobust (didn't cover multiclass, didn't handle stronghold-quest mods, etc. To be on the safe side for now we're just going to disable it
+	// previously I supported the 'great druid' title change but I think my method was a bit unrobust (didn't cover multiclass, didn't handle stronghold-quest mods, etc). To be on the safe side for now we're just going to disable it
 	
 	LAF check_label STR_VAR label=dw#great_druid_title_change_disabled RET value END
 	ACTION_IF !value BEGIN
@@ -438,7 +448,7 @@ DEFINE_ACTION_FUNCTION patch_character_screen_display BEGIN
 		// there is also a secondary callout to the 'getClassString() function for the 'class' screen, which returns a string
 		// and the small box displaying gender/race/class is the output of characterDescString()
 		// the character class also appears on the inventory screen as a direct call to characters[id].class, and on the dual-class screen as
-		// a call to characters[currentID].class
+		// a call to characters[currentID].class. And the level-up screen uses proficiencyOrGeneralHelp(), which includes class
 	
 			LPF UI_alter_function STR_VAR function=UpdateAttrTable patch=alter_update_attr_table_vanilla END
 			LPF UI_alter_function STR_VAR function=getClassString patch="REPLACE_TEXTUALLY ~return[ %TAB%]+out~ ~return dwFilterKitDesc(out)~" END
@@ -446,6 +456,7 @@ DEFINE_ACTION_FUNCTION patch_character_screen_display BEGIN
 			LPF UI_alter_object STR_VAR object=INVENTORY object_type=menu patch="REPLACE_TEXTUALLY ~\(characters\[id\]\.class\)~ ~dwFilterKitDesc(\1)~" END
 			LPF UI_alter_object STR_VAR object=CHARGEN_DUALCLASS object_type=menu patch="REPLACE_TEXTUALLY ~\(characters\[currentID\]\.class\)~ ~dwFilterKitDesc(\1)~" END
 			LPF UI_alter_object STR_VAR object=STORE_IDENTIFY object_type=menu patch=replace_identify_text END
+			LPF UI_alter_object STR_VAR object=CHARGEN_PROFICIENCIES object_type=menu patch="REPLACE_TEXTUALLY ~\(proficiencyOrGeneralHelp()\)~ ~dwFilterKitDesc(\1)~" END
 	
 	
 		// chargen
@@ -646,7 +657,7 @@ end
 function dwFindDualClassData()
 
 --- returns (is_dualclassed[boolean],first_class[int],second_class_or_zero_if_inactive[int],OC kit[int])
-
+--- first class is the currently active class
 
 	if dwIsChargen then
 		return false,0,0,0
@@ -664,26 +675,24 @@ function dwFindDualClassData()
 	local char=characters[currentID]
 
 	if not char then
-		return false,0,0 -- fail gracefully
+		return false,0,0,0 -- fail gracefully
 	end
 
 	if not char.classlevel.second then
-		return false,0,0
+		return false,0,0,0
 	end
 	if char.classlevel.second.active then
-		return false,0,0
+		return false,0,0,0
 	end
-	local class_str=""
-	local _,_,first_class=string.find(char.classlevel.first.details,"{K=%d+,C=(%d+)}")
+	local _,_,oc_kit,first_class=string.find(char.classlevel.first.details,"{K=(%d+),C=(%d+)}")
 	first_class=tonumber(first_class)
-	local _,_,oc_kit,second_class=string.find(char.classlevel.first.details,"{K=(%d+),C=(%d+)}")
 	oc_kit=tonumber(oc_kit)
-	second_class=tonumber(second_class)
-	inactive_string=Infinity_GetString(%inactive_strref%)
-	if string.find(char.classlevel.second.details,inactive_string) then  --inactive
-		local second_class=0
+	local second_class=99
+	if string.find(char.classlevel.second.details,Infinity_FetchString(%inactive_strref%)) then  --inactive
+		second_class=0
 	else
-		local second_class=dwClassByName[class_str]
+		_,_,second_class=string.find(char.classlevel.second.details,"{K=%d+,C=(%d+)}")
+		second_class=tonumber(second_class)
 	end
 	return true,first_class,second_class,oc_kit
 

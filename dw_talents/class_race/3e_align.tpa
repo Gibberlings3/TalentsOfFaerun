@@ -81,11 +81,23 @@ DEFINE_ACTION_FUNCTION 3e_align BEGIN
 		REPLACE_TEXTUALLY "^[^a-zA-z]+%old_align%.*[%WNL%%MNL%%LNL%]" ""	
 	}
 	strref.patch[desc_array_DRUID]
-	[
+	{
 		SPRINT old_align @603
 		SPRINT new_align @604
 		REPLACE_TEXTUALLY "%old_align%" "%new_align%"
-	]
+	}
+	
+	//beastmaster
+	strref.patch[desc_array_BEAST_MASTER]
+	{
+		SPRINT old_text @608
+		SPRINT new_text @609
+		REPLACE_TEXTUALLY EXACT_MATCH "%old_text%" "%new_text%"	
+	}
+	
+	COPY_EXISTING - "%BEASTMASTER_FIND_FAMILIAR%.spl" nowhere
+		READ_LONG 0x50 strref
+	STRING_SET_EVALUATE strref @610
 	
 	// thief
 	

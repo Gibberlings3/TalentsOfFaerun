@@ -43,6 +43,99 @@ EFFECTS: +4 bonus to hit and damage rolls vs. racial enemy."
 @606="May only distribute 15 skill points per level among thieving skills\." // must exactly match string from Assassin description
 @607="Alignment restricted to any non-good."
 
+@608="May use Find Familiar ability to summon a pseudo dragon (if lawful or neutral good) or fairy dragon (if chaotic good) companion." // must exactly match string from Beastmaster description
+@609="May use Find Familiar ability to summon a companion."
+
+@610="Find Familiar
+(Conjuration/Summoning)
+
+Level: 1
+Range: 0
+Duration: Permanent
+Casting Time: 1
+Area of Effect: Special
+Saving Throw: None
+
+This spell enables the Beast Master to attempt to summon a familiar to act as <PRO_HISHER> aide and companion. Familiars are typically small creatures. A creature acting as a familiar can benefit its master, conveying its sensory powers to <PRO_HIMHER>, conversing with <PRO_HIMHER>, and serving as a guard/scout/spy as well. A Beast Master can have only one familiar at a time, and <PRO_HESHE> has no control over what sort of creature answers the summoning, if any come at all.
+
+Note: This spell can only be cast by the protagonist.
+
+The creature is always more intelligent than others of its type (typically by 2 or 3 Intelligence points), and its bond with the Beast Master confers upon it an exceptionally long life. The Beast Master has an empathic link with the familiar and can issue it mental commands. The Beast Master receives half the familiar's total Hit Points (rounded down) as bonus Hit Points. However, the Beast Master must take care to treat <PRO_HISHER> familiar well, for if the familiar should die, the Beast Master loses the bonus Hit Points and the familiar's Hit Points again as damage. Also, when a familiar dies, the Beast Master loses 1 point of Constitution PERMANENTLY.
+
+Example: A Beast Master has 10 Hit Points and casts Find Familiar. The fairy dragon summoned has 24 Hit Points, so the Beast Master gets a bonus of 12 Hit Points. The Beast Master now has 22 Hit Points. If the familiar dies, the Beast Master loses those 12 Hit Points (putting <PRO_HIMHER> back at 10), loses 1 point of Constitution permanently (which may cause additional Hit Point loss), and takes 24 damage.
+
+Here is a list of the familiars that the Beast Master receives according to alignment:
+
+LAWFUL GOOD, NEUTRAL GOOD: Pseudo Dragon
+– Hit Points: 24
+– Armor Class: -2
+– Magic Resistance: 50%
+– Combat: 2 attacks per round at 13 THAC0 for 1d3 damage, save vs. Death or be rendered unconscious for 2 turns
+– Special Abilities: Can cast Blur once per day. Regenerates 1 HP/round. Immune to level drain, sleep, and petrification.
+
+CHAOTIC GOOD: Fairy Dragon
+– Hit Points: 24
+– Armor Class: 4
+– Magic Resistance: 32%
+– Combat: 2 attacks per round at 13 THAC0 for 1d2 damage
+– Special Abilities: Can cast Mirror Image and Invisibility, 10' Radius once per day. Immune to level drain, sleep, and petrification.
+
+LAWFUL GOOD, NEUTRAL GOOD: Pseudo Dragon
+– Hit Points: 24
+– Armor Class: -2
+– Magic Resistance: 50%
+– Combat: 2 attacks per round at 13 THAC0 for 1d3 damage, save vs. Death or be rendered unconscious for 2 turns
+– Special Abilities: Can cast Blur once per day. Regenerates 1 HP/round. Immune to level drain, sleep, and petrification.
+
+LAWFUL NEUTRAL: Ferret
+– Hit Points: 24
+– Armor Class: 0
+– Magic Resistance: 50%
+– Combat: 2 attacks per round at 13 THAC0 for 1d3 damage
+– Special Abilities: Has 75% in Pick Pockets, 40% in Hide in Shadows/Move Silently, and 20% in Detect Traps. Can cast Blur once per day. Immune to level drain, sleep, and petrification.
+
+LAWFUL EVIL: Imp
+– Hit Points: 18
+– Armor Class: 2
+– Magic Resistance: 25%
+– Combat: 1 attack per round at 15 THAC0 for 1d6 damage
+– Special Abilities: Has 100% resistance to fire, cold, and electricity. Can cast Polymorph Self once per day. Regenerates 1 HP/round.
+
+NEUTRAL: Rabbit
+– Hit Points: 24
+– Armor Class: 1
+– Magic Resistance: 65%
+– Combat: 2 attacks per round at 13 THAC0 for 1d2 damage
+– Special Abilities: Has 50% in Detect Traps and 30% Hide in Shadows/Move Silently. Has 75% resistance to fire, cold, and electricity.
+
+NEUTRAL EVIL: Dust Mephit
+– Hit Points: 24
+– Armor Class: 6
+– Magic Resistance: 10%
+– Combat: 2 attacks per round at 13 THAC0 for 1d2 damage
+– Special Abilities: Has 100% resistance to fire and 50% resistance to slashing, piercing, and missile damage. Can cast Glitterdust once per day and Glass Dust twice per day. Regenerates 1 HP/round. Immune to level drain, sleep, and petrification.
+
+CHAOTIC GOOD: Fairy Dragon
+– Hit Points: 24
+– Armor Class: 4
+– Magic Resistance: 32%
+– Combat: 2 attacks per round at 13 THAC0 for 1d2 damage
+– Special Abilities: Can cast Mirror Image and Invisibility, 10' Radius once per day. Immune to level drain, sleep, and petrification.
+
+CHAOTIC NEUTRAL: Cat
+– Hit Points: 24
+– Armor Class: 0
+– Magic Resistance: 50%
+– Combat: 2 attacks per round at 13 THAC0 for 1d3 damage
+– Special Abilities: Has 30% in Pick Pockets and 99% in Move Silently/Hide in Shadows. Immune to level drain, sleep, and petrification.
+
+CHAOTIC EVIL: Quasit
+– Hit Points: 24
+– Armor Class: 2
+– Magic Resistance: 25%
+– Combat: 3 attacks per round at 13 THAC0 for 1d6 damage
+– Special Abilities: Has 100% resistance to fire, cold, and electricity. Can cast Horror and Blur once per day. Regenerates 1 HP/round."
+
 
 @700="1 turn" // must match string from BG2 SPCL213
 @701="24 turns"
