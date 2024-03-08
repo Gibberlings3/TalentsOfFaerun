@@ -10,15 +10,10 @@ DEFINE_ACTION_FUNCTION tempus_cleric BEGIN
 		k_desc:=@61
 		k.kit_remove_powers{ohtmps1 ohtmps2}
 		k.kit_grant_powers{ohtmps2 3 5,ohtmps1 5 5,%spl_tempus_courage% 7 5}
-		k_club=2
-		k_flailmorningstar=2
-		k_mace=2
-		k_warhammer=2
-		k_quarterstaff=2
 	]
 
 	
-	
+	LAF prof_adjust STR_VAR kit arguments=melee patch="value=(arguments=0)?0:arguments + 1" END
 	LAF cleric_kit_substitutions STR_VAR kit god=tempus END
 	LAF assign_spheres STR_VAR kit default=cleric add=tempus_allow subtract="evil charm good divination" END
 	LAF assign_bonus_spells STR_VAR kit spells="STRENGTH HASTE IMPROVED_HASTE POWER_WORD_STUN" END
@@ -41,22 +36,52 @@ DEFINE_ACTION_FUNCTION berserkerpriest_of_tempus BEGIN
 		k_desc:="%desc%"
 		k.kit_grant_powers{ohtmps2 3 5,ohtmps1 5 5,%spl_tempus_courage% 7 5|class=cleric}	
 		k.kit_grant_powers{%BERSERKER_RAGE% 1 5|class=fighter}
-		k_warhammer=3
-		k_club=3
-		k_flailmorningstar=3
-		k_mace=3
-		k_quarterstaff=3
-		k_sling=0
 		k.kit_match_usability{berserker}
 		k.kit_set_alignment{cg nn cn ce}
+		k_colors:="80,126,127,93,97"
 	]
-	
+
+	LAF prof_adjust STR_VAR kit arguments=ranged patch="value=0" END
+	LAF prof_adjust STR_VAR kit arguments=melee patch="value=(arguments>0)?arguments+1:0" END
 	LAF cleric_kit_substitutions STR_VAR kit god=tempus END
 	LAF assign_spheres STR_VAR kit default=cleric add=tempus_allow subtract="evil charm good divination" END
 	LAF assign_bonus_spells STR_VAR kit spells="STRENGTH HASTE IMPROVED_HASTE POWER_WORD_STUN" END
 	LAF adjust_cleric_stronghold STR_VAR talos="c_e" lathander="n_n c_g c_n" kit END
 
 	LAF set_multiclass_components STR_VAR kit components="berserker ohtempus"  END
+
+END
+
+DEFINE_ACTION_FUNCTION shaman_of_tempus BEGIN
+
+	LAF tempus_shared END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_EMOTION_COURAGE%" type=innate RET spl_tempus_courage=new_resref END
+
+	OUTER_SPRINT kit DW_TEMPUS_BARBARIAN
+	
+	kit.copy[FIGHTER_CLERIC=>%kit%]
+	[
+		k_name:=@4133
+		k_desc:=@4134
+		k.kit_grant_powers{ohtmps2 3 5,ohtmps1 5 5,%spl_tempus_courage% 7 5|class=cleric}	
+		k.kit_grant_powers{%BARBARIAN_RAGE% 1 4|class=fighter}
+		k.kit_apply_powers{spcl151 1,spcl153 11,spcl154 15 4 20|class=fighter}
+		k.kit_match_usability{barbarian}
+		k.kit_set_alignment{cg nn cn ce}
+		k_colors:="80,126,127,93,97"
+	]
+
+	LAF prof_copy INT_VAR only_if_nonzero=1 STR_VAR copy_from=BARBARIAN copy_to=DW_TEMPUS_BARBARIAN END
+	LAF cleric_kit_substitutions STR_VAR kit god=tempus END
+	LAF assign_spheres STR_VAR kit default=cleric add=tempus_allow subtract="evil charm good divination" END
+	LAF assign_bonus_spells STR_VAR kit spells="STRENGTH HASTE IMPROVED_HASTE POWER_WORD_STUN" END
+	LAF adjust_cleric_stronghold STR_VAR talos="c_e" lathander="n_n c_g c_n" kit END
+
+	LAF set_multiclass_components STR_VAR kit components="barbarian ohtempus"  END
+	ACTION_IF barbarian_class BEGIN
+		LAF assign_kit_to_virtual_class STR_VAR kit=dw_tempus_barbarian class=barbarian_cleric END	
+	END
+
 
 END
 
@@ -74,14 +99,12 @@ DEFINE_ACTION_FUNCTION tempus_favored_soul BEGIN
 	kit.edit[%kit%|edit_strrefs_in_place:i=1]
 	[
 		k.kit_grant_powers{ohtmps2 3 5,ohtmps1 5 5,%spl_tempus_courage% 7 5}
-		k_melee=2
+		k_colors:="80,126,127,93,97"
 	]
-
 	// spell choices
-
+	LAF prof_adjust STR_VAR kit arguments=melee patch="value=(arguments=0)?0:arguments + 1" END	
 	LAF assign_bonus_spells STR_VAR kit spells="CLERIC_REMOVE_FEAR WIZARD_STRENGTH WIZARD_HASTE CLERIC_RECITATION CLERIC_RIGHTEOUS_MAGIC WIZARD_IMPROVED_HASTE WIZARD_POWER_WORD_STUN" END
 	LAF adjust_cleric_stronghold STR_VAR talos="c_e" lathander="n_n c_g c_n" kit END
-
 
 
 END

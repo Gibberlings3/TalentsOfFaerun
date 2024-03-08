@@ -38,10 +38,6 @@ dwKitExtraProfs={}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///	change a kit's parent class for the purposes of choosing initial proficiencies
-/// (the new class should give the same number of profs as the old one; that means it's probably going to be a bespoke virtual class)
-///
-/// optionally, known_weapon_parent is stored to determine the base-class usability proficiencies of the kit (as opposed to the ones it
-/// gets for free)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 DEFINE_ACTION_FUNCTION prof_redirect_kit_parent
@@ -49,6 +45,7 @@ DEFINE_ACTION_FUNCTION prof_redirect_kit_parent
 			parent=""
 			known_weapon_parent=""
 BEGIN
+/*
 	// initialize if necessary
 	LAF initialize_prof_component END
 
@@ -69,7 +66,7 @@ BEGIN
 		END
 		APPEND_OUTER "%data_loc_shared%/weapprof_parent_class_override.txt" "%kit%%TAB%%known_weapon_parent%"
 	END
-
+*/
 END
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -79,8 +76,10 @@ DEFINE_ACTION_FUNCTION prof_add_kit_extra_slots
 BEGIN
 
 	LAF initialize_prof_component END
-	LAF kit_get_id STR_VAR kit RET kit_id END
-	APPEND "m_dw_prd.lua" ~dwKitExtraProfs[%kit_id%]=%slots%~ KEEP_CRLF
+	LAF kit_get_id STR_VAR kit RET kit_id found END
+	ACTION_IF found BEGIN
+		APPEND "m_dw_prd.lua" ~dwKitExtraProfs[%kit_id%]=%slots%~ KEEP_CRLF
+	END
 
 END
 

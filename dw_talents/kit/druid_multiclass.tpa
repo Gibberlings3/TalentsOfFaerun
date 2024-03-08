@@ -122,4 +122,10 @@ DEFINE_ACTION_FUNCTION druid_multiclass BEGIN
 	// process scroll usability
 	LAF process_scroll_usability_now END
 
+	// if appropriate, rebuild dual-class grid
+	
+	ACTION_IF FILE_EXISTS_IN_GAME "m_dw_dud.lua" BEGIN
+		LAF collect_dual_class_kit_data END
+	END
+
 END

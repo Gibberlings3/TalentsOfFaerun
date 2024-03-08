@@ -319,12 +319,22 @@ GREATER WEREWOLF: AC -4, Strength 21, Dexterity 20, 3 attacks per round for 1d10
 
 WEREWOLF LORD: AC -8, Strength 23, Dexterity 20, 3 attacks per round for 1d12 slashing damage (as +4 weapon), 50% magic resistance, 50% elemental resistance, regenerates 1 hit point per second."
 
-@59="Breath Weapon damage increases to 4d8." // these must exactly match the strings in the unmodded Dragon Disciple description
-@60="Breath Weapon damage increases to 6d8."
-@61="Breath Weapon damage increases to 8d8."
-@62="Breath Weapon may now be used twice per day."
-@63="Breath Weapon may now be used three times per day."
-@64="Breath Weapon may now be used four times per day."
+@60="DRAGON DISCIPLE: Dragon Disciples are powerful Sorcerers with dragons' blood somewhere in their lineage. Their natural magical talents bring out their draconic heritage, allowing them to cast powerful magical spells and exhibit dragon-like abilities.
+
+Advantages:
+- 1st level: +1 bonus to AC. This increases to +2 at 5th level, to +3 at 10th level, to +4 at 15th level, and to a maximum of +5 at 20th level.
+– 3rd level: May use Breath Weapon once per day per three levels (to a maximum of six times at level 18).
+
+BREATH WEAPON: The Dragon Disciple breathes a gout of flame up to 30 ft. long, inflicting 3d8 points of fire damage on all creatures caught within the 140-degree cone. The damage increases by 1d8 every three levels after 3rd level, to a maximum of 8d8 at 18th level.
+
+- 4th level: Gains 25% innate Fire Resistance. This increases to 50% at 8th level, to 75% at 12th level, and to a maximum of 100% at 16th level.
+- 5th level: +1 bonus to Constitution. This increases to +2 at 15th level.
+- 7th level: Gains immunity to hold.
+– 13th level: Gains immunity to charm.
+– Hit Die: d6
+
+Disadvantages:
+– May cast one fewer spell per level per day."
 
 // @100 and @101 are, respectively, the unmodded versions of Berserker Rage and Barbarian Rage (Except that 'character' replaces 'berserker' or 'barbarian')
 @100="The enraged state lasts for 1 turn. While enraged, the character gains a bonus of +2 to <PRO_HISHER> attack and damage rolls as well as to <PRO_HISHER> Armor Class, and becomes immune to charm, confusion, fear, feeblemind, hold, imprisonment, level drain, maze, stun, and sleep. The character also gains 15 temporary Hit Points which are taken away at the end of <PRO_HISHER> berserk spree, possibly knocking <PRO_HIMHER> unconscious."

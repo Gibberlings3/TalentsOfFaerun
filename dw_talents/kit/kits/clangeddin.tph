@@ -85,7 +85,6 @@ DEFINE_ACTION_FUNCTION battlerager_of_clangeddin BEGIN
 		k_desc:="%desc%"	
 		k.kit_grant_powers{%spl_clangeddin_command% 1,%spl_clangeddin_command% 10 10,%spl_clangeddin_dispel_magic% 3 6,%spl_clangeddin_strength_of_one% 5 6,%spl_clangeddin_champions_strength% 7|class=cleric}
 		k.kit_grant_powers{%BERSERKER_RAGE% 1 5|class=fighter}
-		k_sling=0
 		k.kit_match_usability{berserker}
 		k_color_metal=25
 		k_color_leather=2
@@ -97,7 +96,7 @@ DEFINE_ACTION_FUNCTION battlerager_of_clangeddin BEGIN
 		k.kit_set_alignment{lg ng ln}
 		IF {is_iwd} {{k_bio:=@1056}}
 	]
-	
+	LAF prof_adjust STR_VAR kit arguments=ranged patch="value=0" END
 	LAF cleric_kit_substitutions STR_VAR kit god=clangeddin END
 	LAF holy_symbol INT_VAR name=2042 follower=2043 STR_VAR inv_bam=imisc8g desc_bam=cmisc8g kit END
 	LAF assign_spheres STR_VAR kit default=cleric add="earth" subtract="evil necromantic summoning" END

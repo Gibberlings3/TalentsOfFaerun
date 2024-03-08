@@ -1,0 +1,122 @@
+@1=~BLACKGUARD: The Blackguard epitomizes evil and is nothing short of a mortal fiend. The quintessential black knight, this villain carries a reputation of the foulest sort that is very well deserved. Consorting with demons and devils and serving dark deities, the Blackguard is hated and feared by all. Some people call these villains "anti-paladins" due to their completely evil nature.
+
+CLASS FEATURES:
+
+– May wear helmets.
+– May wear any armor and use any weapon.
+– May not exceed Specialization (two slots) in any weapon class.
+– May achieve Specialization (two slots) in any fighting style and allocate three slots in Two-Weapon Style.
+– Immune to level drain and fear.
+– May Control Undead as a Cleric two levels lower, starting at level 3.
+– May cast priest spells starting at level MIN_LEVEL_FOR_SPELLS.
+– [SMITE_GOOD_SUBSTITUTION_POINT]May use the Absorb Health ability once per day to drain 2 Hit Points from a victim per level of the Blackguard, healing the Blackguard for the same amount.
+– May use the Poison Weapon ability once per day. An additional use is gained at level 5, and at every 5 levels thereafter.
+
+POISON WEAPON:
+Each successful hit within the next 5 rounds will inject poison into the target. Each target can only be affected once per round. The amount of poison damage depends on the character's level:
+
+1st - Target suffers 1 poison damage per second for 6 seconds (Save vs. Death at +1 negates)
+5th - Target suffers 1 poison damage per second for 12 seconds (Save vs. Death negates), and also immediately suffers 2 poison damage (no save)
+9th - Target suffers 1 poison damage per second for 18 seconds (Save vs. Death at -1 negates), and also immediately suffers 4 poison damage (no save)
+13th - Target suffers 1 poison damage per second for 24 seconds (Save vs. Death at -2 negates), and also immediately suffers 6 poison damage (no save)
+
+– 3rd level: May use the Aura of Despair ability once per day .
+
+AURA OF DESPAIR: When this ability is activated, all enemies within 15 feet of the Blackguard suffer ill effects based on the Blackguard's level:
+  3rd level - All enemies suffer a -1 penalty to hit and damage rolls and a -2 penalty to Armor Class for 1 turn.
+  6th level - All enemies suffer a -2 penalty to hit and damage rolls and a -2 penalty to Armor Class for 1 turn.
+  15th level - All enemies suffer a -4 penalty to hit and damage rolls and a -4 penalty to Armor Class for 1 turn; enemies with 8 or fewer Hit Dice are panicked as well.
+  20th Level - All enemies suffer a -4 penalty to hit and damage rolls and a -4 penalty to Armor Class for 1 turn; enemies with 18 or fewer Hit Dice are panicked as well.
+
+– Receives a +2 bonus to all Saving Throws.
+– Alignment restricted to evil.
+– Hit Die: d10~
+
+@2="BLACKGUARD: The Blackguard epitomizes evil and is nothing short of a mortal fiend. Blackguards are typically melee combatants, but they can also call upon the dark powers they serve for aid."
+
+@3="Thrall of Orcus"
+
+@4="THRALL OF ORCUS: This is a blackguard who has devoted <PRO_HIMHER>self to the service of Orcus, demon prince of the undead. In his service, <PRO_HESHE> becomes a tool of misery, murder, and revenge. <PRO_HESHE> revels in the company of the undead, preferring their decaying touch to that of living flesh.
+
+Advantages: 
+– Replaces Smite Good with Smite Order, which affects lawful creatures such as baatezu (devils), mind flayers, githyanki, and blue and silver dragons.
+- May use Find Familiar ability to summon a quasit companion.
+- May cast Doom as an innate ability once per day. An additional use is gained at 7th level and every 6th level thereafter.
+- 5th level: may cast Vampiric Touch as an innate ability once per day. An additional use is gained at 11th level and every 6th level thereafter.
+- 9th level: may cast Control Undead as an innate ability once per day. An additional use is gained at 15th level and every 6th level thereafter.
+- 13th level: May cast Finger of Death as an innate ability once per day. An additional use is gained at 19th level and every 6th level thereafter.
+- 17th level: May cast Power Word: Kill as an innate ability once per day.
+
+Disadvantages:
+- May not cast spells.
+
+Requirements:
+- Alignment restricted to Lawful Evil."
+
+@5="Disciple of Asmodeus"
+
+@6="DISCIPLE OF ASMODEUS: this is a blackguard who has made an unholy pack with Asmodeus, Lord of the Nine Hells. A disciple of Asmodeus is a lordly, domineering warrior who craves unlimited power. <PRO_HESHE> is ruthless in <PRO_HISHER> pursuits and uncaring of any who get in <PRO_HISHER> way.
+
+Advantages: 
+– Replaces Smite Good with Smite Chaos, which affects chaotic creatures such as tanar'ri (demons), most vampires, and red, black, and shadow dragons.
+- May use Find Familiar ability to summon an imp companion.
+- May cast Command as an innate ability once per day. An additional use is gained at 7th level and every 6th level thereafter.
+- 5th level: may cast Charm Person as an innate ability once per day. An additional use is gained at 11th level and every 6th level thereafter.
+- 9th level: may cast Greater Command as an innate ability once per day. An additional use is gained at 15th level and every 6th level thereafter.
+- 13th level: May cast Domination as an innate ability once per day. An additional use is gained at 19th level and every 6th level thereafter.
+- 17th level: May cast Power Word: Stun as an innate ability once per day.
+
+Disadvantages:
+- May not cast spells.
+
+Requirements:
+- Alignment restricted to Lawful Evil."
+
+@7="Find Familiar
+(Conjuration/Summoning)
+
+Level: 1
+Range: 0
+Duration: Permanent
+Casting Time: 1
+Area of Effect: Special
+Saving Throw: None
+
+This spell enables the Disciple of Asmodeus to attempt to summon an imp familiar to act as <PRO_HISHER> aide and companion. A creature acting as a familiar can benefit its master, conveying its sensory powers to <PRO_HIMHER>, conversing with <PRO_HIMHER>, and serving as a guard/scout/spy as well. A Disciple of Asmodeus can have only one familiar at a time.
+
+Note: This spell can only be cast by the protagonist.
+
+The Disciple of Asmodeus has an empathic link with the familiar and can issue it mental commands. The Disciple receives half the familiar's total Hit Points (rounded down) as bonus Hit Points. However, the Disciple must take care to treat <PRO_HISHER> familiar well, for if the familiar should die, the Disciple loses the bonus Hit Points and the familiar's Hit Points again as damage. Also, when a familiar dies, the Disciple loses 1 point of Constitution PERMANENTLY.
+
+The familiar has these statistics:
+
+– Hit Points: 9
+– Armor Class: 4
+– Magic Resistance: 15%
+– Combat: 1 attack per round at 17 THAC0 for 1d6 damage
+– Special Abilities: Has 100% resistance to fire, cold, and electricity. Can cast Polymorph Self once per day. Regenerates 1 HP/round."
+
+@8="Find Familiar
+(Conjuration/Summoning)
+
+Level: 1
+Range: 0
+Duration: Permanent
+Casting Time: 1
+Area of Effect: Special
+Saving Throw: None
+
+This spell enables the Thrall of Orcus to attempt to summon a quasit familiar to act as <PRO_HISHER> aide and companion. A creature acting as a familiar can benefit its master, conveying its sensory powers to <PRO_HIMHER>, conversing with <PRO_HIMHER>, and serving as a guard/scout/spy as well. A Thrall of Orcus can have only one familiar at a time.
+
+Note: This spell can only be cast by the protagonist.
+
+The Thrall of Orcus has an empathic link with the familiar and can issue it mental commands. The Thrall receives half the familiar's total Hit Points (rounded down) as bonus Hit Points. However, the Thrall must take care to treat <PRO_HISHER> familiar well, for if the familiar should die, the Thrall loses the bonus Hit Points and the familiar's Hit Points again as damage. Also, when a familiar dies, the Thrall loses 1 point of Constitution PERMANENTLY.
+
+The familiar has these statistics:
+
+– Hit Points: 12
+– Armor Class: 4
+– Magic Resistance: 15%
+– Combat: 2 attacks per round at 15 THAC0 for 1d6 damage
+– Special Abilities: Has 100% resistance to fire, cold, and electricity. Can cast Horror once per day. Regenerates 1 HP/round."
+

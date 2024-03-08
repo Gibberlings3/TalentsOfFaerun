@@ -6,6 +6,10 @@ DEFINE_ACTION_FUNCTION kit_fd  BEGIN
 	LAF ui_spell_system_spheres END
 	LAF virtual_class_setup END
 
+
+	LAF check_label STR_VAR label=dw-barbarian_class RET barbarian_class=value END
+
+
 	ACTION_FOR_EACH fd IN
 		totemic_shaman
 		raging_shifter

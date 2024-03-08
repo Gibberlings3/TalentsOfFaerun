@@ -425,6 +425,12 @@ DEFINE_ACTION_FUNCTION ui_spell_system_setup BEGIN
 
 	ACTION_IF !FILE_EXISTS_IN_GAME "m_dw_ssf.lua" BEGIN // if it does, we're installed already
 	
+	// clear out memorized spells from joinables (only really robust way to deal with illegal spells
+	
+	LAF remove_joinable_spells INT_VAR remove_known=0 remove_memorized=1 END
+
+	LAF ui_on_open_setup END
+	LAF ui_system_call_setup END
 	// sort out class/kit detection
 	
 	LAF ui_detect_class_kit END
@@ -570,7 +576,6 @@ END
 DEFINE_PATCH_FUNCTION memorize_priest_spells_edit//internal
 BEGIN
 
-	REPLACE_TEXTUALLY ~\([ %TAB%]*\)\(table.sort.*\)~ ~\1dwBuildChargenPriestChooseSpell()%WNL%\1\2~
 	REPLACE_TEXTUALLY ~clickable lua "createCharScreen:IsDoneButtonClickable()"~ ~clickable lua "createCharScreen:IsDoneButtonClickable() and dwChargenSpecialistRequirementsSatisfied(priestSpells)"~
 	REPLACE_TEXTUALLY ~currentChargenMemorizePriestSpell ?= ?nil~ ~currentChargenMemorizePriestSpell = nil%WNL%%TAB%%TAB%dwIsPriest=true~
 
@@ -578,7 +583,6 @@ END
 
 DEFINE_PATCH_FUNCTION choose_spells_edit//internal
 BEGIN
-	REPLACE_TEXTUALLY ~\([ %TAB%]*\)\(table.sort.*\)~ ~\1dwLearnSpecialistSpells()%WNL%\1dwBuildChooseSpell()%WNL%\1\2~
 	REPLACE_TEXTUALLY EXACT_MATCH ~clickable lua "createCharScreen:IsDoneButtonClickable()"~ ~clickable lua "createCharScreen:IsDoneButtonClickable() and dwChargenSpecialistRequirementsSatisfied(spellBook)"~
 	REPLACE_TEXTUALLY EXACT_MATCH ~text lua "t('SPECIALIST_SPELL_REQ')"~ ~text lua "dwSpecialistSpellMessage()"~
 END
@@ -676,11 +680,6 @@ END
 DEFINE_PATCH_FUNCTION learn_spell_bonus_patch//internal
 BEGIN
 
-	PATCH_IF INDEX_BUFFER ("onOpen") >=0 BEGIN
-		REPLACE_TEXTUALLY ~\(onOpen[^"]*"\)~ ~\1%WNL%%TAB%dwLearnChance()~
-	END ELSE BEGIN
-		REPLACE_TEXTUALLY "\(name +'ITEM_DESCRIPTION'\)" ~\1%WNL%OnOpen%WNL%"%WNL%%TAB%dwLearnChance()%WNL%"~
-	END
 	PATCH_IF INDEX_BUFFER ("onClose") >=0 BEGIN
 		REPLACE_TEXTUALLY ~\(onClose[^"]*"\)~ ~\1%WNL%%TAB%dwLearnChanceCancel()~
 	END ELSE BEGIN

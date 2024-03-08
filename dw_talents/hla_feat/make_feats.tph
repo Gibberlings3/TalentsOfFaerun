@@ -18,6 +18,30 @@ BEGIN
 	LAF read_in_school_exclusions_map RET_ARRAY school_exclusions_map sorcerer_hla_map END
 	LAF read_in_sphere_names RET_ARRAY sphere_names END
 
+	// if it's an ini, make a table
+	
+	ACTION_MATCH "%feat_table%" WITH
+	".*\.ini" BEGIN
+		LAF ini_to_2da 
+			STR_VAR 2da="hla_table.2da"
+					location
+					locbase
+					path
+					ini="%feat_table%" 
+					2da_path="%workspace%" 
+					defaults="name:i=>~-1~ desc:i=>~-1~ max_count:i=>~1~" 
+					main_default="*" 
+					first_column="id" 
+					force_columns="resref type name:i	desc:i	select_desc	prerequisite max_count:i	require_1		require_2		require_3	require_4	require_5	exclude_kit	 alignment		exclude_hla special special_string checks" 
+		END
+		OUTER_SPRINT location ""
+		OUTER_SPRINT locbase ""
+		OUTER_SPRINT path "%workspace%"
+		OUTER_SPRINT feat_table "hla_table.2da"
+	END
+	DEFAULT
+	END
+
 	// get the names from the feat table, for prerequisites and resource-loc copying
 	
 	LAF read_in_feats STR_VAR table="%feat_table%" location locbase path RET_ARRAY feat_names END
@@ -455,7 +479,7 @@ BEGIN
 END
 
 ///////////////////////////////////////////////////////////////////////////////////
-///	Evaluate a check on whether we should build/install a feat
+///	Evaluate a check on whether we should PY/install a feat
 ///////////////////////////////////////////////////////////////////////////////////
 
 DEFINE_DIMORPHIC_FUNCTION evaluate_feat_checks
@@ -886,6 +910,7 @@ BEGIN
 		OUTER_SPRINT $class_names("%id%") "%name%"
 	END
 	OUTER_SPRINT $class_names("FAVORED_SOUL") @1070
+	OUTER_SPRINT $class_names("WARRIOR") @1071
 END
 
 ///////////////////////////////////////////////////////////////////////////////////

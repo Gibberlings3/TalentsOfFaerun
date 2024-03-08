@@ -92,7 +92,7 @@ DEFINE_ACTION_FUNCTION rebalance_dragon_disciple BEGIN
 			kit.edit[%kit%]
 			[
 				k.kit_apply_powers{%spl_dragon_disciple_hold_immunity% 7,%spl_dragon_disciple_charm_immunity% 13}
-				k.kit_grant_powers{%breath_weapon% 6 6 18}
+				k.kit_grant_powers{%breath_weapon% 6 3 18}
 			]							
 			LAF patch_dragon_disciple_description STR_VAR kit END
 		END
@@ -103,38 +103,23 @@ END
 
 DEFINE_ACTION_FUNCTION patch_dragon_disciple_description STR_VAR kit="" BEGIN
   LAF 2daq_extract INT_VAR rowname_column=1 STR_VAR resref=kitlist row="%kit%" column=HELP RET strref=value END
-
-  ACTION_GET_STRREF strref desc
-  OUTER_PATCH_SAVE desc "%desc%" BEGIN
-	SPRINT level_5_string @38
-	SPRINT level_7_string @40
-	SPRINT level_13_string @41
-	first_swap=0
-	second_swap=0
-	REPLACE_EVALUATE "^\([^a-z]*\)\(%level_5_string%.*\)" BEGIN
-		PATCH_IF first_swap BEGIN
-			SPRINT output "%MATCH1%%MATCH2%"
-		END ELSE BEGIN
-			first_swap=1
-			SPRINT output "%MATCH1%%MATCH2%%WNL%%MATCH1%%level_7_string%%WNL%%MATCH1%%level_13_string%"
+	ACTION_IF "%kit%" STR_CMP "DRAGON_DISCIPLE" BEGIN
+		ACTION_GET_STRREF strref desc
+		WITH_TRA "%sfo_tra_loc%/english/dragon_disciple.tra" "%sfo_tra_loc%/%LANGUAGE%/dragon_disciple.tra" BEGIN
+			OUTER_PATCH_SAVE desc "%desc%" BEGIN
+				SPRINT breath @59
+				SPRINT extra_breath @60
+				SPRINT hold @61
+				SPRINT charm @62
+				SPRINT hit_die @63
+				REPLACE_TEXTUALLY EXACT_MATCH "%breath%" "%breath% %extra_breath%"
+				REPLACE_TEXTUALLY "\(.*\)%hit_die%" "\1%hold%%WNL%\1%charm%%WNL%\1%hit_die%"
+			END
 		END
+	END ELSE BEGIN
+		OUTER_SPRINT desc @60	
 	END
-	"%output%"
-	
-	array.new{dd_swaps}
-	{
-		59=>62
-		60=>63
-		61=>64
-	}
-	PHP_EACH dd_swaps AS old=>add BEGIN
-		old:=(AT old)
-		add:=(AT add)
-		REPLACE_TEXTUALLY "%old%" "%old% %add%"
-	END
-	
-  END
-  STRING_SET_EVALUATE strref "%desc%"
+	STRING_SET_EVALUATE strref "%desc%"
 END
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -181,6 +166,24 @@ DEFINE_ACTION_FUNCTION rebalance_wizard_slayer BEGIN
 			REPLACE_TEXTUALLY INCREMENT_PLACEHOLDER "%resist_bonus%"		
 		}
 	]
+	
+// also apply to barbarian version if it exists
+
+	ACTION_IF RESOURCE_CONTAINS "kitlist.2da" "DW_BARBARIAN_WS" BEGIN
+		WITH_TRA "%sfo_tra_loc%/english/barbarian.tra" "%sfo_tra_loc%/%LANGUAGE%/barbarian.tra" BEGIN
+			OUTER_SPRINT desc @7
+		END
+		kit.edit[DW_BARBARIAN_WS|edit_strrefs_in_place:i=1]
+		[
+			k.kit_remove_powers{SPCL131 SPCL819}
+			k.kit_apply_powers{%spl_wizard_slayer_base_resistance% 1,%spl_wizard_slayer_incremental_resistance% 2 1}
+			k_description:="%desc%"
+			k_description=k_description.patch{
+				REPLACE_TEXTUALLY BASE_PLACEHOLDER "%resist_base%"
+				REPLACE_TEXTUALLY INCREMENT_PLACEHOLDER "%resist_bonus%"		
+			}
+		]	
+	END
 
 
 END

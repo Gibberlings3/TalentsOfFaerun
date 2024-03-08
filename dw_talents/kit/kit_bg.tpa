@@ -1,0 +1,68 @@
+DEFINE_ACTION_FUNCTION kit_bg BEGIN
+
+	LAF blackguard_class_checks END
+	LAF include STR_VAR file=blackguard.tph location=kits END
+	ACTION_FOR_EACH blackguard IN
+		disciple_of_asmodeus
+		thrall_of_orcus
+	BEGIN
+		LAF check_ini STR_VAR ini="%blackguard%" RET value END
+		ACTION_IF value BEGIN
+			ACTION_TIME "%blackguard%" BEGIN
+				LAF "%blackguard%" END
+			END
+		END
+		
+	END
+
+	// update the kit-identification LUA
+	LAF ui_detect_class_kit END
+
+
+	// re-externalize proficiencies if appropriate
+	ACTION_IF FILE_EXISTS "%data_loc_shared%/weapprof.2da" BEGIN
+		LAF externalize_weapprof END
+	END
+
+END
+
+DEFINE_ACTION_FUNCTION blackguard_class_checks BEGIN
+
+	// make state to detect blackguards
+	
+	LAF ds_resolve_stat STR_VAR id=DW_VIRTUAL_CLASS_MARKER RET blackguard_splstate=stat_ind END
+	COPY_EXISTING "spcl151.spl" override // barbarian passive
+		LPF ADD_SPELL_EFFECT INT_VAR target=2 timing=9 special=1 parameter2=blackguard_splstate END
+	
+	// shift scripting to find it
+	
+	ACTION_CLEAR_ARRAY blackguard_scripts
+	ACTION_CLEAR_ARRAY blackguard_dialogs
+	COPY_EXISTING_REGEXP - ".*\.bcs" nowhere 
+		PATCH_IF INDEX_BUFFER (16416)>=0 BEGIN
+				SPRINT $blackguard_scripts("%SOURCE_RES%") ""
+		END
+	COPY_EXISTING_REGEXP - ".*\.dlg" nowhere 
+		PATCH_IF INDEX_BUFFER ("BLACKGUARD")>=0 BEGIN
+			SPRINT $blackguard_dialogs("%SOURCE_RES%") ""
+		END
+
+	ACTION_PHP_EACH blackguard_scripts AS script=>discard BEGIN
+		OUTER_SPRINT match "Kit(\([^,]+\),BLACKGUARD)" 
+		OUTER_SPRINT replace "Class(\1,PALADIN)|CheckSpellState(\1,DW_VIRTUAL_CLASS_MARKER)"
+		LAF disjunctive_substitution_bcs STR_VAR script match replace END
+	END
+	
+	ACTION_PHP_EACH blackguard_dialogs AS dialog=>discard BEGIN
+		OUTER_SPRINT match "Kit(\([^,]+\),BLACKGUARD)" 
+		OUTER_SPRINT replace "Class(\1,PALADIN)|CheckSpellState(\1,DW_VIRTUAL_CLASS_MARKER)"
+		LAF disjunctive_substitution_dlg  STR_VAR dialog match replace END
+	END
+
+
+
+
+
+END
+
+

@@ -117,12 +117,12 @@ DEFINE_ACTION_FUNCTION dragon_disciple BEGIN
 		  OUTER_SPRINT kit "DW_DRAGON_DISCIPLE_%color%"
 		  spl.copy[spdd03=>dwdd%letter%b1]
 		  [
+			m_description:=(AT breath_description)
 			m.ab_fx.alter{s_parameter2b=dmgtype|match="s_opcode=12"}
-			m.ab.alter{s_projectile=projectile}
+			m.ab.alter{s_projectile=projectile + 1}
 		  ]
 		  spl.copy[spdd02=>dwdd%letter%rs]
 		  [
-			m_description:=(AT breath_description)
 			m.ab_fx.alter{s_opcode=resistance|match="s_opcode=30"}
 			m.ab_fx.alter{s_parameter2=resistance_icon|match="s_opcode=142"}
 		  ]
@@ -131,13 +131,13 @@ DEFINE_ACTION_FUNCTION dragon_disciple BEGIN
 			k_name:=(AT name)
 			k_description:=(AT description)
 			LPF check_label STR_VAR label="dw#rebalance_dragon_disciple" RET value END
-			IF {!value} {{ k_description=k_description.patch{LPF swap_dd_description END} }}
+			IF {value} {{ k_description=k_description.patch{LPF swap_dd_description END} }}
 			k_color_minor_cloth=color_minor
 			k_color_main_cloth=color_major
 			k.kit_remove_powers{spdd02 spdd03}
 			k.kit_apply_powers{dwdd%letter%rs 4 4 16,%spl_two_fewer_spells% 1}
 			k.kit_grant_powers{dwdd%letter%b1 3}
-			IF {value} {{ k.kit_grant_powers{dwdd%letter%b1 6 6 18} }}
+			IF {value} {{ k.kit_grant_powers{dwdd%letter%b1 6 3 18} }}
 		  ]
 		  
 		  LAF override_chargen_kit_name INT_VAR override STR_VAR kit class=SORCERER END
@@ -172,7 +172,7 @@ DEFINE_ACTION_FUNCTION dragon_disciple BEGIN
 		k_name:=@1 
 		k_description:=@11
 		LPF check_label STR_VAR label="dw#rebalance_dragon_disciple" RET value END
-		IF {!value} {{ k_description=k_description.patch{LPF swap_dd_description END} }}
+		IF {value} {{ k_description=k_description.patch{LPF swap_dd_description END} }}
 	]
 	
 	spl.edit[spdd03|edit_strrefs_in_place:i=1]
@@ -185,7 +185,12 @@ DEFINE_ACTION_FUNCTION dragon_disciple BEGIN
 
 
 	// specialist menu
-	LAF add_kit_menu INT_VAR name=21 desc=22 title=23 STR_VAR id=dragon_disciple kits="DRAGON_DISCIPLE DW_DRAGON_DISCIPLE_BLUE DW_DRAGON_DISCIPLE_GREEN DW_DRAGON_DISCIPLE_BLACK DW_DRAGON_DISCIPLE_WHITE" class=SORCERER END
+	ACTION_IF value BEGIN
+		OUTER_SET desc=24
+	END ELSE BEGIN
+		OUTER_SET desc=22
+	END
+	LAF add_kit_menu INT_VAR name=21 desc title=23 STR_VAR id=dragon_disciple kits="DRAGON_DISCIPLE DW_DRAGON_DISCIPLE_BLUE DW_DRAGON_DISCIPLE_GREEN DW_DRAGON_DISCIPLE_BLACK DW_DRAGON_DISCIPLE_WHITE" class=SORCERER END
 
 
 	// update the kit-identification LUA
@@ -202,15 +207,11 @@ END
 
 DEFINE_PATCH_FUNCTION swap_dd_description
 BEGIN
-	swap_out_1:=@16
-	swap_out_2:=@17
-	swap_out_3:=@24
-	swap_out_4:=@25
-	swap_out_5:=@26
-	REPLACE_TEXTUALLY "^.*%swap_out_1%.*[%WNL%%LNL%%MNL%]" ""
-	REPLACE_TEXTUALLY "^.*%swap_out_2%.*[%WNL%%LNL%%MNL%]" ""	
-	REPLACE_TEXTUALLY "^.*%swap_out_3%.*[%WNL%%LNL%%MNL%]" ""	
-	REPLACE_TEXTUALLY "^.*%swap_out_4%.*[%WNL%%LNL%%MNL%]" ""	
-	REPLACE_TEXTUALLY "^.*%swap_out_5%.*[%WNL%%LNL%%MNL%]" ""				
-
+	SPRINT breath @59
+	SPRINT extra_breath @60
+	SPRINT hold @61
+	SPRINT charm @62
+	SPRINT hit_die @63
+	REPLACE_TEXTUALLY EXACT_MATCH "%breath%" "%breath% %extra_breath%"
+	REPLACE_TEXTUALLY "\(.*\)%hit_die%" "\1%hold%%WNL%\1%charm%%WNL%\1%hit_die%"
 END

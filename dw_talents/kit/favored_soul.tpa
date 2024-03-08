@@ -3,6 +3,7 @@ DEFINE_ACTION_FUNCTION favored_soul BEGIN
 	LAF include STR_VAR file=symbol_stronghold.tph locbase=shared END
 	LAF include STR_VAR file=cleric_dialog_adjusts.tph END
 	LAF include STR_VAR file=prof_tools.tph locbase=prof END
+	LAF prof_build_lookup INT_VAR overwrite=1 RET_ARRAY prof_lookup_array END
 
 	LAF cleric_dialog_adjusts_setup END
 	LAF run STR_VAR file= amalgamate_class_checks locbase=shared END//temporary
@@ -157,7 +158,7 @@ END
 
 DEFINE_ACTION_FUNCTION build_favored_soul_kit INT_VAR god=0 name=0 desc=0  god_gender=0 god_temple=0 allow_neutral=0 override_bio="-1" STR_VAR kit="" favored_weapon="" copy_from="" BEGIN
 
-	LAF ds_resolve_stat STR_VAR id=DW_FAVORED_SOUL RET favored_soul_splstate=stat_ind END
+	LAF ds_resolve_stat STR_VAR id=DW_VIRTUAL_CLASS_MARKER RET favored_soul_splstate=stat_ind END
 
 	// if needed, make marker spell
 	
@@ -197,7 +198,8 @@ DEFINE_ACTION_FUNCTION build_favored_soul_kit INT_VAR god=0 name=0 desc=0  god_g
 
 	// process favored weapon
 
-	LAF 2daq_extract STR_VAR resref=weapprof row="%favored_weapon%" column=NAME_REF RET weapon_name_strref=value END
+	ACTION_TO_UPPER favored_weapon
+	OUTER_SET weapon_name_strref=$prof_lookup_array("%favored_weapon%" "WEAPON_STRREF")
 
 	ACTION_GET_STRREF weapon_name_strref weapon_name
 	OUTER_SPRINT desc (AT desc)
@@ -212,15 +214,12 @@ DEFINE_ACTION_FUNCTION build_favored_soul_kit INT_VAR god=0 name=0 desc=0  god_g
 	[
 		k_name:=(AT name)
 		k_desc:="%desc%"
+		k_clastext_briefdesc:=@4135
 		k.kit_remove_powers{sppr150 sppr250 sppr350 sppr450 sppr550 sppr650 sppr750 spsh005 %spl_shaman_unusability_flag%}
-		k.kit_apply_powers{%spl_favored_soul_resistance_fire% 5,%spl_favored_soul_resistance_cold% 10,%spl_favored_soul_resistance_lightning% 15,%spl_favored_soul_resistance_acid% 20}
+		k.kit_apply_powers{%spl_favored_soul_marker% 1, %spl_favored_soul_resistance_fire% 5,%spl_favored_soul_resistance_cold% 10,%spl_favored_soul_resistance_lightning% 15,%spl_favored_soul_resistance_acid% 20}
 		k_alignment:="0,0,0,0,0,0,0,0,0"
-		k_melee=1
-		k_ranged=1
 		k_scale_detect_illusion=0
 		k_initial_skill_detect_illusion=0
-		TO_LOWER favored_weapon
-		"k_%favored_weapon%"=2
 		PATCH_IF is_iwd BEGIN
 			PATCH_IF override_bio>=0 BEGIN
 				k_bio:=(AT override_bio)
@@ -236,6 +235,9 @@ DEFINE_ACTION_FUNCTION build_favored_soul_kit INT_VAR god=0 name=0 desc=0  god_g
 			k_bio:=15884
 		END
 	]
+	
+	LAF prof_adjust STR_VAR kit arguments=all patch="value=1" END
+	LAF prof_adjust STR_VAR kit arguments="%favored_weapon%" patch="value=2" END
 	
 	// racial restrictions, colors, alignment copied from cleric
 	
@@ -337,7 +339,7 @@ DEFINE_ACTION_FUNCTION favored_soul_detection_general BEGIN
 
 	LAF run STR_VAR file= amalgamate_class_checks locbase=shared END
 
-	LAF ds_resolve_stat STR_VAR id=DW_FAVORED_SOUL RET favored_soul_splstate=stat_ind END
+	LAF ds_resolve_stat STR_VAR id=DW_VIRTUAL_CLASS_MARKER RET favored_soul_splstate=stat_ind END
 
 	// alter dialog and scripts to detect FSs properly
 	

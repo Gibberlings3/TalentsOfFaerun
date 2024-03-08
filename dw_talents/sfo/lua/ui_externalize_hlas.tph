@@ -74,9 +74,6 @@ VERBOSE
 	
 	LAF make_discard_hla END
 
-	// mark up the UI to record the 'right' number of HLAs
-	
-	LAF record_hla_count END
 	
 	// alter CHARGEN_PROFICIENCIES to autoskip the Abilities page if you don't need it
 	
@@ -132,15 +129,6 @@ VERBOSE
   END
 END
 
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-DEFINE_ACTION_FUNCTION record_hla_count BEGIN
-
-	COPY_EXISTING "ui.menu" override
-		REPLACE_TEXTUALLY EXACT_MATCH "characterScreen:OnLevelUpButtonClick()" "dwHLANumberOld=dwNumberHLAs(false);characterScreen:OnLevelUpButtonClick()"
-	BUT_ONLY
-END
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -200,7 +188,6 @@ END
 
 DEFINE_PATCH_FUNCTION hide_hla_patch BEGIN
 
-	REPLACE_TEXTUALLY ~OnOpen\([^"]*\)"~ ~OnOpen\1"%WNL%%TAB%dwHLATable=dwBuildHLATable()%WNL%~
 	REPLACE_TEXTUALLY ~chargen\.HLAs\[\([^]]+\)\]~ ~chargen.HLAs[dwHLATable[\1].index]~
 	REPLACE_TEXTUALLY ~chargenHLAPlusMinusFrame(\([^,]*\), +\([^ )]+\))~ ~chargenHLAPlusMinusFrame(\1,dwHLATable[\2].index)~
 	REPLACE_TEXTUALLY EXACT_MATCH ~table "chargen.HLAs"~ ~table "dwHLATable"~
@@ -208,6 +195,7 @@ DEFINE_PATCH_FUNCTION hide_hla_patch BEGIN
 	// these last two rows are telemetry, currently used by the Ranger externalization code
 	REPLACE_TEXTUALLY ~\([ %TAB%]*\)\(createCharScreen:OnHLAButtonClick([^)]*, *1 *)\)~ ~\1\2%WNL%\1dwHLATable[currentHLASelection].count = dwHLATable[currentHLASelection].count+1~
 	REPLACE_TEXTUALLY ~\([ %TAB%]*\)\(createCharScreen:OnHLAButtonClick([^)]*, *-1 *)\)~ ~\1\2%WNL%\1dwHLATable[currentHLASelection].count = dwHLATable[currentHLASelection].count - 1~
+
 END
 
 
@@ -524,6 +512,25 @@ dwHLANotEpic={}
 <<<<<<<< .../stratagems-inline/m_dw_hlf.lua
 
 -- exposed functions
+
+function dwIncrementHLACount(int)
+
+	dwHLATable[currentHLASelection].count = dwHLATable[currentHLASelection].count + int
+
+end
+
+
+function dwSetOldHLACount()
+
+	dwHLANumberOld=dwNumberHLAs(false)
+
+end
+
+function dwBuildHLATableWrap()
+
+	dwHLATable=dwBuildHLATable()
+
+end
 
 function dwBuildHLATable()
 

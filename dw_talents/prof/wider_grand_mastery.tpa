@@ -7,40 +7,142 @@ DEFINE_ACTION_FUNCTION wider_grand_mastery STR_VAR version=0 BEGIN
 	LAF include STR_VAR file=prof_tools.tph END
 	LAF include STR_VAR file=profdoc.tph END
 	
+	// get virtual classes
+	
+	LAF get_virtual_parent_classes RET_ARRAY virtual_parent_classes END
+	// get  DD MCs
+	
+	LAF 2da_read STR_VAR file=multiclass_kit_components.2da path="%data_loc_shared%" RET_ARRAY mc_array=array mc_rows=rows END
+	ACTION_PHP_EACH mc_rows AS row=>discard BEGIN
+		ACTION_TO_UPPER row
+		ACTION_IF $mc_array("%row%" "CLASS1") STR_EQ "DWARVEN_DEFENDER" || $mc_array("%row%" "CLASS2") STR_EQ "DWARVEN_DEFENDER" BEGIN
+			OUTER_SPRINT $mc_is_dd("%row%") ""
+		END 
+	END
+	
+	// get parent classes
+	
+	LAF 2da_read STR_VAR file=kitlist.2da RET_ARRAY kitlist_rows=rows kitlist_array=array END
+	ACTION_PHP_EACH kitlist_rows AS row=>discard BEGIN
+		OUTER_SPRINT kit $kitlist_array("%row%" "ROWNAME")
+		ACTION_TO_UPPER kit
+		ACTION_IF VARIABLE_IS_SET $virtual_parent_classes("%kit%") BEGIN
+			OUTER_SPRINT $parent_class_map("%kit%") $virtual_parent_classes("%kit%")
+		END ELSE 
+		ACTION_IF IS_AN_INT $kitlist_array("%row%" "CLASS") BEGIN
+			OUTER_PATCH "" BEGIN
+				LOOKUP_IDS_SYMBOL_OF_INT class class $kitlist_array("%row%" "CLASS")
+				SPRINT $parent_class_map("%kit%") "%class%"
+			END
+		END
+	END
+	
 	// main code
 	
 	LAF check_ini STR_VAR ini=mc_fighter_mastery RET mc_fighter_mastery=value END
 	LAF check_ini STR_VAR ini=paladin_mastery RET paladin_mastery=value END
 	LAF check_ini STR_VAR ini=ranger_mastery RET ranger_mastery=value END
+	LAF check_ini STR_VAR ini=barbarian_mastery RET barbarian_mastery=value END
 	LAF check_ini STR_VAR ini=mc_ranger_mastery RET mc_ranger_mastery=value END
+	LAF check_ini STR_VAR ini=mc_barbarian_mastery RET mc_barbarian_mastery=value END
 
-	ACTION_MATCH "%version%" WITH
-	0 BEGIN
-		OUTER_SPRINT class "FIGHTER_MAGE FIGHTER_CLERIC FIGHTER_DRUID FIGHTER_THIEF FIGHTER_MAGE_CLERIC FIGHTER_MAGE_THIEF"
-		OUTER_SPRINT kit ""
+	ACTION_IF FILE_EXISTS "%data_loc_shared%/weapprof.2da" BEGIN
+		COPY "%data_loc_shared%/weapprof.2da" "override"
 	END
-	1 BEGIN
-		OUTER_SPRINT class "PALADIN RANGER"
-		OUTER_SPRINT kit ""
+	COPY_EXISTING "weapprof.2da" override
+		LPF 2da_read RET_ARRAY weapprof_array=array weapprof_rows=rows weapprof_cols=columns END
+		mc=0
+		SPRINT parent ""
+		PHP_EACH weapprof_cols AS kit=>discard BEGIN
+			TO_UPPER kit
+			PATCH_IF IDS_OF_SYMBOL ("class" "%kit%" )>=0 BEGIN
+				SPRINT parent "%kit%"
+				proceed=1
+			END ELSE 
+			PATCH_IF VARIABLE_IS_SET $parent_class_map("%kit%") BEGIN
+				SPRINT parent $parent_class_map("%kit%")
+				proceed=1
+			END ELSE BEGIN
+				proceed=0
+			END
+			PATCH_IF proceed BEGIN
+				PATCH_MATCH "%parent%" WITH
+				FIGHTER_MAGE FIGHTER_CLERIC FIGHTER_DRUID FIGHTER_THIEF FIGHTER_MAGE_CLERIC FIGHTER_MAGE_THIEF BEGIN
+					mc=1
+					SPRINT parent "FIGHTER"
+					val=mc_fighter_mastery
+				END
+				CLERIC_RANGER BEGIN
+					mc=1
+					SPRINT parent "RANGER"
+					val=mc_ranger_mastery
+				END
+				PALADIN BLACKGUARD BEGIN
+					mc=0
+					SPRINT parent "PALADIN"
+					val=paladin_mastery
+				END
+				BARBARIAN BEGIN
+					mc=0
+					SPRINT parent "BARBARIAN"
+					val=barbarian_mastery
+				END
+				DW_BARBARIAN_CLERIC DW_BARBARIAN_DRUID BEGIN
+					mc=1
+					SPRINT parent "BARBARIAN"
+					val=mc_barbarian_mastery
+				END
+				DEFAULT
+					mc=0
+						SPRINT parent "NULL"
+				END
+				PATCH_IF version=0 BEGIN // mc only
+					proceed=mc && "%parent%" STR_EQ "FIGHTER"
+				END ELSE
+				PATCH_IF version=1 BEGIN // 
+					proceed =!mc && ("%parent%" STR_EQ "PALADIN" || "%parent%" STR_EQ "BARBARIAN" || "%parent%" STR_EQ "RANGER")
+				END ELSE
+				PATCH_IF version=2 BEGIN // 
+					proceed =mc || ("%parent%" STR_EQ "PALADIN" || "%parent%" STR_EQ "BARBARIAN" || "%parent%" STR_EQ "RANGER")
+				END ELSE BEGIN
+					PATCH_FAIL "unrecognized version %version% for wider_grand_mastery" 
+				END
+				PATCH_IF proceed BEGIN
+					PHP_EACH weapprof_rows AS row=>discard BEGIN
+						id=$weapprof_array("%row%" "ID")
+						PATCH_IF id>=89 && (id<=110 || id=115) BEGIN
+							PATCH_IF $weapprof_array("%row%" "%kit%")>=2 BEGIN
+								old-val=$weapprof_array("%row%" "%kit%")
+								SET $weapprof_array("%row%" "%kit%")=val
+							END
+						END
+					END
+				
+				END
+			END
+		END
+		LPF 2da_write STR_VAR array=weapprof_array END
+
+	ACTION_IF FILE_EXISTS "%data_loc_shared%/weapprof.2da" BEGIN
+		COPY_EXISTING "weapprof.2da" "%data_loc_shared%"
 	END
-	2 BEGIN
-		OUTER_SPRINT class "FIGHTER_MAGE FIGHTER_CLERIC FIGHTER_DRUID FIGHTER_THIEF FIGHTER_MAGE_CLERIC FIGHTER_MAGE_THIEF PALADIN RANGER CLERIC_RANGER"
-		OUTER_SPRINT kit "DW_DRUID_RANGER DW_NIGHT_WOLF"
-	END
-	DEFAULT
-		FAIL "unrecognized version %version% for wider_grand_mastery" 
-	END
-	LAF alter_profs STR_VAR kit class function=grand_mastery_helper END
 
 	// manual tweaks
 	
 	// Dwarven Defender multiclasses deserve 4 pips in axe/hammer, 2 in everything else
 
-	LAF alter_profs STR_VAR kit="DW_ABJURANT_DEFENDER DW_MORADIN_HAMMER" function=dd_patch END
+	OUTER_SPRINT kit ""
+	ACTION_PHP_EACH mc_is_dd AS kit_here=>discard BEGIN
+		OUTER_SPRINT kit "%kit% %kit_here%"
+	END
+
+	LAF prof_adjust INT_VAR reexternalize=0 STR_VAR kit arguments="all" patch="value=arguments>0?2:0" END
+	LAF prof_adjust INT_VAR reexternalize=0 STR_VAR kit arguments="AXE WARHAMMER" patch="value=4" END
 
 	// reexternalize
 
 	ACTION_IF FILE_EXISTS "%data_loc_shared%/weapprof.2da" BEGIN
+		COPY_EXISTING "weapprof.2da" "%data_loc_shared%"
 		LAF externalize_weapprof END
 	END
 	
@@ -75,7 +177,7 @@ BEGIN
 			CLERIC_RANGER DRUID_RANGER BEGIN
 				value_new=mc_ranger_mastery
 			END
-			DEFAULT
+			DEFAULT				
 				value_new=mc_fighter_mastery
 			END			
 		END ELSE BEGIN
@@ -86,23 +188,6 @@ BEGIN
 	END
 END
 
-DEFINE_PATCH_FUNCTION dd_patch 
-	INT_VAR prof_id=0
-			value=0
-	STR_VAR class=""
-	RET value_new
-BEGIN
-	value_new=value
-	PATCH_IF prof_id>=89 && (prof_id<111 || prof_id=115) BEGIN
-		PATCH_MATCH "%prof_id%" WITH 
-		92 97 BEGIN
-			value_new = 4
-		END
-		DEFAULT
-			value_new = 2
-		END
-	END
-END
 
 DEFINE_PATCH_FUNCTION warrior_filter
 	STR_VAR parent_class=""

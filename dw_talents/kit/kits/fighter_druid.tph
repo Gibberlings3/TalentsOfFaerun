@@ -16,6 +16,10 @@ DEFINE_ACTION_FUNCTION totemic_shaman BEGIN
 	LAF assign_spheres STR_VAR kit default=druid END
 	LAF set_multiclass_components STR_VAR kit components="barbarian totemic_druid"  END
 
+
+	ACTION_IF barbarian_class BEGIN
+		LAF assign_kit_to_virtual_class STR_VAR kit class=barbarian_druid END	
+	END
 END
 
 DEFINE_ACTION_FUNCTION raging_shifter BEGIN
@@ -29,8 +33,6 @@ DEFINE_ACTION_FUNCTION raging_shifter BEGIN
 		LPF adjust_shapeshifter_descriptions STR_VAR desc RET k_desc=desc END
 		k.kit_apply_powers{%spl_remove_all_druid_shapeshifts% 1 1|class=druid}
 		k.kit_grant_powers{%BERSERKER_RAGE% 1 5|class=fighter}
-		k_sling=0
-		k_dart=0
 		k.kit_match_usability{shapeshifter}
 		LPF check_label STR_VAR label="dw#rebalance_shapeshifter" RET value END
 		IF {value} 
@@ -47,6 +49,8 @@ DEFINE_ACTION_FUNCTION raging_shifter BEGIN
 		k_l_n=0
 		k_l_e=0
 	]
+
+	LAF prof_adjust STR_VAR kit arguments=ranged patch="value=0" END
 	LAF assign_spheres STR_VAR kit default=druid END
 	LAF set_multiclass_components STR_VAR kit components="berserker shapeshifter"  END
 

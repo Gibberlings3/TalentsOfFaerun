@@ -27,6 +27,7 @@ DEFINE_ACTION_FUNCTION blackguard_is_virtual_class BEGIN
 	LAF 2da_read STR_VAR file=clastext.2da RET_ARRAY clastext_array=array END
 	OUTER_SET name_strref=$clastext_array("BLACKGUARD" "MIXED")
 	OUTER_SET desc_strref=$clastext_array("BLACKGUARD" "DESCSTR")
+	OUTER_SET brief_strref=$clastext_array("BLACKGUARD" "BRIEFDESC")
 
 	LAF 2da_read STR_VAR file=clsrcreq.2da case=lower RET_ARRAY clsrcreq_array=array END
 	ACTION_FOR_EACH column IN human elf dwarf gnome halfling half_elf halforc BEGIN
@@ -36,11 +37,22 @@ DEFINE_ACTION_FUNCTION blackguard_is_virtual_class BEGIN
 	LAF add_virtual_class INT_VAR name_strref desc_strref STR_VAR parent=paladin ident=class_blackguard human elf dwarf gnome halfling half_elf halforc all_races="false" END
 	LAF assign_kit_to_virtual_class STR_VAR kit=blackguard class=class_blackguard END
 
-
-
-
-
-
+	// a proper 'class' description
+	
+	WITH_TRA "%sfo_tra_loc%/english/blackguard.tra" "%sfo_tra_loc%/%LANGUAGE%/blackguard.tra" BEGIN
+		OUTER_SPRINT desc @1
+		OUTER_SPRINT brief @2
+	END
+	LAF 2da_read STR_VAR file=MXSPLPAL.2DA RET_ARRAY pal_spell_rows=rows END
+	OUTER_SET min_spell_level=99
+	ACTION_PHP_EACH pal_spell_rows AS row=>discard BEGIN
+		OUTER_SET min_spell_level= (row<min_spell_level)?row:min_spell_level
+	END
+	OUTER_PATCH_SAVE desc "%desc%" BEGIN
+		REPLACE_TEXTUALLY "MIN_LEVEL_FOR_SPELLS" "%min_spell_level%"
+	END
+	STRING_SET_EVALUATE desc_strref "%desc%"
+	STRING_SET_EVALUATE brief_strref "%brief%"
 
 END
 

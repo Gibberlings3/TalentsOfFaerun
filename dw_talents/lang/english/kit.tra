@@ -16,8 +16,10 @@ DEFENSIVE STANCE: For 1 turn, the Dwarven Defender gains +50% resistance to all 
 - Gains 5% resistance to crushing, slashing, piercing, and missile damage every 5 fighter levels to a maximum of 20% at fighter level 20.
 
 Disadvantages:
-- Race restricted to dwarf.
 - May achieve Specialization (two slots) only in hammers.
+
+Requirements:
+- Race restricted to dwarf.
 - Alignment must be Lawful Good, Neutral Good, or Lawful Neutral."
 
 @3="Forgemaster of Moradin"
@@ -30,6 +32,9 @@ Advantages:
 - 7th level: May cast Stoneskin once per day, as the fourth level mage spell. An additional use is gained at 12th level and every 5 levels thereafter.
 
 Disadvantages:
+- None.
+
+Requirements:
 - Race restricted to dwarf.
 - Alignment must be Lawful Good, Neutral Good, or Lawful Neutral."
 
@@ -57,6 +62,8 @@ CHAOS OF BATTLE: Chaos of Battle applies bonuses to all allies and penalties to 
 Disadvantages:
 - Becomes winded after berserking: -2 penalty to Armor Class, to-hit rolls, and damage rolls.
 - May not become Proficient in ranged weapons.
+
+Requirements:
 - Alignment restricted to Chaotic Good, Chaotic Neutral, Chaotic Evil, or True Neutral."
 
 @7="Fury of Talos"
@@ -83,6 +90,8 @@ LIGHTNING OF TALOS: This spell conjures a bolt of lightning which unerringly str
 
 Disadvantages:
 - May not wear armor heavier than splint mail.
+
+Requirements:
 - Alignment restricted to neutral evil, chaotic evil, and chaotic neutral."
 
 @9="Sword of Selûne"
@@ -114,6 +123,8 @@ Disadvantages:
 - May not wear any armor.
 - May not use ranged weapons (either missile or thrown).
 - May not wear gauntlets or bracers.
+
+Requirements:
 - Alignment restricted to chaotic good, neutral good, and chaotic neutral."
 
 @11="Magehunter of Helm"
@@ -136,6 +147,8 @@ SEEKING SWORD: This spell creates a sword in the Cleric's hand (that cannot be d
 
 Disadvantages:
 - May not use any magic items apart from weapons and armor.
+
+Requirements:
 - Alignment restricted to lawful good, lawful neutral, lawful evil, and true neutral."
 
 @13="Dark Knight of Bane"
@@ -154,6 +167,9 @@ Advantages:
 - 12th level cleric: May cast Symbol of Fear once per day, as the 7th level priest spell. An additional use is gained at 17th level and every 5 levels thereafter.
 
 Disadvantages:
+- None.
+
+Requirements:
 - Alignment restricted to Lawful Evil, Neutral Evil or Chaotic Evil."
 
 @15="Knight of Iyachtu Xvim"
@@ -174,6 +190,9 @@ Advantages:
 - 12th level cleric: May cast Symbol of Fear once per day. An additional use is gained at 17th level and every 5 levels thereafter.
 
 Disadvantages:
+- None.
+
+Requirements:
 - Alignment restricted to Lawful Evil, Neutral Evil or Chaotic Evil."
 
 @17="Templar of Lathander"
@@ -192,6 +211,9 @@ BOON OF LATHANDER: This spell lasts 1 round per level of the caster. It gives th
 - 9th level cleric: May cast False Dawn once per day. An additional use is gained at 14th level and every 5 levels thereafter.
 
 Disadvantages:
+- None.
+
+Requirements:
 - Alignment restricted to lawful good, neutral good, chaotic good, and true neutral."
 
 @19="Holy Justice of Tyr"
@@ -214,6 +236,9 @@ EXALTATION: This spell enables a priest to aid and protect any one being other t
 - 11th level: May cast Holy Word once per day. 
 
 Disadvantages:
+- None.
+
+Requirements:
 - Alignment restricted to lawful good, neutral good, or lawful neutral."
 @21="Guardian of Helm"
 @22="GUARDIAN OF HELM
@@ -232,6 +257,9 @@ SEEKING SWORD: This spell creates a sword in the Cleric's hand (that cannot be d
 - 7th level cleric: May cast Truesight once per day, as the fifth level priest spell. An additional use is gained at 12th level and every 5 levels thereafter.
 
 Disadvantages:
+- None.
+
+Requirements:
 - Alignment restricted to lawful good, lawful neutral, lawful evil, and true neutral."
 
 @23="Forester of Mielikki"
@@ -254,9 +282,11 @@ CALLED SHOT: All successful ranged attacks within the next 10 seconds have the f
  16th level: +2 bonus to damage roll.
 
 Disadvantages:
-- Alignment restricted to Lawful Good, Neutral Good, Chaotic Good, and true neutral
 - May not wear any metal armor.
-- May only become Proficient (one slot) with melee weapons."
+- May only become Proficient (one slot) with melee weapons.
+
+Requirements:
+- Alignment restricted to Lawful Good, Neutral Good, Chaotic Good, and true neutral/"
 
 @25="Hunter of Selûne"
 @26="HUNTER OF SELÛNE
@@ -275,6 +305,9 @@ Advantages:
 - 9th level cleric: May cast True Seeing once per day, as the 5th level priest spell. An additional use of this power is gained at level 15 and every 6 levels thereafter.
 
 Disadvantages:
+- None.
+
+Requirements:
 - Alignment restricted to chaotic good, neutral good, and chaotic neutral."
 @27="Silverstar of Selûne"
 @28="SILVERSTAR OF SELÛNE: Selûne (pronounced: seh-LOON-ay), Our Lady of Silver, is the goddess of the moon, the stars, and those who use them to navigate. Her eternal foe is the evil Shar, goddess of darkness, night, loss, and forgetfulness. Selûne is often called the Moonmaiden for her connection to the silver moon that orbits Faerûn. 
@@ -292,6 +325,9 @@ Advantages:
 - 9th level: May cast True Seeing once per day, as the 5th level priest spell. An additional use of this power is gained at level 15 and every 6 levels thereafter.
 
 Disadvantages:
+- None.
+
+Requirements:
 - Alignment restricted to chaotic good, neutral good, and chaotic neutral."
 
 @31=~Less than a fortnight after your initiation into the Temple of Moradin, you were summoned before the High Forgesmith of your order. In a cordial, if somewhat cold meeting, you were assigned your first duty as a full member of the temple: to make a pilgrimage to the North and see if you could bring the word of Moradin to dwarven settlers in the frontier towns. Almost as an afterthought, he informed you of his "concerns" over portents and omens concerning events transpiring in the North, and it was the belief of the temple that a representative of their interests there might serve to maintain peace in the region.
@@ -2653,16 +2689,17 @@ The next day, you fled the temple with not a word to your superiors, taking litt
 @3998="Knows the following additional spells: "
 @3999="Level"
 @4000="Favored Soul"
+// NOTE FOR TRANSLATORS: The line 'May wear any armor and use any weapon' must be translated exactly the same way as the equivalent line from the Fighter description (string 9556 in BG2).
 @4001="FAVORED SOUL: The favored soul follows the path of the cleric but is able to channel divine power with surprising ease. Scholars wonder if favored souls have traces of divine blood from unions centuries ago. Others suggest that divine training awakens the ability, or that favored souls are simply imbued by their god with their gifts by divine will. In any case, favored souls cast their spells as much through force of personality as through study. 
 
 A favored soul must choose a specific god to follow: unlike a cleric, <PRO_HESHE> cannot draw power from more dispersed or generalised worship.
 
 CLASS FEATURES:
 
-- May use any weapons and armor.
+- May wear any armor and use any weapon.
+- May become Proficient (one slot) in any weapon class.
+- May become Proficient (one slot) in any fighting style.
 - May achieve Specialization (two slots) in the weapon type favored by their deity.
-- May only become Proficient (one slot) in any other weapon class.
-- May only become Proficient (one slot) in any fighting style.
 - May cast clerical spells.
 - Does not automatically learn all spells of a given level as Clerics do. Instead, Favored Souls select new spells to learn at each level, which they can cast daily without memorization.
 - Gains immediate access to a number of Favored Soul-specific spells, which can be cast like any other. The specific spells depend on their deity.
@@ -3213,6 +3250,30 @@ Disadvantages:
 @4130="Malar"
 @4131="a temple of the One-Eyed God"
 @4132="a temple of the Queen of the Spiders"
+
+
+@4133="Shaman of Tempus"
+@4134="SHAMAN OF TEMPUS
+(Barbarian / Priest of Tempus)
+
+ Tempus (pronounced: TEM-pus), also known as the Lord of Battles or the Foehammer, is random in his favors, yet his chaotic nature favors all sides equally. Lord Tempus may be on an army's side one day and against them the next; such is the nature of war. Tempuran clergy can be found on both sides of a conflict, as none can ever truly know whom the war god will favor. Tempus is highly favored among the barbarian tribes of the North; his shamans are fierce and terrifying warriors.
+
+Advantages:
+- SPHERE_PLACEHOLDER
+- May learn the following additional priest spells: Star Metal Cudgel (4th level), Blood Rage (4th level), Iron Skins (5th level).
+- MAGE_SPELL_PLACEHOLDER
+- 3rd level cleric: May cast Chaos of Battle once per day, as detailed below. An additional use is gained at 8th level and every 5 levels thereafter.
+- 5th level cleric: May cast Holy Power once per day, as the fourth level priest spell. An additional use is gained at 10th level and every 5 levels thereafter.
+- 7th level cleric: May cast Emotion: Courage once per day, as the fourth level mage spell. An additional use is gained at 12th level and every 5 levels thereafter.
+
+CHAOS OF BATTLE: Chaos of Battle applies bonuses to all allies and penalties to all enemies within a 30-ft. radius of the caster. The spell lasts 1 turn and will randomly affect the targets' Armor Class, Hit Points, THAC0, saves, or luck. The magnitude of the effect starts at 1 (5 for Hit Points) at level 1 and will improve by 1 (5 for Hit Points) every 6 levels of the caster.
+
+Disadvantages:
+- Alignment restricted to Chaotic Good, Chaotic Neutral, Chaotic Evil, or True Neutral."
+
+@4135="FAVORED SOUL: The favored soul follows the path of the cleric but is able to channel divine power with surprising ease. Favored Souls select new spells to learn when they gain levels; once learned, the Favored Soul can cast them daily without memorization."
+
+
 
 @10000="Level 3: "
 @10001="Level 7: "

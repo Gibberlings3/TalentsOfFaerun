@@ -14,12 +14,13 @@ DEFINE_ACTION_FUNCTION kit_fm BEGIN
 		abjurant_defender=>null
 		kensai_illusionist=>null
 		kensai_enchanter=>null
-		barbarian_transmuter=>null
+		//barbarian_transmuter=>null
 		berserker_invoker=>null
 		berserker_wild_mage=>null
 	END
 	
 	LAF check_label STR_VAR label=dw-elementalist RET elemental_kits=value END
+	/*
 	ACTION_IF elemental_kits BEGIN
 		LAF make_elemental_spell_lists RET earth_names air_names water_names fire_names all_names END
 		ACTION_DEFINE_ASSOCIATIVE_ARRAY fm_kits BEGIN
@@ -29,6 +30,7 @@ DEFINE_ACTION_FUNCTION kit_fm BEGIN
 			barbarian_earth_elementalist=>null
 		END
 	END
+	*/
 	LAF check_label STR_VAR label=dw-force_mage RET force_mage=value END
 	ACTION_IF force_mage BEGIN
 		ACTION_DEFINE_ASSOCIATIVE_ARRAY fm_kits BEGIN
@@ -54,6 +56,7 @@ DEFINE_ACTION_FUNCTION kit_fm BEGIN
 	
 	// introduce submenu for barbarian/elementalist
 	
+	/*
 	LAF add_kit_menu INT_VAR name=30001 desc=30002 title=30000 STR_VAR id=barbarian_elementalist kits="DW_BARBARIAN_ELEMENTALIST_AIR DW_BARBARIAN_ELEMENTALIST_FIRE DW_BARBARIAN_ELEMENTALIST_EARTH DW_BARBARIAN_ELEMENTALIST_WATER" class=FIGHTER_MAGE END
 
 	// virtual names for b/elem multiclass kits
@@ -64,7 +67,7 @@ DEFINE_ACTION_FUNCTION kit_fm BEGIN
 		LAF override_chargen_kit_name INT_VAR override=30005 STR_VAR kit=DW_BARBARIAN_ELEMENTALIST_FIRE class=FIGHTER_MAGE END
 		LAF override_chargen_kit_name INT_VAR override=30006 STR_VAR kit=DW_BARBARIAN_ELEMENTALIST_WATER class=FIGHTER_MAGE END
 	END
-
+	*/
 
 	// update the kit-identification LUA
 	LAF ui_detect_class_kit END

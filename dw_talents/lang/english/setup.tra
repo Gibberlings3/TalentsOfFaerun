@@ -44,6 +44,8 @@
 @94="This component is incompatible with the Tweaks Anthology component that prevents humans from dual-classing"
 @95="This component must not be installed after 'thieves gain skill points in multiples of 5'"
 @96="This component conflicts with a similar component from tweaks Anthology; check the readme for details."
+@97="This component requires the 'Revised speciality priests of Lathander/Helm/Talos/Tempus/Tyr' component to be installed"
+@98="This component requires the 'Revised Paladins and Blackguards' component to be installed."
 
 @100="Include arcane spells from Icewind Dale: Enhanced Edition"
 @101="Include divine spells from Icewind Dale: Enhanced Edition"
@@ -129,7 +131,10 @@
 @524=~Speciality mages automatically get one speciality spell at each level (where possible)~
 @525=~Bloodlines for sorcerers~
 @526=~Revised favored enemy for rangers: new enemy groups, and rangers reselect their favored enemy at 4th level and every third level thereafter~
-
+@527=~Make Barbarian Into a Class~
+@528=~Make Wizard Slayer Kit Available to Barbarians~
+@529="Revised Paladins and Blackguards"
+@530="This component has already been installed as part of the 'Revised Paladins and Blackguards' component"
 
 @600="Tidy up class-selection menu"
 
@@ -140,8 +145,8 @@
 @704="New sorcerer kit: Bloodrager"
 @705="New choices of god / goddess for speciality priests"
 @706="New class: Favored Soul"
-@707="Multiclass/dual-class fighter/cleric kits"
-@708="Multiclass/dual-class fighter/druid kits"
+@707="Multiclass/dual-class barbarian/cleric and fighter/cleric kits"
+@708="Multiclass/dual-class barbarian/druid and fighter/druid kits"
 @709="Multiclass/dual-class fighter/mage kits"
 @710="Multiclass/dual-class fighter/thief kits"
 @711="Multiclass/dual-class cleric/mage kits"
@@ -149,6 +154,7 @@
 @713="Multiclass/dual-class cleric/thief and druid/thief kits"
 @714="Multiclass/dual-class mage/thief kits"
 @715="Multiclass fighter/mage/cleric kits"
+@716="New blackguard kits"
 
 @800=""
 

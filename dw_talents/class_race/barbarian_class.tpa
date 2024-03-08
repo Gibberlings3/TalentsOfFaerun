@@ -1,0 +1,190 @@
+DEFINE_ACTION_FUNCTION barbarian_class BEGIN
+
+	LAF include STR_VAR file=multiclass.tph locbase=shared END
+
+
+	LAF make_label STR_VAR label=dw#setup_kit_menus END
+	// setup
+	LAF virtual_class_setup END
+
+	// add Barbarian as a virtual class
+	LAF 2da_read STR_VAR file=clastext.2da RET_ARRAY clastext_array=array END
+	OUTER_SET name_strref=$clastext_array("BARBARIAN" "MIXED")
+	OUTER_SET desc_strref=$clastext_array("BARBARIAN" "DESCSTR")
+
+	LAF 2da_read STR_VAR file=clsrcreq.2da case=lower RET_ARRAY clsrcreq_array=array END
+	ACTION_FOR_EACH column IN human elf dwarf gnome halfling half_elf halforc BEGIN
+		OUTER_SET "%column%"=$clsrcreq_array("barbarian" "%column%")
+	END
+	
+	LAF add_virtual_class INT_VAR name_strref desc_strref STR_VAR parent=fighter ident=class_barbarian human elf dwarf gnome halfling half_elf halforc all_races="false" END
+	LAF assign_kit_to_virtual_class STR_VAR kit=barbarian class=class_barbarian END
+
+	// make state to detect barbarians
+	
+	LAF ds_resolve_stat STR_VAR id=DW_VIRTUAL_CLASS_MARKER RET barbarian_splstate=stat_ind END
+	COPY_EXISTING "spcl151.spl" override // barbarian passive
+		LPF ADD_SPELL_EFFECT INT_VAR target=2 timing=9 special=1 parameter2=barbarian_splstate END
+	
+	// shift scripting to find it
+	
+	ACTION_CLEAR_ARRAY barbarian_scripts
+	ACTION_CLEAR_ARRAY barbarian_dialogs
+	COPY_EXISTING_REGEXP - ".*\.bcs" nowhere 
+		PATCH_IF INDEX_BUFFER ("1073741824")>=0 BEGIN
+				SPRINT $barbarian_scripts("%SOURCE_RES%") ""
+		END
+	COPY_EXISTING_REGEXP - ".*\.dlg" nowhere 
+		PATCH_IF INDEX_BUFFER ("BARBARIAN")>=0 BEGIN
+			SPRINT $barbarian_dialogs("%SOURCE_RES%") ""
+		END
+
+	ACTION_PHP_EACH barbarian_scripts AS script=>discard BEGIN
+		OUTER_SPRINT match "Kit(\([^,]+\),BARBARIAN)" 
+		OUTER_SPRINT replace "Class(\1,FIGHTER_ALL)|CheckSpellState(\1,DW_VIRTUAL_CLASS_MARKER)"
+		LAF disjunctive_substitution_bcs STR_VAR script match replace END
+	END
+	
+	ACTION_PHP_EACH barbarian_dialogs AS dialog=>discard BEGIN
+		OUTER_SPRINT match "Kit(\([^,]+\),BARBARIAN)" 
+		OUTER_SPRINT replace "Class(\1,FIGHTER_ALL)|CheckSpellState(\1,DW_VIRTUAL_CLASS_MARKER)"
+		LAF disjunctive_substitution_dlg  STR_VAR dialog match replace END
+	END
+
+	// reactivate Barbarian dual-classing
+	
+	ACTION_FOR_EACH file IN abdcscrq abdcdsrq BEGIN
+		COPY_EXISTING "%file%.2da" override
+			LPF 2da_read RET_ARRAY array columns END
+			PHP_EACH columns AS col=>discard BEGIN
+				SET $array("BARBARIAN" "%col%")=$array("FIGHTER" "%col%")
+			END
+			LPF 2da_write STR_VAR array END
+		BUT_ONLY
+	END
+
+	COPY_EXISTING "dualclas.2da" override
+		LPF 2da_read RET_ARRAY array columns END
+		PHP_EACH columns AS col=>discard BEGIN
+			PATCH_MATCH "%col%" WITH
+			CLERIC DRUID BEGIN
+				SET $array("BARBARIAN" "%col%")=1
+			END
+			DEFAULT
+				SET $array("BARBARIAN" "%col%")=0
+			END
+		END
+		LPF 2da_write STR_VAR array END
+	BUT_ONLY
+	
+	// permit dual-classing into the barbarian kit (deprecated: we do it into the multiclass kits, since naming works better)
+	//LAF add_dual_class_kit_option STR_VAR oldkit="trueclass" oldclass="cleric" newclass="class_barbarian" kit="barbarian" END
+	//LAF add_dual_class_kit_option STR_VAR oldkit="trueclass" oldclass="druid" newclass="class_barbarian" kit="barbarian" END
+
+	// make hitpoint tables for Barbarian/Cleric, Barbarian/Druid, Barbarian/Thief
+	
+	ACTION_CLEAR_ARRAY barb_mc_hp
+	OUTER_FOR (level=1;level<=40;++level) BEGIN
+		OUTER_SET $barb_mc_hp("%level%" "SIDES")=10
+		OUTER_SET $barb_mc_hp("%level%" "ROLLS")=1
+		OUTER_SET $barb_mc_hp("%level%" "MODIFIER")=level>=10?2:0
+	END
+	LAF 2da_write STR_VAR file=dwhpbm path="override" array=barb_hp_array default=0 END
+
+	// build Barbarian/Cleric kit
+	
+	OUTER_SPRINT kit DW_BARBARIAN_CLERIC
+
+	kit.copy[FIGHTER_CLERIC=>%kit%]
+	[
+		k_name:=@1
+		k_desc:=@2
+		k.kit_grant_powers{%BARBARIAN_RAGE% 1 4|class=fighter}
+		k.kit_apply_powers{spcl151 1,spcl153 11,spcl154 15 4 20|class=fighter}
+		k.kit_match_usability{barbarian}
+		k_hp_table:=dwhpbm
+	]
+	
+	LAF prof_copy INT_VAR only_if_nonzero=1 STR_VAR copy_from=BARBARIAN copy_to=DW_BARBARIAN_CLERIC END
+
+	LAF 2da_read STR_VAR file=clsrcreq.2da case=lower RET_ARRAY array END
+	ACTION_FOR_EACH column IN human elf dwarf gnome halfling half_elf halforc BEGIN
+		OUTER_SET "%column%"=$array("fighter_cleric" "%column%") AND $array("barbarian" "%column%")
+	END	
+	LAF add_virtual_class INT_VAR name=1 desc=2 multiclass=1 STR_VAR ident="barbarian_cleric" human elf dwarf gnome halfling half_elf halforc all_races="false" parent=FIGHTER_CLERIC END
+	LAF assign_kit_to_virtual_class STR_VAR kit class=barbarian_cleric END
+
+	// log the kit 
+
+	LAF set_multiclass_components 
+		STR_VAR kit components="BARBARIAN" 
+	END
+
+	// build Barbarian/Druid kit
+	
+	OUTER_SPRINT kit DW_BARBARIAN_DRUID
+
+	kit.copy[FIGHTER_DRUID=>%kit%]
+	[
+		k_name:=@3
+		k_desc:=@4
+		k.kit_grant_powers{%BARBARIAN_RAGE% 1 4|class=fighter}
+		k.kit_apply_powers{spcl151 1,spcl153 11,spcl154 15 4 20|class=fighter}
+		k.kit_match_usability{barbarian}
+		k_hp_table:=dwhpbm
+	]
+	
+	LAF prof_copy INT_VAR only_if_nonzero=1 STR_VAR copy_from=BARBARIAN copy_to=DW_BARBARIAN_DRUID END
+
+	LAF 2da_read STR_VAR file=clsrcreq.2da case=lower RET_ARRAY array END
+	ACTION_FOR_EACH column IN human elf dwarf gnome halfling half_elf halforc BEGIN
+		OUTER_SET "%column%"=$array("fighter_druid" "%column%") AND $array("barbarian" "%column%")
+	END	
+	LAF add_virtual_class INT_VAR name=3 desc=4 multiclass=1 STR_VAR ident="barbarian_druid" human elf dwarf gnome halfling half_elf halforc all_races="false" parent=FIGHTER_DRUID END
+	LAF assign_kit_to_virtual_class STR_VAR kit class=barbarian_druid END
+
+	// log the kit 
+
+	LAF set_multiclass_components 
+		STR_VAR kit components="BARBARIAN" 
+	END
+	
+	// build Barbarian/Thief kit
+	
+	OUTER_SPRINT kit DW_BARBARIAN_THIEF
+
+
+	kit.copy[FIGHTER_THIEF=>%kit%]
+	[
+		k_name:=@8
+		k_desc:=@9
+		k.kit_grant_powers{%BARBARIAN_RAGE% 1 4|class=fighter}
+		k.kit_apply_powers{spcl151 1,spcl153 11,spcl154 15 4 20|class=fighter}
+		k.kit_match_usability{barbarian}
+		k_hp_table:=dwhpbm
+	]	
+
+	LAF prof_copy INT_VAR only_if_nonzero=1 STR_VAR copy_from=BARBARIAN copy_to=DW_BARBARIAN_THIEF END
+
+	LAF 2da_read STR_VAR file=clsrcreq.2da case=lower RET_ARRAY array END
+	ACTION_FOR_EACH column IN human elf dwarf gnome halfling half_elf halforc BEGIN
+		OUTER_SET "%column%"=$array("fighter_thief" "%column%") AND $array("barbarian" "%column%")
+	END	
+	LAF add_virtual_class INT_VAR name=8 desc=9 multiclass=1 STR_VAR ident="barbarian_thief" human elf dwarf gnome halfling half_elf halforc all_races="false" parent=FIGHTER_THIEF END
+	LAF assign_kit_to_virtual_class STR_VAR kit class=barbarian_thief END
+	
+	// log the kit 
+
+	LAF set_multiclass_components 
+		STR_VAR kit components="BARBARIAN" 
+	END	
+	
+	// regenerate class detection
+
+	LAF ui_detect_class_kit END
+
+	// rebuild dual-class grid
+	
+	LAF collect_dual_class_kit_data END
+
+END

@@ -47,9 +47,6 @@ DEFINE_ACTION_FUNCTION hammer_of_moradin BEGIN
 		k.kit_grant_powers{%spl_moradin_enchanted_weapon% 5 5,%spl_moradin_prayer% 3 5,%spl_moradin_stoneskin% 7 5|class=cleric}
 		k.kit_grant_powers{spdwd02 1,spdwd02 4 4|class=fighter}
 		k.kit_apply_powers{spdwd01 5 5|class=fighter}
-		k_club=1
-		k_flailmorningstar=1
-		k_sling=1	
 		k_color_metal=25
 		k_color_leather=2
 		k_color_armor=24
@@ -62,6 +59,8 @@ DEFINE_ACTION_FUNCTION hammer_of_moradin BEGIN
 	]
 	LAF cleric_kit_substitutions STR_VAR kit god=moradin END
 
+	LAF prof_adjust STR_VAR kit arguments=all patch="value=1" END
+	LAF prof_adjust STR_VAR kit arguments=WARHAMMER patch="value=2" END
 	LAF assign_spheres STR_VAR kit default=cleric add="earth fire" subtract="evil necromantic charm summoning" END
 	LAF holy_symbol INT_VAR name=2002 follower=2003 STR_VAR inv_bam=imisc8g desc_bam=cmisc8g kit END
 

@@ -418,9 +418,14 @@ BEGIN
 			OUTER_SPRINT this_kit FERALAN
 		END
 		DEFAULT
-		END		
+		END	
+		OUTER_SET is_barbarian=0
 		ACTION_IF "%this_kit%" STRING_EQUAL_CASE DRUID BEGIN
 			OUTER_SPRINT this_parent CLERIC
+		END ELSE 
+		ACTION_IF "%this_kit%" STRING_EQUAL_CASE BARBARIAN BEGIN
+			OUTER_SPRINT this_parent FIGHTER
+			OUTER_SET is_barbarian=1
 		END ELSE BEGIN
 			OUTER_SET this_class_num=$parent_classes("%this_kit%")
 			OUTER_PATCH "" BEGIN
@@ -491,13 +496,21 @@ BEGIN
 		END ELSE BEGIN
 			OUTER_SPRINT oldkit TRUECLASS
 		END
-		LAF add_dual_class_kit_option STR_VAR oldclass="%class1%" newclass="%class2%" oldkit kit END	
+		ACTION_IF is_barbarian && "%class2%" STR_EQ "FIGHTER" BEGIN
+			LAF add_dual_class_kit_option STR_VAR oldclass="%class1%" newclass="class_barbarian" oldkit kit END			
+		END ELSE BEGIN
+			LAF add_dual_class_kit_option STR_VAR oldclass="%class1%" newclass="%class2%" oldkit kit END	
+		END
 		ACTION_IF VARIABLE_IS_SET $component_array("%class2%") BEGIN
 			OUTER_SPRINT oldkit $component_array("%class2%")
 		END ELSE BEGIN
 			OUTER_SPRINT oldkit TRUECLASS
 		END
-		LAF add_dual_class_kit_option STR_VAR oldclass="%class2%" newclass="%class1%" oldkit kit END	
+		ACTION_IF is_barbarian && "%class1%" STR_EQ "FIGHTER" BEGIN
+			LAF add_dual_class_kit_option STR_VAR oldclass="%class2%" newclass="class_barbarian" oldkit kit END	
+		END ELSE BEGIN
+			LAF add_dual_class_kit_option STR_VAR oldclass="%class2%" newclass="%class1%" oldkit kit END			
+		END
 	END
 
 

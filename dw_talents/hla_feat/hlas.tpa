@@ -43,11 +43,12 @@ DEFINE_ACTION_FUNCTION hlas STR_VAR version=0 BEGIN // version is for testing. v
 	ACTION_IF (version=0 || version=2) BEGIN
 	
 		ACTION_FOR_EACH type IN arcane divine monk rogue shaman warrior summons shared BEGIN
+		//ACTION_FOR_EACH type IN warrior arcane BEGIN
 			ACTION_IF FILE_EXISTS "%MOD_FOLDER%/%component_loc%/hla_spec_%type%.tph" BEGIN
 				LAF include STR_VAR file="hla_spec_%type%.tph" END
 			END
-			LAF make_feats INT_VAR is_epic=1 STR_VAR feat_table="hla_table_%type%.2da" location=data resource_location="%component_loc%/resource/hla" END
-			LAF install_feats INT_VAR is_epic=1 STR_VAR feat_table="hla_table_%type%.2da" location=data END
+			LAF make_feats INT_VAR is_epic=1 STR_VAR feat_table="hla_table_%type%.ini" location=data resource_location="%component_loc%/resource/hla" END
+			LAF install_feats INT_VAR is_epic=1 STR_VAR feat_table="hla_table_%type%.ini" location=data END
 		END
 		
 		LAF run STR_VAR file=move_hlas_into_spcl END

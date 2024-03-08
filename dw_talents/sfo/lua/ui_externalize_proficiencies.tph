@@ -315,8 +315,6 @@ DEFINE_PATCH_FUNCTION externalize_prof_patch BEGIN
 
 	REPLACE_TEXTUALLY EXACT_MATCH "chargen.proficiency" "dwProficiencyTable"
 	REPLACE_TEXTUALLY EXACT_MATCH "dwProficiencyTable[rowNumber].value" "chargen.proficiency[dwProficiencyLookup[rowNumber]].value"
-	REPLACE_TEXTUALLY ~onOpen\([^"]*\)"~ ~onOpen\1"%WNL%%TAB%dwProficiencyTable,dwProficiencyLookup,dwSpendableTotal=dwBuildProficiencyTable(chargen.proficiency)%WNL%~
-	REPLACE_TEXTUALLY ~\(OnOpen[^"]*"[^"]+\)"~ ~\1%WNL%%TAB%dwClearExcessProficiencies(dwSpendableTotal)%WNL%%TAB%dwProficienciesTotal=chargen.extraProficiencySlots%WNL%"~ // note that this is at the *end* of the OnOpen block, i.e. after any signal transmission
 	REPLACE_TEXTUALLY ~text lua[ %TAB%]+"proficiencyOrGeneralHelp()"~ ~text lua "dwFilterExcessProficiencies(proficiencyOrGeneralHelp())"~
 END
 
@@ -354,6 +352,13 @@ dwDCKitMap={}
 
 <<<<<<<< .../stratagems-inline/m_dw_epf.lua
 
+function dwProficiencyOnOpenEnd()
+
+	dwClearExcessProficiencies(dwSpendableTotal)
+	dwProficienciesTotal=chargen.extraProficiencySlots
+
+end
+
 function plusButtonClickable(row) -- overwrite the baseline one in util
 	local prof=chargen.proficiency[dwProficiencyLookup[row]]
 	local clickable =  (prof.value < prof.max)
@@ -383,7 +388,7 @@ function dwStartingProfAllowed(prof)
 		race=dwRaces[currentChargenRace]
 		subrace=subraceList(race.id)[currentChargenSubrace]
 		level_1_max = level_1_max + subrace.extraprof
-	else
+	elseif dwFindSubraceData then
 		level_1_max = level_1_max + dwFindSubraceData(characters[currentID]).extraprof
 	end
 	
@@ -501,6 +506,12 @@ function dwBuildProficiencyTable(proftable)
 		end
 	end
 	return newtable,lookup,count
+
+end
+
+function dwBuildProficiencyTableWrap()
+
+	dwProficiencyTable,dwProficiencyLookup,dwSpendableTotal=dwBuildProficiencyTable(chargen.proficiency)
 
 end
 

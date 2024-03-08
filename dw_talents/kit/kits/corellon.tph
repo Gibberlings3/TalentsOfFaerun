@@ -51,11 +51,6 @@ DEFINE_ACTION_FUNCTION guardian_of_corellon BEGIN
 		k.kit_grant_powers{%spl_corellon_chromatic_orb% 3 6,%spl_corellon_flame_arrow% 7 6,%spl_corellon_prismatic_spray% 11|class=cleric}
 		k.kit_grant_powers{spcl144 1 4|class=fighter}
 		k.kit_match_usability{kensai}
-		k_crossbow=0
-		k_longbow=0
-		k_shortbow=0
-		k_dart=0
-		k_sling=0
 		k_swordandshield=0
 		k_color_metal=35
 		k_color_minor_cloth=21
@@ -71,6 +66,7 @@ DEFINE_ACTION_FUNCTION guardian_of_corellon BEGIN
 	
 	LAF cleric_kit_substitutions STR_VAR kit god=corellon END
 
+	LAF prof_adjust STR_VAR kit arguments=ranged patch="value=0" END
 	LAF assign_spheres STR_VAR kit default=cleric subtract="evil necromantic summoning" add="water air fey sun" END
 	LAF holy_symbol INT_VAR name=2036 follower=2037 STR_VAR kit desc_bam=a#feyhly inv_bam=cring10 bam_path=dr kit END
 	LAF adjust_cleric_stronghold STR_VAR lathander="all" kit END

@@ -4,7 +4,9 @@ DEFINE_ACTION_FUNCTION kit_fc BEGIN
 	LAF include STR_VAR file=symbol_stronghold.tph locbase=shared END
 	LAF include STR_VAR file=cleric_dialog_adjusts.tph END
 	LAF include STR_VAR file=multiclass.tph locbase=shared END
+	LAF ui_spell_system_spheres END
 
+	LAF check_label STR_VAR label=dw-barbarian_class RET barbarian_class=value END
 
 	ACTION_FOR_EACH fc IN
 		raging_flame_of_kossuth
@@ -13,6 +15,7 @@ DEFINE_ACTION_FUNCTION kit_fc BEGIN
 		wrathful_spear_of_gruumsh
 		hammer_of_moradin
 		berserkerpriest_of_tempus
+		shaman_of_tempus
 		fury_of_talos
 		sword_of_selune
 		templar_of_lathander
@@ -26,6 +29,11 @@ DEFINE_ACTION_FUNCTION kit_fc BEGIN
 			LAF check_ini INT_VAR silent=1 STR_VAR ini="iwd_story_block_%fc%" RET story_block=value END
 		END ELSE BEGIN
 			LAF check_ini INT_VAR silent=1 STR_VAR ini="bg_story_block_%fc%" RET story_block=value END		
+		END
+		ACTION_IF "%fc%" STR_EQ "shaman_of_tempus" BEGIN // only install if we're using barbarians as a class
+			ACTION_IF !RESOURCE_CONTAINS "m_dw_vcd.lua" "class_barbarian" BEGIN
+				OUTER_SET value=0
+			END
 		END
 		ACTION_IF value && !story_block BEGIN
 			OUTER_PATCH "%fc%" BEGIN

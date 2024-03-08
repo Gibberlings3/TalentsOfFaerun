@@ -1,0 +1,85 @@
+DEFINE_ACTION_FUNCTION disciple_of_asmodeus BEGIN
+
+
+	LAF check_ini STR_VAR ini=smite_evil_level RET smite_evil_level=value END
+	LAF check_ini STR_VAR ini=smite_evil_interval RET smite_evil_interval=value END
+
+	LAF splconv STR_VAR spell="%CLERIC_COMMAND%" new_type=innate RET innate_command=new_resref RET_ARRAY splconv_array END
+	LAF splconv STR_VAR spell="%WIZARD_CHARM_PERSON%" new_type=innate RET innate_charm_person=new_resref RET_ARRAY splconv_array END
+	LAF splconv STR_VAR spell="%CLERIC_GREATER_COMMAND%" new_type=innate RET innate_mass_command=new_resref RET_ARRAY splconv_array END
+	LAF splconv STR_VAR spell="%CLERIC_MENTAL_DOMINATION%" new_type=innate RET innate_domination=new_resref RET_ARRAY splconv_array END
+	LAF splconv STR_VAR spell="%WIZARD_POWER_WORD_STUN%" new_type=innate RET innate_power_word_stun=new_resref RET_ARRAY splconv_array END
+
+	COPY_EXISTING "%BEASTMASTER_FIND_FAMILIAR%.spl" "override/%spl_familiar_disciple%.spl"
+		SAY 0x50 @7
+
+	OUTER_SPRINT kit "DW_BLACKGUARD_ASMODEUS"
+	kit.copy[BLACKGUARD=>%kit%]
+	[
+		k_name:=@5
+		k_description:=@6
+		//charm/command
+		k.kit_grant_powers{%innate_command% 1 6}
+		k.kit_grant_powers{%innate_charm_person% 5 6}
+		k.kit_grant_powers{%innate_greater_command% 9 6}
+		k.kit_grant_powers{%innate_domination% 13 6}
+		k.kit_grant_powers{%innate_power_word_stun% 17}
+		// smite chaos
+		k.kit_remove_powers{%spl_smite_good%}
+		k.kit_grant_powers{%spl_smite_chaos% %smite_evil_level% %smite_evil_interval%}
+		// familiar
+		k.kit_grant_powers{%spl_familiar_disciple% 1}
+		//deactivate spellcasting
+		k.kit_apply_powers{spcl234 1}
+		// alignment
+		k.kit_set_alignment{le}
+	]
+	
+	LAF assign_kit_to_virtual_class STR_VAR kit=dw_blackguard_asmodeus class=class_blackguard END
+
+
+END
+
+DEFINE_ACTION_FUNCTION thrall_of_orcus BEGIN
+
+	LAF check_ini STR_VAR ini=smite_evil_level RET smite_evil_level=value END
+	LAF check_ini STR_VAR ini=smite_evil_interval RET smite_evil_interval=value END
+
+
+	LAF splconv STR_VAR spell="%CLERIC_DOOM%" new_type=innate RET innate_doom=new_resref RET_ARRAY splconv_array END
+	LAF splconv STR_VAR spell="%WIZARD_VAMPIRIC_TOUCH%" new_type=innate RET innate_vampiric_touch=new_resref RET_ARRAY splconv_array END
+	LAF splconv STR_VAR spell="%WIZARD_FINGER_OF_DEATH%" new_type=innate RET innate_finger_of_death=new_resref RET_ARRAY splconv_array END
+	LAF splconv STR_VAR spell="%WIZARD_CONTROL_UNDEAD%" new_type=innate RET innate_control_undead=new_resref RET_ARRAY splconv_array END
+	LAF splconv STR_VAR spell="%WIZARD_POWER_WORD_KILL%" new_type=innate RET innate_power_word_kill=new_resref RET_ARRAY splconv_array END
+
+	COPY_EXISTING "%BEASTMASTER_FIND_FAMILIAR%.spl" "override/%spl_familiar_thrall%.spl"
+		SAY 0x50 @8
+
+	OUTER_SPRINT kit "DW_BLACKGUARD_ORCUS"
+	kit.copy[BLACKGUARD=>%kit%]
+	[
+		k_name:=@3
+		k_description:=@4
+		//spells
+		k.kit_grant_powers{%innate_doom% 1 6}
+		k.kit_grant_powers{%innate_vampiric_touch% 5 6}
+		k.kit_grant_powers{%innate_control_undead% 9 6}
+		k.kit_grant_powers{%innate_finger_of_death% 13 6}
+		k.kit_grant_powers{%innate_power_word_kill% 17}
+		// smite order
+		k.kit_remove_powers{%spl_smite_good%}
+		k.kit_grant_powers{%spl_smite_order% %smite_evil_level% %smite_evil_interval%}
+		// familiar
+		k.kit_grant_powers{%spl_familiar_thrall% 1}
+		//deactivate spellcasting
+		k.kit_apply_powers{spcl234 1}	
+		// alignment
+		k.kit_set_alignment{ce}
+	]
+
+
+	LAF assign_kit_to_virtual_class STR_VAR kit=dw_blackguard_orcus class=class_blackguard END
+
+
+
+END

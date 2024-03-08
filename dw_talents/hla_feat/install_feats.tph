@@ -8,6 +8,7 @@ DEFINE_ACTION_FUNCTION install_feats INT_VAR is_epic=0 STR_VAR feat_table="" loc
 
 	/////////////////////////////////////////////////////////////////
 
+	LAF get_virtual_parent_classes RET_ARRAY virtual_parent_classes END
 	
 	// get class/kit mappings
 	
@@ -44,8 +45,27 @@ DEFINE_ACTION_FUNCTION install_feats INT_VAR is_epic=0 STR_VAR feat_table="" loc
 
 		
 	// pass through feat table
-	
-	LAF sfo_path STR_VAR location locbase path RET directory=path END
+	ACTION_MATCH "%feat_table%" WITH
+	".*\.ini" BEGIN
+		LAF ini_to_2da 
+			STR_VAR 2da="hla_table.2da" 
+					location
+					locbase
+					path
+					ini="%feat_table%" 
+					2da_path="%workspace%" 
+					defaults="name:i=>~-1~ desc:i=>~-1~ max_count:i=>~1~" 
+					main_default="*" 
+					first_column="id" 
+					force_columns="resref type name:i	desc:i	select_desc	prerequisite max_count:i	require_1		require_2		require_3	require_4	require_5	exclude_kit	 alignment		exclude_hla special special_string checks" 
+		END
+		OUTER_SPRINT directory "%workspace%"
+		OUTER_SPRINT feat_table "hla_table.2da"
+
+	END
+	DEFAULT
+		LAF sfo_path STR_VAR location locbase path RET directory=path END
+	END
 	LAF install_feats_core INT_VAR is_epic STR_VAR feat_table="%directory%/%feat_table%" RET_ARRAY assign_array END
 	
 
@@ -272,11 +292,13 @@ BEGIN
 			END
 		END
 		"WARRIOR" BEGIN
-			PATCH_FOR_EACH class IN FIGHTER RANGER PALADIN BEGIN
+			PATCH_FOR_EACH class IN FIGHTER RANGER PALADIN BARBARIAN BLACKGUARD BEGIN
 				SPRINT $assign_array_here("%class%") ""
 				PATCH_IF IS_AN_INT number && number>1 BEGIN
 					parent_number=IDS_OF_SYMBOL (class class)
-					SPRINT lua_append_class ~%lua_append_class%%TAB%[%parent_number%]=%number%,%WNL%~
+					PATCH_IF parent_number>=0 BEGIN // not barbarians/blackguards
+						SPRINT lua_append_class ~%lua_append_class%%TAB%[%parent_number%]=%number%,%WNL%~
+					END
 				END
 			END
 		END
@@ -301,6 +323,10 @@ BEGIN
 					parent_number=IDS_OF_SYMBOL (class sorcerer)
 					SPRINT $assign_array_here("%kit%") ""
 				END
+			END
+			PATCH_IF IS_AN_INT number && number>1 BEGIN
+				parent_number=IDS_OF_SYMBOL (class SORCERER)	
+				SPRINT lua_append_class ~%lua_append_class%%TAB%[%parent_number%]=%number%,%WNL%~
 			END
 		END
 		DEFAULT
@@ -370,7 +396,11 @@ BEGIN
 			END ELSE BEGIN
 				SPRINT $assign_array_here("%req%") ""
 				PATCH_IF IS_AN_INT number && number>1 BEGIN
-					 PATCH_IF VARIABLE_IS_SET $kit_number("%req%") BEGIN // it's a kit
+					PATCH_IF VARIABLE_IS_SET $virtual_parent_classes("%req%") BEGIN // it's the reference kit for a virtual classparent_number=$parent_number("%req%")
+						parent_number=$parent_number("%req%")
+						SPRINT lua_append_class ~%lua_append_class%%TAB%[%parent_number%]=%number%,%WNL%~					
+					END ELSE				
+					PATCH_IF VARIABLE_IS_SET $kit_number("%req%") BEGIN // it's a kit
 						parent_number=$parent_number("%req%")
 						PATCH_IF VARIABLE_IS_SET $kits_with_component("%req%") BEGIN
 							SPRINT list $kits_with_component("%req%") 
@@ -424,17 +454,12 @@ DEFINE_ACTION_MACRO read_kitlist_for_hlas BEGIN
 				SPRINT $assign_array("%kit_label%") ""
 				SET $kit_number("%kit_label%")=kit_number
 				SET $parent_number("%kit_label%")=class_number
-				LOOKUP_IDS_SYMBOL_OF_INT class class class_number
-				TO_UPPER class
-				PATCH_MATCH "%class%" WITH
-				SHAMAN BEGIN
-					PATCH_IF INDEX ("DW_.*_FAVORED" "%kit_label%")>=0 BEGIN
-						SPRINT $"child_kits_FAVORED_SOUL"("%kit_label%") ""	
-					END ELSE BEGIN
-						SPRINT $"child_kits_%class%"("%kit_label%") ""
-					END
-				END
-				DEFAULT
+				PATCH_IF VARIABLE_IS_SET $virtual_parent_classes("%kit_label%") BEGIN
+					SPRINT class $virtual_parent_classes("%kit_label%")
+					SPRINT $"child_kits_%class%"("%kit_label%") ""
+				END ELSE BEGIN
+					LOOKUP_IDS_SYMBOL_OF_INT class class class_number
+					TO_UPPER class
 					SPRINT $"child_kits_%class%"("%kit_label%") ""
 				END
 				/*
@@ -698,6 +723,12 @@ DEFINE_ACTION_FUNCTION install_feats_core INT_VAR is_epic=0 STR_VAR feat_table="
 					DEFAULT
 						SPRINT $"assign_array_%class%"("%resref%") ""
 						SPRINT $HLAs_assigned_to("%class%") ""
+						PHP_EACH "child_kits_%class%" AS kit=>discard BEGIN
+							PATCH_IF $exclude_kit("%kit%")=0  && (INDEX (DW_DUMMY "%kit%") <0) && (!trueclass_only || "%kit%" STR_EQ "%class%") BEGIN
+								SPRINT $"assign_array_%kit%"("%resref%") "" 
+								SPRINT $HLAs_assigned_to("%kit%") ""
+							END
+						END
 					END
 				END
 			END

@@ -868,8 +868,28 @@ IDS
 		////////////////////////////////////////////////////////////////////////////////
 
 		COPY_EXISTING weapprof.2da override
+			READ_2DA_ENTRIES_NOW weapprof_data 4
+			SET_2DA_ENTRY_LATER weapprof_fix 1 0 LARGE_SWORD_BG1
+			SET_2DA_ENTRY_LATER weapprof_fix 2 0 SMALL_SWORD_BG1
+			SET_2DA_ENTRY_LATER weapprof_fix 3 0 BOW_BG1
 			SET_2DA_ENTRY_LATER weapprof_fix 4 0 SPEAR_BG1
+			SET_2DA_ENTRY_LATER weapprof_fix 5 0 BLUNT_BG1
+			SET_2DA_ENTRY_LATER weapprof_fix 6 0 SPIKED_BG1
 			SET_2DA_ENTRY_LATER weapprof_fix 7 0 AXE_BG1
+			SET_2DA_ENTRY_LATER weapprof_fix 8 0 MISSILE_BG1
+			FOR (row=9;row<weapprof_data;++row) BEGIN
+				READ_2DA_ENTRY_FORMER weapprof_data row 0 rowname
+				PATCH_IF VARIABLE_IS_SET $sfo_reserved_weapprof_fix("%rowname%") BEGIN
+					id=2
+					WHILE VARIABLE_IS_SET $sfo_reserved_weapprof_fix("%rowname%%id%") BEGIN
+						++id
+					END
+					SET_2DA_ENTRY_LATER weapprof_fix row 0 "%rowname%%id%"
+					SPRINT $sfo_reserved_weapprof_fix("%rowname%%id%") ""
+				END ELSE BEGIN
+					SPRINT $sfo_reserved_weapprof_fix("%rowname%") ""
+				END
+			END
 			SET_2DA_ENTRIES_NOW weapprof_fix 4
 
 		////////////////////////////////////////////////////////////////////////////////

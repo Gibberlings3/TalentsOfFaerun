@@ -1,0 +1,55 @@
+DEFINE_ACTION_FUNCTION barbarian_wizard_slayer BEGIN
+
+	// load required resources
+	
+	LAF include STR_VAR file=multiclass.tph locbase=shared END
+
+	// make the kit
+	
+	OUTER_SPRINT kit DW_BARBARIAN_WS
+
+	ACTION_IF FILE_EXISTS_IN_GAME "%spl_wizard_slayer_base_resistance%" BEGIN // kit rebalance
+
+		LAF check_ini STR_VAR ini=wizard_slayer_base_resistance RET resist_base=value END
+		LAF check_ini STR_VAR ini=wizard_slayer_bonus_resistance RET resist_bonus=value END
+
+		kit.copy[BARBARIAN=>%kit%]
+		[
+			k_name:=@5
+			k_desc:=@7
+			k_desc=k_description.patch{
+				REPLACE_TEXTUALLY BASE_PLACEHOLDER "%resist_base%"
+				REPLACE_TEXTUALLY INCREMENT_PLACEHOLDER "%resist_bonus%"		
+			}
+			k.kit_apply_powers{%spl_wizard_slayer_base_resistance% 1,%spl_wizard_slayer_incremental_resistance% 2 1,spcl133 1}
+			k_kitlist_unusable=0x40000002
+		]	
+	END ELSE BEGIN
+		kit.copy[BARBARIAN=>%kit%]
+		[
+			k_name:=@5
+			k_desc:=@6
+			k.kit_apply_powers{spcl131 1 1,spcl133 1}
+			k_kitlist_unusable=0x40000002
+		]
+	END
+
+
+	// add the kit as a barbarian kit
+	
+	LAF assign_kit_to_virtual_class STR_VAR kit=dw_barbarian_ws class=class_barbarian END
+
+	// regenerate class detection
+
+	LAF ui_detect_class_kit END
+
+	// rebuild dual-class grid
+	
+	LAF collect_dual_class_kit_data END
+	
+END
+
+
+
+
+

@@ -510,8 +510,9 @@ DEFINE_ACTION_FUNCTION add_subraces_lua_setup BEGIN
 		OUTER_SPRINT lua_loc lua
 	END
 
-	LAF ui_detect_class_kit END // unsure if it's needed, but it's helpful to control install order (and dk has no visible effects)
 	LAF shared_color_changes END
+	LAF ui_on_open_setup END
+	LAF ui_system_call_setup END
 
 	LAF UI_install_function STR_VAR new_function_path="%MOD_FOLDER%/%lua_loc%/code/adjust_abilities.lua" lua_file="m_dw_shr" search_string=dwGetAbilityValue END
 
@@ -557,9 +558,6 @@ DEFINE_ACTION_FUNCTION add_subraces_lua_setup BEGIN
 			LPF UI_alter_object STR_VAR object=CHARGEN_RACE object_type=menu patch=ui_pseudoraces END 
 		// fix the raceOrGeneralHelp() function to display pseudoraces correctly and to skip through to the subrace description if only one is available
 			LPF UI_replace_function INT_VAR inline=1 STR_VAR function=raceOrGeneralHelp new_function_path="race_or_general_help.lua" END
-		// transmit data to the new character, and hide proficiency entries used to transmit data
-			LPF UI_alter_object STR_VAR object=CHARGEN_PROFICIENCIES object_type=menu patch=pass_subrace_data END
-			LPF UI_alter_object STR_VAR object=LEVELUP_PROFICIENCIES object_type=menu patch=pass_subrace_data END
 		// add the subrace ability modifiers in the ability-roller menu	
 			LPF UI_alter_object STR_VAR object=CHARGEN_ABILITIES object_type=menu patch=ui_ability_roller END 
 			LPF UI_replace_function INT_VAR inline=1 STR_VAR function=abilityOrGeneralHelp new_function_path="ability_or_general_help.lua" END
@@ -585,9 +583,6 @@ DEFINE_ACTION_FUNCTION add_subraces_lua_setup BEGIN
 			PATCH_IF GAME_IS ~eet bgee~ BEGIN
 				LPF ui_edit_biography END
 			END
-		// record the race to display on the character screen once it's determined
-		// (why? Mostly to hide momentary race changes when we dual-class)
-			LPF UI_alter_object STR_VAR object=CHARACTER object_type=menu patch=ui_record_race END
 
 	END
 
@@ -657,16 +652,7 @@ COPY_EXISTING "ui.menu" override
 	
 END
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///	 insert our default proficiency edits
-///	Working assumption we want to add to/insert enable()
-/// entries in each Column entry
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-DEFINE_PATCH_FUNCTION pass_subrace_data BEGIN
-	REPLACE_TEXTUALLY ~\(onopen[%TAB%%WNL%%LNL%%MNL% ]*\)"~  ~\1"dwPassSubraceData()%WNL%~
-END
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///	Plug pseudoraces into UI (patch function operating on CHARGEN_RACES)
@@ -675,7 +661,6 @@ END
 DEFINE_PATCH_FUNCTION ui_pseudoraces BEGIN
 
 	REPLACE_TEXTUALLY "chargen.races" "dwRaces"
-	REPLACE_TEXTUALLY ~\(onOpen\([^"]*\)"\)~ ~\1%WNL%dwRaces={}%WNL%dwRaces=dwMakeRaceList(chargen.races)%WNL%~
 
 END
 
@@ -687,8 +672,6 @@ END
 DEFINE_PATCH_FUNCTION ui_ability_roller BEGIN
 
 	REPLACE_TEXTUALLY "chargen\.ability\[\([^]]+\)\]\.roll" "dwShowAdjustedAbilityValue(\1,dwSubraceAbilityModifier(\1))"
-	REPLACE_TEXTUALLY ~OnOpen\([^"]\)*"~ ~OnOpen%WNL%\1"%WNL%\1dwImposeLegalAbilityMinimums()%WNL%~
-	REPLACE_TEXTUALLY ~createCharScreen:OnAbilityReRollButtonClick()~ ~createCharScreen:OnAbilityReRollButtonClick()dwImposeLegalAbilityMinimums()~
 
 
 END
@@ -711,32 +694,13 @@ END
 DEFINE_PATCH_FUNCTION ui_edit_biography BEGIN
 
 	PATCH_IF !is_eet BEGIN
-		LPF UI_alter_object STR_VAR object=CHARGEN_BIO object_type=menu patch=ui_edit_biography_helper END
-		LPF UI_alter_object STR_VAR object=CHARGEN object_type=menu patch=ui_edit_biography_helper_2 END
+		LPF UI_alter_object STR_VAR object=CHARGEN object_type=menu patch=ui_edit_biography_helper END
 	END
 
 END
 
-DEFINE_PATCH_FUNCTION ui_edit_biography_helper BEGIN // applies to CHARGEN_BIO
 
-
-	SPRINT payload "createBioEdit=dwSubraceBioSwap(createBioEdit)
-		dwUpdatedBio=true
-		if dwAutoBioSet then
-			createCharScreen:OnDoneButtonClick()
-			createCharScreen:AcceptCharacter(-1)
-		end"
-	
-	PATCH_IF INDEX_BUFFER ("onOpen")>=0 BEGIN
-		REPLACE_TEXTUALLY ~^\([%TAB% ]+\)onOpen.*[%WNL%%MNL%%LNL%]\([%TAB% ]+\)"~ ~\1onOpen%WNL%\2"%WNL%%payload%~	
-	END ELSE BEGIN
-		REPLACE_TEXTUALLY ~^\([%TAB% ]+\)ignoreesc~ ~\1ignoreesc%WNL%\1onOpen%WNL%\1"%WNL%%payload%%WNL%\1"~
-	END
-
-
-END
-
-DEFINE_PATCH_FUNCTION ui_edit_biography_helper_2 BEGIN  // applies to CHARGEN
+DEFINE_PATCH_FUNCTION ui_edit_biography_helper BEGIN  // applies to CHARGEN
 
 
 //	READ_ASCII 0x0 data (BUFFER_LENGTH)
@@ -750,13 +714,6 @@ DEFINE_PATCH_FUNCTION ui_edit_biography_helper_2 BEGIN  // applies to CHARGEN
 			createCharScreen:OnBiographyButtonClick()
 		end%WNL%~
 	
-
-END
-
-
-DEFINE_PATCH_FUNCTION ui_record_race BEGIN
-
-	REPLACE_TEXTUALLY ~onopen\([^"]*"\)~ ~onopen\1%WNL%%TAB%%TAB%dwRecordedRace[currentID]=dwFindSubraceData(characters[currentID])~
 
 END
 
@@ -1683,6 +1640,32 @@ END
 
 <<<<<<<<.../stratagems-inline/subrace_functions.lua
 
+function dwSubraceChargenBio()
+
+	createBioEdit=dwSubraceBioSwap(createBioEdit)
+	dwUpdatedBio=true
+	if dwAutoBioSet then
+		createCharScreen:OnDoneButtonClick()
+		createCharScreen:AcceptCharacter(-1)
+	end
+
+
+end
+
+function dwCharacterScreenRecordRace()
+
+	dwRecordedRace[currentID]=dwFindSubraceData(characters[currentID])
+
+end
+
+function dwSubraceOnOpen()
+
+	dwRaces={}
+	dwRaces=dwMakeRaceList(chargen.races)
+	currentChargenSubrace=nil
+
+end
+
 function dwOnRaceSelectButtonClick(index)
 
 	
@@ -2145,4 +2128,6 @@ function abilityOrGeneralHelp()
 		return Infinity_FetchString(17247)
 	end
 end
+
+
 >>>>>>>>

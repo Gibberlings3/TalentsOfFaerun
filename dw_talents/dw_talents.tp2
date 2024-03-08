@@ -1,7 +1,7 @@
 BACKUP ~weidu_external/backup/dw_talents~
 AUTHOR "DavidW"
 //MODDER setup_tra none area_variables none missing_extern none missing_resref none ict2_actions none missing_eval none overwriting_file none fun_args warn
-VERSION ~Beta 7~
+VERSION ~Beta 8~
 
 AUTO_EVAL_STRINGS
 README "dw_talents/doc/readme-dw_talents.html"
@@ -27,10 +27,9 @@ LANGUAGE ~English~
 /*
 BEGIN "test" DESIGNATED 0
 
-LAF run STR_VAR file=test location=test END
+
+BEGIN "test prequel" DESIGNATED 1
 */
-
-
 //////////////////////////////////////////////////////////////////////
 
 
@@ -376,6 +375,39 @@ FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
 LAF run STR_VAR file=3e_align location=class_race END
 
 //////////////////////////////////////////////////////////////////////
+///	Barbarian becomes class
+//////////////////////////////////////////////////////////////////////
+
+BEGIN @527 DESIGNATED 40150 GROUP @5
+
+REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
+FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
+
+LAF run STR_VAR file=barbarian_class location=class_race tra=barbarian END
+
+//////////////////////////////////////////////////////////////////////
+///	Barbarians can be Wizard Slayers
+//////////////////////////////////////////////////////////////////////
+
+BEGIN @528 DESIGNATED 40160 GROUP @5
+
+REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
+FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
+
+LAF run STR_VAR file=barbarian_wizard_slayer location=class_race tra=barbarian END
+
+//////////////////////////////////////////////////////////////////////
+///	Revised Paladins/Blackguards
+//////////////////////////////////////////////////////////////////////
+
+BEGIN @529 DESIGNATED 40190 GROUP @5
+
+REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
+FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
+
+LAF run STR_VAR file=revised_paladins_blackguards location=class_race END
+
+//////////////////////////////////////////////////////////////////////
 ///	IWD-style paladins
 //////////////////////////////////////////////////////////////////////
 
@@ -385,6 +417,7 @@ REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
 REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet" @51	
 FORBID_COMPONENT "iwdification.tp2" 100 @71
 FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
+REQUIRE_PREDICATE (!MOD_IS_INSTALLED "dw_talents/dw_talents.tp2" 40190 && ! IS_AN_INT dw_talents_component_40190_installed) @80
 
 LAF run STR_VAR file=paladin location=class_race END
 
@@ -399,6 +432,7 @@ REQUIRE_PREDICATE (GAME_IS "iwdee" || MOD_IS_INSTALLED "dw_talents/dw_talents.tp
 FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
 FORBID_COMPONENT "dw_talents/dw_talents.tp2" 40310 @79
 REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_40310_installed @79
+REQUIRE_PREDICATE (!MOD_IS_INSTALLED "dw_talents/dw_talents.tp2" 40190 && ! IS_AN_INT dw_talents_component_40190_installed) @80
 
 LAF run STR_VAR file=paladin_smite_evil location=class_race END
 
@@ -410,6 +444,7 @@ BEGIN @506 DESIGNATED 40310 /*LABEL dw_paladin_extra_uses */ GROUP @5
 
 REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
 FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
+REQUIRE_PREDICATE (!MOD_IS_INSTALLED "dw_talents/dw_talents.tp2" 40190 && ! IS_AN_INT dw_talents_component_40190_installed) @80
 
 
 LAF run STR_VAR file=paladin_extra_uses location=class_race END
@@ -843,13 +878,27 @@ LAF run STR_VAR file=kit_c location=kit tra=kit END
 BEGIN @706 DESIGNATED 50500 GROUP @7
 REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
 FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
+REQUIRE_PREDICATE MOD_IS_INSTALLED "dw_talents/dw_talents.tp2" 40650 || IS_AN_INT dw_talents_component_40650_installed @97
 REQUIRE_PREDICATE MOD_IS_INSTALLED "dw_talents/dw_talents.tp2" 50400 || IS_AN_INT dw_talents_component_50400_installed @90
 FORBID_COMPONENT "dw_talents/dw_talents.tp2" 81100 @93
 REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_81100_installed @93
 
 LAF run STR_VAR file=favored_soul location=kit tra=kit END
 
+//////////////////////////////////////////////////////////////////////
+// Blackguard kits
+//////////////////////////////////////////////////////////////////////
 
+BEGIN @716 DESIGNATED 50600 GROUP @7
+REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
+FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
+FORBID_COMPONENT "dw_talents/dw_talents.tp2" 81100 @93
+REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_81100_installed @93
+REQUIRE_PREDICATE (MOD_IS_INSTALLED "dw_talents/dw_talents.tp2" 40190 || IS_AN_INT dw_talents_component_40190_installed) @98
+
+LAF run STR_VAR file=kit_bg location=kit tra=blackguard END
+
+////////////////////////////////////////////////////////////////////////////
 
 
 ////////
@@ -915,7 +964,7 @@ REQUIRE_PREDICATE (
 
 FORBID_COMPONENT "dw_talents/dw_talents.tp2" 81100 @93
 REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_81100_installed @93
-REQUIRE_PREDICATE MOD_IS_INSTALLED "dw_talents/dw_talents.tp2" 50400 || !IS_AN_INT dw_talents_component_50400_installed @90
+REQUIRE_PREDICATE MOD_IS_INSTALLED "dw_talents/dw_talents.tp2" 50400 || IS_AN_INT dw_talents_component_50400_installed @90
 
 LAF run STR_VAR file=kit_fc location=kit tra=kit END
 
@@ -1414,11 +1463,14 @@ BEGIN @411 DESIGNATED 81100 GROUP @4
 
 REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
 FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
+
+/*
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~2160~ @96 // Alter Weapon Proficiency System 
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~2161~ @96 // Alter Weapon Proficiency System 
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~2162~ @96 // Alter Weapon Proficiency System 
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~2163~ @96 // Alter Weapon Proficiency System 
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~2164~ @96 // Alter Weapon Proficiency System 
+*/
 
 LAF run STR_VAR file=prof location=prof END
 

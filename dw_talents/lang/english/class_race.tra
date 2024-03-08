@@ -36,7 +36,7 @@ EFFECTS: +4 bonus to hit and damage rolls vs. racial enemy."
 
 @600="RANGER: The Ranger is a warrior and a woods<PRO_MANWOMAN> who is skilled with weapons and is knowledgeable in the ways of the forest. The Ranger often protects and guides lost travelers and honest peasant-folk. A Ranger needs to be strong and wise to the ways of nature to live a full life." // must exactly match the ranger description text
 @601="RANGER: The Ranger is a warrior and a woods<PRO_MANWOMAN> who is skilled with weapons and is knowledgeable in the ways of the forest. The Ranger often protects and guides lost travelers and honest peasant-folk. Evil rangers, though rare, are much to be feared, reveling in cruelty and seeking to emulate the most fearsome predators."
-@602="Alignment restricted to good\." // must exactly match string from ranger description
+@602="Alignment restricted to good\." // must exactly match string from ranger description (put a backslash \ in front of a period)
 @603="Alignment restricted to true neutral\." // must exactly match string from druid description
 @604="Alignment restricted to neutral good, neutral evil, lawful neutral, chaotic neutral, and true neutral."
 @605="Alignment restricted to any except lawful good\." // must exactly match string from Thief description
@@ -206,3 +206,18 @@ Smite Good will be wasted if not used within 24 turns."
 @718="May use the Smite Evil ability once per day to make a mighty strike against a single evil opponent. The next successful melee attack the paladin makes - provided it is against an evil creature - will inflict 1d6 points of magic damage, plus another 1d6 points per two levels after 1st level. Until the attack hits, the paladin gains a bonus to attack rolls against evil creatures dependent on <PRO_HISHER> Charisma - the bonus is +1 at 12 Charisma and increases by +1 per 2 points of Charisma after that - +2 at Charisma 14, +3 at Charisma 16, and so on, up to a maximum of +7 at Charisma 24."
 
 @719="Smite Evil/Good"
+
+@720="Smite Order"
+@721="Smite Order
+
+The blackguard prepares to make a mighty strike against a single lawful opponent. The next successful melee attack the blackguard makes - provided it is against a lawful creature - will inflict 1d6 points of magic damage, plus another 1d6 points per two levels after 1st level. Until the attack hits, the blackguard gains a bonus to attack rolls against lawful creatures dependent on <PRO_HISHER> Charisma - the bonus is +1 at 12 Charisma and increases by +1 per 2 points of Charisma after that - +2 at Charisma 14, +3 at Charisma 16, and so on, up to a maximum of +7 at Charisma 24.
+
+Smite Order will be wasted if not used within 24 turns."
+
+@722="Smite Chaos"
+@723="Smite Chaos
+
+The blackguard prepares to make a mighty strike against a single chaotic opponent. The next successful melee attack the blackguard makes - provided it is against a chaotic creature - will inflict 1d6 points of magic damage, plus another 1d6 points per two levels after 1st level. Until the attack hits, the blackguard gains a bonus to attack rolls against chaotic creatures dependent on <PRO_HISHER> Charisma - the bonus is +1 at 12 Charisma and increases by +1 per 2 points of Charisma after that - +2 at Charisma 14, +3 at Charisma 16, and so on, up to a maximum of +7 at Charisma 24.
+
+Smite Chaos will be wasted if not used within 24 turns."
+

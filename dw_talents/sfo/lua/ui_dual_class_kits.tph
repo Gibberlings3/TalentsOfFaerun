@@ -35,6 +35,10 @@ DEFINE_ACTION_FUNCTION collect_dual_class_kit_data BEGIN
 	
 	COPY ".../stratagems-inline/blank" "override/m_dw_vce.lua"
 
+	// hardcoded manual check for barbarian virtual class
+	
+	OUTER_SET barbarian_vc=RESOURCE_CONTAINS "m_dw_vcd.lua" "class_barbarian"
+
 	//get baseclass names
 	
 	ACTION_IF is_iwd BEGIN
@@ -62,6 +66,7 @@ DEFINE_ACTION_FUNCTION collect_dual_class_kit_data BEGIN
 				SET $name("%kit%")=$ui_clastext_data("%kit%" MIXED)
 				SET $desc("%kit%")=$ui_clastext_data("%kit%" DESCSTR)
 				SPRINT $allow("%kit%") "{[1]={newclass=%class%, oldkit=0}}"
+				SET $parent("%kit%")=IDS_OF_SYMBOL (class "%kit%")
 			END
 			DEFAULT
 			END
@@ -85,6 +90,7 @@ DEFINE_ACTION_FUNCTION collect_dual_class_kit_data BEGIN
 					  SET $kitID("%kit%")=kitID
 					  SET $name("%kit%")=name
 					  SET $desc("%kit%")=desc
+					  SET $parent("%kit%")=parent
 					  SPRINT $allow("%kit%") "{[1]={oldkit=%kitID%}}"
 					  PATCH_IF dualclass_specialist BEGIN
 						classvar=2
@@ -252,19 +258,25 @@ DEFINE_ACTION_FUNCTION collect_dual_class_kit_data BEGIN
 	
 	OUTER_SPRINT data ""
 	ACTION_PHP_EACH kitID AS kit=>id BEGIN
-		OUTER_SPRINT data_here "dwKitData['%kit%']={ id=%id%, "
-		ACTION_FOR_EACH entry IN name desc allow BEGIN
-			OUTER_SPRINT val $"%entry%"("%kit%")
-			OUTER_SPRINT data_here "%data_here% %entry%=%val%, "
+		OUTER_SET proceed=1
+		ACTION_IF barbarian_vc && "%kit%" STR_EQ "barbarian" BEGIN
+			OUTER_SET proceed=0
 		END
-		OUTER_SPRINT align_data $align_data("%kit%")
-		OUTER_SPRINT data_here "%data_here% forbid_alignment={%align_data%}, "
-		OUTER_SPRINT race_data $race_data("%kit%")
-		OUTER_SPRINT data_here "%data_here% forbid_race={%race_data%}, "
-		OUTER_SPRINT abil_data $abil_data("%kit%")
-		OUTER_SPRINT data_here "%data_here% ability_min={%abil_data%}, "
-		OUTER_SPRINT data_here "%data_here%}"
-		OUTER_SPRINT data "%data%%data_here%%WNL%"
+		ACTION_IF proceed BEGIN
+			OUTER_SPRINT data_here "dwKitData['%kit%']={ id=%id%, "
+			ACTION_FOR_EACH entry IN name desc allow parent BEGIN
+				OUTER_SPRINT val $"%entry%"("%kit%")
+				OUTER_SPRINT data_here "%data_here% %entry%=%val%, "
+			END
+			OUTER_SPRINT align_data $align_data("%kit%")
+			OUTER_SPRINT data_here "%data_here% forbid_alignment={%align_data%}, "
+			OUTER_SPRINT race_data $race_data("%kit%")
+			OUTER_SPRINT data_here "%data_here% forbid_race={%race_data%}, "
+			OUTER_SPRINT abil_data $abil_data("%kit%")
+			OUTER_SPRINT data_here "%data_here% ability_min={%abil_data%}, "
+			OUTER_SPRINT data_here "%data_here%}"
+			OUTER_SPRINT data "%data%%data_here%%WNL%"
+		END
 	END
 	APPEND "m_dw_dud.lua" "%data%" KEEP_CRLF
 	
@@ -275,6 +287,7 @@ END
 DEFINE_ACTION_FUNCTION add_dual_class_kit_option
 	STR_VAR kit="" oldclass="" oldkit="" newclass=""
 BEGIN
+	ACTION_TO_UPPER kit
 	// remove ' from entries
 	ACTION_FOR_EACH variable IN kit oldkit oldclass newclass BEGIN
 		OUTER_SPRINT old EVAL "%%variable%%"
@@ -305,6 +318,8 @@ BEGIN
 		OUTER_SET number = IDS_OF_SYMBOL (class "%newclass%")
 		ACTION_IF number>=0 BEGIN
 			OUTER_SPRINT data "%data%newclass=%number%, "
+		END ELSE BEGIN // this applies when it's virtual
+			OUTER_SPRINT data "%data%newclass='%newclass%', "
 		END
 	END
 	ACTION_IF "%oldkit%" STRING_COMPARE "" BEGIN
@@ -344,6 +359,7 @@ END
 
 <<<<<<<< .../stratagems-inline/dual_class_functions.lua
 
+
 function dwDualClassKitList()
 
 	kitList={}
@@ -356,10 +372,35 @@ function dwDualClassKitList()
 	return kitList
 
 end
+function dwDualClassToVirtualClassAllowed(vc)
 
-function dwDualClassKitAllowed(kit)
+	if dwOriginalClass==vc.id then
+		return false
+	end
+	empty=true
+	for _,kit in pairs (dwKitData) do
+		if empty and dwDualClassKitAllowed(kit,vc.ident) then
+			empty=false
+		end
+	end
+	return not empty
+
+
+
+
+end
+
+function dwDualClassKitAllowed(kit,newclass)
 	
 	-- inherit dwOriginalClass, dwOriginalKit, dwChargenClassId from environment
+
+	if not newclass then
+		if dwCurrentVirtualClass then
+			newclass=dwCurrentVirtualClass.ident
+		else
+			newclass=dwChargenClassId
+		end
+	end
 
 	allowed=nil
 	
@@ -376,9 +417,11 @@ function dwDualClassKitAllowed(kit)
 			end
 		end
 		if (v.newclass) then
-			if v.newclass ~= dwChargenClassId then
+			if v.newclass ~= newclass then
 				allowed_here=nil
 			end
+		elseif type(newclass)=='string' then -- virtual classes must be explicitly permitted
+			allowed_here=nil
 		end
 		if allowed_here then 
 			allowed=true
@@ -410,5 +453,7 @@ function dwDualClassKitAllowed(kit)
 	return allowed
 
 end
+
+
 
 >>>>>>>>

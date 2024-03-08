@@ -57,6 +57,9 @@ DEFINE_ACTION_FUNCTION paladin_extra_uses BEGIN
 	COPY_EXISTING - "%PALADIN_LAY_ON_HANDS%.spl" nowhere
 		READ_STRREF 0x8 lay_on_hands_name
 	BUT_ONLY
+	COPY_EXISTING - "%BLACKGUARD_ABSORB_HEALTH%.spl" nowhere
+		READ_STRREF 0x8 absorb_health_name
+	BUT_ONLY
 	smite_evil_name:==@705
 	smite_good_name:==@712
 	string_base:==@709
@@ -77,6 +80,7 @@ DEFINE_ACTION_FUNCTION paladin_extra_uses BEGIN
 	LAF 2daq_extract STR_VAR resref="clastext" row=BLACKGUARD column=DESCSTR RET desc_strref=value END
 	strref.patch[desc_strref]
 	[
+		REPLACE_TEXTUALLY "\(.*%absorb_health_name%.*\)" "\1 %string_lay_on_hands%"
 		REPLACE_TEXTUALLY "\(.*%smite_good_name%.*\)" "\1 %string_smite_evil%"	
 	]
 

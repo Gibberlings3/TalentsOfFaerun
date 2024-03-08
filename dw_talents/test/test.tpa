@@ -1,4 +1,34 @@
 DEFINE_ACTION_FUNCTION test STR_VAR version=0 BEGIN
 
-	LAF ui_detect_class_kit END
+/*
+	kit.copy[FIGHTER_CLERIC=>DW_TESTKIT]
+	[
+		k_name:="Test kit"
+		k_desc:="test kit desc"
+		k.kit_match_proficiencies{barbarian}
+		
+	]
+*/
+
+	OUTER_SET desc_strref=28606
+	// a proper 'class' description
+	
+	WITH_TRA "%sfo_tra_loc%/english/blackguard.tra" "%sfo_tra_loc%/%LANGUAGE%/blackguard.tra" BEGIN
+		OUTER_SPRINT desc @1
+	END
+	LAF 2da_read STR_VAR file=MXSPLPAL.2DA RET_ARRAY pal_spell_rows=rows END
+	OUTER_SET min_spell_level=99
+	ACTION_PHP_EACH pal_spell_rows AS row=>discard BEGIN
+		OUTER_SET min_spell_level= (row<min_spell_level)?row:min_spell_level
+	END
+	OUTER_PATCH_SAVE desc "%desc%" BEGIN
+		REPLACE_TEXTUALLY "MIN_LEVEL_FOR_SPELLS" "%min_spell_level%"
+	END
+	STRING_SET_EVALUATE desc_strref "%desc%"
+
+LAF include STR_VAR file=profdoc.tph locbase=prof END
+LAF update_all_proficiency_descriptions END
+
+
+
 END

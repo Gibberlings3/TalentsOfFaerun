@@ -32,7 +32,7 @@
         <strong> On the web: </strong><a href="https://www.gibberlings3.net/mods/tweaks/tof/">Home
         page</a>, <a href="https://www.gibberlings3.net/forums/forum/236-talents-of-faer&ucirc;n/">discussion
         forum</a>, <a href="https://www.gibberlings3.net/gallery/album/42-talents-of-faer&ucirc;n/">image gallery</a>, and <a href="https://discord.gg/yTzjMTb">Discord</a></p>
-      <p> <strong>Version beta 7</strong><br />
+      <p> <strong>Version beta 8</strong><br />
         <strong>Languages: </strong>English<br />
         <strong>Platforms: </strong>Windows, macOS, Linux </p>
       <p> Talents of Faer&ucirc;n (ToF) is a collection of about 85 mini-mods for the Enhanced Edition versions of Baldur's Gate, Baldur's Gate II, and Icewind Dale, partially inspired by existing mods and tabletop Dungeons and Dragons resources. It contains many optional tweaks to various parts of gameplay, focusing on expanding and rebalancing player character abilities. Features include 150-odd new high-level abilities, a new 'feat' system where lower-level characters gain abilities every few levels, revisions to existing kits, new classes, new kits for multi-class characters, new types of magical specialization, a dozen or so new spells, many spell tweaks, 20-odd new gods for clerics to worship, a subrace system, a revised system of cleric/druid spells, and tweaks to the rules for ability scores and proficiencies. </p>
@@ -283,7 +283,7 @@
       <p> This component adds Icewind Dale II-style subraces for dwarves, elves, gnomes, and halflings. Subraces are selected when you generate a character: if you select a race with subraces, you will be offered a menu to select from. There are three dwarven subraces (shield dwarves, gold dwarves, gray dwarves), five elven subraces (moon elves, sun elves, wild elves, wood elves, drow), two gnomish subraces (rock gnomes, deep gnomes), and three halfling subraces (lightfoot, strongheart, ghostwise). The component also adds a new category of races, 'planetouched' (meaning creatures whose ancestry is partly other-planar) which contains six further races: aasimar, tieflings, air genasi, earth genasi, fire genasi, and water genasi. (Planetouched creatures count as human for the purposes of multi-classing and class choices.) And it slightly improves the basic abilities granted to humans and half-orcs.</p>
       <p>The powers and weaknesses of these races and subraces are based on a mixture of D&amp;D 2nd and 3rd edition. They're 'balanced' in the sense that I don't think any race you choose will imbalance the wider game. I haven't made that much effort to strictly balance them one against another: a deep gnome, for instance, is probably just better than a rock gnome. A full list of races, subraces, and their powers can be found <a href="subdocuments_dw/tof_race.html">here</a>. </p>
       <p>Ideally, a component like this would also alter in-game dialog options and responses, so that NPCs react to your race/subrace&mdash;especially for 'exotic' races like tieflings or gray dwarves. I haven't (yet) done this, though.</p>
-      <p>Two choices are barred on BG/BG2: you can't play as a drow (because it would break the plot of BG2 chapter 5) and you can't play as an aasimar (because I find a Bhaalspawn aasimar a bit implausible). If you want to ignore the story-based problems with these choices, you can reactivate them using dw_talents.ini; there's no mechanical problem with either.</p>
+      <p>On BG/BG2, you can't play as a drow,because it would break the plot of BG2 chapter 5. If you want to ignore the story-based problems with drow, you can reactivate them using dw_talents.ini; there's no mechanical problem with them.</p>
 	  <p>For technical reasons (which I admit I don't fully understand) <strong>this component does not work properly if you play Icewind Dale and start a new game in Heart of Winter</strong>. (It functions fine if you start in the main Icewind Dale campaign, or in any of the BG and BG2 start setups.) Starting in Heart of Winter is disabled.</p>
 	  <p>Modders might want to read <a href="dw_subdocuments/identifying_subraces.html">this document</a>, which discusses how to detect a subrace or apply it to an NPC.</p>
     </div>
@@ -307,6 +307,12 @@
         <li>Thieves (except for assassins) may now be of any alignment.</li>
         <li>Assassins may no longer be good-aligned.</li>
       </ul>
+	  </p>
+     <p><strong>Make Barbarian Into a Class</strong><br />
+	  <p>This component changes Barbarians to function as a proper character class, instead of a fighter kit (as was the case before the Enhanced Editions). Barbarians can multiclass and dual-class with Cleric, Druid, and Thief, with the same restrictions as for Fighters. (Multiclass and dual-class Barbarian/Mage is not allowed for conceptual and balance reasons; Barbarian/Fighter and Barbarian/Ranger are not allowed for technical reasons.)</p>
+     <p><strong>Make the Wizard Slayer kit Available to Barbarians</strong><br />
+       <em>Requires the 'Make Barbarian Into a Class' component.</em></p>
+	  <p>This component makes the fighter 'Wizard Slayer' kit available as a barbarian kit. (It remains available to fighters).</p>
       <p><strong>Icewind Dale-Style Paladins</strong><strong><br />
         </strong><em>Not available for IWDEE</em></p>
       <p>This component gives paladins in Baldur's Gate and Baldur's Gate II the modified (and mostly enhanced) powers they receive in Icewind Dale: </p>
@@ -596,7 +602,7 @@
 	<p><strong>New Class: Favored Soul</strong></p>
       <p>Favored souls are spellcasters with an innate connection to a particular god or goddess. They are similar to clerics, but their power flows directly from their patron, without any need to study the litanies of a church. In game terms, they cast spells spontaneously, like a sorcerer or shaman, but choose their spells from the cleric list (with some modifications according to their faith). They lack the ability to turn undead, but gain additional known spells based on the god or goddess they serve.</p>
       <p>Favored souls must select a god/goddess to serve at character creation, chosen from almost all of those included in Talents of Faer&ucirc;n as well as the 'core five' in the unmodded game. For the purposes of dialog options, strongholds, and the like, they are treated as clerics of their chosen deity. ('Under the hood', favored souls are formally a set of kits for shamans, but hopefully this should not be visible in-game.)</p>
-      <p>This component requires the 'New Choices of God/Goddess for Speciality Priests' component to be installed. It also requires you to be using the Icewind Dale arcane and divine spells (either because you are playing IWD:EE, or because you have them installed) and the 'Add Nine New Arcane Spells' and 'Add Six New Divine Spells' components of ToF.</p>
+      <p>This component requires the 'Revised speciality priests of Lathander/Helm/Talos/Tempus/Tyr' and 'New Choices of God/Goddess for Speciality Priests' components to be installed. It also requires you to be using the Icewind Dale arcane and divine spells (either because you are playing IWD:EE, or because you have them installed) and the 'Add Nine New Arcane Spells' and 'Add Six New Divine Spells' components of ToF.</p>
       <p>This component automatically installs the contents of the <a href="#tidy-up-class">'Tidy Up Class-Selection Menu' component</a>, and makes use of the ToF revised sphere system, which is documented <a href="subdocuments_dw/spheres.html">here</a>.</p>
       <p><strong>Druids May Multi-Class as Mages, Rangers, and Thieves</strong></p>
       <p>This component introduces three new multi-class options: druid/mage, druid/ranger, and druid/thief. All three are legal 2nd edition Advanced Dungeons and Dragons classes, but were omitted from Baldur's Gate. These work as you would expect: all three are restricted to druid weapon choices, druid/mages cannot cast spells in armor, and druid/thieves cannot use thief skills in armor heavier than studded leather. All three classes are correctly treated as druid multi-classes in in-game conversations (for instance, in Baldur's Gate II they all will be offered the druid stronghold, as well as the stronghold corresponding to their other class). The component also adjusts cleric/rangers so as to use the cleric spell list (in the unmodded game they used the druid list).</p>
@@ -610,7 +616,15 @@
       </ul>
       <p>('Under the hood', these limitations reflect the fact that technically these are all kits of the respective cleric multi-classes&mdash;but hopefully this should be pretty much invisible in game!)</p>
       <p>This component automatically installs the contents of the <a href="#tidy-up-class">'Tidy Up Class-Selection Menu' component</a>, and makes use of the ToF revised sphere system, which is documented <a href="subdocuments_dw/spheres.html">here</a>.</p>
-    </div>
+      <p><strong>New Kits for Blackguards</strong></p>
+	  <p><em>Requires the 'Revised Paladins and Blackguards' component to be installed.</em></p>
+      <p>This component introduces two new kits for Blackguards:</p>
+      <ul>
+        <li>Disciple of Asmodeus</li>
+        <li>Thrall of Orcus</li>
+      </ul> 
+
+ </div>
     <div class="ribbon_rectangle_h3">
       <h3><a name="multiclass-kit" id="multiclass-kit"></a>Multi-Classed/Dual-Classed Kits</h3>
     </div>
@@ -621,8 +635,8 @@
       <p>Multi-classed characters can select these kits at character creation; unless otherwise noted, they are available to all races. Dual-classed characters must dual-class into these kits provided that their initial class and kit must match one or other part of the multi-classed kit. For instance, a wizard slayer or a priest of Helm can dual-class into a Magehunter of Helm (wizard slayer/priest of Helm), while an unkitted fighter or a priest of Lathander can dual-class into a Templar of Lathander (fighter/priest of Lathander). Dual-classing characters have to respect the alignment, ability and racial requirements of the kit.</p>
       <p>Full documentation of all multi-classed kits introduced by Talents of Faer&ucirc;n can be found <a href="subdocuments_dw/multi-classed-kits.html">here.</a> </p>
       <p>This component automatically installs the contents of the <a href="#tidy-up-class">'Tidy Up Class-Selection Menu' component</a>. Druid and cleric multi-class components also make use of the ToF revised sphere system, which is documented <a href="subdocuments_dw/spheres.html">here</a>.</p>
-      <p><strong>New Multi-Class/Dual-Class for Fighter/Clerics</strong></p>
-      <p>This component introduces 14 new kits for fighter/clerics:</p>
+      <p><strong>New Multi-Class/Dual-Class for Fighter/Clerics and Barbarian/Clerics</strong></p>
+      <p>This component introduces 15 new kits for fighter/clerics and barbarian/clerics:</p>
       <ul>
         <li>Axe of Clangeddin (fighter/priest of Clangeddin; dwarves only)</li>
         <li>Battlerager of Clangeddin (berserker/priest of Clangeddin; dwarves only)</li>
@@ -635,6 +649,7 @@
         <li>Knight of Iyachtu Xvim (fighter/priest of Iyachtu Xvim; BG/BG2 only)</li>
         <li>Magehunter of Helm (wizard slayer/priest of Helm)</li>
         <li>Raging Flame of Kossuth (berserker/priest of Kossuth)</li>
+		<li>Shaman of Tempus (barbarian/priest of Tempus)</li>
         <li>Sword of Sel&ucirc;ne (kensai/priest of Sel&ucirc;ne)</li>
         <li>Templar of Lathander (fighter/priest of Lathander)</li>
         <li>Wrathful Spear of Gruumsh (barbarian/priest of Gruumsh; half-orcs only)</li>
@@ -642,18 +657,17 @@
       <p>On a BG install, Yeslick becomes an Axe of Clangeddin.</p>
       <p>The Dark Knight of Bane and the Knight of Iyachtu Xvim are mechanically identical. This component requires you to be using the Icewind Dale arcane and divine spells (either because you are playing IWD:EE, or because you have them installed) and the 'Add Nine New Arcane Spells' and 'Add Six New Divine Spells' components of ToF.</p>
       <p><strong>New Multi-Class/Dual-Class for Fighter/Druids</strong></p>
-      <p>This component introduces two new kits for fighter/druids: the Totemic Shaman (barbarian/totemic druid) and the Raging Shifter (berserker/shapeshifter).</p>
+      <p>This component introduces one new kit each for barbarian/druids and fighter/druids: the Totemic Shaman (barbarian/totemic druid) and the Raging Shifter (berserker/shapeshifter).</p>
       <p><strong>New Multi-Class/Dual-Class for Fighter/Mages</strong></p>
-      <p>This component introduces up to 11 new kits for fighter/mages. The component always includes these kits:</p>
+      <p>This component introduces up to 6 new kits for fighter/mages. The component always includes these kits:</p>
       <ul>
         <li>Abjurant Defender (abjurer/dwarven defender; dwarves only)</li>
-        <li>Barbarian/Transmuter</li>
         <li>Berserker/Invoker</li>
         <li>Berserker/Wild Mage</li>
         <li>Kensai/Enchanter</li>
         <li>Kensai/Illusionist</li>
       </ul>
-      <p>If you have installed the 'New Wizard Specializations: Elemental Specialists' component, the component also includes the Barbarian/Elementalist kits (four versions). If you have installed the 'New Wizard Specialization: Force Mage' component, the component also includes the Kensai/Force Mage kit.</p>
+      <p>If you have installed the 'New Wizard Specialization: Force Mage' component, the component also includes the Kensai/Force Mage kit.</p>
       <p><strong>New Multi-Class/Dual-Class for Fighter/Thieves</strong></p>
       <p>This component introduces three new kits for fighter/thieves:</p>
       <ul>
@@ -697,7 +711,7 @@
       <p>If you have installed the 'New Wizard Specialization: Force Mage' component, the Force Mage of Mystra is also available. </p>
       <p>The conjurer of Bane and the conjurer of Iyachtu Xvim are game-mechanically identical. Multi-class clerics of Auril and Talona are disabled by default on IWD (as is a hidden 'necromancer of Myrkul'), and multi-class clerics of Umberlee are disabled by default on BG/BG2, because having a cleric of these gods in your party causes problems with the plot. If you want to ignore this and play one anyway, you can reactivate them via the ini.</p>
       <p>This component requires you to be using the Icewind Dale arcane and divine spells (either because you are playing IWD:EE, or because you have them installed) and the 'Add Nine New Arcane Spells' and 'Add Six New Divine Spells' components of ToF.</p>
-      <p>On BG2 installs, Aerie becomes an air elementalist of Baervan. On BG installs, Quayle becomes an illusionist of Baervan.</p>
+      <p>On BG2 installs, Aerie becomes an air elementalist of Baervan.</p>
       <p><strong>New Multi-Class/Dual-Class for Cleric/Rangers and Druid/Rangers</strong></p>
       <p> This component introduces up to six new kits for cleric/rangers: </p>
       <ul>
@@ -1077,7 +1091,8 @@ There are, however, a number of exceptions. (All in-game documentation has been 
         <li>The sorcerer bloodlines are inspired by<a href="https://paizo.com/products/btq01zp3"><em>Pathfinder Core Rulebook</em></a> (Paizo, 2009), by Jason Bulmahn and others.</li>
         <li>The Bloodrager kit is inspired by the Bloodrager class from <a href="https://paizo.com/products/btpy978v?Pathfinder-Roleplaying-Game-Advanced-Class-Guide"><em>Pathfinder Advanced Class Guide</em></a> (Paizo, 2014), by Jason Bulmahn and others.</li>
         <li>Militant wizards are inspired by the kit of the same name from <a href="https://www.drivethrurpg.com/product/16889/PHBR4-The-Complete-Wizards-Handbook-2e?manufacturers_id=44&amp;filters=44827_0_0_0_0"><em>The Complete Wizard's Handbook</em></a> (TSR, 1990), by Rick Swan.</li>
-        <li>I'm also grateful to the following:</li>
+		<li>The Disciple of Asmodeus and Thrall of Orcus blackguard kits are inspired by the (3rd edition) prestige classes of the same name from <em>Book of Vile Darkness</em> (Wizards of the Coast, 2002), by Monte Cook and others.</li> 
+		<li>I'm also grateful to the following:</li>
         <ul>
           <li>For the game itself, and its Enhanced Editions: Bioware, Black Isle, and Beamdog</li>
           <li>For Icewind Dale II: Black Isle.</li>
@@ -1284,7 +1299,57 @@ href="https://gibberlings3.github.io/iesdp/">Infinity Engine Structure Descripti
 </ul>
 
 </div>
-  
+   <div class="ribbon_rectangle_h3"><h3>Version beta 8 (8th March 2024)</h3></div>
+    <div class="ribbon_triangle_h2-l"></div>
+    <div class="ribbon_triangle_h2-r"></div>
+<div class="section"> 
+<p>
+<ul>
+<li>New component: make barbarians into a class.</li>
+<li>New component: make wizard slayer available as a barbarian kit.</li>
+<li>New component: new blackguard kits (largely as a proof-of-concept and a test as to how well my system handles kits for virtual classes).</li>
+<li>Fairly substantial rebuild of the code for handling proficiencies and proficiency documentation.</li>
+<li>Fairly substantial rebuild of the code for hacking the UI, which should be generally more robust and in particular hopefully solves various issues with ranger enemy selection.</li>
+<li>We should now be compatible with mods that change the proficiency system (like the various Tweaks Anthology components), provided they are installed before Talents of Faerun.</li>
+<li>An earlier update had broken the system that puts virtual classes (e.g. druid) on the character sheet; it should be working again now.</li>
+<li>Cleric/Mages who are also specialist mages should now be able to memorize their priest spells properly.</li>
+<li>Fixed a couple of glitches with the rewritten 'Improved NPC customization and management' component.</li>
+<li>Fixed a typo that was blocking install of the minor-abilities component on SoD.</li>
+<li>Dragon disciples' additional uses per day of their breath weapon is now documented in-game.</li>
+<li>Green and black dragon disciples' breath weapons get the correct projectile.</li>
+<li>Dragon disciples' breath weapons have the correct in-game description.</li>
+<li>Added a new 'concentrated venom' feat for mages, giving +10% poison damage and 10% resistance to poison damage, in parallel with Aegis of Rime, etc. (RoyalProtector's request.)</li>
+<li>Fixed a few redundancies and formatting errors in subrace and ability descriptions.</li>
+<li>The monk's description text now notes that they use Wisdom as an AC modifier.</li>
+<li>Half orcs were not receiving their hit point bonus.</li>
+<li>Ambidexterity was still leaving a residual -1 penalty to hit with offhand weapons.</li>
+<li>Fixed a small bug in the batch-mode TP2.</li>
+<li>Favored souls, and multiclassed priests, of Tempus now get an appropriate color scheme.</li>
+<li>Quayle has reconsidered his flirtation with the worship of Baervan, and has reaffirmed his faith to Baravar, even though that means he no longer gets a cool new kit. Truly, the path of Baravar's faithful is a difficult one.</li>
+<li>A new vaccination scheme against wyvern poison means that baby wyverns only do 1 hp damage per second with their poison, as per the documentation.</li>
+<li>Removed an unintended poison effect from the hunting spider Avenger form.</li>
+<li>We no longer bother blocking quick item use when shapechanged, since you can do it from the inventory screen anyway.</li>
+<li>Characters using Dirty Fighting are now less chivalrous, and can affect women (but can't affect undead, monsters, and animals; there was a typo in the exclusion code).</li>
+<li>Dirty Fighting now correctly displays 'slowed'.</li>
+<li>Blackguards can now use Dirty Fighting.</li>
+<li>The sphere system (and related components) now resets joinable characters' memorized spells (previously, some characters would have illegal spells, which could block spell slots).</li>
+<li>The leveller component no longer gives extra spells to characters who multiclass from mage/bard to sorcerer or priest to shaman.</li>
+<li>Fixed a subtle library bug which meant dummy kits were being added in an unnecessarily compatibility-unfriendly way.</li>
+<li>Fixed a library bug that was inserting a blank into the description of innate versions of priest spells.</li>
+<li>Malagents and necromancers of Talona should now correctly receive their Poison Weapon ability.</li>
+<li>By popular request (and because I was persuaded on lore grounds) Aasimar is now available as a PC subrace in BG/BG2.</li>
+<li>The 'stunned' string is correctly displayed when using Stonefist in BGEE.</li>
+<li>Symbols weren't being correctly moved over to the Enchantment school.</li>	
+<li>Fixed a documentation error for Sol's Searing Orb (no in-game change).</li>
+<li>Made a few changes to the 'Spell Tweaks' system to make things easier for translators.</li>
+<li>Fixed a couple of glitches in Faerie Fire (notably, it is now properly blocked in daylight).</li>
+<li>Tweaked Chromatic orb now correctly gives no saving throw against damage, for real this time.</li>
+<li>Fixed several issues with Strength of Stone.</li>
+<li>Under-the-hood change: new arcane and divine spells are added in 'normal' slots for spells if there are any available, and only added in 'extended' slots if normal slots are full.</li>
+<li>
+</ul>
+
+</div>  
 </div>
 </body>
 </html>

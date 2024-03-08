@@ -48,11 +48,6 @@ DEFINE_ACTION_FUNCTION swashbuckler_of_sune BEGIN
 		k.kit_grant_powers{%spl_sune_charm% 1 6,%spl_sune_veil% 5 8,%spl_sune_flame_strike% 7 5,%spl_sune_emotion_hope% 9,%spl_sune_emotion_hopelessness% 9,%spl_sune_mantle% 12|class=cleric}
 		k.kit_apply_powers{splcl441 1,splcl441 5 5,splcl141 5 5|class=thief}
 		k_mod_chr=2
-		k_warhammer=2
-		k_club=2
-		k_flailmorningstar=2
-		k_mace=2
-		k_quarterstaff=2
 		k_2weapon=3
 		k_color_metal=35
 		k_color_minor_cloth=49
@@ -63,6 +58,8 @@ DEFINE_ACTION_FUNCTION swashbuckler_of_sune BEGIN
 		IF {is_iwd} {{k_bio:=@1024}}
 	]
 	
+	LAF prof_copy INT_VAR only_if_nonzero=1 STR_VAR copy_to="%kit%" copy_from=SWASHBUCKLER END
+
 	LAF cleric_kit_substitutions STR_VAR kit god=sune END
 
 	LAF assign_spheres STR_VAR kit default=cleric subtract="evil necromantic combat" add="fire sune_allow" END

@@ -8,23 +8,11 @@ DEFINE_ACTION_FUNCTION pointbuy STR_VAR version="-1" BEGIN
 	LAF kit_race_abil_mod END
 	LAF UI_install_function STR_VAR new_function_path="%MOD_FOLDER%/%lua_loc%/code/adjust_abilities.lua" lua_file="m_dw_shr" search_string=dwGetAbilityValue END
 
-	ACTION_IF point_total>=0 && MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 80000 BEGIN
-		OUTER_SET hide_reroll=1
-	END ELSE BEGIN
-		OUTER_SET hide_reroll=0
-	END
-	
-	
-
 	COPY ".../stratagems-inline/m_dw_pbf.lua" "override/m_dw_pbf.lua"
-	COPY_EXISTING ui.menu override
-		LPF UI_alter_object STR_VAR object=CHARGEN_ABILITIES object_type=menu patch=UI_pointbuy_patch END
-		PATCH_IF hide_reroll BEGIN
+	ACTION_IF (point_total>=0 && MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 80000)  BEGIN // hide reroll
+		COPY_EXISTING ui.menu override
 			LPF UI_alter_object STR_VAR object=CHARGEN_ABILITIES object_type=menu patch=UI_pointbuy_remove_reroll END
-		END
-	BUT_ONLY
-	
-	ACTION_IF hide_reroll BEGIN
+		BUT_ONLY
 		COPY_EXISTING "l_%EE_LANGUAGE%.lua" override
 			SPRINT new @1
 			REPLACE_TEXTUALLY ~TOTAL_ROLL_NORMAL.*~ ~TOTAL_ROLL_NORMAL = "%new%",~
@@ -40,12 +28,6 @@ DEFINE_ACTION_FUNCTION pointbuy STR_VAR version="-1" BEGIN
 
 END
 
-DEFINE_PATCH_FUNCTION UI_pointbuy_patch BEGIN
-
-		REPLACE_TEXTUALLY ~onOpen\([^"]*\)"~ ~onOpen\1"dwAbilityPointBuy(%point_total%,%base_abil%)%WNL%~
-		REPLACE_TEXTUALLY ~createCharScreen:OnAbilityReRollButtonClick()~ ~createCharScreen:OnAbilityReRollButtonClick()dwAbilityPointBuy(%point_total%,%base_abil%)~
-
-END
 
 DEFINE_PATCH_FUNCTION UI_pointbuy_remove_reroll BEGIN
 
@@ -57,7 +39,7 @@ DEFINE_ACTION_FUNCTION kit_race_abil_mod BEGIN
 
 	// install the core file
 
-	COPY ".../stratagems-inline/m_dw_pbd.lua" override
+	COPY ".../stratagems-inline/m_dw_pbd.lua" override EVALUATE_BUFFER
 	
 	// get the data
 	
@@ -119,12 +101,17 @@ END
 
 dwKitAbMod={}
 dwRaceAbMod={}
+dwPointTotal=%point_total%
+dwBaseAbil=%base_abil%
 
 >>>>>>>>
 
 <<<<<<<< .../stratagems-inline/m_dw_pbf.lua
 
-function dwAbilityPointBuy(points_total,target_base)
+function dwAbilityPointBuy()
+
+	points_total=dwPointTotal
+	target_base=dwBaseAbil
 
 	-- get baseline data
 

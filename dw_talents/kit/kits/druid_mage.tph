@@ -30,7 +30,7 @@ DEFINE_ACTION_FUNCTION druid_mage BEGIN
 	LAF assign_kit_to_virtual_class STR_VAR kit class=druid_mage END
 
 	// log the kit 
-
+	
 	LAF set_multiclass_components STR_VAR kit components="DRUID" END
 	
 	// log for prof component

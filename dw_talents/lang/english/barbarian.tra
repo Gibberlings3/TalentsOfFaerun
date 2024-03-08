@@ -1,0 +1,24 @@
+@1="Barbarian/Cleric"
+@2="BARBARIAN/CLERIC: This character can use the abilities of a Fighter and a Cleric, though weapons are restricted to only those allowed by the Cleric's ethos."
+@3="Barbarian/Druid"
+@4="BARBARIAN/DRUID: This character can use the abilities of a Fighter and a Druid, though weapons are restricted to only those allowed by the Druid's ethos."
+@5="Barbarian Wizard Slayer"
+@6="BARBARIAN WIZARD SLAYER: This barbarian has been specially trained by <PRO_HISHER> tribe to excel in hunting and combating spellcasters of all kinds.
+
+Advantages:
+– Each successful hit bestows a 25% cumulative chance of spell failure on the target.
+– +1% Magic Resistance per level.
+
+Disadvantages:
+– May not use any magic items apart from weapons and armor."
+@7="BARBARIAN WIZARD SLAYER: This warrior has been specially trained by <PRO_HISHER> tribe to excel in hunting and combating spellcasters of all kinds.
+
+Advantages:
+- Each successful hit bestows a 10% cumulative chance of spell failure on the target.
+- Magic Resistance of BASE_PLACEHOLDER% at first level, increasing by INCREMENT_PLACEHOLDER% per level.
+
+Disadvantages:
+- May not use any magic items apart from weapons and armor."
+
+@8="Barbarian/Thief"
+@9="BARBARIAN/THIEF: This character can use the abilities of a Barbarian and a Thief."

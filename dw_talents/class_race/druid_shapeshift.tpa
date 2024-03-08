@@ -579,8 +579,9 @@ DEFINE_ACTION_FUNCTION avenger_shapeshift_build_forms BEGIN
 	
 	COPY_EXISTING "%itm_avenger_hunting_spider%.itm" override
 		LPF DELETE_EFFECT INT_VAR match_opcode=16 END
+		LPF DELETE_EFFECT INT_VAR match_opcode=25 END
 
-	// sword spider (all we're doing is changing the icons)
+	// sword spider 
 	
 	LAF make_shapeshift_spell
 		INT_VAR use_template=1
@@ -634,7 +635,9 @@ DEFINE_ACTION_FUNCTION avenger_shapeshift_build_forms BEGIN
 				ability_icon=dw-aswy
 				icon_path="%MOD_FOLDER%/%component_loc%/resource"
 	END
-
+	COPY_EXISTING "PLYWYVRN.itm" override
+		LPF ALTER_EFFECT INT_VAR match_opcode=25 parameter1=1 END
+	BUT_ONLY
 	
 	// winter wolf
 	

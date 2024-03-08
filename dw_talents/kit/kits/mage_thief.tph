@@ -40,19 +40,10 @@ DEFINE_ACTION_FUNCTION enchanter_swashbuckler BEGIN
 		k_name:=@211
 		k_desc:=@212
 		k.kit_apply_powers{splcl441 1,splcl441 5 5,splcl141 5 5|class=thief}
-		k_longsword=2
-		k_shortsword=2
-		k_scimitarwakisashininjato=2
-		k_dagger=2
-		k_club=2
-		k_quarterstaff=2
-		k_crossbow=2
-		k_shortbow=2
-		k_dart=2
-		k_sling=2
 		k_2weapon=3
 		k.kit_copy_from{clascolr|source=SWASHBUCKLER}
 	]
+	LAF prof_copy STR_VAR copy_from=SWASHBUCKLER copy_to=DW_ENCHANTER_SWASHBUCKLER END
 	LAF set_multiclass_components STR_VAR kit components="enchanter swashbuckler"  END
 	LAF make_multiclass_specialist STR_VAR kit school=enchantment END
 	LAF copy_backstab STR_VAR kit copy_from=swashbuckler END

@@ -1,0 +1,22 @@
+DEFINE_ACTION_FUNCTION revised_paladins_blackguards BEGIN
+
+	LAF run STR_VAR file=setup_menus locbase=shared END // also INCLUDEs the virtual_class tools
+
+	// start with the IWD tweaks
+	
+	ACTION_IF !is_iwd && !MOD_IS_INSTALLED "iwdification.tp2" 100 BEGIN
+		LAF run STR_VAR file=paladin END
+	END
+	// tell it where the new spell is
+	LAF RES_NUM_OF_SPELL_NAME STR_VAR spell_name=PALADIN_SMITE_EVIL RET PALADIN_SMITE_EVIL=spell_res END
+	
+	// now shift to 3e Smite Evil
+	
+	LAF run STR_VAR file=paladin_smite_evil END
+	
+	// and now add extra uses
+	
+	LAF run STR_VAR file=paladin_extra_uses END
+
+END
+

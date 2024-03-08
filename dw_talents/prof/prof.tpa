@@ -15,13 +15,17 @@ DEFINE_ACTION_FUNCTION prof BEGIN
 	
 	LAF externalize_profsmax END
 
+	// read in the prof map, to allow for modifications
+	
+	LAF prof_build_lookup INT_VAR overwrite=1 RET_ARRAY prof_lookup_array unused_profs profs_used_array profs_used_rows END
+	
 	// see if there are extra profs due to subrace component
 	
 	LAF detect_subrace_extra_profs RET subrace_extra_profs END
 	
 	// read in the component's choices of modification from profmod.2da
 	
-	LAF read_in_profmod RET_ARRAY GENERAL PROFICIENCY2HANDED PROFICIENCYSWORDANDSHIELD PROFICIENCYSINGLEWEAPON PROFICIENCY2WEAPON END
+	LAF 2da_read STR_VAR file=profmod.2da location=data RET_ARRAY profmod_array=array END
 	
 	// read in Favored Soul and other 'virtual classes'
 	
@@ -44,7 +48,7 @@ DEFINE_ACTION_FUNCTION prof BEGIN
 		LPF UI_alter_function STR_VAR function=proficiencyOrGeneralHelp patch=hide_prof_display END
 	BUT_ONLY
 
-	// parse clastext.2da and kitlist.2da to get kit/class IDs. (Safer to do it from clastext than from class.ids/kit.ids as this is what the engine looks at)
+	// parse clastext.2da and kitlist.2da to get kit/class IDs, setting virtual class entries in m_dw_prd while we're at it. (Safer to do it from clastext than from class.ids/kit.ids as this is what the engine looks at)
 
 	LAF parse_clastext RET_ARRAY is_class id END
 	LAF parse_kitlist RET_ARRAY parent_class END
@@ -75,7 +79,6 @@ DEFINE_ACTION_FUNCTION prof BEGIN
 	LAF make_weapons_usable END
 	
 	// allocate new proficiencies; update descriptions
-	
 	LAF allocate_new_proficiencies END
 	
 	// sort out clerics' favored weapons
@@ -83,7 +86,6 @@ DEFINE_ACTION_FUNCTION prof BEGIN
 	ACTION_IF FILE_EXISTS "%data_loc%/favored_weapons.2da" BEGIN
 		LAF process_favored_weapons END
 	END
-	
 	// apply manual tweaks
 	
 	LAF run STR_VAR file=manual_prof_edits END
@@ -103,6 +105,7 @@ DEFINE_ACTION_FUNCTION prof BEGIN
 	// assign profs to NPCs
 	
 	LAF run STR_VAR file=prof_npc END
+	
 	
 END
 
@@ -127,8 +130,6 @@ END
 
 DEFINE_PATCH_FUNCTION "apply_default_profs" BEGIN // patch function used by UI edit
 
-
-	REPLACE_TEXTUALLY ~onOpen[^"]*"~ ~onOpen%WNL%"%WNL%dwGrantDefaultProficiencies()%WNL%~
 	REPLACE_TEXTUALLY ~minusButtonClickable(currentChargenProficiency)~ ~minusButtonClickable(currentChargenProficiency) and dwDefaultProficiencyGuard(currentChargenProficiency)~
 	REPLACE_TEXTUALLY ~getMinusFrame(8)~ ~dwProfMinusFrame()~
 
@@ -142,27 +143,6 @@ DEFINE_PATCH_FUNCTION "hide_prof_display" BEGIN // patch function used by UI edi
 
 END	
 	
-		
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-DEFINE_ACTION_FUNCTION read_in_profmod RET_ARRAY GENERAL PROFICIENCY2HANDED PROFICIENCYSWORDANDSHIELD PROFICIENCYSINGLEWEAPON PROFICIENCY2WEAPON BEGIN
-	
-	COPY "%MOD_FOLDER%/%component_loc%/data/profmod.2da" "%workspace%"
-		COUNT_2DA_COLS colcount
-		COUNT_2DA_ROWS colcount rowcount
-		FOR (row=0;row<rowcount;++row) BEGIN
-			READ_2DA_ENTRY row 0 colcount type
-			TO_UPPER type
-			FOR (col=1;col<colcount;++col) BEGIN
-				READ_2DA_ENTRY row col colcount entry
-				PATCH_IF IS_AN_INT entry BEGIN
-					level = col - 1
-					SET $"%type%"("%level%")=entry
-				END
-			END
-		END
-	BUT_ONLY
-END
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -193,6 +173,9 @@ END
 
 DEFINE_ACTION_FUNCTION parse_kitlist RET_ARRAY parent_class BEGIN
 	
+	// get virtual class data
+	LAF get_virtual_parent_classes RET_ARRAY virtual_parent_classes END
+	
 	// get main data from kitlist
 	COPY_EXISTING - "kitlist.2da" nowhere
 		COUNT_2DA_COLS colcount
@@ -200,22 +183,34 @@ DEFINE_ACTION_FUNCTION parse_kitlist RET_ARRAY parent_class BEGIN
 		FOR (row=0;row<kitlist_contents;++row) BEGIN
 			READ_2DA_ENTRY_FORMER kitlist_contents row 1 ident
 			TO_UPPER ident
-			READ_2DA_ENTRY_FORMER kitlist_contents row 8 parent_id
-			PATCH_IF IS_AN_INT parent_id BEGIN
-				LOOKUP_IDS_SYMBOL_OF_INT parent_class class parent_id
-				SPRINT $parent_class("%ident%") "%parent_class%"
+			PATCH_IF VARIABLE_IS_SET $virtual_parent_classes("%ident%") BEGIN
+				SPRINT parent_class $virtual_parent_classes("%ident%")
 			END ELSE BEGIN
-				SPRINT $parent_class("%ident%") FIGHTER
+				READ_2DA_ENTRY_FORMER kitlist_contents row 8 parent_id
+				PATCH_IF IS_AN_INT parent_id BEGIN
+					LOOKUP_IDS_SYMBOL_OF_INT parent_class class parent_id
+					PATCH_IF "%parent_class%" STR_EQ "SORCERER" BEGIN
+						SPRINT parent_class MAGE
+					END
+				END ELSE BEGIN
+					SPRINT parent_class FIGHTER
+				END
+			END
+			SPRINT $parent_class("%ident%") "%parent_class%"
+			PATCH_IF VARIABLE_IS_SET $virtual_class_array("%parent_class%") BEGIN
+				parent_number=$virtual_class_array("%parent_class%")
+				READ_2DA_ENTRY_FORMER kitlist_contents row 0 kit_id
+				INNER_ACTION BEGIN
+					APPEND "m_dw_prd.lua" "dwProfKitRedirect[%kit_id%]=%parent_number%%WNL%"
+				END
 			END
 		END
-	
-	//override if appropriate
-	ACTION_IF FILE_EXISTS "%data_loc_shared%/weapprof_parent_class_override.txt" BEGIN
-		LAF array_read STR_VAR path="%data_loc_shared%" file="weapprof_parent_class_override.txt" RET_ARRAY parent_class_override_array=array END
-		ACTION_PHP_EACH parent_class_override_array AS k=>v BEGIN
-			OUTER_SPRINT $parent_class("%k%") "%v%"
-		END
+
+	ACTION_FOR_EACH class IN FIGHTER MAGE THIEF CLERIC FIGHTER_MAGE FIGHTER_CLERIC FIGHTER_THIEF CLERIC_MAGE CLERIC_THIEF MAGE_THIEF FIGHTER_MAGE_THIEF FIGHTER_MAGE_CLERIC DRUID RANGER PALADIN MONK CLERIC_RANGER FIGHTER_DRUID SHAMAN BARD BEGIN
+		OUTER_SPRINT $parent_class("%class%") "%class%"
 	END
+	OUTER_SPRINT $parent_class("SORCERER") "MAGE"
+
 END
 		
 		
@@ -244,47 +239,54 @@ DEFINE_ACTION_FUNCTION generate_weapprof_lua RET_ARRAY total_count BEGIN
 		FOR (row=0;row<weapprof_contents;++row) BEGIN
 			SPRINT lua_data ""
 			READ_2DA_ENTRY_FORMER weapprof_contents row 1 prof_id
-			PATCH_IF ( (prof_id>=89 && prof_id<=107) || prof_id=115 ) BEGIN
-				FOR (col=4;col<colcount;++col) BEGIN
-					// reading step
-					READ_2DA_ENTRY_FORMER weapprof_contents row col prof
-					SPRINT class $header("%col%")
-					PATCH_IF VARIABLE_IS_SET $header_is_class("%col%") BEGIN
-						SET id=$header_id("%col%")
-						known=0
-						PATCH_IF VARIABLE_IS_SET $starting_prof_override("%id%") BEGIN
-							PATCH_IF VARIABLE_IS_SET $starting_prof_override("%id%" "%prof_id%") BEGIN
-								known=1
-							END							
-						END ELSE BEGIN
-							known=prof>0
+			PATCH_IF ( prof_id>=89 && prof_id<=115 ) BEGIN
+				proceed=0
+				PHP_EACH profs_used_rows AS name=>discard BEGIN
+					proceed = proceed || ( $profs_used_array("%name%" "ID")=prof_id && !($profs_used_array("%name%" "TYPE") STR_EQ "STYLE") )
+				END
+				PATCH_IF proceed BEGIN
+					FOR (col=4;col<colcount;++col) BEGIN
+						// reading step
+						READ_2DA_ENTRY_FORMER weapprof_contents row col prof
+						SPRINT class $header("%col%")
+						PATCH_IF VARIABLE_IS_SET $header_is_class("%col%") BEGIN
+							SET id=$header_id("%col%")
+							known=0
+							PATCH_IF VARIABLE_IS_SET $starting_prof_override("%id%") BEGIN
+								PATCH_IF VARIABLE_IS_SET $starting_prof_override("%id%" "%prof_id%") BEGIN
+									known=1
+								END							
+							END ELSE BEGIN
+								known=prof>0
+							END
+							PATCH_IF known BEGIN
+								SPRINT header $header("%col%")
+								SET $total_count("%header%")+=1
+								PATCH_IF "%lua_data%" STRING_COMPARE_CASE "" BEGIN
+									SPRINT lua_data "%lua_data%, "
+								END
+								SPRINT lua_data "%lua_data%[%id%]=true"
+								// handle sorcerer hardcoding
+								PATCH_IF id=1 BEGIN
+									SPRINT lua_data "%lua_data%, [19]=true"
+								END
+							END
 						END
-						PATCH_IF known BEGIN
-							SPRINT header $header("%col%")
-							SET $total_count("%header%")+=1
-							PATCH_IF "%lua_data%" STRING_COMPARE_CASE "" BEGIN
+					END	
+					PHP_EACH virtual_class_array AS discard=>id BEGIN
+						PATCH_IF VARIABLE_IS_SET $starting_prof_override("%id%" "%prof_id%") BEGIN
+							PATCH_IF "%lua_data%" STRING_COMPARE_CASE "" BEGIN // this would apply if there's some weapon class used by a virtual class but no real class, which is what we call a low-probability scenario; still, harmless to allow for it
 								SPRINT lua_data "%lua_data%, "
-							END
+							END					
 							SPRINT lua_data "%lua_data%[%id%]=true"
-							// handle sorcerer hardcoding
-							PATCH_IF id=1 BEGIN
-								SPRINT lua_data "%lua_data%, [19]=true"
-							END
 						END
-					END
-				END	
-				PHP_EACH virtual_class_array AS discard=>id BEGIN
-					PATCH_IF VARIABLE_IS_SET $starting_prof_override("%id%" "%prof_id%") BEGIN
-						PATCH_IF "%lua_data%" STRING_COMPARE_CASE "" BEGIN // this would apply if there's some weapon class used by a virtual class but no real class, which is what we call a low-probability scenario; still, harmless to allow for it
-							SPRINT lua_data "%lua_data%, "
-						END					
-						SPRINT lua_data "%lua_data%[%id%]=true"
 					END
 				END
-				
-				INNER_ACTION BEGIN
-					APPEND "m_dw_prd.lua" ~dwStartingProfs[%prof_id%]={%lua_data%}~ KEEP_CRLF
-				END	
+				PATCH_IF "%lua_data%" STR_CMP "" BEGIN
+					INNER_ACTION BEGIN
+						APPEND "m_dw_prd.lua" ~dwStartingProfs[%prof_id%]={%lua_data%}~ KEEP_CRLF
+					END	
+				END
 			END
 			
 			// discard stat
@@ -312,37 +314,36 @@ END
 DEFINE_ACTION_FUNCTION generate_raceweapon_lua RET race_count_max BEGIN
 
 	
-	APPEND "m_dw_prd.lua" "dwRaceWeapons={}"
-
 	OUTER_SET race_count_max=0
-	COPY "%MOD_FOLDER%/%component_loc%/data/raceweapons.2da" "%workspace%"
-		COUNT_2DA_ROWS 2 rowcount
-		FOR (row=0;row<rowcount;++row) BEGIN
-			count_here=0
-			CLEAR_ARRAY working_array
-			READ_2DA_ENTRY row 0 2 race
-			SET race_id=IDS_OF_SYMBOL (race "%race%")
-			READ_2DA_ENTRY row 1 2 weapons
-			SPRINT lua_line ""
-			INNER_PATCH_SAVE weapons "%weapons%" BEGIN
-				REPLACE_TEXTUALLY "," " "
-			END
-			WHILE "%weapons%" STRING_COMPARE_CASE "" BEGIN
-				LPF return_first_entry STR_VAR list="%weapons%" RET entry weapons=list END
-				prof_num=IDS_OF_SYMBOL (stats "PROFICIENCY%entry%")
-				PATCH_IF "%lua_line%" STRING_EQUAL "" BEGIN
-					SPRINT lua_line "[%prof_num%]=true"
-				END ELSE BEGIN
-					SPRINT lua_line "%lua_line%, [%prof_num%]=true"					
-				END
-				++count_here				
-			END
-			INNER_ACTION BEGIN
-				APPEND "m_dw_prd.lua" ~dwRaceWeapons[%race_id%]={%lua_line%}~ KEEP_CRLF
-			END
-			race_count_max=(race_count_max<count_here)?count_here:race_count_max
+	APPEND "m_dw_prd.lua" "dwRaceWeapons={}"
+	LAF ini_read INT_VAR flat=1 STR_VAR file=raceweapons.ini location=data RET_ARRAY raceweapon_array=array END
+	ACTION_PHP_EACH raceweapon_array AS race=>weapons BEGIN
+		OUTER_SET race_id=IDS_OF_SYMBOL (race "%race%")
+		OUTER_FOR (prof=89;prof<=115;++prof) BEGIN
+			OUTER_SET $extra_race("%prof%")=0
 		END
-	BUT_ONLY
+		OUTER_WHILE "%weapons%" STR_CMP "" BEGIN
+			LAF return_first_entry STR_VAR list="%weapons%" separator="," RET weapon=entry weapons=list END
+			ACTION_TO_UPPER weapon
+			
+			ACTION_IF VARIABLE_IS_SET $prof_lookup_array("%weapon%" "ID") BEGIN
+				OUTER_SET id=$prof_lookup_array("%weapon%" "ID")
+				OUTER_SET $extra_race("%id%")=1
+			END ELSE BEGIN
+				WARN "Unknown weapon %weapon% in raceweapons.ini"
+			END
+		END
+		OUTER_SPRINT lua_line ""
+		OUTER_SET count_here=0
+		ACTION_PHP_EACH extra_race AS id=>active BEGIN
+			ACTION_IF active BEGIN
+				OUTER_SPRINT lua_line "%lua_line%[%id%]=true, "		
+				OUTER_SET ++count_here
+			END
+		END
+		APPEND "m_dw_prd.lua" ~dwRaceWeapons[%race_id%]={%lua_line%}~ KEEP_CRLF
+		OUTER_SET race_count_max=(race_count_max<count_here)?count_here:race_count_max
+	END
 	
 END
 
@@ -365,44 +366,46 @@ DEFINE_ACTION_FUNCTION generate_kitweapon_lua BEGIN
 	
 	// get kit-specific weapons and read them into LUA
 
-	COPY_EXISTING kitlist.2da "%workspace%"
+	COPY_EXISTING - kitlist.2da nowhere
 		COUNT_2DA_COLS colcount
 		COUNT_2DA_ROWS colcount rowcount
 		FOR (row=0;row<rowcount;++row) BEGIN
 			READ_2DA_ENTRY row 0 colcount id
 			READ_2DA_ENTRY row 1 colcount name
+			TO_UPPER name
 			SET $kit_id("%name%")=id
 		END
 	BUT_ONLY
 
-	COPY "%MOD_FOLDER%/%component_loc%/data/kitweapons.2da" "%workspace%"
-		COUNT_2DA_ROWS 2 rowcount
-		FOR (row=0;row<rowcount;++row) BEGIN
-			CLEAR_ARRAY working_array
-			READ_2DA_ENTRY row 0 2 kit
-			READ_2DA_ENTRY row 1 2 weapons
-			SPRINT lua_line ""
-			INNER_PATCH_SAVE weapons "%weapons%" BEGIN
-				REPLACE_TEXTUALLY "," " "
-			END
-			SET kit_id=$kit_id("%kit%")
-			WHILE "%weapons%" STRING_COMPARE_CASE "" BEGIN
-				LPF return_first_entry STR_VAR list="%weapons%" RET entry weapons=list END
-				prof_num=IDS_OF_SYMBOL (stats "PROFICIENCY%entry%")
-				PATCH_IF "%lua_line%" STRING_EQUAL "" BEGIN
-					SPRINT lua_line "[%prof_num%]=true"
-				END ELSE BEGIN
-					SPRINT lua_line "%lua_line%, [%prof_num%]=true"					
-				END			
-			END
-			INNER_ACTION BEGIN
-				APPEND "m_dw_prd.lua" ~dwKitWeapons[%kit_id%]={%lua_line%}~ KEEP_CRLF
+	LAF ini_read INT_VAR flat=1 STR_VAR file=kitweapons.ini location=data RET_ARRAY kitweapon_array=array END
+	ACTION_PHP_EACH kitweapon_array AS kit=>weapons BEGIN
+		ACTION_TO_UPPER kit
+		OUTER_SET kit_id=$kit_id("%kit%")
+		OUTER_FOR (prof=89;prof<=115;++prof) BEGIN
+			OUTER_SET $extra_kit("%prof%")=0
+		END
+		OUTER_WHILE "%weapons%" STR_CMP "" BEGIN
+			LAF return_first_entry STR_VAR list="%weapons%" separator="," RET weapon=entry weapons=list END
+			ACTION_TO_UPPER weapon
+			
+			ACTION_IF VARIABLE_IS_SET $prof_lookup_array("%weapon%" "ID") BEGIN
+				OUTER_SET id=$prof_lookup_array("%weapon%" "ID")
+				OUTER_SET $extra_kit("%id%")=1
+			END ELSE BEGIN
+				WARN "Unknown weapon %weapon% in kitweapons.ini"
 			END
 		END
-	BUT_ONLY
+		OUTER_SPRINT lua_line ""
+		OUTER_SET count_here=0
+		ACTION_PHP_EACH extra_kit AS id=>active BEGIN
+			ACTION_IF active BEGIN
+				OUTER_SPRINT lua_line "%lua_line%[%id%]=true, "		
+				OUTER_SET ++count_here
+			END
+		END
+		APPEND "m_dw_prd.lua" ~dwKitWeapons[%kit_id%]={%lua_line%}~ KEEP_CRLF
+	END
 
-	
-	
 	
 END
 
@@ -549,9 +552,11 @@ DEFINE_ACTION_FUNCTION process_favored_weapons BEGIN
 				// collect more kit data
 				READ_2DA_ENTRY_FORMER kitlist_data row 0 kit_id
 				READ_2DA_ENTRY_FORMER kitlist_data row 4 desc_strref
-				SPRINT weapon_id $favored_array("%god%")
-				SPRINT weapon_name $weapon_name("%weapon_id%")
-				SPRINT weapon_number $weapon_ids("%weapon_id%")
+				SPRINT weapon $favored_array("%god%")
+				TO_UPPER weapon
+				SET weapon_strref=$prof_lookup_array("%weapon%" "WEAPON_STRREF")
+				GET_STRREF weapon_strref weapon_name
+				SET weapon_number=$prof_lookup_array("%weapon%" "ID")
 				// amend the description (not for favored souls)
 				PATCH_IF !favored_soul BEGIN
 					GET_STRREF desc_strref desc_string
@@ -654,175 +659,99 @@ Here's what we do:
 */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
 DEFINE_ACTION_FUNCTION allocate_new_proficiencies BEGIN
 
 	LAF get_weapprof_path RET weapprof_path END
 	COPY "%weapprof_path%" "%weapprof_path%"
-		COUNT_2DA_COLS colcount
-		FOR (col=4;col<colcount;++col) BEGIN
-			READ_2DA_ENTRY 0 (col - 1) (colcount - 1) header
-			SET $col_of_header("%header%")=col
-			SPRINT $header_of_col("%col%") "%header%"
+		LPF 2da_read RET_ARRAY weapprof_array=array weapprof_rows=rows weapprof_cols=columns END
+		// make a copy, used as lookup for parent classes
+		LPF array_copy STR_VAR array=weapprof_array RET_ARRAY weapprof_array_old=array END
+		// set the favored soul virtual class (this is moot until such time as we introduce a favored soul with weapon restrictions, but may as well futureproof.)
+		PHP_EACH profs_used_rows AS prof=>discard BEGIN
+			SPRINT type $prof_lookup_array("%prof%" "TYPE")
+			PATCH_MATCH "%type%" WITH
+			MELEE MISSILE BEGIN
+				SET $weapprof_array_old("%prof%" "FAVORED_SOUL")=1
+			END
+			DEFAULT
+			END
 		END
-		READ_2DA_ENTRIES_NOW weapprof_contents colcount
-		FOR (row=0;row<weapprof_contents;++row) BEGIN
-			READ_2DA_ENTRY_FORMER weapprof_contents row 1 prof_id
-			SET $prof_id("%row%")=prof_id
-			PATCH_IF prof_id=115 BEGIN
-				SET club_row=row
-			END ELSE
-			PATCH_IF prof_id=107 BEGIN
-				SET sling_row=row
+		// go through each column
+		PHP_EACH weapprof_cols AS kit=>discard BEGIN
+			PATCH_MATCH "%kit%" WITH
+			"ID" "NAME_REF" "DESC_REF" BEGIN
 			END
-			READ_2DA_ENTRY_FORMER weapprof_contents row 2 prof_name_strref
-			PATCH_IF IS_AN_INT prof_name_strref BEGIN
-				GET_STRREF prof_name_strref prof_name
-				SPRINT $weapon_names("%row%") "%prof_name%"
-			END
-		END		
-		// main pass
-		FOR (col=4;col<colcount;++col) BEGIN
-			SPRINT header $header_of_col("%col%")
-			// first: get the 'baseline' number of pips, to use for zeroes
-			// formula for doing so: melee: check club, since virtually everyone can use a club.
-			// for missile, check sling.
-			// if you get 0 (e.g. mages), assume 1
-			READ_2DA_ENTRY_FORMER weapprof_contents club_row col prof_melee
-			PATCH_IF !IS_AN_INT prof_melee BEGIN
-				prof_melee=0
-			END
-			prof_melee = prof_melee>0? prof_melee:1
-			READ_2DA_ENTRY_FORMER weapprof_contents sling_row col prof_missile
-			PATCH_IF !IS_AN_INT prof_missile BEGIN
-				prof_missile=0
-			END			prof_missile = prof_missile>0? prof_missile:1
-			FOR (row=0;row<weapprof_contents;++row) BEGIN
-			  READ_2DA_ENTRY_FORMER weapprof_contents row col prof
-			  PATCH_IF !IS_AN_INT prof BEGIN
-				prof=0
-			  END
-			  SET prof_id=$prof_id("%row%")
-			  PATCH_IF (prof_id>=89 && prof_id<=115) BEGIN
-				PATCH_MATCH prof_id WITH
-					108 109 110 BEGIN 
-						// ignore - these are unused but a mod might do something surprising with them
-					END
-					111 BEGIN
-						SPRINT profmod_row "PROFICIENCY2HANDED"
-					END
-					112 BEGIN
-						SPRINT profmod_row "PROFICIENCYSWORDANDSHIELD"
-					END
-					113 BEGIN
-						SPRINT profmod_row "PROFICIENCYSINGLEWEAPON"
-					END
-					114 BEGIN
-						SPRINT profmod_row "PROFICIENCY2WEAPON"
-					END					
-					DEFAULT
-						SPRINT profmod_row GENERAL
-					END
-				PATCH_IF "%profmod_row%" STRING_EQUAL_CASE GENERAL  && prof=0 BEGIN
-					PATCH_MATCH prof_id WITH
-					103 104 105 106 107 BEGIN
-						SET write=$GENERAL("%prof_missile%")					
-					END
-					DEFAULT
-						SET write=$GENERAL("%prof_melee%")
-					END
-				END ELSE
-				PATCH_IF VARIABLE_IS_SET $"%profmod_row%"("%prof%") BEGIN
-					SET write=$"%profmod_row%"("%prof%")
-				END ELSE BEGIN
-					SET write=prof
-				END
-				PATCH_IF prof>0 BEGIN
-				  PATCH_IF VARIABLE_IS_SET $parent_class("%header%") BEGIN
-					SPRINT parent_class $parent_class("%header%")
-					PATCH_IF "%parent_class%" STRING_EQUAL_CASE "sorcerer" BEGIN
-						SPRINT parent_class MAGE
-					END
-					SET parent_col=$col_of_header("%parent_class%")
-					READ_2DA_ENTRY_FORMER weapprof_contents row parent_col parent_prof
-					PATCH_IF (prof>=parent_prof) BEGIN // 0 and 1 are left unchanged
-						SET_2DA_ENTRY_LATER weapprof_contents_new row col write
-					END
-				  END ELSE BEGIN
-					SET_2DA_ENTRY_LATER weapprof_contents_new row col write
-				  END
-				END ELSE BEGIN
-					PATCH_IF VARIABLE_IS_SET $is_class("%header%") BEGIN // if class, check monk status; otherwise write
-						PATCH_IF 2h_monk OR "%header%" STRING_COMPARE_CASE "" BEGIN
-							SET_2DA_ENTRY_LATER weapprof_contents_new row col write
-						END 
-					END ELSE BEGIN
-						PATCH_IF VARIABLE_IS_SET $parent_class("%header%") BEGIN
-							SPRINT parent_class $parent_class("%header%")
-							PATCH_IF "%parent_class%" STRING_EQUAL_CASE "sorcerer" BEGIN
-								SPRINT parent_class MAGE
-							END
-							SET parent_col=$col_of_header("%parent_class%")
-							READ_2DA_ENTRY_FORMER weapprof_contents row parent_col parent_prof
-							PATCH_IF parent_prof=0 && (2h_monk OR "%parent_class%" STRING_COMPARE_CASE "monk") BEGIN
-								SET_2DA_ENTRY_LATER weapprof_contents_new row col write							
-							END
+			DEFAULT
+				TO_UPPER kit
+				// get baseline levels in melee and missile (use club and sling; assume 1 if zero)
+				SPRINT melee_prof_name $prof_lookup_array("CLUB" "NAME")
+				SPRINT missile_prof_name $prof_lookup_array("SLING" "NAME")
+				SPRINT prof_melee $weapprof_array("%melee_prof_name%" "%kit%")
+				SPRINT prof_missile $weapprof_array("%missile_prof_name%" "%kit%")
+				prof_melee=(IS_AN_INT prof_melee && prof_melee>0)?prof_melee:1
+				prof_missile=(IS_AN_INT prof_missile && prof_missile>0)?prof_missile:1
+				// pass through all profs
+				PHP_EACH profs_used_rows AS prof_name=>discard BEGIN
+					// get value
+					SPRINT prof $weapprof_array("%prof_name%" "%kit%")
+					prof=IS_AN_INT prof? prof: 0
+					// compare to parent class
+					SPRINT parent $parent_class("%kit%")
+					SPRINT prof_parent $weapprof_array_old("%prof_name%" "%parent%")
+					prof_parent=IS_AN_INT prof_parent? prof_parent :0
+					PATCH_IF prof>=prof_parent BEGIN // patch only if >= parent
+						SPRINT prof_type $profs_used_array("%prof_name%" "TYPE")
+						PATCH_MATCH "%prof_type%" WITH
+						"STYLE" BEGIN
+							SPRINT profmod_row "%prof_name%"
 						END
-					END
-				END	
-			  END
-			END // end of passing through rows for this column
-		END // end of passing through columns
-		SET_2DA_ENTRIES_NOW weapprof_contents_new colcount
-		PRETTY_PRINT_2DA
-	BUT_ONLY
-
+						"MELEE" BEGIN
+							prof=prof>0?prof:prof_melee
+							SPRINT profmod_row "GENERAL"
+						END
+						"MISSILE" BEGIN
+							prof=prof>0?prof:prof_missile
+							SPRINT profmod_row "GENERAL"
+						END
+						DEFAULT
+							PATCH_FAIL "allocate_new_proficiencies: illegal entry %prof_type% for 'type' in prof_lookup_array for proficiency %prof_name%"
+						END
+						SPRINT write $profmod_array("%profmod_row%" "%prof%")
+						write=IS_AN_INT write? write: prof					
+						SET $weapprof_array("%prof_name%" "%kit%")=write
+					END // end of patch block
+				END // end of pass through profs
+			END // end of DEFAULT block in pass through cols
+		END // end of pass through cols
+		LPF 2da_write STR_VAR array=weapprof_array END
+		
 
 
 END
-
 
 DEFINE_ACTION_FUNCTION override_initial_profs 
 
 	RET_ARRAY starting_prof_override
 	BEGIN
 
-
-	// get the data
-	COPY "%MOD_FOLDER%/%component_loc%/data/initial_prof_override.2da" "%workspace%"
-		COUNT_2DA_COLS colcount
-		FOR (col=1;col<colcount;++col) BEGIN
-			READ_2DA_ENTRY 0 (col - 1) (colcount - 1) header
-			TO_UPPER header
-			PATCH_IF VARIABLE_IS_SET $virtual_class_array("%header%") BEGIN
-				class_number=$virtual_class_array("%header%")
-			END ELSE BEGIN
-				class_number=IDS_OF_SYMBOL (class "%header%")
-			END
-			SPRINT $override_header_array("%col%") "%class_number%"
-			SET $starting_prof_override("%class_number%")=1
+	LAF 2da_read STR_VAR file=initial_prof_override.2da location=data RET_ARRAY data_array=array data_cols=columns data_rows=rows END
+	ACTION_PHP_EACH data_cols AS header=>discard BEGIN
+		ACTION_IF VARIABLE_IS_SET $virtual_class_array("%header%") BEGIN
+			OUTER_SET class_number=$virtual_class_array("%header%")
+		END ELSE BEGIN
+			OUTER_SET class_number=IDS_OF_SYMBOL (class "%header%")
 		END
-		READ_2DA_ENTRIES_NOW class_override_entries colcount
-		FOR (row=0;row<class_override_entries;++row) BEGIN
-			READ_2DA_ENTRY_FORMER class_override_entries row 0 prof_name
-			prof_id = IDS_OF_SYMBOL (stats "PROFICIENCY%prof_name%")
-			PHP_EACH override_header_array AS col=>class_number BEGIN
-				READ_2DA_ENTRY_FORMER class_override_entries row col is_known
-				PATCH_IF is_known BEGIN
-					SET $starting_prof_override("%class_number%" "%prof_id%")=1			
-				END
+		OUTER_SPRINT $override_header_array("%col%") "%class_number%"
+		OUTER_SET $starting_prof_override("%class_number%")=1
+		ACTION_PHP_EACH data_rows AS name=>discard BEGIN
+			ACTION_IF $data_array("%name%" "%header%")=1 BEGIN
+				OUTER_SET prof_id=$prof_lookup_array("%name%" "ID")
+				OUTER_SET $starting_prof_override("%class_number%" "%prof_id%")=1			
 			END
-		END	
-	BUT_ONLY
-
-
-
-
+			
+		END
+	END
 END
-
-
-
-
 
 
 

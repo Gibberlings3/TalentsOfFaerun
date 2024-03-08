@@ -91,20 +91,22 @@ function dwDualclassClickable()
 	if (level<2) then
 		return false
 	end
-	return true
+	if (class==1 or class==2 or class==3 or class==4 or class==11 or class==12) then
+		return true
+	end
+	return false
 
 end
 
 
 function dwClassDetailsHelper(details)
-
-	i,j = string.find(details,"%a+:")
-	c=string.sub(details,i,j-1)
-	i,j=string.find(details,"%d+")
-	l=tonumber(string.sub(details,i,j))
+	_,_,c,levelstring=string.find(details,"{K=%d+,C=(%d+)}(.*)")
+	i,j=string.find(levelstring,"%d+")
+	l=tonumber(string.sub(levelstring,i,j))
 	return {class=c,level=l}
 
 end
+
 
 >>>>>>>>
 

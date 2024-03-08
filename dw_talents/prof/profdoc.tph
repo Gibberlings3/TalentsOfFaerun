@@ -36,8 +36,25 @@ BEGIN
 		END
 	END
 	
+	// get usabilities
+	LAF usability_by_class RET_ARRAY class_weapon_use_strings END
+	
+	// get multiclasses setup
+	
+	LAF hardcode_multiclass END
+	
 	// main loop
 	SILENT
+	// Favored Soul doesn't have a sterotype kit, so we do it manually
+	COPY_EXISTING - "m_dw_vcd.lua" nowhere
+		REPLACE_EVALUATE "dwVirtualClass\[[0-9]+\]={ident='favored_soul'.*desc=\([0-9]+\)" BEGIN
+			desc_strref=MATCH1
+			INNER_ACTION BEGIN
+				LAF update_class_proficiency_description INT_VAR desc_strref is_multiclass=0 STR_VAR class=FAVORED_SOUL parent_class=FAVORED_SOUL END		
+			END
+		END
+		""
+	IF_EXISTS
 	ACTION_PHP_EACH clastext_rows AS class_label=>discard BEGIN
 		OUTER_SPRINT class_id $clastext_array("%class_label%" CLASSID)
 		ACTION_IF IS_AN_INT class_id BEGIN
@@ -50,6 +67,8 @@ BEGIN
 				END
 				ACTION_MATCH "%class_label%" WITH
 				"FALLEN.*" "GRIZZLY_BEAR" "GODXX.*" "DW_DUMMY.*" BEGIN 
+				END
+				ANY $clastext_array("%class_label%" FALLEN) STR_EQ 1 BEGIN
 				END
 				DEFAULT
 					ACTION_IF "%class_filter%" STRING_COMPARE "" BEGIN
@@ -78,6 +97,7 @@ BEGIN
 			END
 		END
 	END
+
 	VERBOSE
 	ACTION_IF races BEGIN
 		OUTER_FOR (race_id=1;race_id<=7;++race_id) BEGIN
@@ -163,7 +183,7 @@ BEGIN
 		OUTER_SPRINT style_start_some @152
 		OUTER_SPRINT multiclass_start_string @160
 		ACTION_CLEAR_ARRAY prof_match_array
-		OUTER_SET number_of_match_lines=11
+		OUTER_SET number_of_match_lines=12
 		OUTER_FOR (ind=1;ind<=number_of_match_lines;++ind) BEGIN
 			OUTER_SET tra_ref=200+ind
 			OUTER_SPRINT line (AT tra_ref)
@@ -302,8 +322,23 @@ BEGIN
 	  BUT_ONLY
 
 
-	LAF get_all_starting_profs RET_ARRAY starting_profs END
+	LAF get_all_starting_profs RET_ARRAY starting_profs kit_redirects END
 	
+	ACTION_CLEAR_ARRAY starting_profs
+	ACTION_CLEAR_ARRAY kit_redirects
+	// arrays of missile and melee weapons
+	
+	LAF prof_build_lookup INT_VAR overwrite=1 RET_ARRAY prof_lookup_array profs_used_array profs_used_rows END
+	ACTION_CLEAR_ARRAY melee_profs
+	ACTION_CLEAR_ARRAY missile_profs
+	ACTION_FOR_EACH prof IN BASTARDSWORD LONGSWORD SHORTSWORD AXE TWOHANDEDSWORD KATANA SCIMITARWAKISASHININJATO DAGGER WARHAMMER CLUB SPEAR HALBERD FLAILMORNINGSTAR MACE QUARTERSTAFF BEGIN
+		OUTER_SET id=$prof_lookup_array("%prof%" "ID")
+		OUTER_SET $melee_profs("%id%")=1
+	END
+	ACTION_FOR_EACH prof IN LONGBOW SHORTBOW CROSSBOW DART SLING BEGIN
+		OUTER_SET id=$prof_lookup_array("%prof%" "ID")
+		OUTER_SET $missile_profs("%id%")=1
+	END
 	
 	// get baseline data from the active 2DA
 	
@@ -320,10 +355,15 @@ BEGIN
 		END
 		""
 	BUT_ONLY
+	OUTER_SET $profs_first_level("FAVORED_SOUL")=$profs_first_level("SHAMAN")
+	OUTER_SET $profs_interval("FAVORED_SOUL")=$profs_interval("SHAMAN")
 	
 	COPY_EXISTING "enginest.2da" "%workspace%"
 		REPLACE_EVALUATE "STRREF_GUI_MIXED_NORMAL_FIGHTER[ %TAB%]+\([0-9]+\)" BEGIN
 			GET_STRREF "%MATCH1%" mainclass
+			INNER_PATCH_SAVE mainclass "%mainclass%" BEGIN
+				REPLACE_TEXTUALLY "{[^}]*}" ""
+			END
 		END	
 		""
 		PATCH_FOR_EACH class IN FIGHTER_MAGE FIGHTER_CLERIC FIGHTER_DRUID FIGHTER_THIEF FIGHTER_MAGE_CLERIC FIGHTER_MAGE_THIEF  BEGIN
@@ -331,16 +371,25 @@ BEGIN
 		END
 		REPLACE_EVALUATE "STRREF_GUI_MIXED_RANGER[ %TAB%]+\([0-9]+\)" BEGIN
 			GET_STRREF "%MATCH1%" mainclass
+			INNER_PATCH_SAVE mainclass "%mainclass%" BEGIN
+				REPLACE_TEXTUALLY "{[^}]*}" ""
+			END
 			SPRINT $mainclass_string("CLERIC_RANGER") "%mainclass% "
 		END
 		""
 		REPLACE_EVALUATE "STRREF_GUI_MIXED_CLERIC[ %TAB%]+\([0-9]+\)" BEGIN
 			GET_STRREF "%MATCH1%" mainclass
+			INNER_PATCH_SAVE mainclass "%mainclass%" BEGIN
+				REPLACE_TEXTUALLY "{[^}]*}" ""
+			END
 			SPRINT $mainclass_string("CLERIC_MAGE") "%mainclass% "
 			SPRINT $mainclass_string("CLERIC_THIEF") "%mainclass% "
 		END
 		""
 		REPLACE_EVALUATE "STRREF_GUI_MIXED_THIEF[ %TAB%]+\([0-9]+\)" BEGIN
+			INNER_PATCH_SAVE mainclass "%mainclass%" BEGIN
+				REPLACE_TEXTUALLY "{[^}]*}" ""
+			END
 			GET_STRREF "%MATCH1%" mainclass
 			SPRINT $mainclass_string("MAGE_THIEF") "%mainclass% "
 		END
@@ -407,14 +456,14 @@ BEGIN
 	ACTION_CLEAR_ARRAY melee_array
 	ACTION_CLEAR_ARRAY known_array
 	OUTER_SET max_count=0
-	ACTION_FOR_EACH melee IN 89 90 91 92 93 94 95 96 97 115 98 99 100 101 102 BEGIN
+	ACTION_PHP_EACH melee_profs AS melee=>discard BEGIN
 		OUTER_SET $melee_array("%melee%")=1
 		OUTER_SET $weapon_array("%melee%")=0
 		OUTER_SET $known_array("%melee%")=1
 		OUTER_SET max_count +=1
 	END
 	ACTION_CLEAR_ARRAY missile_array
-	ACTION_FOR_EACH missile IN 103 104 105 106 107 BEGIN
+	ACTION_PHP_EACH missile_profs AS missile=>discard BEGIN
 		OUTER_SET $missile_array("%missile%")=1
 		OUTER_SET $weapon_array("%missile%")=0
 		OUTER_SET $known_array("%missile%")=1
@@ -437,22 +486,15 @@ BEGIN
 		END
 	END
 	// decide on style
-	OUTER_SET list_negatively=(total_count+3>=max_count) // if we have all but 3 (or fewer), list negatively
+	OUTER_SET list_negatively=((max_count - total_count) *4 <=max_count) // if we have all but 25% or fewer, list negatively
 	// load weapon names, if needed
 	ACTION_IF !VARIABLE_IS_SET $weapon_name_array("89") BEGIN
-		LAF get_weapprof_path RET weapprof_path END
-		COPY "%weapprof_path%" "%workspace%" 
-			COUNT_2DA_COLS colcount
-			READ_2DA_ENTRIES_NOW weapprof_data colcount
-			FOR (row=0;row<weapprof_data;++row) BEGIN
-				READ_2DA_ENTRY_FORMER weapprof_data row 1 id_here
-				PATCH_IF ( (id_here>=89 && id_here<=107) || id_here=115) BEGIN
-					READ_2DA_ENTRY_FORMER weapprof_data row 2 name_strref
-					GET_STRREF name_strref name
-					SPRINT $weapon_name_array("%id_here%") "%name%"
-				END
-			END
-		BUT_ONLY
+		ACTION_PHP_EACH profs_used_rows AS prof=>discard BEGIN
+			OUTER_SET id_here=$profs_used_array("%prof%" "ID")
+			OUTER_SET name_strref=$profs_used_array("%prof%" "STRREF")
+			ACTION_GET_STRREF name_strref name
+			OUTER_SPRINT $weapon_name_array("%id_here%") "%name%"
+		END
 	END
 	// filter out melee 
 	OUTER_SET all_melee=1
@@ -481,9 +523,11 @@ BEGIN
 	OUTER_SET all_missile=1
 	OUTER_SET any_missile=0
 	OUTER_SET know_any_missile=0
+	OUTER_SET missile_count=0
 	ACTION_PHP_EACH missile_array AS id=>discard BEGIN
 		ACTION_IF $known_array("%id%")=1 BEGIN
 			OUTER_SET know_any_missile=1
+			OUTER_SET ++missile_count
 			ACTION_IF $weapon_array("%id%")=0 BEGIN
 				OUTER_SET all_missile=0
 			END
@@ -495,7 +539,7 @@ BEGIN
 	ACTION_IF !know_any_missile BEGIN
 		OUTER_SET all_missile=0
 	END
-	ACTION_IF all_missile && !list_negatively BEGIN
+	ACTION_IF all_missile && !list_negatively && missile_count>=3 BEGIN
 		ACTION_PHP_EACH missile_array AS id=>discard BEGIN
 			OUTER_SET $weapon_array("%id%")=0
 		END
@@ -535,13 +579,13 @@ BEGIN
 				OUTER_SPRINT weapon_string "%weapon_string%, %all_melee_string%"
 			END
 		END ELSE
-		ACTION_IF all_missile && !list_negatively BEGIN
+		ACTION_IF all_missile && !list_negatively && missile_count>=3 BEGIN
 			ACTION_IF "%weapon_string%" STRING_EQUAL "" BEGIN
 				OUTER_SPRINT weapon_string "%all_missile_string%"
 			END ELSE BEGIN
 				OUTER_SPRINT weapon_string "%weapon_string%, %all_missile_string%"
 			END		
-		END 
+		END ELSE
 		ACTION_IF list_negatively BEGIN
 			OUTER_SPRINT weapon_string "%negative_string%%weapon_string%"
 		END
@@ -712,14 +756,24 @@ DEFINE_ACTION_FUNCTION get_kit_weapons //internal
 	RET_ARRAY weapon_array
 BEGIN
 	ACTION_IF "%kit%" STRING_EQUAL_CASE "FAVORED_SOUL" BEGIN // hardcoded (ugh, sorry)
+		OUTER_FOR (id=89;id<=115;++id) BEGIN
+			ACTION_IF (id<111 || id=115) BEGIN
+				OUTER_SET $weapon_array("%id%")=0
+			END
+		END
 		ACTION_IF FILE_EXISTS_IN_GAME "m_dw_prf.lua" BEGIN
-			OUTER_FOR (id=89;id<=115;++id) BEGIN
-				OUTER_SET $weapon_array("%id%")=2
-			END	
-			OUTER_SET $weapon_array("114")=3
+			ACTION_PHP_EACH profs_used_rows AS prof=>discard BEGIN
+				OUTER_SET id=$profs_used_array("%prof%" "ID")
+				ACTION_IF (id<111 || id=115) BEGIN
+					OUTER_SET $weapon_array("%id%")=2
+				END
+			END
 		END ELSE BEGIN
-			OUTER_FOR (id=89;id<=115;++id) BEGIN
-				OUTER_SET $weapon_array("%id%")=1
+			ACTION_PHP_EACH profs_used_rows AS prof=>discard BEGIN
+				OUTER_SET id=$profs_used_array("%prof%" "ID")
+				ACTION_IF (id<111 || id=115) BEGIN
+					OUTER_SET $weapon_array("%id%")=1
+				END
 			END
 		END
 	 END ELSE BEGIN
@@ -727,14 +781,9 @@ BEGIN
 		"sorcerer" BEGIN
 			OUTER_SPRINT kit mage
 		END
-		"dw_druid_\(mage\|ranger\|thief\)" BEGIN
-			OUTER_SPRINT kit druid
-		END
-		barbarian BEGIN
-			OUTER_SPRINT kit fighter
-		END
 		DEFAULT
 		END
+		
 		ACTION_CLEAR_ARRAY weapon_array	
 		ACTION_IF !VARIABLE_IS_SET all_weapprof_loaded BEGIN
 			LAF get_weapprof_path RET weapprof_path END
@@ -769,24 +818,7 @@ BEGIN
 	END
 END
 
-DEFINE_ACTION_FUNCTION display_kit_weapons //internal
-STR_VAR kit="" BEGIN
-	LAF get_kit_weapons STR_VAR kit RET_ARRAY weapon_array END
-	COPY_EXISTING "weapprof.2da" override
-		COUNT_2DA_COLS colcount
-		READ_2DA_ENTRIES_NOW weapprof_data colcount
-		FOR (row=0;row<weapprof_data;++row) BEGIN
-			READ_2DA_ENTRY_FORMER weapprof_data row 0 label
-			READ_2DA_ENTRY_FORMER weapprof_data row 1 id
-			PATCH_IF id>88 && (id<=110 || id=115) BEGIN
-			SET val=$weapon_array("%id%")
-			PATCH_PRINT "%label%: %val%"
-			END
-			
-		END
-	BUT_ONLY
 
-END
 
 DEFINE_ACTION_FUNCTION get_kit_styles //internal
 	STR_VAR kit=""
@@ -899,14 +931,10 @@ BEGIN
 	// get the array
 	LAF get_kit_weapons STR_VAR kit="%class%" RET_ARRAY weapon_array END
 	// usability
-	LAF list_weapons_at_prof_value INT_VAR value_min=1 STR_VAR weapon_array=weapon_array RET known_list=weapon_list END
-	LAF organize_weapon_list STR_VAR weapon_list="%known_list%" RET weapon_string all_weapons END
-	ACTION_IF all_weapons BEGIN
-		OUTER_SPRINT usability "%all_usable_string%"
-	END ELSE BEGIN
-		OUTER_SPRINT usability "%usable_string%%weapon_string%."
-	END
+
+	OUTER_SPRINT usability $class_weapon_use_strings("%class%")
 	// proficiency
+	LAF list_weapons_at_prof_value INT_VAR value_min=1 STR_VAR weapon_array=weapon_array RET known_list=weapon_list END
 	OUTER_FOR (number=1;number<=5;++number) BEGIN
 		LAF list_weapons_at_prof_value INT_VAR value=number STR_VAR weapon_array=weapon_array RET weapon_list END
 		LAF organize_weapon_list STR_VAR weapon_list known_list RET weapon_string all_melee all_missile all_weapons END
@@ -1144,9 +1172,15 @@ END
 
 
 DEFINE_ACTION_FUNCTION get_all_starting_profs //internal
-	RET_ARRAY starting_profs
+	RET_ARRAY starting_profs kit_redirects
 BEGIN
-	COPY_EXISTING "m_dw_prd.lua" "%workspace%"
+	ACTION_CLEAR_ARRAY starting_profs
+	ACTION_CLEAR_ARRAY kit_redirects
+	COPY_EXISTING - "m_dw_prd.lua" nowhere
+		REPLACE_EVALUATE "dwProfKitRedirect\[\([0-9]+\)\]=\([0-9]+\)" BEGIN
+			SET $kit_redirects("%MATCH1%")=MATCH2
+		END
+		""
 		REPLACE_EVALUATE "dwStartingProfs\[\([0-9]+\)\]={\(.*\)}" BEGIN
 			SET prof_id="%MATCH1%"
 			INNER_PATCH "%MATCH2%" BEGIN
@@ -1177,19 +1211,30 @@ BEGIN
 			OUTER_SPRINT begins_with_some @9
 		END
 	END
-	ACTION_MATCH "%class%" WITH
-	"dw_druid_\(mage\|ranger\|thief\)" BEGIN
-		OUTER_SPRINT class "druid"
-	END
-	"barbarian" BEGIN
-		OUTER_SPRINT class "fighter"
-	END
-	DEFAULT
+	ACTION_IF "%class%" STR_EQ "FAVORED_SOUL" BEGIN
+		OUTER_SET class_num=1001
+	END ELSE BEGIN
+		OUTER_SET class_num=IDS_OF_SYMBOL (class "%class%")
 	END
 
-	OUTER_SET class_num=IDS_OF_SYMBOL (class "%class%")
+	ACTION_IF class_num="-1" BEGIN
+		// if it's not here, it's probably the defining kit for a virtual class (or else hardcoded FAVORED_SOUL)
+		OUTER_SPRINT kit "%class%"
+		ACTION_TO_UPPER kit
+		ACTION_IF VARIABLE_IS_SET $kitlist_array("%kit%" "ROWNUMBER") BEGIN
+			OUTER_SET kitid=$kitlist_array("%kit%" "ROWNUMBER")
+			ACTION_IF IS_AN_INT $kit_redirects("%kitid%") BEGIN
+				OUTER_SET class_num=$kit_redirects("%kitid%")
+			END ELSE BEGIN // if there's no redirect, we use the kit's base class
+				OUTER_SET class_num=$kitlist_array("%kit%" "CLASS")
+			END
+		END	
+	END
+	ACTION_IF class_num="-1" BEGIN
+		FAIL "get_class_starting_prof: cannot find weapon list for class %class%"
+	END
 	ACTION_IF !VARIABLE_IS_SET $starting_profs("%class_num%") BEGIN
-		LAF get_all_starting_profs RET_ARRAY starting_profs END
+		LAF get_all_starting_profs RET_ARRAY starting_profs kit_redirects END
 	END
 	OUTER_SPRINT weapon_list $starting_profs("%class_num%")
 	LAF organize_weapon_list STR_VAR weapon_list RET weapon_string all_weapons  END
@@ -1267,7 +1312,7 @@ BEGIN
 	ACTION_IF proceed BEGIN
 		// compare with class profs
 		ACTION_IF !VARIABLE_IS_SET $starting_profs("%class_number%") BEGIN
-			LAF get_all_starting_profs RET_ARRAY starting_profs END
+			LAF get_all_starting_profs RET_ARRAY starting_profs kit_redirects END
 		END
 		OUTER_SPRINT class_list $starting_profs("%class_number%")
 		OUTER_WHILE "%class_list%" STRING_COMPARE "" BEGIN
@@ -1463,7 +1508,7 @@ BEGIN
 	ACTION_IF desc_strref<0 BEGIN
 		ACTION_TO_UPPER class
 		OUTER_SET desc_strref=$clastext_array("%class%" "DESCSTR")
-		END
+	END
 	ACTION_GET_STRREF desc_strref desc
 	
 	// allow for annoying clastext/kitlist mismatches
@@ -1480,13 +1525,13 @@ BEGIN
 	OUTER_SET ind=0
 	OUTER_SPRINT $all_array("%ind%") "%usability%[PROFDOC_MARKER]"
 	OUTER_SET ind+=1
-	OUTER_SPRINT $all_array("%ind%") "%pip_line%[PROFDOC_MARKER]"
-	OUTER_SET ind+=1
 	ACTION_IF FILE_EXISTS_IN_GAME "m_dw_prf.lua" BEGIN
 		LAF get_class_starting_prof STR_VAR class RET starting_prof_string END
 		OUTER_SPRINT $all_array("%ind%") "%starting_prof_string%"
 		OUTER_SET ind+=1
 	END
+	OUTER_SPRINT $all_array("%ind%") "%pip_line%[PROFDOC_MARKER]"
+	OUTER_SET ind+=1
 	ACTION_PHP_EACH weapon_array AS discard=>string BEGIN
 		ACTION_IF "%string%" STRING_COMPARE "" BEGIN
 			OUTER_SPRINT $all_array("%ind%") "%string%"
@@ -1815,42 +1860,208 @@ RET weapprof_path BEGIN
 
 END
 
-
 ///////////////////////////////////////////////////////////////////////////////////////////
-// Define our virtual parent classes
+// Determine actual usability by class
 /////////////////////////////////////////////////////////////////////////////////////////////
 
-DEFINE_ACTION_FUNCTION get_virtual_parent_classes //internal
-RET_ARRAY virtual_parent_classes BEGIN
-	ACTION_CLEAR_ARRAY virtual_parent_classes
-	ACTION_IF FILE_EXISTS_IN_GAME "m_dw_vcd.lua" BEGIN
-		ACTION_CLEAR_ARRAY virtual_class_temp_array
-		COPY_EXISTING "m_dw_vcd.lua" "%workspace%"
-			REPLACE_EVALUATE "dwVirtualKitClass\[\([0-9]+\)\]='\(favored_soul\|druid_mage\|druid_ranger\|druid_thief\)'" BEGIN
-				SPRINT virtual_parent "%MATCH2%"
-				TO_UPPER virtual_parent
-				PATCH_MATCH "%virtual_parent%" WITH
-					"DRUID.*" BEGIN
-						SPRINT virtual_parent "DW_%virtual_parent%"
-					END
-					DEFAULT
-					END
-				SPRINT $virtual_class_temp_array("%MATCH1%") "%virtual_parent%"
-			END
-			""	
-		BUT_ONLY
-		COPY_EXISTING "kitlist.2da" "%workspace%"
-			COUNT_2DA_COLS colcount
-			READ_2DA_ENTRIES_NOW kitlist_data colcount
-			FOR (row=0;row<kitlist_data;++row) BEGIN
-				READ_2DA_ENTRY_FORMER kitlist_data row 0 kit_id
-				READ_2DA_ENTRY_FORMER kitlist_data row 1 kit_label
-				PATCH_IF VARIABLE_IS_SET $virtual_class_temp_array("%kit_id%") BEGIN
-					SPRINT $virtual_parent_classes("%kit_label%") $virtual_class_temp_array("%kit_id%")
+DEFINE_ACTION_FUNCTION usability_by_class
+RET_ARRAY class_weapon_use_strings
+BEGIN
+	ACTION_CLEAR_ARRAY class_weapon_use_strings
+	// define prototypes
+	ACTION_CLEAR_ARRAY prototype_array
+	ACTION_DEFINE_ASSOCIATIVE_ARRAY prototype_array BEGIN
+		longsword=>SW1H04
+		shortsword=>SW1H07
+		bastardsword=>SW1H01
+		2hsword=>SW2H01
+		scimitar=>SW1H20
+		katana=>SW1H43
+		wakizashi=>SW1H46
+		ninjato=>SW1H48
+		dagger=>DAGG01
+		battleaxe=>AX1H01
+		throwingaxe=>AX1H04
+		mace=>blun04
+		flail=>blun02
+		morningstar=>blun06
+		warhammer=>hamm01
+		club=>blun01
+		staff=>staf01
+		longbow=>bow03
+		shortbow=>bow05
+		lightcrossbow=>xbow01
+		heavycrossbow=>xbow04
+		dart=>dart01
+		sling=>slng01		
+	END
+	// setup
+	ACTION_CLEAR_ARRAY class_usability_array
+	ACTION_FOR_EACH class IN 
+	FIGHTER MAGE CLERIC THIEF DRUID RANGER PALADIN BARBARIAN BLACKGUARD MONK BARD SORCERER SHAMAN 
+	FIGHTER_CLERIC FIGHTER_MAGE FIGHTER_THIEF FIGHTER_DRUID CLERIC_MAGE CLERIC_THIEF MAGE_THIEF CLERIC_RANGER 
+	FIGHTER_MAGE_THIEF FIGHTER_MAGE_CLERIC 
+	DW_BARBARIAN_CLERIC DW_BARBARIAN_DRUID DW_DRUID_MAGE DW_DRUID_RANGER DW_DRUID_THIEF FAVORED_SOUL
+	BEGIN
+		OUTER_SPRINT $class_usability_array("%class%") ""
+		OUTER_SPRINT $class_unusability_array("%class%") ""
+		OUTER_SET $usability_restriction_count("%class%")=0
+		OUTER_SET $not_this_weapon("%class%")=0
+	END
+	// go through prototypes
+	ACTION_PHP_EACH prototype_array AS label=>item BEGIN
+		COPY_EXISTING - "%item%.itm" nowhere
+			not_this_weapon_FAVORED_SOUL=0
+			READ_STRREF 0x8 name
+			byte1=BYTE_AT 0x1e
+			not_this_weapon_BARD=(byte1 BAND BIT6)
+			not_this_weapon_CLERIC=(byte1 BAND BIT7)
+			byte2=BYTE_AT 0x1f
+			not_this_weapon_CLERIC_MAGE=(byte2 BAND BIT0)
+			not_this_weapon_DW_DRUID_MAGE=not_this_weapon_CLERIC_MAGE
+			not_this_weapon_CLERIC_THIEF=(byte2 BAND BIT1)
+			not_this_weapon_DW_DRUID_THIEF=not_this_weapon_CLERIC_THIEF
+			not_this_weapon_CLERIC_RANGER=(byte2 BAND BIT2)
+			not_this_weapon_DW_DRUID_RANGER=not_this_weapon_CLERIC_RANGER
+			not_this_weapon_FIGHTER=(byte2 BAND BIT3)
+			not_this_weapon_FIGHTER_DRUID=(byte2 BAND BIT4)
+			not_this_weapon_FIGHTER_MAGE=(byte2 BAND BIT5)
+			not_this_weapon_FIGHTER_CLERIC=(byte2 BAND BIT6)
+			not_this_weapon_FIGHTER_MAGE_CLERIC=(byte2 BAND BIT7)
+			byte3=BYTE_AT 0x20
+			not_this_weapon_FIGHTER_MAGE_THIEF=(byte3 BAND BIT0)
+			not_this_weapon_FIGHTER_THIEF=(byte3 BAND BIT1)
+			not_this_weapon_MAGE=(byte3 BAND BIT2)
+			not_this_weapon_MAGE_THIEF=(byte3 BAND BIT3)
+			not_this_weapon_PALADIN=(byte3 BAND BIT4)
+			not_this_weapon_RANGER=(byte3 BAND BIT5)
+			not_this_weapon_THIEF=(byte3 BAND BIT6)
+			byte4=BYTE_AT 0x21
+			not_this_weapon_MONK=(byte4 BAND BIT5)
+			not_this_weapon_DRUID=(byte4 BAND BIT6)
+			not_this_weapon_SHAMAN=(byte4 BAND BIT6)
+			exclude_barbarians=((BYTE_AT 0x29) BAND BIT6)
+			not_this_weapon_BARBARIAN = not_this_weapon_FIGHTER || exclude_barbarians
+			not_this_weapon_DW_BARBARIAN_CLERIC = not_this_weapon_FIGHTER_CLERIC || exclude_barbarians
+			not_this_weapon_DW_BARBARIAN_DRUID = not_this_weapon_FIGHTER_DRUID || exclude_barbarians
+			not_this_weapon_SORCERER=not_this_weapon_MAGE
+			not_this_weapon_BLACKGUARD=not_this_weapon_PALADIN
+			GET_OFFSET_ARRAY fx_arr ITM_V10_GEN_EFFECTS
+			PHP_EACH fx_arr AS fx_ind=>fx_off BEGIN
+				PATCH_IF SHORT_AT fx_off = 319 BEGIN // restrict item
+					PATCH_IF LONG_AT (fx_off+0x8)=5 BEGIN // restrict item:class
+					class=LONG_AT (fx_off+0x4)
+					not_this_weapon_DRUID=not_this_weapon_DRUID ||(class=IDS_OF_SYMBOL (class DRUID))
+					not_this_weapon_SHAMAN=not_this_weapon_SHAMAN || (class=IDS_OF_SYMBOL (class SHAMAN))
+					END ELSE
+					PATCH_IF LONG_AT (fx_off+0x8)=6 BEGIN // restrict item:specific
+						specific=LONG_AT (fx_off+0x4)
+						not_this_weapon_MAGE=not_this_weapon_MAGE || (specific=IDS_OF_SYMBOL (specific MAGE_UNUSABLE))
+						not_this_weapon_CLERIC_THIEF=not_this_weapon_CLERIC_THIEF || (specific=IDS_OF_SYMBOL (specific CLERIC_UNUSABLE))
+						not_this_weapon_CLERIC_MAGE=not_this_weapon_CLERIC_MAGE || (specific=IDS_OF_SYMBOL (specific CLERIC_UNUSABLE))
+						not_this_weapon_CLERIC_RANGER=not_this_weapon_CLERIC_RANGER || (specific=IDS_OF_SYMBOL (specific CLERIC_UNUSABLE))
+						not_this_weapon_DRUID=not_this_weapon_DRUID || (specific=IDS_OF_SYMBOL (specific DRUID_UNUSABLE))
+						not_this_weapon_DW_DRUID_MAGE=not_this_weapon_DW_DRUID_MAGE || (specific=IDS_OF_SYMBOL (specific DRUID_UNUSABLE))
+						not_this_weapon_DW_DRUID_RANGER=not_this_weapon_DW_DRUID_RANGER || (specific=IDS_OF_SYMBOL (specific DRUID_UNUSABLE))
+						not_this_weapon_DW_DRUID_THIEF=not_this_weapon_DW_DRUID_THIEF || (specific=IDS_OF_SYMBOL (specific DRUID_UNUSABLE))
+						not_this_weapon_SHAMAN=not_this_weapon_SHAMAN || (specific=IDS_OF_SYMBOL (specific SHAMAN_UNUSABLE))
+					END					
 				END
-			
 			END
-		BUT_ONLY
+			PHP_EACH class_usability_array AS class=>usable BEGIN
+				SET $usability_restriction_count("%class%") += $not_this_weapon("%class%")
+				PATCH_IF $not_this_weapon("%class%") BEGIN
+					SPRINT unusable $class_unusability_array("%class%")
+					SPRINT $class_unusability_array("%class%") "%unusable%%name%, "
+				END ELSE BEGIN
+					SPRINT $class_usability_array("%class%") "%usable%%name%, "				
+				END
+			END
+	END
+	// tidy strings
+	ACTION_PHP_EACH class_usability_array AS class=>usable BEGIN
+		OUTER_PATCH_SAVE "class_usability_array_%class%" "%usable%" BEGIN
+			REPLACE_TEXTUALLY " ," ","
+			REPLACE_TEXTUALLY ", $" ""
+		END
+	END
+	ACTION_PHP_EACH class_unusability_array AS class=>unusable BEGIN
+		OUTER_PATCH_SAVE "class_unusability_array_%class%" "%unusable%" BEGIN
+			REPLACE_TEXTUALLY " ," ","
+			REPLACE_TEXTUALLY ", $" ""
+		END
+	END
+	// make actual output
+	WITH_TRA "%sfo_tra_loc%/english/profdoc.tra" "%sfo_tra_loc%/%LANGUAGE%/profdoc.tra" BEGIN
+		OUTER_SPRINT any_weapon_string @4
+		OUTER_SPRINT may_use_these_weapons @5
+		OUTER_SPRINT any_weapon_except @6
+	END
+	ACTION_PHP_EACH usability_restriction_count AS class=>count BEGIN
+		ACTION_IF count=0 BEGIN // any weapon
+			ACTION_TO_LOWER class
+			OUTER_SPRINT $class_weapon_use_strings("%class%") "%any_weapon_string%"
+		END ELSE
+		ACTION_IF count<=3 BEGIN // display negatively
+			OUTER_SPRINT unusable $class_unusability_array("%class%")
+			ACTION_TO_LOWER class
+			OUTER_SPRINT $class_weapon_use_strings("%class%") "%may_use_these_weapons%%any_weapon_except%%unusable%."
+		END ELSE BEGIN //display positively
+			OUTER_SPRINT usable $class_usability_array("%class%")
+			ACTION_TO_LOWER class
+			OUTER_SPRINT $class_weapon_use_strings("%class%") "%may_use_these_weapons%%usable%."		
+		END
 	END
 
+
+
+
+
+
+
+END
+
+DEFINE_ACTION_FUNCTION hardcode_multiclass BEGIN
+
+	ACTION_DEFINE_ASSOCIATIVE_ARRAY multiclass_hardcode BEGIN
+		FIGHTER_CLERIC=>701
+		FIGHTER_DRUID=>702
+		FIGHTER_MAGE=>703
+		FIGHTER_THIEF=>704
+		CLERIC_MAGE=>705
+		CLERIC_RANGER=>706
+		CLERIC_THIEF=>707
+		MAGE_THIEF=>708
+		FIGHTER_MAGE_CLERIC=>709
+		FIGHTER_MAGE_THIEF=>710
+		DW_BARBARIAN_CLERIC=>711
+		DW_BARBARIAN_DRUID=>712
+		DW_DRUID_MAGE=>713
+		DW_DRUID_RANGER=>714
+		DW_DRUID_THIEF=>715
+	END
+	WITH_TRA "%sfo_tra_loc%/english/profdoc.tra" "%sfo_tra_loc%/%LANGUAGE%/profdoc.tra" BEGIN
+		ACTION_PHP_EACH multiclass_hardcode AS class=>tra_ref BEGIN
+			OUTER_SPRINT desc (AT tra_ref)
+			OUTER_SPRINT $desc_string("%class%") "%desc%"
+			OUTER_SET $desc_brief("%class%")=RESOLVE_STR_REF ("%desc%[DW_BRIEF]")
+		END
+	END
+	
+	COPY_EXISTING "clastext.2da" override
+		LPF 2da_read RET_ARRAY clastext_array=array clastext_rows=rows END
+		PHP_EACH multiclass_hardcode AS class=>tra_ref BEGIN
+			PATCH_IF VARIABLE_IS_SET $clastext_rows("%class%") BEGIN
+				// main descriptive text overwrites string
+				SET strref=$clastext_array("%class%" "DESCSTR")
+				SPRINT desc_string $desc_string("%class%")
+				INNER_ACTION BEGIN
+					STRING_SET_EVALUATE strref "%desc_string%"
+				END
+				// brief text is new string
+				SET $clastext_array("%class%" "BRIEFDESC")=$desc_brief("%class%")
+			END
+		END
+		LPF 2da_write STR_VAR array=clastext_array END
+	BUT_ONLY
 END

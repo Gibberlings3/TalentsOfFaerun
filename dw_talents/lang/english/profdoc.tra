@@ -3,7 +3,7 @@
 @3="all weapons"
 @4="May use any weapon."
 @5="May use these weapons: "
-@6="any weapon except "
+@6="any except "
 @7="any fighting style"
 @8="Begins Proficient (one slot) with all weapon classes."
 @9="Begins Proficient (one slot) with these weapon classes: "
@@ -17,11 +17,11 @@
 @23="May achieve Mastery (three slots) with these weapon classes: "
 @24="May achieve High Mastery (four slots) with these weapon classes: "
 @25="May achieve Grand Mastery (five slots) with these weapon classes: "
-@26="May become Proficient (one slot) with the "
-@27="May achieve Specialization (two slots) with the "
-@28="May achieve Mastery (three slots) with the "
-@29="May achieve High Mastery (four slots) with the "
-@30="May achieve Grand Mastery (five slots) with the "
+@26="May become Proficient (one slot) with "
+@27="May achieve Specialization (two slots) with "
+@28="May achieve Mastery (three slots) with "
+@29="May achieve High Mastery (four slots) with "
+@30="May achieve Grand Mastery (five slots) with "
 
 @31="May become Proficient (one slot) with any melee weapon class."
 @32="May achieve Specialization (two slots) with any melee weapon class."
@@ -77,9 +77,9 @@
 @123="UNUSED_PLACEHOLDER"
 
 
-@131="Begins Proficient (one slot) with the "
-@132="Begins Specialized (two slots) with the "
-@133="Begin Proficient (one slot) with the " // pluralized version of @131
+@131="Begins Proficient (one slot) with "
+@132="Begins Specialized (two slots) with "
+@133="Begin Proficient (one slot) with " // pluralized version of @131
 @141="Begins Proficient (one slot) with these weapon classes: "
 @142="Begins Specialized (two slots) with these weapon classes: "
 @143="Begin Proficient (one slot) with these weapon classes: " // pluralized version of @141
@@ -116,7 +116,7 @@
 @209="May not use ranged weapons"
 @210="May only use weapons available to" // from Monk
 @211="May not use these weapons" // from my own code
-
+@212="May not use missile weapons" // from Kensai
 
 @250="Advantages:"
 @251="Disadvantages:"
@@ -141,7 +141,7 @@
 @309=NO_DIFFERENCE
 @310=NO_DIFFERENCE
 @311=NO_DIFFERENCE
-
+@312=NO_DIFFERENCE
 
 @350=NO_DIFFERENCE
 @351=NO_DIFFERENCE
@@ -162,6 +162,7 @@
 @409=NO_DIFFERENCE
 @410=NO_DIFFERENCE
 @411=NO_DIFFERENCE
+@412=NO_DIFFERENCE
 
 
 @450=NO_DIFFERENCE
@@ -176,7 +177,7 @@
 @501="May wear any armor and use any weapon." // exactly matches IWD fighter
 @502="NO_SWAP" // match BG fighter if different
 @503="NO_SWAP"	// match BG2 fighter if different
-@504="They may Specialize in, but not Master, any weapon they can use." // main line used by warrior/x multiclasses
+@504="May achieve Specialization (two slots) in the weapon type favored by their deity." // must match string in line @4000 of kit.tra
 @505="This character may Specialize in, but not Master, any weapon they can use." // ranger and FMC variant
 @506=", though weapons are restricted to only those allowed by the Cleric's ethos"
 @507=", though weapons are restricted to only those allowed by the Druid's ethos"
@@ -190,9 +191,26 @@
 @601="May wear any armor."
 @602="May wear any armor."
 @603="May wear any armor."
-@604=""
+@604="May achieve Specialization (three slots) in the weapon type favored by their deity."
 @605=""
 @606=""
 @607=""
 @608=""
 @609=""
+
+@701="FIGHTER/CLERIC: This character can use the abilities of a Fighter and a Cleric."
+@702="FIGHTER/DRUID: This character can use the abilities of a Fighter and a Druid."
+@703="FIGHTER/MAGE: This character can use the abilities of a Fighter and a Mage, though they cannot cast spells while wearing armor."
+@704="FIGHTER/THIEF: This character can use the abilities of a Fighter and a Thief, though they cannot use their thieving skills while wearing more than studded leather armor."
+@705="CLERIC/MAGE: This character can use the abilities of a Cleric and a Mage, though Mage spells cannot be cast while wearing armor."
+@706="CLERIC/RANGER: This character can use the abilities of a Cleric and a Ranger."
+@707="CLERIC/THIEF: This character can use the abilities of a Cleric and a Thief. Thieving skills cannot be used while wearing more than studded leather armor."
+@708="MAGE/THIEF: This character can use the abilities of a Mage and a Thief, though Mage spells cannot be cast while wearing armor."
+@709="FIGHTER/MAGE/CLERIC: This character can use the abilities of a Fighter, Mage, and Cleric, though they cannot cast Mage spells while wearing armor."
+@710="FIGHTER/MAGE/THIEF: This character can use the abilities of a Fighter, Mage, and Thief, though they cannot use their thieving skills while wearing more than studded leather armor and cannot cast spells while wearing any armor."
+@711="BARBARIAN/CLERIC: This character can use the abilities of a Barbarian and a Cleric."
+@712="BARBARIAN/DRUID: This character can use the abilities of a Barbarian and a Druid."
+@713="DRUID/MAGE: This character can use the abilities of a Druid and a Mage, though Mage spells cannot be cast while wearing armor."
+@714="DRUID/RANGER: This character can use the abilities of a Druid and a Ranger."
+@715="DRUID/THIEF: This character can use the abilities of a Druid and a Thief. Thieving skills cannot be used while wearing more than studded leather armor."
+

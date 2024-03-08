@@ -51,7 +51,6 @@ DEFINE_ACTION_FUNCTION wrathful_spear_of_gruumsh BEGIN
 		k.kit_grant_powers{%BARBARIAN_RAGE% 1 4|class=fighter}
 		k.kit_apply_powers{spcl151 1,spcl153 11,spcl154 15 4 20|class=fighter}
 		k.kit_match_usability{barbarian}
-		k_sling=0
 		k_color_metal=35
 		k_color_minor_cloth=46
 		k_color_main_cloth=47
@@ -64,12 +63,15 @@ DEFINE_ACTION_FUNCTION wrathful_spear_of_gruumsh BEGIN
 	]
 
 	LAF cleric_kit_substitutions STR_VAR kit god=gruumsh END
-
+	LAF prof_copy INT_VAR only_if_nonzero=1 STR_VAR copy_to=DW_GRUUMSH_WRATHFUL_SPEAR copy_from=BARBARIAN END
 	LAF assign_spheres STR_VAR kit default=cleric subtract="good divination wards" add="fire earth" END
 	LAF holy_symbol INT_VAR name=2034 follower=2035 category=1 STR_VAR kit desc_bam=camul10 inv_bam=iamul10 kit END
 	LAF adjust_cleric_stronghold STR_VAR talos="all" kit END
 	LAF set_multiclass_components STR_VAR kit components="barbarian dw_gruumsh_cleric"  END
  
+	ACTION_IF barbarian_class BEGIN
+		LAF assign_kit_to_virtual_class STR_VAR kit class=barbarian_cleric END	
+	END
  
 END
 

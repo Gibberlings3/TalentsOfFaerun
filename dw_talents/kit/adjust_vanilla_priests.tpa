@@ -30,5 +30,8 @@ DEFINE_ACTION_FUNCTION adjust_vanilla_priests BEGIN
 
 	// process scroll usability
 	LAF process_scroll_usability_now END
+	
+	// 3p
+	LAF 3p_kit END
 
 END

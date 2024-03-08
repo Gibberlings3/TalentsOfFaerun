@@ -12,7 +12,7 @@ DEFINE_ACTION_FUNCTION leveller_lua BEGIN
 		OUTER_FOR (level=1;level<=50;++level) BEGIN
 			ACTION_IF VARIABLE_IS_SET $xplevel_array("%class%" "%level%") BEGIN
 				OUTER_SET xp=$xplevel_array("%class%" "%level%")
-				OUTER_SPRINT data "%data%%xp%, "
+				OUTER_SPRINT data "%data%[%level%]=%xp%, "
 			END
 		END
 		OUTER_SPRINT data "%data%}%WNL%"
@@ -76,18 +76,31 @@ DEFINE_ACTION_FUNCTION leveller_lua BEGIN
 		END
 	END
 
+	// get the 'Experience: ' and ': Level :' string
+	
+	COPY_EXISTING - enginest.2da nowhere
+	REPLACE_EVALUATE "STRREF_GUI_MIXED_EXPERIENCEENTRY[ %TAB%]+\([0-9]+\)" BEGIN
+		GET_STRREF MATCH1 xp_string	
+	END
+	""
+	INNER_PATCH "%xp_string%" BEGIN
+		// get the line ending with <LEVEL>
+		REPLACE_EVALUATE "<CLASS>\(.*\)<LEVEL>" BEGIN
+			lvl_strref=RESOLVE_STR_REF ("%MATCH1%")
+		END
+		""
+		// get the line ending with <EXPERIENCE>
+		REPLACE_EVALUATE "\(.*^.*\)<EXPERIENCE>" BEGIN
+			exp_strref=RESOLVE_STR_REF ("%MATCH1%")
+		END
+		""
+		
+	END
+
 	// install functions
 	COPY ".../stratagems-inline/m_dw_lvd.lua" override EVALUATE_BUFFER
 	COPY ".../stratagems-inline/m_dw_lvf.lua" override EVALUATE_BUFFER
 
-	// put them into the main menu
-	
-	COPY_EXISTING "ui.menu" override
-		LPF UI_alter_object STR_VAR object=CHARACTER object_type=menu patch=~~~~~ REPLACE_TEXTUALLY ~\(onOpen[^"]*"\)~ ~\1%WNL%%TAB%%TAB%dwXPAdjust()%WNL%~ ~~~~~ END
-		REPLACE_TEXTUALLY "startEngine:OnSoAButtonClick(true)" "dwLevellerSoA()%WNL%%TAB%%TAB%%TAB%startEngine:OnSoAButtonClick(true)"
-		REPLACE_TEXTUALLY "startEngine:OnToBButtonClick(true)" "dwLevellerToB()%WNL%%TAB%%TAB%%TAB%startEngine:OnToBButtonClick(true)"
-		REPLACE_TEXTUALLY "startEngine:OnTBPButtonClick(true)" "dwLevellerTBP()%WNL%%TAB%%TAB%%TAB%startEngine:OnTBPButtonClick(true)"
-		REPLACE_TEXTUALLY "startEngine:OnCampaignButtonClick(\([^,]+\),true)" "dwLevellerCampaign(\1)%WNL%%TAB%%TAB%%TAB%startEngine:OnCampaignButtonClick(\1,true)"
 END
 
 <<<<<<<<.../stratagems-inline/m_dw_lvd.lua
@@ -102,6 +115,7 @@ dwLevellerCampaignXP={}
 <<<<<<<<.../stratagems-inline/m_dw_lvf.lua
 
 function dwXPAdjust()
+	local dw_dual_class_flag=false
 	if dwAvoidRecursion or dwAvoidRecursionPortrait then return end
 	if not xpmin then
 		xpmin=0
@@ -137,7 +151,7 @@ function dwXPAdjust()
 				myxp=characters[id].classlevel.first.xp
 			else
 				myxp=characters[id].classlevel.first.xp
-				local _,_,extract=string.find(characters[id].classlevel.second.details,"(%d%d%d%d+)")	
+				local _,_,extract=string.find(characters[id].classlevel.second.details,Infinity_FetchString(%exp_strref%).."(%d+)")	
 				if extract then 
 					myxp=myxp+tonumber(extract)
 				end			
@@ -157,7 +171,7 @@ function dwXPAdjust()
 	end
 	-- my own xp
 	-- if we're zero level, give up		
-	local _,_,level_string=string.find(characters[currentID].classlevel.first.details,"}[^\n%d]+(%d+)")
+	local _,_,level_string=string.find(characters[currentID].classlevel.first.details,Infinity_FetchString(%lvl_strref%).."(%d+)")
 	local level=tonumber(level_string)
 	if not (level==0) then
 		local myxptarget=xptarget
@@ -166,19 +180,29 @@ function dwXPAdjust()
 		if characters[currentID].classlevel.second then
 			if (not characters[currentID].classlevel.second.active) or characters[currentID].classlevel.second.xp<myxp then --dual-classed
 				-- check if on the dual-class list; if so, min xp needs to allow them to reactivate their class
-				found_match=false
-				for k,v in pairs (dwLevellerDualClass) do
-					if (characters[currentID].name==Infinity_FetchString(v.name) and not v.disabled) then
-						found_match=true
-						local level=v.original_level + 1
-						local minxp=dwLevelXPMap[v.final_class][level]
-						if myxptarget<minxp then
-							myxptarget=minxp
+				-- check if has dual-class flag
+				if not dw_dual_class_flag then
+					for k,v in pairs(characters[currentID].statusEffects) do
+						if v.strRef==%dc_signal% then
+							dw_dual_class_flag=true
+						end
+					end
+				end
+				if dw_dual_class_flag then
+					found_match=false
+					for k,v in pairs (dwLevellerDualClass) do
+						if (characters[currentID].name==Infinity_FetchString(v.name) and not v.disabled) then
+							found_match=true
+							local level=v.original_level + 1
+							local minxp=dwLevelXPMap[v.final_class][level]
+							if myxptarget<minxp then
+								myxptarget=minxp
+							end
 						end
 					end
 				end
 				if not found_match then
-					_,_,extract=string.find(characters[currentID].classlevel.second.details,"(%d%d%d%d+)")					
+					_,_,extract=string.find(characters[currentID].classlevel.second.details,Infinity_FetchString(%exp_strref%).."(%d+)")				
 					if extract then
 						myxp=myxp + tonumber(extract)
 					end
@@ -188,10 +212,11 @@ function dwXPAdjust()
 			end
 		else
 			-- check if has dual-class flag
-			local dw_dual_class_flag=false
-			for k,v in pairs(characters[currentID].statusEffects) do
-				if v.strRef==%dc_signal% then
-					dw_dual_class_flag=true
+			if not dw_dual_class_flag then
+				for k,v in pairs(characters[currentID].statusEffects) do
+					if v.strRef==%dc_signal% then
+						dw_dual_class_flag=true
+					end
 				end
 			end
 			if dw_dual_class_flag then
@@ -219,137 +244,6 @@ function dwXPAdjust()
 end
 
 
-
-function dwXPAdjustOld()
-	if dwAvoidRecursion then return end
-	dwLevelUpLog={}
-	if not xpmin then
-		xpmin=0
-	end	
-	-- reload everyone's XP	
-	dwAvoidRecursion=true
-	--e:GetActiveEngine():OnLeftPanelButtonClick(4)
-	for n=0,Infinity_GetNumCharacters() - 1 do
-		Infinity_OnPortraitLClick(n)
-	end
-	--e:GetActiveEngine():OnLeftPanelButtonClick(0)
-	dwAvoidRecursion=false
-	-- get the portrait lookup data
-	local _,portraitLookup=dwFindPortraitMatch()
-	-- find target XP
-	local xptarget=0
-	for n,id in pairs (portraitLookup) do
-		local classcount=0
-		local myxp=0
-		if characters[id].classlevel.third then --- triple multiclass
-			myxp=characters[id].classlevel.first.xp*3
-		elseif characters[id].classlevel.second then -- double multiclass or else dual-class
-		-- check the DC list
-			local found_match=false
-			for k,v in pairs (dwLevellerDualClass) do
-				if (characters[id].name==Infinity_FetchString(v.name) and not v.disabled) then
-					found_match=true
-				end
-			end		
-			if found_match then
-				myxp=characters[id].classlevel.first.xp
-			else
-				myxp=characters[id].classlevel.first.xp
-				local _,_,extract=string.find(characters[id].classlevel.second.details,"(%d%d%d%d+)")	
-				if extract then 
-					myxp=myxp+tonumber(extract)
-				end			
-			end
-		else
-			myxp=characters[id].classlevel.first.xp
-		end
-		if xptarget<myxp then
-			xptarget=myxp
-		end
-	end		
-	-- scale it down
-	xptarget=math.floor (xptarget * 0.9)
-	-- floor it
-	if (xpmin>xptarget) then
-		xptarget=xpmin
-	end
-	-- cycle through all characters
-	for myportrait,id_here in pairs(portraitLookup) do
-		print('checking id '..id_here..' with portrait '..myportrait)
-		proceed=true
-		-- if we've already done this one, give up
-		if dwLevelUpLog[id_here] then
-			proceed=false
-		end
-		-- if we're zero level, give up		
-		local _,_,level_string=string.find(characters[id_here].classlevel.first.details,"}[^\n%d]+(%d+)")
-		local level=tonumber(level_string)
-		if level==0 then
-			proceed=false
-		end
-		if proceed then
-			-- log that we've done it
-			dwLevelUpLog[id_here]=true
-			local myxptarget=xptarget
-			-- find my xp
-			local myxp=characters[id_here].classlevel.first.xp
-			if characters[id_here].classlevel.second then
-				if (not characters[id_here].classlevel.second.active) or characters[id_here].classlevel.second.xp<myxp then --dual-classed
-					-- check if on the dual-class list; if so, min xp needs to allow them to reactivate their class
-					found_match=false
-					for k,v in pairs (dwLevellerDualClass) do
-						if (characters[id_here].name==Infinity_FetchString(v.name) and not v.disabled) then
-							found_match=true
-							local currentID=id_here
-							local level=v.original_level + 1
-							local minxp=dwLevelXPMap[v.final_class][level]
-							if myxptarget<minxp then
-								myxptarget=minxp
-							end
-						end
-					end
-					if not found_match then
-						_,_,extract=string.find(characters[id_here].classlevel.second.details,"(%d%d%d%d+)")					
-						if extract then
-							myxp=myxp + tonumber(extract)
-						end
-					end
-				else
-					myxp=myxp + characters[id_here].classlevel.second.xp
-				end
-			else
-				-- check if has dual-class flag
-				local dw_dual_class_flag=false
-				for k,v in pairs(characters[id_here].statusEffects) do
-					if v.strRef==%dc_signal% then
-						dw_dual_class_flag=true
-					end
-				end
-				if dw_dual_class_flag then
-					for k,v in pairs (dwLevellerDualClass) do
-						if proceed and characters[id_here].name==Infinity_FetchString(v.name) and not v.disabled then
-							local currentID=id_here
-							class=dwFindClassKit()
-							myxptarget=dwLevelXPMap[class][v.original_level]
-						end
-					end	
-				end				
-			end
-			if characters[id_here].classlevel.third then
-				myxp=myxp + characters[id_here].classlevel.third.xp
-			end
-			-- compare
- 			if (myxp+1000<myxptarget) then
-				d6,d5,d4,d3=dwGetXPDigits(myxptarget)
-				C:Eval('ApplySpellRES("dw#ausp",Myself)',myportrait) -- sets for automatic spellbook gain
-				C:Eval('ApplySpellRES("dwexp6'..d6..'",Myself)',myportrait)
-				C:Eval('ApplySpellRES("dwexp5'..d5..'",Myself)',myportrait)
-				C:Eval('ApplySpellRES("dwexp4'..d4..'",Myself)',myportrait)
-				C:Eval('ApplySpellRES("dwexp3'..d3..'",Myself)',myportrait)
-			end
-		end
-	end
-end
 
 function dwGetXPDigits(num)
 --- returns the millions, hundred-thousands, ten-thousands, and thousands digits of a number

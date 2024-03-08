@@ -237,7 +237,7 @@ DEFINE_ACTION_FUNCTION start_at_level_one_pregens BEGIN
 			PATCH_MATCH "%class%" WITH
 			RANGER BEGIN
 				INNER_ACTION BEGIN
-					LAF 2daq_extract STR_VAR resref=SKILLSHM row=1 column=MOVE_SILENTLY RET value END
+					LAF 2daq_extract STR_VAR resref=SKILLRNG row=1 column=MOVE_SILENTLY RET value END
 				END
 				SET $thief_skills("move_silently")=value				
 			END

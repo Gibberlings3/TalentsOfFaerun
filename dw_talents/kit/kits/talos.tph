@@ -51,12 +51,18 @@ DEFINE_ACTION_FUNCTION fury_of_talos BEGIN
 		k.kit_match_usability{barbarian}
 		k.kit_set_alignment{cn ne ce}
 		k_colors:="25,83,66,28,23"
-		
+	
 	]
+	LAF prof_copy INT_VAR only_if_nonzero=1 STR_VAR copy_to="%kit%" copy_from=BARBARIAN END
 	LAF cleric_kit_substitutions STR_VAR kit god=talos END
 	LAF assign_spheres STR_VAR kit default=cleric add="air talos_allow" subtract="good charm wards" END
 	LAF assign_bonus_spells STR_VAR kit spells="SHOCKING_GRASP MINOR_LIGHTNING_BOLT LIGHTNING_BOLT CHAIN_LIGHTNING" END
 	LAF set_multiclass_components STR_VAR kit components="barbarian talos"  END
+
+	ACTION_IF barbarian_class BEGIN
+		LAF assign_kit_to_virtual_class STR_VAR kit class=barbarian_cleric END	
+	END
+	
 	LAF holy_symbol INT_VAR name=2054 follower=2055 STR_VAR kit desc_bam=pbelt14 inv_bam=ibelt14 kit END
 
 END

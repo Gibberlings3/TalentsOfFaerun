@@ -15,6 +15,11 @@ DEFINE_ACTION_FUNCTION leveller_2 BEGIN
 	OUTER_SPRINT string @55
 	LAF resolve_statdesc STR_VAR bam="****" string RET dual_class_stat=stat_num END
 
+	// remove known/memorized spells (necessary b/c people can class-change into shaman or sorcerer)
+	
+	LAF remove_joinable_spells INT_VAR remove_known=1 remove_memorized=1 END
+
+
 	// setup general detection
 	LAF ui_detect_class_kit END
 

@@ -10,7 +10,7 @@ DEFINE_ACTION_FUNCTION talona_cleric BEGIN
 		k_name:=@104
 		k_desc:=@105
 		k.kit_apply_powers{%spl_talona_disease_immunity% 1,%spl_talona_poison_immunity% 4}
-		k.kit_grant_powers{%spl_talona_cause_disease% 3 6,%spl_talona_mold_touch% 5 6,%spl_talona_poison_weapon% 6 6,%spl_talona_cloud_of_pestilence% 7 6}
+		k.kit_grant_powers{%spl_talona_cause_disease% 3 6,%spl_talona_mold_touch% 5 6,%ASSASSIN_POISON% 6 6,%spl_talona_cloud_of_pestilence% 7 6}
 		k_color_metal=35
 		k_color_minor_cloth=52
 		k_color_main_cloth=103
@@ -78,7 +78,7 @@ DEFINE_ACTION_FUNCTION necromancer_of_talona BEGIN
 		k_name:=@118
 		k_desc:=@119
 		k.kit_apply_powers{%spl_talona_disease_immunity% 1,%spl_talona_poison_immunity% 4|class=cleric}
-		k.kit_grant_powers{%spl_talona_cause_disease% 3 6,%spl_talona_mold_touch% 5 6,%spl_talona_poison_weapon% 6 6,%spl_talona_cloud_of_pestilence% 7 6|class=cleric}
+		k.kit_grant_powers{%spl_talona_cause_disease% 3 6,%spl_talona_mold_touch% 5 6,%ASSASSIN_POISON% 6 6,%spl_talona_cloud_of_pestilence% 7 6|class=cleric}
 		k_color_minor_cloth=52
 		k_color_main_cloth=103
 		k.kit_set_alignment{le ne ce}

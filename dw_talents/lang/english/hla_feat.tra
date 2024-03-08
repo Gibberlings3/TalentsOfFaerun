@@ -6,6 +6,9 @@
 @6 = "The character's mastery of electrical magic grants them +10% electrical resistance, and a 20% increase to all electrical damage done."
 @7 = "Aqua Mortis"
 @8 = "The character's mastery of acid magic grants them +10% acid resistance, and a 20% increase to all acid damage done."
+@9 = "Concentrated Venom"
+@10 = "The character's mastery of poison magic grants them +10% poison resistance, and a 20% increase to all poison damage done."
+
 
 
 @11 = "Extra Level 1 Spell"
@@ -288,7 +291,7 @@ Characters with this ability can opt to use this poison when they activate their
 @1062="NUMBER level CLASS"
 @1063="high"
 @1070="Favored Soul"
-@1071="Fighter/Paladin/Ranger"
+@1071="Barbarian / Blackguard / Fighter / Paladin / Ranger"
 
 
 

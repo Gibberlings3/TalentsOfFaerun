@@ -16,7 +16,7 @@ DEFINE_ACTION_FUNCTION 3e_abilities STR_VAR version=1 BEGIN   /// 1 hybrid, 2 e3
 	
 	// load data
 	
-	LAF ds_resolve_stat STR_VAR id=DW_FAVORED_SOUL RET favored_soul_stat=stat_ind END
+	LAF ds_resolve_stat STR_VAR id=DW_VIRTUAL_CLASS_MARKER RET favored_soul_stat=stat_ind END
 	LAF load_3e_abil_data INT_VAR hybrid_bonuses RET_ARRAY 3e_abil_modifiers END
 	
 	// make the spells that grant extra spells
@@ -181,6 +181,18 @@ DEFINE_ACTION_FUNCTION 3e_abilities STR_VAR version=1 BEGIN   /// 1 hybrid, 2 e3
 	STRING_SET 9586 @5
 	STRING_SET 9587 @6
 	
+	// edit monk description to note that they benefit from wisdom boost
+	
+	LAF 2daq_extract STR_VAR resref=clastext row=MONK column=DESCSTR RET strref=value END
+	ACTION_GET_STRREF strref desc
+	OUTER_PATCH_SAVE desc "%desc%" BEGIN
+		SPRINT old @7
+		SPRINT new @8
+		REPLACE_TEXTUALLY "%old%" "%new%"
+	END
+	STRING_SET_EVALUATE strref "%desc%"
+	STRING_SET_EVALUATE strref "%desc%"
+	
 	// remove ability restrictions
 	
 	LAF check_ini STR_VAR ini=remove_class_ability_score_requirements RET value END
@@ -202,7 +214,7 @@ DEFINE_ACTION_FUNCTION 3e_abilities STR_VAR version=1 BEGIN   /// 1 hybrid, 2 e3
 		8=>10
 		9=>10
 	END
-
+	PRINT "do we get to here?"
 	COPY_EXISTING_REGEXP GLOB ".*\.cre" override
 		PATCH_IF (BYTE_AT 0x273) <=21 BEGIN // filter for PC classes
 			con=BYTE_AT 0x23d
@@ -219,16 +231,12 @@ DEFINE_ACTION_FUNCTION 3e_abilities STR_VAR version=1 BEGIN   /// 1 hybrid, 2 e3
 	ACTION_IF value BEGIN
 		
 		WITH_TRA "%scs_tra_loc%/english/hla_feat.tra" "%scs_tra_loc%/%LANGUAGE%/hla_feat.tra" BEGIN
-		
+			PRINT "maybe even as far as here?"
 			OUTER_SPRINT component_loc hla_feat
 			LAF include STR_VAR file=make_feats.tph END
 			LAF include STR_VAR file=feat_spec.tph END
-			LAF read_in_class_names RET_ARRAY class_names END
-			LAF read_in_kit_names RET_ARRAY kit_names END
-			LAF read_in_feats STR_VAR location=data table=feat_table_fop.2da RET_ARRAY feat_names END
-			LAF read_in_basic_requirements_map RET_ARRAY basic_requirements_map END
-			LAF 2da_process_table INT_VAR STR_VAR table=feat_table_fop.2da location=data function=make_feats_core END
 			LAF include STR_VAR file=install_feats.tph END
+			LAF make_feats STR_VAR feat_table=feat_table_fop.2da location=data END
 			LAF install_feats STR_VAR feat_table=feat_table_fop.2da location=data END
 		
 			// clunky one-off removal of HLA from paladins/blackguards
@@ -456,7 +464,7 @@ DEFINE_ACTION_FUNCTION remove_ability_restrictions BEGIN
 			END
 			DEFAULT
 				SPRINT desc_strref $array("%row%" "HELP")
-				PATCH_IF IS_AN_INT desc_strref BEGIN
+				PATCH_IF IS_AN_INT desc_strref && desc_strref>=0 BEGIN
 					GET_STRREF desc_strref desc
 					INNER_PATCH_SAVE desc "%desc%" BEGIN
 						SPRINT old @25

@@ -14,11 +14,6 @@ BREATH WEAPON: The Dragon Disciple breathes a bolt of lightning up to 60 ft. lon
 
 - 4th level: Gains 25% innate Electricity Resistance. This increases to 50% at 8th level, to 75% at 12th level, and to a maximum of 100% at 16th level.
 - 5th level: +1 bonus to Constitution. This increases to +2 at 15th level.
-- 6th level: May use breath weapon twice per day.
-- 7th level: Gains immunity to hold.
-- 12th level: May use breath weapon three times per day.
-- 13th level: Gains immunity to charm.
-- 18th level: May use breath weapon four times per day.
 - Hit Die: d6
 
 Disadvantages:
@@ -34,11 +29,6 @@ BREATH WEAPON: The Dragon Disciple breathes a cone of caustic and poisonous gas,
 
 - 4th level: Gains 25% innate Poison Resistance. This increases to 50% at 8th level, to 75% at 12th level, and to a maximum of 100% at 16th level.
 - 5th level: +1 bonus to Constitution. This increases to +2 at 15th level.
-- 6th level: May use breath weapon twice per day.
-- 7th level: Gains immunity to hold.
-- 12th level: May use breath weapon three times per day.
-- 13th level: Gains immunity to charm.
-- 18th level: May use breath weapon four times per day.
 - Hit Die: d6
 
 Disadvantages:
@@ -54,11 +44,6 @@ BREATH WEAPON: The Dragon Disciple breathes a narrow cone of acid up to 60 ft. l
 
 - 4th level: Gains 25% innate Acid Resistance. This increases to 50% at 8th level, to 75% at 12th level, and to a maximum of 100% at 16th level.
 - 5th level: +1 bonus to Constitution. This increases to +2 at 15th level.
-- 6th level: May use breath weapon twice per day.
-- 7th level: Gains immunity to hold.
-- 12th level: May use breath weapon three times per day.
-- 13th level: Gains immunity to charm.
-- 18th level: May use breath weapon four times per day.
 - Hit Die: d6
 
 Disadvantages:
@@ -74,11 +59,6 @@ BREATH WEAPON: The Dragon Disciple breathes a cone of ice up to 30 ft. long, inf
 
 - 4th level: Gains 25% innate Cold Resistance. This increases to 50% at 8th level, to 75% at 12th level, and to a maximum of 100% at 16th level.
 - 5th level: +1 bonus to Constitution. This increases to +2 at 15th level.
-- 6th level: May use breath weapon twice per day.
-- 7th level: Gains immunity to hold.
-- 12th level: May use breath weapon three times per day.
-- 13th level: Gains immunity to charm.
-- 18th level: May use breath weapon four times per day.
 - Hit Die: d6
 
 Disadvantages:
@@ -94,11 +74,6 @@ BREATH WEAPON: The Dragon Disciple breathes a gout of flame up to 30 ft. long, i
 
 - 4th level: Gains 25% innate Fire Resistance. This increases to 50% at 8th level, to 75% at 12th level, and to a maximum of 100% at 16th level.
 - 5th level: +1 bonus to Constitution. This increases to +2 at 15th level.
-- 6th level: May use breath weapon twice per day.
-- 7th level: Gains immunity to hold.
-- 12th level: May use breath weapon three times per day.
-- 13th level: Gains immunity to charm.
-- 18th level: May use breath weapon four times per day.
 - Hit Die: d6
 
 Disadvantages:
@@ -112,8 +87,7 @@ The character breathes a cloud of caustic and poisonous gas, inflicting 3d8 poin
 The character breathes a stream of acid, inflicting 3d8 points of acid damage on all creatures caught within the stream. The ability deals an additional 1d8 points of acid damage for every three levels beyond 3rd level the character has attained (4d8 at 6th level, 5d8 at 9th level, and so on, up to a maximum of 8d8 at 18th level)."
 @15="Breath Weapon
 The character breathes a cone of ice and snow, inflicting 3d8 points of cold damage on all creatures caught within the 140-degree cone. The ability deals an additional 1d8 points of cold damage for every three levels beyond 3rd level the character has attained (4d8 at 6th level, 5d8 at 9th level, and so on, up to a maximum of 8d8 at 18th level)."
-@16="Gains immunity to charm" // must exactly match substring in @6-@10
-@17="Gains immunity to hold" // must exactly match substring in @6-@10
+
 @18="DRAGON DISCIPLE" // must match exactly the string in the class description"
 @19="RED DRAGON DISCIPLE"
 @20="Breath Weapon
@@ -126,7 +100,23 @@ Advantages:
 - 1st level: +1 bonus to AC. This increases to +2 at 5th level, to +3 at 10th level, to +4 at 15th level, and to a maximum of +5 at 20th level.
 - 3rd level: May use Breath Weapon once per day.
 
-BREATH WEAPON: The Dragon Disciple has a breath weapon that inflicts 3d8 damage, with an area and a damage type dependent on the disciple's dragon species. The damage increases by 1d8 every three levels after 3rd level, to a maximum of 8d8 at 18th level.
+BREATH WEAPON: The Dragon Disciple has a breath weapon that inflicts 3d8 damage, with an area and a damage type dependent on the disciple's dragon species. The damage increases by 1d8 every three levels after 3rd level, to a maximum of 8d8 at 18th level. 
+
+- 4th level: Gains 25% innate resistance to an element dependent on the disciple's dragon species. This increases to 50% at 8th level, to 75% at 12th level, and to a maximum of 100% at 16th level.
+- 5th level: +1 bonus to Constitution. This increases to +2 at 15th level.
+- Hit Die: d6
+
+Disadvantages:
+- May cast one fewer spell per level per day."
+@23="Choose Dragon"
+
+@24="DRAGON DISCIPLE: Dragon Disciples are powerful Sorcerers with dragons' blood somewhere in their lineage. Their natural magical talents bring out their draconic heritage, allowing them to cast powerful magical spells and exhibit dragon-like abilities. Each Dragon Disciple has the blood of a specific dragon species: red, blue, green, black, or white.
+
+Advantages:
+- 1st level: +1 bonus to AC. This increases to +2 at 5th level, to +3 at 10th level, to +4 at 15th level, and to a maximum of +5 at 20th level.
+- 3rd level: May use Breath Weapon once per day. An additional use is gained every third level, up to a maximum of six uses at level 18.
+
+BREATH WEAPON: The Dragon Disciple has a breath weapon that inflicts 3d8 damage, with an area and a damage type dependent on the disciple's dragon species. The damage increases by 1d8 every three levels after 3rd level, to a maximum of 8d8 at 18th level. 
 
 - 4th level: Gains 25% innate resistance to an element dependent on the disciple's dragon species. This increases to 50% at 8th level, to 75% at 12th level, and to a maximum of 100% at 16th level.
 - 5th level: +1 bonus to Constitution. This increases to +2 at 15th level.
@@ -136,10 +126,7 @@ BREATH WEAPON: The Dragon Disciple has a breath weapon that inflicts 3d8 damage,
 
 Disadvantages:
 - May cast one fewer spell per level per day."
-@23="Choose Dragon"
-@24="May use breath weapon twice per day." // these must exactly match strings in @6-@10
-@25="May use breath weapon three times per day."
-@26="May use breath weapon four times per day."
+
 
 
 @51="Red Dragon"
@@ -147,3 +134,9 @@ Disadvantages:
 @53="Green Dragon"
 @54="Black Dragon"
 @55="White Dragon"
+
+@59="May use Breath Weapon once per day." // must match strings in above description
+@60="An additional use is gained every third level, up to a maximum of six uses at level 18."
+@61="7th level: Gains immunity to hold."
+@62="13th level: Gains immunity to charm."
+@63="Hit Die: d6"// must match strings in above description

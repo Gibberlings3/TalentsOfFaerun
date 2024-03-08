@@ -1,9 +1,8 @@
 DEFINE_ACTION_FUNCTION ui_inn_label BEGIN
 
+	LAF ui_system_call_setup END
 	ACTION_IF !FILE_EXISTS_IN_GAME "m_dw_ilf.lua" BEGIN //only run once
 		COPY ".../stratagems-inline/m_dw_ilf.lua" override
-		COPY_EXISTING "ui.menu" override
-			REPLACE_TEXTUALLY "storeScreen:OnRentRoomButtonClick()" "dwOnRentRoomButtonClick()"		
 			
 		// get global scripts
 		

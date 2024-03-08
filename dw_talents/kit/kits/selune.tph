@@ -78,7 +78,6 @@ DEFINE_ACTION_FUNCTION sword_of_selune BEGIN
 		k_color_main_cloth=58
 		k_color_leather=25
 		k_color_armor=80	
-		k_sling=0
 		k_swordandshield=0
 		k.kit_match_usability{kensai}
 		k.kit_set_alignment{ng cg cn}
@@ -86,7 +85,7 @@ DEFINE_ACTION_FUNCTION sword_of_selune BEGIN
 	]
 
 	LAF cleric_kit_substitutions STR_VAR kit god=selune END
-
+	LAF prof_adjust STR_VAR kit arguments=ranged patch="value=0" END
 	LAF assign_spheres STR_VAR kit default=cleric subtract="evil necromantic" add="moon fey selune_allow" END
 	LAF holy_symbol INT_VAR name=2000 follower=2001 STR_VAR kit desc_bam=cdpslhly inv_bam=cdislhly bam_path=dr kit END
 	LAF adjust_cleric_stronghold STR_VAR lathander=all kit END

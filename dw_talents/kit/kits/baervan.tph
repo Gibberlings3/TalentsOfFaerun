@@ -57,13 +57,6 @@ DEFINE_ACTION_FUNCTION forester_of_baervan BEGIN
 		k.kit_apply_powers{%archer_buff% 3 3,%spl_ranger_charm_remover% 1 1|class=ranger}
 		k_color_minor_cloth=56
 		k_color_main_cloth=41
-		k_warhammer=1
-		k_club=1
-		k_flailmorningstar=1
-		k_mace=1
-		k_quarterstaff=1
-		k_longbow=4
-		k_shortbow=4
 		k_2handed=1
 		k_swordandshield=1
 		k_singleweapon=1
@@ -76,7 +69,8 @@ DEFINE_ACTION_FUNCTION forester_of_baervan BEGIN
 		k_half_elf=1
 		k.kit_set_alignment{lg ng cg}
 	]
-	
+
+	LAF prof_copy INT_VAR only_if_nonzero=1 STR_VAR copy_from=FERALAN copy_to="%kit%" END
 	LAF cleric_kit_substitutions STR_VAR kit god=baervan END
 
 	LAF holy_symbol INT_VAR name=2040 follower=2041 STR_VAR inv_bam=ibeltbw desc_bam=cbeltbw kit END

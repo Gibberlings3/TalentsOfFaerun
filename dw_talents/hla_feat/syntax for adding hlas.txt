@@ -1,0 +1,63 @@
+Both install_feats and make_feats work by processing an INI file with entries like
+
+[WIZARD_GAZE_OF_THE_MEDUSA]
+resref=spl_hla_gaze_medusa
+type=grant
+name:i=3338
+desc:i=3339
+select_desc=overlay
+prerequisite=ARCANE_KNOWLEDGE_ALTERATION[DW_ELEMENTALIST_EARTH]
+require_1=ARCANE_9
+exclude_kit=NOT_SCHOOL(alteration)|DW_ELEMENTALIST_AIR|DW_FORCE_MAGE
+special=copy[spwi604]|edit
+
+Each defines one HLA. The section header (in the above case, 'WIZARD_GAZE_OF_THE_MEDUSA') is a unique identifier for your HLA (in a third-party context it should probably have a modder prefix). It is not used inside the IE and so can have any format, but I recommend UPPERCASED_STRINGS_WITHOUT_SPACES.
+
+Permitted keys are
+
+
+- resref (required): the resref of the spell that defines the HLA. If the resref is a variable name, that variable will be evaluated and its value will be used instead. make_feats will create the spell (as a blank spell with one header) if it does not exist already. install_feats will do nothing if the spell does not exist.
+- type (required): 'grant' or 'apply'. Determines whether the spell is applied to or granted to characters who select it from the HLA menu.
+- name:i : a lookup in the currently-loaded tra file, used as the spell's name. (If not set, the spell's name is unchanged)
+- desc:i : a lookup in the currently-loaded tra file, used as the spell's description. (If not set, the spell's description is unchanged.)
+- select_desc: this is used to override the description and/or name on the HLA selection screen. 
+	-If it is set to an integer, the tra reference for that integer in the currently-loaded tra file is used as the HLA's description on that screen.
+	-If it is set to 'overlay', the HLA description will include information about what the requirements and prerequisites are for the HLA (but will otherwise match the spell).
+	-if it is set to 'extra_spell', the HLA name and description on the selection screen will be set as appropriate for an additional spell slot at a given level
+	-If it is set to 'extra_use', the HLA name and description on the selection screen will be set as appropriate for an additional use of an ability.
+	-If it is set to 'n_X', where X is an integer, the tra reference for that integer in the currently-loaded tra file is used as the HLA's name on the selection screen.
+	-If it is set to 't_X', where X is an integer, the tra reference for the integer in the currently-loaded tra file is displayed at the top of the HLA's description on the selection screen.
+
+-prerequisite: This is an HLA that is required before this HLA can be selected. It should be the ID of an HLA defined in the current ini file or that already exists. (Note that the IDs for vanilla-game HLAs are just their spell.ids names.)
+You can put a comma-separated list of kits, in square brackets after the prerequisite (e.g. CRITICAL_STRIKE[KENSAI,WIZARD_SLAYER] ). These kits are exempt from the prerequisite.
+
+max_count:i : the number of times the HLA can be selected (default is 1)
+
+- require_1 through require_5: these define which classes and kits get HLAs, and (if desired) at what level. There are a number of possible formats:
+
+[everyone gets it]
+'NONE' gives the HLA to every class and kit.
+
+[assignment by class or kit]
+'class' (where 'class' is an entry from class.ids) gives the HLA to all characters of this class (and to any multiclass character of that class). 'Class' can be a virtual class (as defined by the ui_virtual_class_kit), in which case it should be set to the template kit for that virtual class. The functions automatically treat 'BLACKGUARD' and 'BARBARIAN' as virtual classes (so Barbarians won't get HLAs assigned to 'FIGHTER' and Blackguards won't get HLAs assigned to 'PALADIN').
+'kit' (where 'kit' is an entry from the ROWNAME column of kitlist.2da) gives the HLA to that kit only (and to any multiclass character with that kit as part of their multiclass kit).
+'WARRIOR' gives the HLA to all fighters, paladins, rangers, barbarians, and blackguards.
+'DRAGON_DISCIPLE' gives the HLA to all characters in the 5 dragon disciple kits used by Talents of Faerun
+
+For each of these, adding a number after the class/kit (as in 'ALL_7' or 'CLERIC_5' or 'WARRIOR_3') requires the character to have reached this experience level to be eligible for the HLA. (The system cannot assign different levels to the same HLA for a class and an overlapping virtual class: you can't have PALADIN_7 and BLACKGUARD_9 in the same HLA, for instance.)
+
+[assignment by spell type]
+ARCANE_n or DIVINE_n gives the HLA to every class or kit capable of casting arcane or divine spells of that level.
+'sphere' gives the HLA to every cleric, druid or shaman with access to that sphere.
+
+[assignment by skill]
+STEALTH, DETECT_ILLUSION, FIND_TRAPS, PICK_POCKETS, SET_TRAPS makes it accessible to characters with that skill. The system is not clever enough to know when a kit, e.g. the Shadowdancer, is explicitly denied access to a skill (you should exclude them explicitly).
+
+[misc]
+CASTER makes the HLA available to every spellcasting class (i.e. everyone except barbarians, fighters, thieves and monks). The system is not clever enough to know when a kit, e.g. the Inquisitor, is explicitly denied access to a skill (you should exclude them explicitly).
+FULL_CASTER makes it available to clerics, druids, shamans, mages, sorcerers, bards, and the Favored Soul virtual class.
+TURN_UNDEAD documents that the HLA requires the Turn Undead ability, but has no actual effect (you need to set it explicitly).
+
+- exclude_kit: a |-separated list of kits (i.e. kitlist rowname entries). Any kit on the list doesn't get the HLA. Instead of a kit, you can enter '
+
+...more to write but I'm getting bored.

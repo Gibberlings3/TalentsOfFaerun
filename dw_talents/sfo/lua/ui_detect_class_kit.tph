@@ -16,6 +16,9 @@ Detection algorithm (non-chargen version)
 
 DEFINE_ACTION_FUNCTION ui_detect_class_kit STR_VAR version="" BEGIN // version 1 is debug
 
+	LAF ui_on_open_setup END
+	LAF ui_system_call_setup END
+
 	// UI edits, only do once
 	
 	LAF check_label STR_VAR label=dw#detect_class_kit_ui_edits RET value END
@@ -46,45 +49,6 @@ DEFINE_ACTION_FUNCTION ui_detect_class_kit STR_VAR version="" BEGIN // version 1
 
 		// install the functions
 		COPY ".../stratagems-inline/m_dw_dkf.lua" override EVALUATE_BUFFER
-
-		// edit the menu to keep currentID up-to-date
-		// (it's updated when you hit the character screen, but for some reason the inventory and mage/priest spell screens use id, not currentID)
-		// likewise id gets updated when you use the select portrait but currentID doesn't
-		
-		ACTION_IF !FILE_EXISTS "weidu_external/markers/dw-update-currentID.mrk" BEGIN
-			COPY_EXISTING "spwi304.spl" "weidu_external/markers/dw-update-currentID.mrk" 
-			COPY_EXISTING "ui.menu" override
-				PATCH_FOR_EACH object IN MAGE PRIEST INVENTORY BEGIN
-					LPF UI_alter_object STR_VAR object object_type=menu patch=update_currentID END
-				END
-				REPLACE_TEXTUALLY "Infinity_OnPortraitLClick(\([0-9]\))" "Infinity_OnPortraitLClick(\1); currentID=id"
-			BUT_ONLY
-		END
-		
-		// also update the menu to run the portrait match function whenever the main world screen is opened (this is just to make sure the data is available)
-		
-		ACTION_IF !RESOURCE_CONTAINS "ui.menu" "dwPortraitMatch" BEGIN
-			COPY_EXISTING "ui.menu" override
-			LPF UI_alter_object STR_VAR object=WORLD_ACTIONBAR object_type=menu patch=~~~~~REPLACE_TEXTUALLY ~\(onOpen[^"]*"\)~  ~\1%WNL%%TAB%%TAB%dwFindPortraitMatch()%WNL%~  ~~~~~ END
-		END
-		
-		// also edit the menu to record original class/kit on dual-classing, and alignment on chargen
-		
-		ACTION_IF !RESOURCE_CONTAINS "ui.menu" "dwOriginalClass,dwOriginalKit" BEGIN
-			COPY_EXISTING "ui.menu" override
-				REPLACE_TEXTUALLY EXACT_MATCH 
-					"characterScreen:OnDualClassButtonClick()" 
-					"dwOriginalClass,dwOriginalKit=dwFindClassKit(2);characterScreen:OnDualClassButtonClick()"
-				REPLACE_TEXTUALLY EXACT_MATCH
-					"createCharScreen:OnAlignmentSelectButtonClick(chargen.alignment[currentChargenAlignment].id)"
-					"dwChargenAlignment=chargen.alignment[currentChargenAlignment].id;createCharScreen:OnAlignmentSelectButtonClick(chargen.alignment[currentChargenAlignment].id)"
-				// this last one for Lefreut
-				REPLACE_TEXTUALLY EXACT_MATCH
-					"createCharScreen:OnAlignmentSelectButtonClick(allChargenAlignments[currentChargenAlignment].id)"
-					"dwChargenAlignment=chargen.alignment[currentChargenAlignment].id;createCharScreen:OnAlignmentSelectButtonClick(allChargenAlignments[currentChargenAlignment].id)"
-
-			BUT_ONLY
-		END
 
 
 
@@ -278,12 +242,7 @@ DEFINE_ACTION_FUNCTION ui_detect_class_kit STR_VAR version="" BEGIN // version 1
 
 END
 
-////////////////////////////////////////////////////////////////
 
-
-DEFINE_PATCH_FUNCTION update_currentID BEGIN
-	REPLACE_TEXTUALLY ~onOpen\([^"]*\)"~ ~onOpen\1"%WNL%%TAB%currentID=id%WNL%~
-END
 
 ////////////////////////////////////////////////////////////////
 /// This gives you a class-dependent, kit-dependent title change
@@ -497,7 +456,12 @@ END
 
 <<<<<<<< .../stratagems-inline/m_dw_dkf.lua
 
--- exposed functions
+function dwUpdateCurrentID()
+
+currentID=id
+
+end
+
 
 function dwFindClassKit(var)
 
@@ -551,10 +515,12 @@ function dwFindClassKit(var)
 
 end
 
+function dwFindClassKit2()
+	dwFindClassKit(2)
+end
+
 
 function dwClassLevelOld()  -- return class and kit before level-up
-							-- only used by ui_externalize_hlas, but as a matter of coding practice the method
-							-- by which we detect classes ought to be localized to this library
 
 	local class,level,class2,level2,class3,level3
 	local data=characters[currentID].classlevel
@@ -600,7 +566,7 @@ function dwClassLevelNew() -- return class and kit after level-up
 
 end
 
-function dwFindAlignment()
+function dwFindAlignment(var)
 
 	if (dwIsChargen or dwIsDualClassing or var==1) and not (var==2) then
 	
@@ -636,7 +602,7 @@ function dwFindAlignment()
 
 end
 
-function dwFindRace()
+function dwFindRace(var)
 
     if (dwIsChargen or dwIsDualClassing or var==1) and not (var==2) then
 		if currentChargenRace then
@@ -797,6 +763,9 @@ function dwFindPortraitMatch()
 	return dwPortraitLookup,dwPortraitLookupBackwards
 end
 
+function dwRecordChargenAlignment()
+	dwChargenAlignment=chargen.alignment[currentChargenAlignment].id
+end
 
 
 -- local functions
@@ -805,7 +774,9 @@ function dwClassKitByName(kittext)
 
 	local class,kit=0,0
 	if kittext then
-		_,_,kit,class=string.find(kittext,"K=(%d+),C=(%d+)")
+	--a certain delicacy is required to handle multiclass characters one of whose classes is kitted (specialist mages, mostly)
+		_,_,_,class=string.find(kittext,"{K=(%d+),C=(%d+)}[^}]*$") -- class should be from *last* entry
+		_,_,kit,_=string.find(kittext,"^[^}]*{K=(%d+),C=(%d+)}") -- kit should be from *first* entry
 	end
 	return tonumber(class),tonumber(kit)
 

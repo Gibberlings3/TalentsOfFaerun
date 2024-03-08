@@ -12,7 +12,7 @@ Dexterity affects a character's Armor Class (making you easier or harder to stri
 Minimum: <MINIMUM>
 Maximum: <MAXIMUM>"
 
-@3="CONSTITUTION: Constitution measures a character's fitness, health, and physical resistance to hardship, injury, and disease. Constitution is important to all characters because it affects hit points. 
+@3="CONSTITUTION: Constitution measures a character's fitness, health, and physical resistance to hardship, injury, and disease. Constitution is important to all characters. 
 
 Constitution affects a character's hit points (how much damage you can take before dying) and saving throws vs. Poison/Paralysis/Death and Petrification/Polymorph (resisting the effects of poison, etc.).
 
@@ -26,21 +26,22 @@ Intelligence affects the number of magic spells that a wizard can cast each day,
 Minimum: <MINIMUM>
 Maximum: <MAXIMUM>"
 
-@5="WISDOM: Wisdom measures a character's enlightenment, judgment, and common sense.  Wisdom is most important to clerics, druids, paladins, rangers, and shamans, but helps any character that wants ability to resist controlling magic. It also affects the Armor Class of an unarmored monk, making you easier or harder to strike in combat.
+@5="WISDOM: Wisdom measures a character's enlightenment, judgment, and common sense.  Wisdom is most important to clerics, druids, monks, paladins, rangers, and shamans, but helps any character that wants ability to resist controlling magic.
 
 Wisdom affects saving throws vs. spells (resisting a harpy's charming song, etc.) and the number of divine magic spells that clerics, druids, paladins, rangers, and shamans can cast each day. It also provides an additional bonus to a monk's Armor Class.
 
 Minimum: <MINIMUM>
 Maximum: <MAXIMUM>"
 
-@6="CHARISMA: Charisma measures a character's force of personality, persuasiveness, personal magnetism, and ability to lead.  Charisma is most important for favored souls, paladins, sorcerers, and bards.
+@6="CHARISMA: Charisma measures a character's force of personality, persuasiveness, personal magnetism, and ability to lead.  Charisma is most important for favored souls, paladins, blackguards, sorcerers, and bards.
 
-Charisma affects the number of spells that favored souls, sorcerers, and bards can cast each day, the power of a cleric or paladin's Turn Undead ability, and the prices charged by stores. It also provides an additional bonus to a paladin's saving throws.
+Charisma affects the number of spells that favored souls, sorcerers, and bards can cast each day, the power of a cleric or paladin's Turn Undead ability, and the prices charged by stores. It also provides an additional bonus to a paladin's or blackguard's saving throws.
 
 Minimum: <MINIMUM>
 Maximum: <MAXIMUM>"
 
-
+@7="May not wear any armor." // should match description in Monk character text
+@8="May not wear any armor, but add Wisdom bonus to armor class."
 
 
 

@@ -41,7 +41,7 @@ DEFINE_ACTION_FUNCTION paladin_smite_evil BEGIN
 	spl.copy[%spl_smite_evil_payload%=>%spl_smite_good_payload%]
 	[
 		m_name:=@712
-		m.ab_fx.alter{ s_parameter2=35 s_resource:="%spl_smite_good_payload%"| match="s_opcode=324"}
+		m.ab_fx.alter{ s_parameter2=34 s_resource:="%spl_smite_good_payload%"| match="s_opcode=324"}
 		m.ab_fx.alter{ s_resource:="%spl_smite_good_cosmetic%"|match="s_opcode=146"}
 	]
 
@@ -51,14 +51,30 @@ DEFINE_ACTION_FUNCTION paladin_smite_evil BEGIN
 		m.ab.alter{s_level=1 s_projectile=195}
 	]
 	
+	// make blackguard variant versions
+	
+	spl.copy[%spl_smite_good_payload%=>%spl_smite_order_payload%]
+	[
+		m_name:=@720
+		m.ab_fx.alter{ s_parameter2=60 s_resource:="%spl_smite_order_payload%"| match="s_opcode=324"}
+	]
+
+	spl.copy[%spl_smite_good_payload%=>%spl_smite_chaos_payload%]
+	[
+		m_name:=@722
+		m.ab_fx.alter{ s_parameter2=62 s_resource:="%spl_smite_chaos_payload%"| match="s_opcode=324"}
+	]	
+	
 	// make undead-hunter and cavalier versions
 	
 	spl.copy[%spl_smite_evil_payload%=>%spl_smite_evil_undead_hunter_payload%]
 	[
+		m.ab_fx.alter{s_resource:=%spl_smite_evil_undead_hunter_payload%|match="s_opcode=324"}
 		m.ab_fx.add{s_opcode=326 s_target=2 s_timing=9 s_parameter1=0 s_parameter2=1 s_resource:="%spl_smite_evil_extra_damage%"}
 	]
 	
 	COPY_EXISTING "%spl_smite_evil_payload%.spl" "override/%spl_smite_evil_cavalier_payload%.spl"
+		LPF ALTER_EFFECT INT_VAR match_opcode=324 STR_VAR resource="%spl_smite_evil_cavalier_payload%" END
 		PATCH_FOR_EACH race IN demonic darkplanatar antisolar salamander BEGIN
 			LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 timing=1 parameter1=IDS_OF_SYMBOL (race "%race%") parameter2=104 STR_VAR resource="%spl_smite_evil_extra_damage%" END
 		END
@@ -75,10 +91,12 @@ DEFINE_ACTION_FUNCTION paladin_smite_evil BEGIN
 	
 	// create the actual spells
 	
-	LAF make_smite_evil_spell INT_VAR color=115 name=705 description=708 STR_VAR payload="%spl_smite_evil_payload%" removal="%spl_smite_evil_removal%" root=dwsmt spell="%PALADIN_SMITE_EVIL%" END
-	LAF make_smite_evil_spell INT_VAR color=115 name=705 description=710 STR_VAR payload="%spl_smite_evil_cavalier_payload%" removal="%spl_smite_evil_removal_cavalier%" root=dwsmc spell="%spl_smite_evil_cavalier%" END
-	LAF make_smite_evil_spell INT_VAR color=115 name=705 description=711 STR_VAR payload="%spl_smite_evil_undead_hunter_payload%" removal="%spl_smite_evil_removal_undead_hunter%" root=dwsmu spell="%spl_smite_evil_undead_hunter%" END
-	LAF make_smite_evil_spell INT_VAR color=195 name=712 description=713 smite_good=1 STR_VAR payload="%spl_smite_good_payload%" removal="%spl_smite_good_removal%" root=dwsmg spell="%spl_smite_good%" END
+	LAF make_smite_evil_spell INT_VAR color=115 name=705 description=708 STR_VAR type=evil payload="%spl_smite_evil_payload%" removal="%spl_smite_evil_removal%" root=dwsmt spell="%PALADIN_SMITE_EVIL%" END
+	LAF make_smite_evil_spell INT_VAR color=115 name=705 description=710 STR_VAR type=evil payload="%spl_smite_evil_cavalier_payload%" removal="%spl_smite_evil_removal_cavalier%" root=dwsmc spell="%spl_smite_evil_cavalier%" END
+	LAF make_smite_evil_spell INT_VAR color=115 name=705 description=711 STR_VAR type=evil payload="%spl_smite_evil_undead_hunter_payload%" removal="%spl_smite_evil_removal_undead_hunter%" root=dwsmu spell="%spl_smite_evil_undead_hunter%" END
+	LAF make_smite_evil_spell INT_VAR color=195 name=712 description=713 STR_VAR type=good payload="%spl_smite_good_payload%" removal="%spl_smite_good_removal%" root=dwsmg spell="%spl_smite_good%" END
+	LAF make_smite_evil_spell INT_VAR color=195 name=720 description=721 STR_VAR type=order payload="%spl_smite_order_payload%" removal="%spl_smite_order_removal%" root=dwsmo spell="%spl_smite_order%" END
+	LAF make_smite_evil_spell INT_VAR color=195 name=722 description=723 STR_VAR type=chaos payload="%spl_smite_chaos_payload%" removal="%spl_smite_chaos_removal%" root=dwsmx spell="%spl_smite_chaos%" END
 
 	// give the powers to the kits
 	
@@ -99,11 +117,16 @@ DEFINE_ACTION_FUNCTION paladin_smite_evil BEGIN
 		k_description=k_clastext_descstr.patch{REPLACE_TEXTUALLY "^%adv%" "%adv%%WNL%%new%"}
 
 	]
+	OUTER_SPRINT replace "\[SMITE_GOOD_SUBSTITUTION_POINT\]"
 	kit.edit[BLACKGUARD|edit_strrefs_in_place:i=1]
 	[		
 		k.kit_grant_powers{%spl_smite_good% 1}
 		new:=@715
-		k_clastext_descstr:="%k_clastext_descstr%%WNL%%new%"
+		PATCH_IF INDEX ("%replace%" "%k_clastext_descstr%")>=0 BEGIN
+			k_description=k_clastext_descstr.patch{REPLACE_TEXTUALLY "\(.*\)%replace%" "\1%new%%WNL%\1"}
+		END ELSE BEGIN
+			k_clastext_descstr:="%k_clastext_descstr%%WNL%%new%"
+		END
 	]
 
 	// append class/kit descriptions
@@ -123,7 +146,8 @@ DEFINE_ACTION_FUNCTION make_smite_evil_spell
 			color=0
 			name=0
 			description=0
-	STR_VAR payload=""
+	STR_VAR type="good"
+			payload=""
 			removal=""
 			root=""
 			spell=""
@@ -179,14 +203,7 @@ BEGIN
 		m.ab_fx.add{s_opcode=328 s_target=1 s_timing=0 s_duration=1440 s_parameter2=stat_ind s_special=1}
 
 	]
-	
-	/*
-	
-		m.ab_fx.add{s_opcode=7 s_target=1 s_timing=0 s_duration=1440 s_parameter1=color s_parameter2=255}
-		m.ab_fx.add{s_opcode=7 s_target=1 s_timing=0 s_duration=1440 s_parameter1=color s_parameter2=21}
-		m.ab_fx.add{s_opcode=7 s_target=1 s_timing=0 s_duration=1440 s_parameter1=color s_parameter2=20}
-		m.ab_fx.add{s_opcode=7 s_target=1 s_timing=0 s_duration=1440 s_parameter1=color s_parameter2=16}
-	*/
+
 	
 	// get splprot entry
 	LAF resolve_splprot_entry INT_VAR stat=42 value="-1" STR_VAR relation=equal RET splprot_value=value END
@@ -211,10 +228,21 @@ BEGIN
 	END
 	COPY_EXISTING "%spell%.spl" override
 		PHP_EACH smite_evil_cha_map AS parameter1=>power BEGIN
-			PATCH_IF smite_good BEGIN
-				SPRINT resource EVAL "%spl_smite_good_hit_bonus_%power%%"			
-			END ELSE BEGIN
+			PATCH_MATCH "%type%" WITH
+			good BEGIN
+				SPRINT resource EVAL "%spl_smite_good_hit_bonus_%power%%"	
+			END
+			evil BEGIN
 				SPRINT resource EVAL "%spl_smite_evil_hit_bonus_%power%%"
+			END
+			order BEGIN
+				SPRINT resource EVAL "%spl_smite_order_hit_bonus_%power%%"		
+			END
+			chaos BEGIN
+				SPRINT resource EVAL "%spl_smite_chaos_hit_bonus_%power%%"
+			END
+			DEFAULT
+				PATCH_FAIL "make_smite_evil_spell: %type% is illegal value for type"
 			END
 			LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=1 timing=1 parameter1 parameter2=splprot_value STR_VAR resource END
 		END
@@ -241,6 +269,8 @@ DEFINE_ACTION_FUNCTION make_smite_evil_cha_bonus BEGIN
 	OUTER_FOR (power=1;power<=7;++power) BEGIN
 		OUTER_SPRINT spell EVAL "%spl_smite_evil_hit_bonus_%power%%"
 		OUTER_SPRINT spell2 EVAL "%spl_smite_good_hit_bonus_%power%%"
+		OUTER_SPRINT spell3 EVAL "%spl_smite_order_hit_bonus_%power%%"
+		OUTER_SPRINT spell4 EVAL "%spl_smite_chaos_hit_bonus_%power%%"
 		eff.make[%spell%]
 		[
 			m_opcode=178
@@ -252,6 +282,8 @@ DEFINE_ACTION_FUNCTION make_smite_evil_cha_bonus BEGIN
 			m_parameter3=power
 		]
 		eff.copy[%spell%=>%spell2%][m_parameter1=1]
+		eff.copy[%spell%=>%spell3%][m_parameter1=0x10]
+		eff.copy[%spell%=>%spell4%][m_parameter1=0x30]
 		
 		spl.make[%spell%]
 		[
@@ -262,6 +294,15 @@ DEFINE_ACTION_FUNCTION make_smite_evil_cha_bonus BEGIN
 		[
 			m.ab_fx.alter{s_resource:="%spell2%"}
 		]
+		spl.copy[%spell%=>%spell3%]
+		[
+			m.ab_fx.alter{s_resource:="%spell3%"}
+		]
+		spl.copy[%spell%=>%spell4%]
+		[
+			m.ab_fx.alter{s_resource:="%spell4%"}
+		]
+
 	END
 
 

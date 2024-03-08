@@ -1,22 +1,11 @@
 DEFINE_ACTION_FUNCTION ui_ranger_favored_enemy_setup BEGIN
 
 	ACTION_IF !FILE_EXISTS_IN_GAME "m_dw_fef.lua" BEGIN
+		
+		LAF ui_detect_class_kit END // also does on_open and system_call
 		//install the new menu
 		
 		LAF build_favored_enemy_menu END
-
-		// edit the UI to set up the ranger screen
-		
-		COPY_EXISTING "ui.menu" override
-			LPF UI_alter_object STR_VAR object=CHARACTER object_type=menu patch=ranger_patch_character END
-			PATCH_IF is_iwd BEGIN
-				SPRINT object LEVELUP_PROFICIENCIES
-			END ELSE BEGIN
-				SPRINT object CHARGEN_PROFICIENCIES
-			END
-			LPF UI_alter_object STR_VAR object object_type=menu patch=ranger_patch_prof END
-		
-		BUT_ONLY
 
 		// generate the lua version of haterace
 		
@@ -84,16 +73,7 @@ BEGIN
 	APPEND "m_dw_fee.lua" "%data%" KEEP_CRLF
 END
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-DEFINE_PATCH_FUNCTION ranger_patch_character BEGIN
-	REPLACE_TEXTUALLY ~\(onOpen[^"]*"\)\([^"]*\)~ ~\1%WNL%%TAB%%TAB%if (dwOpenRangerFavoredEnemy) then%WNL%%TAB%%TAB%%TAB%Infinity_PopMenu()Infinity_PushMenu('DW_HATEDRACE')%WNL%%TAB%%TAB%else%WNL%\2%WNL%%TAB%%TAB% end~
-	REPLACE_TEXTUALLY ~characterScreen:OnLevelUpButtonClick()~ ~dwRangerLevelOld=dwFindRangerLevel(false); characterScreen:OnLevelUpButtonClick()~
-END
-DEFINE_PATCH_FUNCTION ranger_patch_prof BEGIN
-	REPLACE_TEXTUALLY ~\(onOpen[^"]*"\)~ ~\1%WNL%%TAB%%TAB%if (dwRangerLevelOld) then%WNL%%TAB%%TAB%%TAB%dwRangerLevelNew=dwFindRangerLevel(true)%WNL%%TAB%%TAB%%TAB%dwOpenRangerFavoredEnemy=dwCheckRangerFavoredEnemy(dwRangerLevelOld,dwRangerLevelNew)%WNL%%TAB%%TAB%end%WNL%%TAB%%TAB%~
-END
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -330,7 +310,7 @@ DEFINE_ACTION_FUNCTION build_favored_enemy_menu BEGIN
 	//
 	
 	OUTER_INNER_PATCH_SAVE favored_enemy_menu "%object_data%" BEGIN
-		REPLACE_TEXTUALLY ~onOpen"[^"]*"~ ~~
+		REPLACE_TEXTUALLY ~onOpen[^"]*"[^"]*"~ ~~
 		REPLACE_TEXTUALLY "'CHARGEN_HATEDRACE'" ~'DW_HATEDRACE'%WNL%%TAB%onOpen"%WNL%%TAB%%TAB%dwRacialEnemyOnOpen()%WNL%%TAB%"~
 		REPLACE_TEXTUALLY EXACT_MATCH "chargen.hatedRace" "dwHatedRace"
 		REPLACE_TEXTUALLY "hatedRaceOrGeneralHelp" "dwHatedRaceOrGeneralHelp"
@@ -360,6 +340,27 @@ dwRangerChooseRace={}
 
 
 <<<<<<<<.../stratagems-inline/m_dw_fef.lua
+function dwOpenRangerSelectScreen()
+
+	Infinity_PopMenu()
+	Infinity_PushMenu('DW_HATEDRACE')
+
+end
+
+function dwRecordRangerLevelOld()
+
+	dwOpenRangerFavoredEnemy=nil
+	dwRangerLevelOld=dwFindRangerLevel(false)
+
+end
+
+function dwRangerProfSetup()
+	if (dwRangerLevelOld) then
+		dwRangerLevelNew=dwFindRangerLevel(true)
+		dwOpenRangerFavoredEnemy=dwCheckRangerFavoredEnemy(dwRangerLevelOld,dwRangerLevelNew)
+	end
+end
+
 function dwHatedRaceOrGeneralHelp()
 	local race = dwHatedRace[currentChargenHatedRace]
 	if race then
@@ -444,22 +445,6 @@ function dwCheckRangerFavoredEnemy(level_old,level_new)
 	return false
 end
 
-function dwCheckRangerFavoredEnemyOLD()
-	local ranger_level=nil
-	local c1,l1,c2,l2=dwClassLevelOld()
-	if c1==12 then
-		ranger_level=l1
-	elseif c2==12 then
-		ranger_level=l2
-	else
-		ranger_level=nil
-	end
-	if (ranger_level) then
-		dwOpenRangerFavoredEnemy=dwRangerChooseRace[ranger_level]
-	else
-		dwOpenRangerFavoredEnemy=nil
-	end
-end
 
 function dwFindCurrentFavoredEnemy()
 	local race_id=nil

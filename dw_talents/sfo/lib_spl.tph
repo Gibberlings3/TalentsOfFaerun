@@ -89,7 +89,7 @@ BEGIN
 			OUTER_SPRINT value "%key%"
 		END
 		ACTION_IF is_ids_here<0 BEGIN
-			OUTER_SET is_ids_here=(STRING_LENGTH "%value%">8)
+			OUTER_SET is_ids_here=(STRING_LENGTH "%value%">8) && "%path%" STR_EQ "" && "%location%" STR_EQ "" && "%locbase%" STR_EQ "" 
 		END
 		ACTION_IF is_ids_here BEGIN
 			OUTER_SPRINT ids "%value%"
