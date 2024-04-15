@@ -1,14 +1,24 @@
 /*
+describe-library
+{
+This is used by other SFO-lua functions; it builds LUA functions to reliably identify the class and kit of the current character, and to
+identify other features of the character. It works by appending the (mixed-case) title of each kit to add the class and kit ID in curly
+brackets, and then telling the UI to hide all curly-bracket information. (This obviously requires us to catch all cases where this happens,
+and probably we're still missing some especially on variant UIs. 
 
-Note that unlike other DW lua libraries, this one just reinstalls itself every time you build it.
-That's basically to make sure the data table stays up-to-date
+}
 
-Detection algorithm (non-chargen version)
 
-- first, see if class string is an exact match to a kit. If so, return that kit
-- if not, see if a kit name is a substring of the class string. If so, return that kit
-- either way, sub the kit name for its parent-class name in the class string
-- look up that string (watching for <MAGESCHOOL>-type problems)
+
+*/
+
+
+/*
+document{ui_detect_class_kit}
+{
+Set up all the resources to detect the class and kit (etc). Note that unlike other SFO-lua libraries, this one just reinstalls itself every time you build it (since new classes and kits may have been added).
+'Version', if set to 1, is used for debugging.
+}
 
 
 */
@@ -309,7 +319,9 @@ BEGIN
 END
 
 
-DEFINE_PATCH_FUNCTION make_title_change_spell_helper STR_VAR arguments="" BEGIN
+DEFINE_PATCH_FUNCTION make_title_change_spell_helper//internal 
+STR_VAR arguments="" 
+BEGIN
 	PATCH_IF SHORT_AT 0x0 = 290 BEGIN
 		READ_LONG 0x4 title_strref
 		GET_STRREF title_strref title
@@ -322,7 +334,9 @@ END
 /// we use this to clear out earlier iterations of sfo_compliant_change_title, since it needs to be rerun from scratch whenever we rebuild
 /// the lua
 
-DEFINE_ACTION_FUNCTION clear_out_title_change_subspells STR_VAR prefix=dwcct BEGIN
+DEFINE_ACTION_FUNCTION clear_out_title_change_subspells//internal
+	STR_VAR prefix=dwcct 
+BEGIN
 
 	OUTER_FOR (index=1;index<1000;++index) BEGIN
 		ACTION_IF FILE_EXISTS_IN_GAME "%prefix%%index%.spl" BEGIN
@@ -334,7 +348,8 @@ DEFINE_ACTION_FUNCTION clear_out_title_change_subspells STR_VAR prefix=dwcct BEG
 END
 
 
-DEFINE_ACTION_FUNCTION patch_character_screen_display BEGIN
+DEFINE_ACTION_FUNCTION patch_character_screen_display//internal 
+BEGIN
 
 	COPY_EXISTING "ui.menu" override
 	
@@ -435,7 +450,8 @@ DEFINE_ACTION_FUNCTION patch_character_screen_display BEGIN
 
 END
 
-DEFINE_PATCH_FUNCTION alter_update_attr_table_vanilla BEGIN
+DEFINE_PATCH_FUNCTION alter_update_attr_table_vanilla//internal 
+BEGIN
 	endpoint=RINDEX_BUFFER ("end")
 	DELETE_BYTES endpoint 3
 	SPRINT insert "%TAB%helpTextString=dwFilterKitDesc(helpTextString)%WNL%end"
@@ -444,12 +460,14 @@ DEFINE_PATCH_FUNCTION alter_update_attr_table_vanilla BEGIN
 
 END
 
-DEFINE_PATCH_FUNCTION replace_identify_text BEGIN
+DEFINE_PATCH_FUNCTION replace_identify_text//internal 
+BEGIN
 	REPLACE_TEXTUALLY ~text[ %TAB%]+lua[ %TAB%]+"[ %TAB%]*store\.identifyText[ %TAB%]*"~ ~text lua "dwFilterKitDesc(store.identifyText)"~
 
 END
 
-DEFINE_PATCH_FUNCTION replace_identify_text_lefreut BEGIN
+DEFINE_PATCH_FUNCTION replace_identify_text_lefreut//internal
+BEGIN
 	REPLACE_TEXTUALLY ~text[ %TAB%]+lua[ %TAB%]+"[ %TAB%]*identifyText[ %TAB%]*"~ ~text lua "dwFilterKitDesc(identifyText)"~
 
 END
@@ -516,7 +534,7 @@ function dwFindClassKit(var)
 end
 
 function dwFindClassKit2()
-	dwFindClassKit(2)
+	dwOriginalClass,dwOriginalKit=dwFindClassKit(2)
 end
 
 

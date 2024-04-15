@@ -1,6 +1,7 @@
 DEFINE_ACTION_FUNCTION hla_setup BEGIN
 
-	LAF pro_copy STR_VAR pro="li#bard1 li#bard2 rr#trpex rr#vrnp rr#vrpo tg#hola tg#toxt" source_location="resource/hla_setup/pro" END
+	LAF detectable_spells END
+	LAF pro_copy STR_VAR pro="li#bard1 li#bard2 rr#trpex rr#vrnp rr#vrpo tg#hola tg#toxt rr#thl4b" source_location="resource/hla_setup/pro" END
 
 	ACTION_BASH_FOR "%MOD_FOLDER%/%component_loc%/resource/hla_setup/anim" ".*\.bam" BEGIN
 		ACTION_IF !FILE_EXISTS_IN_GAME "%BASH_FOR_FILE%" BEGIN

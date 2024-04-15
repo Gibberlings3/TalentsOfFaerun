@@ -179,12 +179,20 @@ BEGIN
 			LAF 2da_read STR_VAR file=campaign.2da RET_ARRAY campaign_array=array campaign_rows=rows END
 			ACTION_PHP_EACH campaign_rows AS row=>discard BEGIN
 				OUTER_SPRINT clastext_here $campaign_array("%row%" "CLASTEXT")
-				LAF 2da_read STR_VAR file="%clastext_here%.2da" RET_ARRAY here_array=array here_rows=rows here_columns=columns END
-				ACTION_IF !VARIABLE_IS_SET $here_rows("%new_kit%") BEGIN
-					ACTION_PHP_EACH here_columns AS col=>discard BEGIN
-						OUTER_SPRINT $here_array("%new_kit%" "%col%") $clastext_array("%new_kit%" "%col%")
+				ACTION_IF "%clastext_here%" STR_CMP "*" && FILE_EXISTS_IN_GAME "%clastext_here%.2da" BEGIN
+					LAF 2da_read STR_VAR file="%clastext_here%.2da" RET_ARRAY here_array=array here_rows=rows here_columns=columns END
+					OUTER_SET kit_missing=1
+					ACTION_PHP_EACH here_rows AS kit_here=>discard2 BEGIN
+						ACTION_IF "%kit_here%" STR_EQ "%new_kit%" BEGIN
+							OUTER_SET kit_missing=0
+						END
 					END
-					LAF 2da_write STR_VAR file="%clastext_here%.2da" array=here_array END
+					ACTION_IF kit_missing BEGIN
+						ACTION_PHP_EACH here_columns AS col=>discard BEGIN
+							OUTER_SPRINT $here_array("%new_kit%" "%col%") $clastext_array("%new_kit%" "%col%")
+						END
+						LAF 2da_write STR_VAR file="%clastext_here%.2da" array=here_array END
+					END
 				END
 			END
 		END
@@ -378,7 +386,7 @@ BEGIN
 	END
 	
 	// set race tables
-	ACTION_IF !clab_only BEGIN
+	ACTION_IF !clab_only && !is_dummy BEGIN
 		LAF kit_set_race_tables INT_VAR force=is_new STR_VAR kit struct END
 	END
 	// set the main clab

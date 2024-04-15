@@ -49,11 +49,11 @@ BEGIN
 		[
 			m.ab.add{}
 			m.ab_fx.add{s_target=1 s_opcode=139 s_timing=1 s_parameter1=RESOLVE_STR_REF (@3066)}
-			m.ab_fx.add{s_target=1 s_timing=1 s_opcode=54 s_parameter1=4} //attack
+			m.ab_fx.add{s_target=1 s_timing=1 s_opcode=278 s_parameter1=4} //attack
 			m.ab_fx.add{s_target=1 s_timing=1 s_opcode=73 s_parameter1=4} //damage
 			m.ab_fx.add{s_target=1 s_timing=1 s_opcode=345 s_parameter1=2 s_parameter2=0 s_special=3} // enchantment
 			m.ab_fx.add{s_target=1 s_timing=1 s_opcode=325 s_parameter1=2} // saving throws
-			m.ab_fx.add{s_target=1 s_timing=1 s_opcode=0 s_parameter1=4} // AC
+			m.ab_fx.add{s_target=1 s_timing=0 s_duration=999999 s_opcode=0 s_parameter1=4} // AC
 		] 
    END
  

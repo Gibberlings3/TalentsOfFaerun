@@ -230,6 +230,8 @@ With this spell, the wizard drains the life force from a target and adds it to <
 @39="When cast upon a target creature"
 @40="When cast upon a target creature, this spell will lower the Magic Resistance of this creature by 30% + 1% per level of the caster. There is no Saving Throw, and the target's Magic Resistance, if any, does not affect this spell. For example, if a creature has 60% Magic Resistance and this spell is cast on it by a 15th-level Mage, then the target's Magic Resistance would be lowered by 45% automatically. This effect is cumulative for each casting of this spell: If Lower Resistance was cast upon the same creature again, the creature's Magic Resistance would be 60% - 45% (initial casting) - 45% (current casting), which would leave the creature with 0% Magic Resistance (the level cannot drop below 0%). This spell will last until its duration expires and cannot be dispelled."
 
+
+
 @43="2 levels of experience" // must be a substring of Energy Drain description
 @44="5 levels of experience"
 @45="Five Levels Drained"

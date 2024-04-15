@@ -1,0 +1,21 @@
+DEFINE_ACTION_FUNCTION style BEGIN
+
+	// the actual style changes
+	
+	COPY "%MOD_FOLDER%/%component_loc%/data/stylbonu.2da" override
+	
+	// documentation
+	
+	LAF 2da_read STR_VAR file=weapprof.2da RET_ARRAY weapprof_array=array END
+	
+	OUTER_SPRINT $desc("2WEAPON") @500
+	OUTER_SPRINT $desc("2HANDED") @503
+	OUTER_SPRINT $desc("SWORDANDSHIELD") @502
+	OUTER_SPRINT $desc("SINGLEWEAPON") @501
+	ACTION_FOR_EACH style IN 2WEAPON 2HANDED SWORDANDSHIELD SINGLEWEAPON BEGIN
+		OUTER_SPRINT desc_string $desc("%style%")
+		STRING_SET_EVALUATE $weapprof_array("%style%" "DESC_REF") "%desc_string%" 
+	END
+	STRING_SET_EVALUATE $weapprof_array("SWORDANDSHIELD" "NAME_REF") @504
+
+END

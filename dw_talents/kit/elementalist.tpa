@@ -216,6 +216,7 @@ DEFINE_ACTION_FUNCTION make_elem_clab_effects BEGIN
 		  m.ab_fx.add{%default% s_opcode=313 s_resource:=dw-ftaeg} // note HLA granted
 		  m.ab_fx.add{%default% s_opcode=142 s_parameter2=25} // resist cold icon
           m.ab_fx.add{%default% s_opcode=85 s_parameter1=10 s_parameter2=0} // resist magic cold
+		  m.ab_fx.add{%default% s_opcode=326 s_resource:=dwmcmb} // bonus spell for dualclass characters
      ]
 
      // aqua mortis
@@ -227,6 +228,7 @@ DEFINE_ACTION_FUNCTION make_elem_clab_effects BEGIN
           m.ab_fx.add{%default% s_opcode=332 s_parameter1=20 s_parameter2=4} // extra acid damage
 		  m.ab_fx.add{%default% s_opcode=313 s_resource:=dw-ftaqu} // note HLA granted
 		  m.ab_fx.add{%default% s_opcode=142 s_parameter2=24} // resist acid icon
+		  m.ab_fx.add{%default% s_opcode=326 s_resource:=dwmcmb} // bonus spell for dualclass characters
      ]
 
      // scion of storms
@@ -238,6 +240,7 @@ DEFINE_ACTION_FUNCTION make_elem_clab_effects BEGIN
           m.ab_fx.add{%default% s_opcode=332 s_parameter1=20 s_parameter2=3} // extra electric damage
 		  m.ab_fx.add{%default% s_opcode=313 s_resource:=dw-ftsci} // note HLA granted
 		  m.ab_fx.add{%default% s_opcode=142 s_parameter2=27} // resist electricity icon
+		  m.ab_fx.add{%default% s_opcode=326 s_resource:=dwmcmb} // bonus spell for dualclass characters
      ]
 
      // spirit of flame
@@ -250,6 +253,7 @@ DEFINE_ACTION_FUNCTION make_elem_clab_effects BEGIN
 		  m.ab_fx.add{%default% s_opcode=313 s_resource:=dw-ftspi} // note HLA granted
 		  m.ab_fx.add{%default% s_opcode=142 s_parameter2=16} // resist fire icon
           m.ab_fx.add{%default% s_opcode=84 s_parameter1=10 s_parameter2=0} // resist magic fire
+		  m.ab_fx.add{%default% s_opcode=326 s_resource:=dwmcmb} // bonus spell for dualclass characters
      ]
 
 

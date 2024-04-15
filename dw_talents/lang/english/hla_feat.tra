@@ -48,11 +48,11 @@
 @51 = "Toughness"
 @52 = "A character with this ability is tougher than normal, and gains 5 additional hit points."
 @53 = "Great Fortitude"
-@54 = "The character is tougher than normal, and receives a +2 bonus to saving throws vs. Poison/Death and saving throws vs. Petrification/Polymorph."
+@54 = "The character is tougher than normal, and receives a +1 bonus to saving throws vs. Poison/Death and saving throws vs. Petrification/Polymorph."
 @55 = "Lightning Reflexes"
-@56 = "The character has faster than normal reflexes, and receives a +2 bonus to saving throws vs. Wands and saving throws vs. Breath Weapons."
+@56 = "The character has faster than normal reflexes, and receives a +1 bonus to saving throws vs. Wands and saving throws vs. Breath Weapons."
 @57 = "Iron Will"
-@58 = "The character's mental focus and strong willpower helps them resist harmful magic. They receive a +2 bonus to saving throws vs. Spells."
+@58 = "The character's mental focus and strong willpower helps them resist harmful magic. They receive a +1 bonus to saving throws vs. Spells."
 @59="Nimble Fingers"
 @60="The character gains an additional +15% bonus to Pick Pockets skill."
 
@@ -71,7 +71,6 @@
 @71="Special: other bards learn this song automatically at 5th level."
 @72="Special: other bards learn this song automatically at 7th level."
 @73="Special: other bards learn this song automatically at 9th level."
-@95="Special: other bards learn this song automatically at 11th level."
 
 @74 = "Dash"
 @75 = "A character with this ability has learned, through training and choice of gear, to move a little faster than before (about 20%). The ability is permanently active and does not need to be activated."
@@ -96,6 +95,7 @@
 @92="The character may inscribe spells they know onto scrolls. They pay the gold cost of the scroll and lose a small amount of their life energy to power the inscription, equivalent to XP_PLACEHOLDER xp per level of the spell inscribed."
 @93="The character may inscribe spells they know onto scrolls. They must pay the gold cost of the scroll."
 @94="Scribe Scrolls"
+@95="Special: other bards learn this song automatically at 11th level."
 
 
 @100="Brewing potions requires the expenditure of gold on the raw materials (equal to the cost of buying the potion in a store) and draws slightly on the character's life force (equivalent to a loss of 1 experience point per gold piece cost).
@@ -231,6 +231,33 @@ Characters with this ability can opt to use this poison when they activate their
 @171="You will apply this poison next time you use the Poison Weapon ability"
 @172="Some poisoners have learned how to brew poisons with other strange effects, replacing the poison damage listed here. Characters who have learned these poisons may select them from the quick-access bar; the poison selected is the one that will be used next time they activate the Poison Weapon ability."
 
+@200=~"The Saga of the North"
+
+1st level: Grants allies a +1 bonus to hit and damage rolls, and a +1 bonus to AC.
+ 5th level: Grants allies a +1 bonus to hit, and a +2 bonus to damage rolls and AC.
+ 10th level: Grants allies a +2 bonus to hit and damage rolls, and a +2 bonus to AC.
+ 15th level: Grants allies a +4 bonus to hit and damage rolls, a +4 bonus to AC, and immunity to fear.
+ 20th level: Grants allies a +4 bonus to hit and damage rolls, a +4 bonus to AC, and immunity to fear, stun, and confusion.~
+@201=~"Jester's Melody"
+
+Every opponent within 30 feet must save once per round to avoid falling under the song's effects:
+  1st level: Enemies must save vs. Spell with a +2 bonus or be confused.
+  15th level: Enemies must save vs. Spell with a +2 bonus or be confused, and must save vs. Spell or be slowed.
+  20th level: Enemies must save vs. Spell with a +2 bonus or be confused, must save vs. Spell at +2 or be knocked unconscious, and must save vs. Spell or be slowed.~
+@202=~"Jester's Melody"
+
+Every opponent within 30 feet must save once per round to avoid falling under the song's effects:
+  1st level: Save vs. Spell at +2 or be distracted, and slowed (10%) or confused (10%). Distracted opponents suffer -2 to attack rolls, saving throws, and AC.
+  5th level: Save vs. Spell at +2 or be distracted, and slowed (20%) or confused (20%).
+  10th level: Save vs. Spell or be distracted, and (slowed (30%), or confused (30%).
+  15th level: Save vs. Spell at -2 or be distracted, and slowed (40%), confused (40%), or knocked unconscious (20%).
+  20th level: Save vs. Spell at -2 or be distracted, and confused and slowed (50%) or knocked unconscious (50%).~
+
+@203="The Saga of the North - inspires allies"
+@204="Jester's Melody - distracts and befuddles foes"
+
+
+
 @499="Points Remaining"
 @500="You may choose abilities for your character from this list." 
 @501="The character gains an additional use of the POWER_PLACEHOLDER ability."
@@ -347,9 +374,7 @@ Weight: 1"
 @3005="This type of attack requires extensive training, and only the most skilled fighters are able to use it in combat properly. For 2 rounds all attacks made will be at maximum damage and each hit has 25% chance to kill the opponent if it fails to save vs. death at -2."
 
 @3006="Spell Immunity"
-@3007="High level wizard slayers tend to develop innate abilities similar to their natural enemies. They can raise their Magic Resistance for a limited time, and even become immune to specific spell schools. 
-
-This ability grants protection from one spell school of your choice. It works similarly to the wizard spell, Spell Immunity, with a few differences. You must choose the school you wish to be protected from, but can only choose between Conjuration, Evocation, Enchantment or Necromancy.
+@3007="This ability grants protection from one spell school of your choice. It works similarly to the wizard spell, Spell Immunity, with a few differences. You must choose the school you wish to be protected from, but can only choose between Conjuration, Evocation, Enchantment or Necromancy.
 
 No spell of the selected school will be able to harm or aid the wizard slayer until the duration expires, which is 1 round/level, starting at level 9 and increasing to a maximum of 14 rounds at level 23. This includes all spells of this school, including any priest spell that might benefit <PRO_HIMHER>."
 
@@ -451,12 +476,12 @@ As a consequence of the blackguard's contract with an infernal power, <PRO_HESHE
 Each time the blackguard uses this ability, <PRO_HESHE> has a 25% chance of forfeiting <PRO_HISHER> soul to <PRO_HISHER> patron. If this happens, the blackguard will not be able to be resurrected after <PRO_HISHER> death: <PRO_HESHE> will be forever lost."
 
 @3052="Abyssal Pact"
-@3053="The blackguard has come to an arrangement with a mighty demon lord; in exchange for present and future favors too hideous to contemplate, the blackguard may use the demon lord's patronage to command the service of a marilith, glabrezu, nabassu or other demon once per day. Demons are capricious and it can never be guaranteed which demons will respect the pact, but in general only Balors and demon lords will dare to refuse the blackguard's command, though the demon will remain at the blackguard's side for only a single turn before departing.
+@3053="The blackguard has come to an arrangement with a mighty demon lord; in exchange for present and future favors too hideous to contemplate, the blackguard may use the demon lord's patronage to order a marilith, glabrezu, nabassu or other demon to obey <PRO_HISHER> commands once per day. Demons are capricious and it can never be guaranteed which demons will respect the pact, but in general only Balors and demon lords will dare to refuse the blackguard's command, though the demon will remain at the blackguard's side for only a single turn before departing.
 
 The blackguard takes a terrible risk in making the pact. Each time <PRO_HESHE> uses this ability, <PRO_HESHE> has a 10% chance of forfeiting <PRO_HISHER> soul to <PRO_HISHER> patron. If this happens, the blackguard will not be able to be resurrected after <PRO_HISHER> death: <PRO_HESHE> will be forever lost."
 
 @3054="Infernal Contract"
-@3055="The blackguard has signed a contract with a high-ranking power in the Nine Hells - perhaps one of the Dark Eight, the pit fiends who oversee the Blood War; perhaps a being darker still. The long-term consequences for the blackguard's soul are dire, but in the short term, <PRO_HESHE> is able, once per day, to demand the allegiance of a cornugon, abishai or other baatezu devil. The contracts of the Hells are so byzantine that it can never be guaranteed which baatezu will be bound by the contract, but in general only the mighty Pit Fiends - and baatezu of similar power - are unconstrained by it; other baatezu must obey without question, though the length of their service is only one turn and they will depart immediately afterwards.
+@3055="The blackguard has signed a contract with a high-ranking power in the Nine Hells - perhaps one of the Dark Eight, the pit fiends who oversee the Blood War; perhaps a being darker still. The long-term consequences for the blackguard's soul are dire, but in the short term, <PRO_HESHE> is able, once per day, to demand that a cornugon, abishai or other baatezu devil obey <PRO_HISHER> commands. The contracts of the Hells are so byzantine that it can never be guaranteed which baatezu will be bound by the contract, but in general only the mighty Pit Fiends - and baatezu of similar power - are unconstrained by it; other baatezu must obey without question, though the length of their service is only one turn and they will depart immediately afterwards.
 
 Each time the blackguard uses this ability, <PRO_HESHE> has a 10% chance of forfeiting <PRO_HISHER> soul to <PRO_HISHER> patron. If this happens, the blackguard will not be able to be resurrected after <PRO_HISHER> death: <PRO_HESHE> will be forever lost."
 
@@ -469,7 +494,7 @@ Each time the blackguard uses this ability, <PRO_HESHE> has a 10% chance of forf
 @3060="Precision"
 @3061="With proper concentration a skilled archer can render <PRO_HISHER> attacks more deadly and precise. By activating this ability the archer gains +6 to <PRO_HISHER> attack rolls with missile weapons, +10 bonus to damage for 3 rounds and a 20% chance/hit to strike a lethal hit (the target creature is allowed a save vs. death to avoid instant death). 
 
-Precision has some drawbacks: it requires intense concentration, making defense difficult, and leaves time for just half of the normally available attacks. The archer's movement rate will be significantly decreased and <PRO_HISHER> AC will suffer a 5 point penalty until the ability expires."
+Precision has some drawbacks: it requires intense concentration, making defense and movement difficult. The archer's movement rate will be significantly decreased and <PRO_HISHER> AC will suffer a 5 point penalty until the ability expires."
 
 @3062="Endurance"
 @3063="High-level rangers are capable of tremendous feats of stamina and endurance, from tireless marches to perseverence despite grave injuries and hardships.
@@ -483,6 +508,9 @@ This passive ability causes summoned animals to appear with a +4 bonus to attack
 
 @3066="Empowered"
 
+@3067="This ability allows the warrior to temporarily tap a great inner strength and fight off the effects of malevolent magic. For 4 rounds, the warrior's Magic Resistance is set to 50%. This is not cumulative with other forms of Magic Resistance, so if the warrior already has 50% Magic Resistance or greater, the ability is useless.
+
+Used by a Monk or Wizard Slayer, this power operates slightly differently: it instead grants a flat +20% bonus to Magic Resistance."
 
 @3068="Shadowless Kick"
 @3069="This ability gives the Monk a one-time attack. This overwhelming assault is always successful; there is no need for an attack roll. The target suffers 5d8 crushing damage, and must save vs. breath at -4 or unconscious for 1 round and, unless sufficiently large, be knocked back a considerable distance by the power of the kick."
@@ -639,15 +667,15 @@ This ability completely ignores any magic resistance of the targets. However, re
 
 @3147="For fame and greater glory, I will fight by your side!"
 @3148="Enhanced Bard Song: the Epic of <CHARNAME>"
-@3149="This mighty battle chant grants the Bard and <PRO_HISHER> allies +4 to hit, +4 to all saving throws, +10% bonus to magic resistance and immunity to Fear and Charm. The Bard <PRO_HIMHER>self receives an 8 point bonus to all of <PRO_HISHER> saving throws while singing the song."
+@3149="This mighty battle chant grants the Bard and <PRO_HISHER> allies +4 to hit, +4 to all saving throws, +10% bonus to magic resistance and immunity to Fear and Charm. The Bard <PRO_HIMHER>self receives an 8 point bonus to all of <PRO_HISHER> saving throws while singing the song. (This song replaces the Ballad of Three Heroes.)"
 @3150="The Epic of <CHARNAME>"
 
 @3151="Enhanced Skald Song: the Saga of <CHARNAME>"
-@3152="This mighty battle chant grants the Skald and <PRO_HISHER> allies +5 to hit, +5 to damage, -5 to AC, +10% resistance to physical damage, immunity to Fear, Stun and Confusion. The Skald <PRO_HIMHER>self receives a 10 point bonus to <PRO_HISHER> armor class while singing the song."
+@3152="This mighty battle chant grants the Skald and <PRO_HISHER> allies +5 to hit, +5 to damage, -5 to AC, +10% resistance to physical damage, immunity to Fear, Stun and Confusion. The Skald <PRO_HIMHER>self receives a 10 point bonus to <PRO_HISHER> armor class while singing the song. (This song replaces the Saga of the North.)"
 @3153="The Saga of <CHARNAME>"
 
 @3154="Enhanced Jester Song: the Mesmeric Melody"
-@3155="The Enhanced Jester Song affects all opponents within hearing range who must save vs. spells once per round or become distracted (-2 save penalty) confused (no save bonus) or mesmerized (+2 save bonus). The Jester <PRO_HIMHER>self becomes immune to all mind-affecting spells and abilities while singing the song."
+@3155="The Enhanced Jester Song affects all opponents within hearing range who must save vs. spells once per round or become distracted (-2 save penalty), confused (no save bonus), or mesmerized (feebleminded until attacked; +2 save bonus). The Jester <PRO_HIMHER>self becomes immune to all mind-affecting spells and abilities while singing the song. (This song replaces the Jester's Melody.)"
 @3156="The Mesmeric Melody"
 
 @3157="Finesse"
@@ -1267,7 +1295,7 @@ Casting Time: 5
 Area of Effect: 1 creature
 Saving Throw: Special
 
-Through this spell, the caster briefly summons a pack of wolf spirits, who vent their fury against a single enemy of the caster. Over the next round, a dozen of these spirits will rip at the target with invisible teeth and claws. The wolf spirits' attacks bypass defenses against magical weapons and always hit, inflicting either 2d8 slashing or 2d8 piercing damage; a save vs spells at -2 reduces this by half. The pack are invisible and cannot be harmed by weapons or spells."
+Through this spell, the caster briefly summons a pack of wolf spirits, who vent their fury against a single enemy of the caster. Over the next round, a dozen of these spirits will rip at the target with invisible teeth and claws. The wolf spirits' attacks bypass defenses against magical weapons and always hit, inflicting either 3d8 slashing or 3d8 piercing damage; a save vs spells at -2 reduces this by half. The pack are invisible and cannot be harmed by weapons or spells."
 
 @3282="Improved Seeking Sword"
 @3283="Improved Seeking Sword
@@ -1395,7 +1423,7 @@ The ability lasts indefinitely, but only one animal spirit power may be active a
 
 Intelligence: +5
 Wisdom: +3
-Immune to poison and charm effects
+Immune to poison, confusion, and charm effects
 
 The ability lasts indefinitely, but only one animal spirit power may be active at a time."
 @3308="Empowered Breath Weapon"
@@ -1527,4 +1555,6 @@ Special: only one elemental immunity ability may be taken."
 @3351="The character has developed a spiritual connection to elemental fire so strong that ice and frost cannot injure <PRO_HIMHER>. <PRO_HESHE> is now immune to cold damage.
 
 Special: only one elemental immunity ability may be taken."
+
+
 

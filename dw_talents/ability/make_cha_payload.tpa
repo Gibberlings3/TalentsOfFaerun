@@ -80,11 +80,11 @@ BEGIN
 		LPF add_basic_spell_ability END
 		LPF 3e_abil_standard INT_VAR ability=cha RET modifier END
 		modifer = modifier>0 ? modifier: 0
-		LPF ADD_SPELL_EFFECT INT_VAR opcode=33 target=2 timing=9 parameter1=modifier END // death/poison
-		LPF ADD_SPELL_EFFECT INT_VAR opcode=34 target=2 timing=9 parameter1=modifier END // wand
-		LPF ADD_SPELL_EFFECT INT_VAR opcode=35 target=2 timing=9 parameter1=modifier END // petrify/polymorph
-		LPF ADD_SPELL_EFFECT INT_VAR opcode=36 target=2 timing=9 parameter1=modifier END // breath weapon
-		LPF ADD_SPELL_EFFECT INT_VAR opcode=37 target=2 timing=9 parameter1=modifier END // spell
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=33 target=2 timing=0 duration=6 parameter1=modifier END // death/poison
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=34 target=2 timing=0 duration=6 parameter1=modifier END // wand
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=35 target=2 timing=0 duration=6 parameter1=modifier END // petrify/polymorph
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=36 target=2 timing=0 duration=6 parameter1=modifier END // breath weapon
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=37 target=2 timing=0 duration=6 parameter1=modifier END // spell
 
 END
 

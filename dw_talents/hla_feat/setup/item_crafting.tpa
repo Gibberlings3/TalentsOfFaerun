@@ -44,14 +44,18 @@ DEFINE_ACTION_FUNCTION scroll_scribing BEGIN
 
    ACTION_IF no_xp_cost BEGIN
         OUTER_SET on_string = RESOLVE_STR_REF (@89)
-		OUTER_SET desc_tra_ref=93
+		OUTER_SPRINT scribe_desc_string @93
    END ELSE BEGIN
         OUTER_SET on_string = RESOLVE_STR_REF (@84)
 		OUTER_PATCH_SAVE on_string "%on_string%" BEGIN
 			REPLACE_TEXTUALLY XP_PLACEHOLDER "%level_1_xp%"
 		END
-		OUTER_SET desc_tra_ref=92
+		OUTER_SPRINT scribe_desc_string @93
+		OUTER_PATCH_SAVE scribe_desc_string "%scribe_desc_string%" BEGIN
+			REPLACE_TEXTUALLY XP_PLACEHOLDER "%level_1_xp%"
+		END
    END
+   
    OUTER_SET off_string = RESOLVE_STR_REF (@88)
 
 	// build spells to display 'not enough gold' and 'not enough xp'
@@ -77,7 +81,7 @@ DEFINE_ACTION_FUNCTION scroll_scribing BEGIN
        m_type:=innate
        m_non_combat=1
        m_name:=@85
-	   m_description:=(AT desc_tra_ref)
+	   m_description:="%scribe_desc_string%"
        m.ab.add{}
        m.ab.alter{s_target=5 s_icon:=spcl919b s_location:=Innate}
        m.ab_fx.add{s_opcode=191 s_target=1 s_parameter1=100 s_parameter2=1 s_duration=60}                   			// caster level boost

@@ -74,6 +74,7 @@ spl_ice_elemental_aura_payload_lesser 		dw-ieap1
 spl_ice_elemental_aura_payload 				dw-ieap2
 spl_ice_elemental_aura_payload_greater 		dw-ieap3
 spl_ice_elemental_freeze					dw-iefr
+spl_ice_elemental_ice_storm					dw-ieis
 spl_lathander_false_dawn					dw-lafd
 spl_tempus_courage							dw-teco
 spl_tyr_hold_person							dw-tyhp
@@ -209,7 +210,7 @@ spl_cavalier_poison_immunity				dw-cav3
 spl_cavalier_resistance_base				dw-cav4
 spl_cavalier_resistance_increment			dw-cav5
 spl_cavalier_fear_immunity					dw-cav6
-spl_undead_hunter_hold_immunity				dw-unh1
+spl_undead_hunter_paralyze_immunity			dw-unh1
 spl_undead_hunter_energy_drain_immunity		dw-unh2
 spl_undead_hunter_plus_one					dw-unh3
 spl_undead_hunter_plus_two					dw-unh4
@@ -375,6 +376,7 @@ spl_barbarian_thunderous_rage				dw-brthu
 spl_barbarian_thunderous_rage_payload		dw-brthp
 spl_barbarian_tempestuous_rage				dw-brth2
 spl_barbarian_tempestuous_rage_payload		dw-brtp2
+spl_hla_resist_magic_extra					dw-hlrme
 spl_hla_evasion								dw-hlaev
 spl_hla_profane_fire						dw-hlprf
 spl_hla_harm								dw-hlhrm
@@ -575,3 +577,6 @@ spl_polymorph_troll							dw-pstr
 spl_shapeshift_rat_hide						dw-ssrh
 spl_familiar_disciple						dw-ffda
 spl_familiar_thrall							dw-ffto
+spl_dual_class_mage_bonus					dw-dcmb
+spl_dual_class_mage_bonus_payload			dw-dcmp
+spl_larloch_foebane							dw-lafb

@@ -106,7 +106,7 @@ DEFINE_ACTION_FUNCTION 319ify_mages BEGIN
 	[
 		m.ab.add{}
 		PATCH_FOR_EACH param IN 7 10 13 14 17 BEGIN
-			m.ab_fx.add{s_opcode=318 s_target=2 s_timing=0 s_duration=1 s_parameter1=param  s_parameter2=105 s_resource:=%sfo_filename%}
+			m.ab_fx.add{s_opcode=318 s_target=1 s_timing=0 s_duration=1 s_parameter1=param  s_parameter2=105 s_resource:=%sfo_filename%}
 		END
 		m.ab_fx.add{s_opcode=72 s_timing=1 s_parameter1=specifics_mage s_parameter2=4 s_target=1}
 	]

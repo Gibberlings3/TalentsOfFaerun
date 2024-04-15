@@ -1,4 +1,24 @@
-DEFINE_ACTION_FUNCTION dual_class_kits BEGIN
+/*
+describe-library{
+
+Resources used to enable dual-classing into a kit. EE only, requires UI edits.
+
+}
+*/
+
+/*
+document{dual_class_kits}
+{
+Do setup work, ready to install specific dual-class kits.
+
+}
+
+
+
+*/
+
+DEFINE_ACTION_FUNCTION dual_class_kits 
+BEGIN
 
 	// install specific functions and UI edit, if not already there
 	
@@ -18,6 +38,7 @@ DEFINE_ACTION_FUNCTION dual_class_kits BEGIN
 	END ELSE BEGIN
 		LAF check_label STR_VAR label=dw#multiclass_specialists_permitted RET value END
 		ACTION_IF value BEGIN
+			LAF ui_dualclass_specialist_bonus_spells END
 			COPY_EXISTING "m_dw_vce.lua" override
 				REPLACE_TEXTUALLY "2999999" "2"
 		END
@@ -27,7 +48,8 @@ DEFINE_ACTION_FUNCTION dual_class_kits BEGIN
 END
 
 
-DEFINE_ACTION_FUNCTION collect_dual_class_kit_data BEGIN
+DEFINE_ACTION_FUNCTION collect_dual_class_kit_data//internal 
+BEGIN
 
 	LAF check_label STR_VAR label=dw#multiclass_specialists_permitted RET dualclass_specialist=value END
 
@@ -284,8 +306,21 @@ DEFINE_ACTION_FUNCTION collect_dual_class_kit_data BEGIN
 
 END
 
+/*
+document{add_dual_class_kit_option}
+{
+Enable dual-classing from kit 'oldkit' of old class 'oldclass', into kit 'kit' of class 'newclass'. Class entries should be IDS entries like 'FIGHTER'. Kit entries should 
+be kitlist.2da rownames.
+}
+
+
+*/
+
 DEFINE_ACTION_FUNCTION add_dual_class_kit_option
-	STR_VAR kit="" oldclass="" oldkit="" newclass=""
+	STR_VAR kit="" 
+			oldclass="" 
+			oldkit="" 
+			newclass=""
 BEGIN
 	ACTION_TO_UPPER kit
 	// remove ' from entries
@@ -355,6 +390,31 @@ BEGIN
 
 
 
+END
+
+DEFINE_ACTION_FUNCTION ui_dualclass_specialist_bonus_spells BEGIN
+
+	// build resources to give dual-classed specialists their bonus spells (the engine won't grant them) and add to CLAB
+	
+	ACTION_IF !FILE_EXISTS_IN_GAME "dwdcmb.spl" BEGIN
+	
+		LAF kit_label_original_classes END
+	
+		CREATE spl dwdcmb
+			LPF add_basic_spell_ability END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=326 timing=1 target=2 parameter1=IDS_OF_SYMBOL(splstate ORIGINAL_CLASS_FIGHTER) parameter2=110 STR_VAR resource=dwdcmbp END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=326 timing=1 target=2 parameter1=IDS_OF_SYMBOL(splstate ORIGINAL_CLASS_CLERIC) parameter2=110 STR_VAR resource=dwdcmbp END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=326 timing=1 target=2 parameter1=IDS_OF_SYMBOL(splstate ORIGINAL_CLASS_THIEF) parameter2=110 STR_VAR resource=dwdcmbp END
+
+		CREATE spl dwdcmbp
+			LPF add_basic_spell_ability END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 timing=1 STR_VAR resource=dwdcmbp END // probably not needed, but let's be safe
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=42 target=2 timing=1 parameter1=1 parameter2=0b111111111 END	
+		
+		
+		LAF kit_edit_all INT_VAR skip_trueclass=1 STR_VAR parent_class="MAGE" edits="sfo_internal_struct.kit_apply_powers{dwdcmb 1}" struct=sfo_internal_struct END
+		
+	END
 END
 
 <<<<<<<< .../stratagems-inline/dual_class_functions.lua

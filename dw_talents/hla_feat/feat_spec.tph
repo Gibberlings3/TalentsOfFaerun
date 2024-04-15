@@ -154,17 +154,16 @@ END
 
 DEFINE_PATCH_FUNCTION GREAT_FORTITUDE BEGIN
 
-	LPF add_feat_effect INT_VAR opcode=33 parameter1=2 END // +2 to poison saves
-	LPF add_feat_effect INT_VAR opcode=35 parameter1=2 END // +2 to polymorph saves
-
+	LPF add_feat_effect INT_VAR opcode=33 parameter1=1 END // +1 to poison saves
+	LPF add_feat_effect INT_VAR opcode=35 parameter1=1 END // +1 to polymorph saves
 END
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 DEFINE_PATCH_FUNCTION LIGHTNING_REFLEXES BEGIN
 
-	LPF add_feat_effect INT_VAR opcode=34 parameter1=2 END // +2 to wand saves
-	LPF add_feat_effect INT_VAR opcode=36 parameter1=2 END // +2 to breath saves
+	LPF add_feat_effect INT_VAR opcode=34 parameter1=1 END // +1 to wand saves
+	LPF add_feat_effect INT_VAR opcode=36 parameter1=1 END // +1 to breath saves
 
 END
 
@@ -172,7 +171,7 @@ END
 
 DEFINE_PATCH_FUNCTION IRON_WILL BEGIN
 
-	LPF add_feat_effect INT_VAR opcode=37 parameter1=2 END // +2 to spell saves
+	LPF add_feat_effect INT_VAR opcode=37 parameter1=1 END // +1 to spell saves
 
 END
 

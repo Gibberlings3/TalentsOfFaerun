@@ -4,16 +4,19 @@
 
 DEFINE_ACTION_FUNCTION bardsong BEGIN
 
-	// blades can just get the baseline ability
+	// blades can just get the baseline ability (but also need to be shifted to the new song)
 	kit.edit[BLADE]
 	[
 		k.kit_grant_powers{#BARD1 1}
+		k.kit_apply_powers{FJBARD 1}
 	]
 
 	// skalds need their own
 	
 	LAF make_bardsong_granter 
-		INT_VAR name_tra_ref=66
+		INT_VAR granted_tra_ref=203
+				name_tra_ref=66
+				desc_tra_ref=200
 		STR_VAR kit=SKALD
 				new_bam=dw-sng1
 				new_bam_path="%MOD_FOLDER%/%component_loc%/resource/BARD_SKALD.bam"
@@ -23,8 +26,11 @@ DEFINE_ACTION_FUNCTION bardsong BEGIN
 	
 	// so do jesters
 	
+	LAF check_label STR_VAR label=dw-kit_rebalance RET value END
 	LAF make_bardsong_granter 
-		INT_VAR name_tra_ref=67
+		INT_VAR granted_tra_ref=204
+				name_tra_ref=67
+				desc_tra_ref=value?202:201
 		STR_VAR kit=JESTER
 				new_bam=dw-sng2
 				new_bam_path="%MOD_FOLDER%/%component_loc%/resource/BARD_JESTER.bam"
@@ -37,6 +43,8 @@ END
 
 DEFINE_ACTION_FUNCTION make_bardsong_granter
 	INT_VAR name_tra_ref=0
+			desc_tra_ref=0
+			granted_tra_ref=0
 	STR_VAR kit=""
 			new_bam=""
 			new_bam_path=""
@@ -46,12 +54,17 @@ BEGIN
 	COPY "%new_bam_path%" "override/%new_bam%.bam"
 	COPY_EXISTING "#BARD1.spl" "override/%new_spell%.spl"
 		SAY 0x8 (AT name_tra_ref)
+		SAY 0x50 (AT desc_tra_ref)
 		LPF ALTER_EFFECT INT_VAR match_opcode=172 STR_VAR resource="%new_spell%" END
 		LPF ALTER_EFFECT INT_VAR match_opcode=171 STR_VAR resource="%new_spell%" END
 		LPF ALTER_EFFECT INT_VAR match_opcode=251 STR_VAR resource="%granted_spell%" END
 		REPLACE_TEXTUALLY "BARD1" "%new_bam%" (8)
 		REPLACE_TEXTUALLY "BARD1B" "%new_bam%" (8)
 	BUT_ONLY
+	ACTION_IF !(granted_tra_ref=0) BEGIN
+		COPY_EXISTING "%granted_spell%.spl" override
+			SAY 0x8 (AT granted_tra_ref)
+	END
 	kit.edit[%kit%]
 	[
 		k.kit_grant_powers{%new_spell% 1}

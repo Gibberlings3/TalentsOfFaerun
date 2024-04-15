@@ -596,6 +596,8 @@ DEFINE_PATCH_FUNCTION CLERIC_FURY_OF_THE_PACK BEGIN
 			m.fx.add{s_opcode=287}
 			// effects: invisible
 			m.fx.add{s_opcode=20}
+			//effects: no critical miss
+			m.fx.add{s_opcode=362 s_target=1 s_parameter1="-1" s_timing=9}
 			// allegiance
 			m_allegiance:=neutral
 			// translucency
@@ -647,8 +649,8 @@ DEFINE_PATCH_FUNCTION CLERIC_FURY_OF_THE_PACK BEGIN
 		spl.make[%spl_fury_of_the_pack_payload%]
 		[
 			m.ab.add{}
-			m.ab_fx.add{s_opcode=12 s_target=2 s_damage_type:=piercing s_timing=1 s_probability1=49 s_dicesize=8 s_dicenumber=2 s_save_vs_spell=1 s_savebonus="-2" s_save_for_half=1}
-			m.ab_fx.add{s_opcode=12 s_target=2 s_damage_type:=slashing s_timing=1 s_probability1=100 s_probability2=50 s_dicesize=8 s_dicenumber=2 s_save_vs_spell=1 s_savebonus="-2" s_save_for_half=1}
+			m.ab_fx.add{s_opcode=12 s_target=2 s_damage_type:=piercing s_timing=1 s_probability1=49 s_dicesize=8 s_dicenumber=3 s_save_vs_spell=1 s_savebonus="-2" s_save_for_half=1}
+			m.ab_fx.add{s_opcode=12 s_target=2 s_damage_type:=slashing s_timing=1 s_probability1=100 s_probability2=50 s_dicesize=8 s_dicenumber=3 s_save_vs_spell=1 s_savebonus="-2" s_save_for_half=1}
 		]
 
 		// make summoning effect
@@ -801,8 +803,14 @@ END
 ////////////////////////////////////////////////////////////////
 
 DEFINE_PATCH_FUNCTION TOTEMIC_SPIRIT_BEAR
-BEGIN		
+BEGIN	
+
+	LPF make_spirit_animation INT_VAR sequence=2 STR_VAR resref=dw-spbe bam_source=transparent_bear wav=cbear01 END
+	SPRINT string @3302
+	LPF resolve_statdesc STR_VAR string bam=spiritb RET stat_num END
 	LPF struct_read RET_ARRAY m=struct END
+	// level
+	m_level=1
 	// icon
 	m.ab.alter{s_icon:=spiritb}
 	// remove all existing ones
@@ -820,6 +828,10 @@ BEGIN
 	// payload: immunity
 	m.immunity_effect{sleep}
 	m.immunity_effect{stun}
+	// add portrait icon
+	m.ab_fx.add{s_opcode=142 s_timing=0 s_duration=999999 s_parameter2=stat_num s_target=2}
+	m.ab_fx.add{s_opcode=215 s_target=1 s_timing=1 s_resource:=dw-spbe}
+	m.ab_fx.add{s_opcode=50 s_target=1 s_timing=1 s_red=200 s_blue=225 s_green=215 s_parameter2=15*0x10000}
 	
 	LPF struct_write STR_VAR struct=m END
 END
@@ -828,7 +840,12 @@ END
 
 DEFINE_PATCH_FUNCTION TOTEMIC_SPIRIT_LION
 BEGIN		
+	LPF make_spirit_animation INT_VAR sequence=12 STR_VAR resref=dw-spli bam_source=transparent_lion wav=panth02 END
+	SPRINT string @3304
+	LPF resolve_statdesc STR_VAR string bam=spiritl RET stat_num END
 	LPF struct_read RET_ARRAY m=struct END
+	// level
+	m_level=1
 	// icon
 	m.ab.alter{s_icon:=spiritl}
 	// remove all existing ones
@@ -846,6 +863,10 @@ BEGIN
 	// payload: immunity
 	m.immunity_effect{fear}
 	m.immunity_effect{death}
+	// add portrait icon and animations
+	m.ab_fx.add{s_opcode=142 s_timing=0 s_duration=999999 s_parameter2=stat_num s_target=2}
+	m.ab_fx.add{s_opcode=215 s_target=1 s_timing=1 s_resource:=dw-spli}
+	m.ab_fx.add{s_opcode=50 s_target=1 s_timing=1 s_red=200 s_blue=225 s_green=215 s_parameter2=15*0x10000}
 	
 	LPF struct_write STR_VAR struct=m END
 END
@@ -854,7 +875,13 @@ END
 
 DEFINE_PATCH_FUNCTION TOTEMIC_SPIRIT_SNAKE
 BEGIN		
+
+	LPF make_spirit_animation INT_VAR sequence=0 STR_VAR resref=dw-spsn bam_source=transparent_snake wav=snake02 END
+	SPRINT string @3306
+	LPF resolve_statdesc STR_VAR string bam=spirits RET stat_num END
 	LPF struct_read RET_ARRAY m=struct END
+	// level
+	m_level=1
 	// icon
 	m.ab.alter{s_icon:=spirits}
 	// remove all existing ones
@@ -870,8 +897,14 @@ BEGIN
 	// payload: +3 WIS
 	m.ab_fx.add{s_opcode=49 s_target=2 s_timing=0 s_duration=999999 s_parameter1=3}
 	// payload: immunity
-	m.immunity_effect{poison}
+	m.immunity_effect{confusion}
 	m.immunity_effect{charm}
+	m.immunity_effect{poison}
+	// add portrait icon
+	m.ab_fx.add{s_opcode=142 s_timing=0 s_duration=999999 s_parameter2=stat_num s_target=2}
+	m.ab_fx.add{s_opcode=215 s_target=1 s_timing=1 s_resource:=dw-spsn}
+	m.ab_fx.add{s_opcode=50 s_target=1 s_timing=1 s_red=200 s_blue=225 s_green=215 s_parameter2=15*0x10000}
+
 	LPF struct_write STR_VAR struct=m END
 
 END
@@ -879,8 +912,14 @@ END
 ////////////////////////////////////////////////////////////////
 
 DEFINE_PATCH_FUNCTION TOTEMIC_SPIRIT_WOLF
-BEGIN		
+BEGIN	
+
+	LPF make_spirit_animation INT_VAR sequence=3 STR_VAR resref=dw-spwo bam_source=transparent_wolf wav=wwolf03 END
+	SPRINT string @3300
+	LPF resolve_statdesc STR_VAR string bam=spirits RET stat_num END
 	LPF struct_read RET_ARRAY m=struct END
+	// level
+	m_level=1
 	// icon
 	m.ab.alter{s_icon:=spiritw}
 	// remove all existing ones
@@ -898,6 +937,12 @@ BEGIN
 	// payload: evasion
 	LPF ds_resolve_stat STR_VAR id=EVASION RET stat_ind END
 	m.ab_fx.add{s_opcode=328 s_target=2 s_duration=999999 s_special=1 s_parameter2=stat_ind}
+
+	// add portrait icon
+	m.ab_fx.add{s_opcode=142 s_timing=0 s_duration=999999 s_parameter2=stat_num s_target=2}
+	m.ab_fx.add{s_opcode=215 s_target=1 s_timing=1 s_resource:=dw-spwo}
+	m.ab_fx.add{s_opcode=50 s_target=1 s_timing=1 s_red=200 s_blue=225 s_green=215 s_parameter2=15*0x10000}
+
 	LPF struct_write STR_VAR struct=m END
 END
 
@@ -969,6 +1014,38 @@ DEFINE_PATCH_FUNCTION 10th_to_quest STR_VAR sphere="" BEGIN
 END
 
 ////////////////////////////////////////////////////////////
+
+DEFINE_DIMORPHIC_FUNCTION make_spirit_animation
+	INT_VAR sequence=0
+	STR_VAR resref=""
+			bam_source=""
+			wav=""
+BEGIN
+
+	vvc.make[%resref%]
+	[
+		m_animation_resref:="%resref%"
+		m_bam_sequence_start=sequence
+		m_wav_start:="%wav%"
+		m_3d_blend=1
+		m_blended=1
+		m_translucent=1
+		m_modify_for_height=1
+		m_z="-10"
+	]
+	spl.make[%resref%]
+	[
+		m.ab.add{}
+		m.ab_fx.add{s_opcode=215 s_target=1 s_timing=1 s_resource:=dw#lion}
+		m.ab_fx.add{s_opcode=50 s_target=1 s_timing=1 s_red=200 s_blue=225 s_green=215 s_parameter2=15*0x10000}
+	]
+
+	COPY "%MOD_FOLDER%/hla_feat/resource/%bam_source%.bam" "override/%resref%.bam"
+
+END
+
+////////////////////////////////////////////////////////////
+
 
 DEFINE_DIMORPHIC_FUNCTION shapeshifter_setup
 BEGIN

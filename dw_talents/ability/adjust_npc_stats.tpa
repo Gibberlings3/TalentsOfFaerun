@@ -1,0 +1,86 @@
+DEFINE_ACTION_FUNCTION adjust_npc_stats STR_VAR version="0" BEGIN // version=1 is debug
+
+	// load data
+	
+	LAF 2da_read STR_VAR file=str_adjust.2da location=data RET_ARRAY str_adjust_array=array END
+	LAF 2da_read STR_VAR file=str_ex_adjust.2da location=data RET_ARRAY str_ex_adjust_array=array END
+	LAF 2da_read STR_VAR file=dex_adjust.2da location=data RET_ARRAY dex_adjust_array=array END
+	LAF 2da_read STR_VAR file=con_adjust.2da location=data RET_ARRAY con_adjust_array=array END
+	LAF 2da_read STR_VAR file=race_min_abil.2da rowmap="IDS_OF_SYMBOL (race ~%arguments%~)" location=data RET_ARRAY race_adjust_array=array END
+	
+	// apply
+	
+	COPY_EXISTING_REGEXP ".*\.cre" override
+		// get race
+		race=BYTE_AT 0x272
+		// str and exstr
+		str_old=BYTE_AT 0x238
+		str_ex=BYTE_AT 0x239
+		str_ex_old=str_ex // record for debug
+		PATCH_IF str_ex>0 BEGIN
+			WRITE_BYTE 0x239 0
+			WHILE str_ex>0 && !VARIABLE_IS_SET $str_ex_adjust_array("%str_ex%" "NEW_STR_VAL") BEGIN
+				str_ex -= 1
+			END
+			PATCH_IF VARIABLE_IS_SET $str_ex_adjust_array("%str_ex%" "NEW_STR_VAL") BEGIN
+				str_new=$str_ex_adjust_array("%str_ex%" "NEW_STR_VAL")
+			END ELSE BEGIN
+				PATCH_FAIL "adjust_npc_stats: str_ex value %str_ex_old% not found in table"
+			END
+		END ELSE
+		PATCH_IF VARIABLE_IS_SET $str_adjust_array("%str_old%" "NEW_VAL") BEGIN
+			str_new=$str_adjust_array("%str_old%" "NEW_VAL")
+		END ELSE BEGIN
+			str_new=str_old
+		END
+		PATCH_IF VARIABLE_IS_SET $race_adjust_array("%race%" "STR") && $race_adjust_array("%race%" "STR")>str_new BEGIN
+			str_new=$race_adjust_array("%race%" "STR")
+		END
+		PATCH_IF !(str_new=str_old) BEGIN
+			WRITE_BYTE 0x238 str_new
+			PATCH_IF version BEGIN 
+				PATCH_PRINT "%SOURCE_RES%: adjusting strength %str_old%/%str_ex_old% to %str_new%"
+			END
+		END
+		// dex
+		dex_old=BYTE_AT 0x23c
+		PATCH_IF VARIABLE_IS_SET $dex_adjust_array("%dex_old%" "NEW_VAL") BEGIN
+			dex_new=$dex_adjust_array("%dex_old%" "NEW_VAL")
+		END ELSE BEGIN
+			dex_new=dex_old
+		END	
+		PATCH_IF VARIABLE_IS_SET $race_adjust_array("%race%" "DEX") && $race_adjust_array("%race%" "DEX")>str_new BEGIN
+			dex_new=$race_adjust_array("%race%" "DEX")
+		END	
+		PATCH_IF !(dex_new=dex_old) BEGIN
+			WRITE_BYTE 0x23c dex_new
+			PATCH_IF version BEGIN 
+				PATCH_PRINT "%SOURCE_RES%: adjusting dex %dex_old% to %dex_new%"
+			END
+		END
+		// con
+		con_old=BYTE_AT 0x23d
+		PATCH_IF VARIABLE_IS_SET $con_adjust_array("%con_old%" "NEW_VAL") BEGIN
+			con_new=$con_adjust_array("%con_old%" "NEW_VAL")
+		END ELSE BEGIN
+			con_new=con_old
+		END		
+		PATCH_IF !(con_new=con_old) BEGIN
+			WRITE_BYTE 0x23d con_new
+			PATCH_IF version BEGIN 
+				PATCH_PRINT "%SOURCE_RES%: adjusting con %con_old% to %con_new%"
+			END
+		END	
+	BUT_ONLY
+
+
+
+
+
+
+
+
+
+
+END
+

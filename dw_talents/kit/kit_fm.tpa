@@ -1,5 +1,8 @@
 DEFINE_ACTION_FUNCTION kit_fm BEGIN
 
+
+	LAF virtual_class_setup END
+
 	LAF include STR_VAR file=multiclass.tph locbase=shared END
 	LAF include STR_VAR file=mageschools_shared.tph locbase=shared END
 	LAF virtualise_specialist_blocks STR_VAR tra=mageschool END

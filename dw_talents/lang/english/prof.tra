@@ -2,5 +2,33 @@
 @400="Favored Weapon: "
 @401="Advantages:" // must exactly match the usual string from kit descriptions
 
+@500="TWO-WEAPON: This fighting style allows the character to use two melee weapons at the same time with fewer penalties. A character wielding two weapons without a slot in this fighting style would incur a -4 penalty to attack rolls with the main weapon and a -8 penalty with the off-hand weapon. 
+
+Proficient (1 slot): The wielder's penalties are reduced to -2 with the main weapon and -6 with the off-hand weapon. The wielder gains +1 to Armor Class against melee attacks only when fighting with two weapons.
+
+Specialized (2 slots): The wielder's penalties are reduced to 0 with the main weapon and -4 with the off-hand weapon. The wielder gains +2 to Armor Class against melee attacks only when fighting with two weapons.
+
+Master (3 slots): The wielder's penalties are reduced to 0 with the main weapon and -2 with the off-hand weapon. The wielder gains +3 to Armor Class against melee attacks only when fighting with two weapons."
+
+@501="SINGLE-WEAPON: This fighting style is for characters who do not wish to use a shield but want some bonus when using a one-handed melee weapon.
+
+Proficient (1 slot): The wielder gets a +2 bonus to AC against melee attacks, a +1 bonus to AC against missile attacks, a +1 bonus to hit, and inflicts critical damage on an attack roll of 19 or 20.
+
+Specialized (2 slots): The wielder gets a +4 bonus to AC against melee attacks, a +2 bonus to AC against missile attacks, a +2 bonus to hit, and inflicts critical damage on an attack roll of 18, 19, or 20."
+
+@502="WEAPON AND SHIELD: Anyone can pick up a shield and get its basic protection bonuses, but by spending slots on this fighting style, an adventurer can maximize the benefits received.
+
+Proficient (1 slot): The wielder gets a -1 bonus to AC against melee weapons and a -2 bonus to AC against missile weapons.
+
+Specialized (2 slots): The wielder gets a -2 bonus to AC against melee weapons and a -4 bonus to AC against missile weapons."
+
+@503="TWO-HANDED: This fighting style allows the character to use a two-handed melee weapon and receive special bonuses.
+
+Proficient (1 slot): The wielder gets a +2 bonus to damage rolls, a -2 bonus to Speed Factor, and the ability to score critical hits on a roll of 19 or 20 (instead of just 20) when using a two-handed weapon.
+
+Specialized (2 slots): The wielder gets a further +3 bonus to damage rolls and a further -2 bonus to Speed Factor."
+
+@504="Weapon and Shield Style"
+
 
 

@@ -11,7 +11,7 @@ DEFINE_ACTION_FUNCTION make_wis_payload BEGIN
 		LPF add_basic_spell_ability END
 		LPF ADD_SPELL_EFFECT INT_VAR opcode=318 target=2 timing=1 parameter1=favored_soul_stat parameter2=splprot_value_state STR_VAR resource=dw3ewis END
 		FOR (value=minimum_bonus_spell_abil;value<=25;value+=1) BEGIN
-			LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 STR_VAR resource="dw3ep%value%" END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 timing=1 STR_VAR resource="dw3ep%value%" END
 			LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 parameter1=value parameter2=splprot_value STR_VAR resource="dw3ep%value%" END
 		END
 	
@@ -19,7 +19,7 @@ DEFINE_ACTION_FUNCTION make_wis_payload BEGIN
 	CREATE spl "dw3ewi2" 
 		LPF add_basic_spell_ability END
 		FOR (value=0;value<=25;value+=1) BEGIN
-			LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 STR_VAR resource="dw3ew%value%" END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 timing=1 STR_VAR resource="dw3ew%value%" END
 			LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 parameter1=value parameter2=splprot_value STR_VAR resource="dw3ew%value%" END
 			INNER_ACTION BEGIN
 				LAF make_wis_secondary_spell INT_VAR wis=value END
@@ -30,7 +30,7 @@ DEFINE_ACTION_FUNCTION make_wis_payload BEGIN
 	CREATE spl "dw3ewi3" 
 		LPF add_basic_spell_ability END
 		FOR (value=12;value<=25;value+=1) BEGIN
-			LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 STR_VAR resource="dw3mn%value%" END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 timing=1 STR_VAR resource="dw3mn%value%" END
 			LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 parameter1=value parameter2=splprot_value STR_VAR resource="dw3mn%value%" END
 			INNER_ACTION BEGIN
 				LAF make_wis_secondary_spell_monk INT_VAR wis=value END
@@ -66,7 +66,7 @@ BEGIN
 	CREATE spl "dw3ew%wis%"
 		LPF add_basic_spell_ability END
 		LPF 3e_abil_standard INT_VAR ability=wis RET modifier END
-		LPF ADD_SPELL_EFFECT INT_VAR opcode=37 target=2 timing=9 parameter1=modifier END // spells
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=37 target=2 timing=0 duration=6 parameter1=modifier END // spells
 
 
 END

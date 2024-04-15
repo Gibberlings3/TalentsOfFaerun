@@ -195,7 +195,7 @@ DEFINE_ACTION_FUNCTION ice_knife BEGIN
 		m.secondary=10
 		m.ab.add{s_location:=spell s_level=1 s_range=60 s_target:=LivingActor s_casting_time=1 s_projectile:="%pro_ice_knife%"}
 		m.ab.clone{s_level=entry_index*2+3|number:i=4}
-		m.ab_fx.add{s_opcode=12 s_target:=PresetTarget s_dicenumber=1 s_dicesize=4 damagetype:=piercing s_power=1 s_dispel_resist=1}
+		m.ab_fx.add{s_opcode=12 s_target:=PresetTarget s_dicenumber=1 s_dicesize=4 s_damagetype:=piercing s_power=1 s_dispel_resist=1}
 		m.ab_fx.add{s_opcode=333 s_target:=PresetTarget s_power=1 s_parameter1=1 s_parameter2=p_level s_timing=1 s_resource:="DW-THISB"}	
 	]
 	spl.make[%WIZARD_ICE_KNIFE%B]

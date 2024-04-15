@@ -3,10 +3,10 @@ DEFINE_ACTION_FUNCTION kit_rebalance BEGIN
 	
 	ACTION_FOR_EACH kit IN 
 	
-		dragon_disciple
-		totemic_druid
 		berserker 
 		barbarian
+		dragon_disciple
+		totemic_druid
 		shapeshifter
 		wizard_slayer
 		undead_hunter
@@ -202,7 +202,7 @@ DEFINE_ACTION_FUNCTION rebalance_berserker BEGIN
 		sleep=>2
 		hold=>4
 		charm=>6
-		feeblemind=>6
+		feeblemind=>8
 		confusion=>8
 		stun=>10
 		leveldrain=>12
@@ -215,7 +215,7 @@ DEFINE_ACTION_FUNCTION rebalance_berserker BEGIN
 		hold=>175
 		charm=>5
 		feeblemind=>76
-		confusion=>3
+		confusion=>128
 		stun=>45
 		leveldrain=>216
 		imprisoned=>211
@@ -223,7 +223,8 @@ DEFINE_ACTION_FUNCTION rebalance_berserker BEGIN
 	END
 
 	// edit the Berserker Rage spell
-	
+
+	OUTER_SET recast_string=is_bg2?74011:(is_iwd?36022:26799)
 	
 	spl.edit[%BERSERKER_RAGE%|edit_strrefs_in_place:i=1]
 	[
@@ -233,6 +234,9 @@ DEFINE_ACTION_FUNCTION rebalance_berserker BEGIN
 			rage_desc:=@5
 			REPLACE_TEXTUALLY "RAGE_PLACEHOLDER" "%rage_desc%"	
 		}
+		// temporarily remove 206 
+		m.ab_fx.delete{s_opcode=206 s_parameter1=recast_string}
+		// make copies of ability block
 		m.ab.clone{s_level=entry_index+2|number:i=24}
 		// clear out immunity effects (also does hp)
 		m.ab_fx.alter{rage_effect_cull}
@@ -244,6 +248,9 @@ DEFINE_ACTION_FUNCTION rebalance_berserker BEGIN
 		END
 		// secondary immunity effects
 		m.immunity_effect{fear sleep hold charm feeblemind confusion stun energy_drain imprisoned mazed|permanent:i=0}
+		//no-recast
+		m.ab_fx.add{s_opcode=206 s_target=1 s_parameter1=recast_string s_duration=60 s_resource:=%BERSERKER_RAGE%}
+		
 	]
 
 	
@@ -284,7 +291,7 @@ DEFINE_ACTION_FUNCTION rebalance_barbarian BEGIN
 		sleep=>2
 		hold=>4
 		charm=>6
-		feeblemind=>6
+		feeblemind=>8
 		confusion=>8
 		stun=>10
 		leveldrain=>12
@@ -297,7 +304,7 @@ DEFINE_ACTION_FUNCTION rebalance_barbarian BEGIN
 		hold=>175
 		charm=>5
 		feeblemind=>76
-		confusion=>3
+		confusion=>128
 		stun=>45
 		leveldrain=>216
 		imprisoned=>211
@@ -305,6 +312,9 @@ DEFINE_ACTION_FUNCTION rebalance_barbarian BEGIN
 	END
 
 	// edit the Barbarian Rage spell
+
+	OUTER_SET recast_string=is_bg2?74011:(is_iwd?36022:26799)
+	
 	
 	spl.edit[%BARBARIAN_RAGE%|edit_strrefs_in_place:i=1]
 	[
@@ -325,6 +335,8 @@ DEFINE_ACTION_FUNCTION rebalance_barbarian BEGIN
 		END
 		// secondary immunity effects
 		m.immunity_effect{fear sleep hold charm feeblemind confusion stun energy_drain imprisoned mazed|permanent:i=0}
+		// no-recast
+		m.ab_fx.add{s_opcode=206 s_target=1 s_parameter1=recast_string s_duration=30 s_resource:=%BARBARIAN_RAGE%}
 	]
 	
 	// make DR start earlier; edit the kit description
@@ -339,6 +351,21 @@ DEFINE_ACTION_FUNCTION rebalance_barbarian BEGIN
 			REPLACE_TEXTUALLY "RAGE_PLACEHOLDER" "%rage_desc%"		
 		}		
 	]
+	
+	// if appropriate, also apply to barbarian MCs
+	
+	ACTION_FOR_EACH barbarian_mc IN DW_BARBARIAN_CLERIC DW_BARBARIAN_DRUID DW_BARBARIAN_THIEF BEGIN
+		OUTER_SET kit_id=IDS_OF_SYMBOL (kit "%barbarian_mc%")
+		ACTION_IF kit_id>=0 BEGIN
+			COPY_EXISTING "DWMKF11.spl" override
+				LPF DELETE_EFFECT INT_VAR match_opcode=326 match_parameter1=kit_id STR_VAR match_resource=SPCL153 END
+			kit.edit[%barbarian_mc%]
+			[
+				k.kit_apply_powers{spcl154 7,spcl154 11|class=fighter}
+			]
+		
+		END
+	END
 
 END
 
@@ -361,83 +388,6 @@ END
 
 
 
-DEFINE_PATCH_FUNCTION rage_effect_cull_old
-BEGIN
-	SET wipe=0
-	PATCH_IF (s_opcode=106 || s_opcode=161 || s_opcode=23 || s_opcode=321 ) && p_level<rage_level_fear BEGIN
-		wipe=1
-	END ELSE
-	PATCH_IF s_opcode=267 THEN BEGIN
-		wipe=((s_parameter1=1280 ||s_parameter1=14043 || s_parameter1=25862 || s_parameter1=26050) && p_level<rage_level_stun)
-				|| ((s_parameter1=35544 || s_parameter1=35545 || s_parameter1=14672 || s_parameter1=14780 || s_parameter1=26206 || s_parameter1=17392 || s_parameter1=37801 ) && p_level<rage_level_charm)
-				|| ((s_parameter1=35484 || s_parameter1=14007 || s_parameter1=17427 || s_parameter1=20568 || s_parameter1=25818) && p_level<rage_level_fear)
-				|| ((s_parameter1=37603 || s_parameter1=37604 || s_parameter1=26184 || s_parameter1=25807) && p_level<rage_level_confusion)
-				|| ((s_parameter1=37613 || s_parameter1=37340 || s_parameter1=26371 ) && p_level<rage_level_sleep)
-				|| ((s_parameter1=14102 || s_parameter1=14650 || s_parameter1=35542 || s_parameter1=35606 ||s_parameter1=25866 ||s_parameter1=31799 || s_parameter1=25806 || s_parameter1=25805 || s_parameter1=25804 || s_parameter1=25803 || s_parameter1=25802) && p_level<rage_level_hold)
-				|| ((s_parameter1=35498 || s_parameter1=35497 || s_parameter1=35496 || s_parameter1=35472 || s_parameter1=35495) && p_level<rage_level_leveldrain)
-	END ELSE
-	PATCH_IF s_opcode=169 THEN BEGIN
-		wipe=((s_parameter2=1 || s_parameter2=0 || s_parameter2=43) && p_level<rage_level_charm) 
-				|| ((s_parameter2=55 || s_parameter2=44) && p_level<rage_level_stun)
-				|| ((s_parameter2=130 || s_parameter2=14) && p_level<rage_level_sleep)
-				|| (s_parameter2=36 && p_level<rage_level_fear)
-				|| ((s_parameter2=3 || s_parameter2=2 || s_parameter2=47) && p_level<rage_level_confusion)
-				|| ((s_parameter2=79 || s_parameter2=78) && p_level<rage_level_imprisonmaze)
-				|| (s_parameter2=48 || p_level<rage_level_feeblemind)
-				|| (s_parameter2=13 && p_level<rage_level_hold)
-				|| ((s_parameter2=59 || s_parameter2=53) && p_level<rage_level_leveldrain)
-
-	END ELSE
-	PATCH_IF s_opcode=101 THEN BEGIN
-		wipe=((s_parameter2=45 || s_parameter2=210) && p_level<rage_level_stun ) 
-				|| ((s_parameter2=217 || s_parameter2=39 || s_parameter2=130) && p_level<rage_level_sleep) 
-				|| (s_parameter2=5 && p_level<rage_level_charm)
-				|| ((s_parameter2=24 || s_parameter2=106 || s_parameter2=23) && p_level<rage_level_fear)
-				|| ((s_parameter2=211 || s_parameter2=213) && p_level<rage_level_imprisonmaze)
-				|| ((s_parameter2=109 || s_parameter2=175) && p_level<rage_level_hold)
-				|| (s_parameter2=128 && p_level<rage_level_confusion)
-				|| (s_parameter2=76 && p_level<rage_level_feeblemind)
-				|| (s_parameter2=216 && p_level<rage_level_leveldrain)
-	END ELSE
-	PATCH_IF s_opcode=142 THEN BEGIN
-		wipe=(s_parameter2=52 && p_level<rage_level_charm)
-				|| (s_parameter2=37 && p_level<rage_level_fear)
-				|| (s_parameter2=90 && p_level<rage_level_leveldrain)
-	END ELSE
-	PATCH_IF s_opcode=240 THEN BEGIN
-		wipe=(s_parameter2=36 && p_level<rage_level_fear)
-				|| (s_parameter2=55 && p_level<rage_level_stun)
-	END ELSE
-	PATCH_IF s_opcode=296 THEN BEGIN
-		PATCH_MATCH "%s_resource%" WITH
-		SPNWCHRM BEGIN 
-			wipe=(p_level<rage_level_charm)
-		END
-		CDHORROR BEGIN
-			wipe=(p_level<rage_level_fear)
-		END
-		SPFLAYER BEGIN
-			wipe=(p_level<rage_level_stun)
-		END
-		SPCONFUS CONFUSH BEGIN
-			wipe=(p_level<rage_level_confusion)
-		END
-		SPMINDAT PARALHAT BEGIN
-			wipe=(p_level<rage_level_hold)
-		END
-		DEFAULT
-		END
-	END ELSE 
-	PATCH_IF s_opcode=46 BEGIN
-		wipe=(p_level<rage_level_stun)
-	END ELSE
-	PATCH_IF (s_opcode=12 || s_opcode=17 || s_opcode=18) BEGIN
-		s_parameter1=5+p_level
-	END
-	PATCH_IF wipe BEGIN 
-		WRITE_LONG 0x0 999
-	END
-END
 
 ///////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -633,13 +583,13 @@ DEFINE_ACTION_FUNCTION rebalance_undead_hunter BEGIN
 
 	// make the new immunity powers
 	
-	// hold
+	// paralyze
 
-	spl.make[%spl_undead_hunter_hold_immunity%]
+	spl.make[%spl_undead_hunter_paralyze_immunity%]
 	[
-		k_name:=@8
+		k_name:=@59
 		m.ab.add{}
-		m.immunity_effect{hold}
+		m.immunity_effect{paralyze}
 	]
 	
 	// energy drain
@@ -666,7 +616,7 @@ DEFINE_ACTION_FUNCTION rebalance_undead_hunter BEGIN
 	kit.edit[UNDEAD_HUNTER|edit_strrefs_in_place:i=1]
 	[
 		k.kit_remove_powers{spcl241 spcl242}
-		k.kit_apply_powers{%spl_undead_hunter_plus_one% 1 4 9,SPCL241 5,%spl_undead_hunter_hold_immunity% 3,%spl_undead_hunter_energy_drain_immunity% 7}
+		k.kit_apply_powers{%spl_undead_hunter_plus_one% 1 4 9,SPCL241 5,%spl_undead_hunter_paralyze_immunity% 3,%spl_undead_hunter_energy_drain_immunity% 7}
 		k_description:=@16
 		// restore description of Smite Evil
 		IF {FILE_EXISTS_IN_GAME "%spl_smite_evil_undead_hunter%.spl"}
@@ -1102,6 +1052,10 @@ DEFINE_ACTION_FUNCTION rebalance_totemic_druid BEGIN
 		INNER_PATCH_SAVE m_resource "%m_resource%" BEGIN
 			REPLACE_TEXTUALLY 5 7
 		END
+	]
+	spl.edit[spcl621]
+	[
+		m_description:=@113
 	]
 	
 	spl.edit[spcl622 spcl623 spcl624 spcl625]

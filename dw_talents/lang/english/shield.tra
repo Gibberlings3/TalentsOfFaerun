@@ -1,0 +1,5 @@
+@1="Armor Class:" // the string used in BGEE armor/shield descriptions
+@2="Armor Class:" // the string used in BG2EE armor/shield descriptions
+@3="Armor Class:" // the string used in IWDEE armor/shield descriptions
+@4="Cannot cast wizard or priest spells"
+@5="DW_HIT_PENALTY to attack rolls" // do not translate DW_HIT_PENALTY

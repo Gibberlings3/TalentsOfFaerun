@@ -119,6 +119,21 @@ END
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
+DEFINE_PATCH_FUNCTION ROGUE_SET_ACID_TRAP
+BEGIN
+
+	INNER_ACTION BEGIN
+		// new projectile
+		spl.edit[rr#thl4b]
+		[
+			m.ab.alter{s_projectile:=rr#thl4b}
+		]
+	END
+
+END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
 DEFINE_PATCH_FUNCTION ROGUE_SET_EXPLODING_TRAP
 BEGIN
 
@@ -135,7 +150,7 @@ BEGIN
 
 			// set projectile
 			
-			LPF ALTER_SPELL_HEADER INT_VAR projectile=RESOLVE_STR_REF (projectl rr#trpex) + 1 END 
+			LPF ALTER_SPELL_HEADER INT_VAR projectile=IDS_OF_SYMBOL (projectl rr#trpex) + 1 END 
 
 			// shift to save-for-half
 
@@ -151,6 +166,18 @@ BEGIN
 	
 END
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION ROGUE_SET_SPIKE_TRAP 
+BEGIN
+
+	INNER_ACTION BEGIN
+		COPY_EXISTING "spcl910b.spl" override
+			LPF ALTER_EFFECT INT_VAR match_opcode=12 parameter2=16*0x10000 END // spiked damage
+	END
+
+END
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
 DEFINE_PATCH_FUNCTION BOUNTY_HUNTER_TOXIC_TRAP
@@ -163,7 +190,7 @@ BEGIN
 
 			// set projectile
 			
-			LPF ALTER_SPELL_HEADER INT_VAR projectile=RESOLVE_STR_REF (projectl tg#toxt) + 1 END 
+			LPF ALTER_SPELL_HEADER INT_VAR projectile=IDS_OF_SYMBOL (projectl tg#toxt) + 1 END 
 
 			// flat immunity for anything immune to poison
 			
@@ -179,7 +206,7 @@ END
 DEFINE_PATCH_FUNCTION ASSASSIN_POISON_APTITUDE
 BEGIN
 
-	LPF add_feat_effect INT_VAR opcode=328 special=1 parameter2=RESOLVE_STR_REF (splstate DW_POWER_UPGRADE_T2) END
+	LPF add_feat_effect INT_VAR opcode=328 special=1 parameter2=IDS_OF_SYMBOL (splstate DW_POWER_UPGRADE_T2) END
 	
 END
 
@@ -188,7 +215,7 @@ END
 DEFINE_PATCH_FUNCTION ASSASSIN_POISON_EXPERTISE
 BEGIN
 
-	LPF add_feat_effect INT_VAR opcode=328 special=1 parameter2=RESOLVE_STR_REF (splstate DW_POWER_UPGRADE_T3) END
+	LPF add_feat_effect INT_VAR opcode=328 special=1 parameter2=IDS_OF_SYMBOL (splstate DW_POWER_UPGRADE_T3) END
 	
 END
 
@@ -196,6 +223,10 @@ END
 
 DEFINE_PATCH_FUNCTION BARD_RESONATING_WEAPON
 BEGIN
+
+	// new icon
+	LPF resolve_statdesc INT_VAR strref=RESOLVE_STR_REF (@3131) STR_VAR bam=RR#BHL5B RET stat_num END
+	LPF ALTER_EFFECT INT_VAR match_opcode=142 parameter2=stat_num END
 
 	// duration 4 rds
 	
@@ -233,7 +264,7 @@ BEGIN
 
 	// set projectile
 	
-	LPF ALTER_SPELL_HEADER INT_VAR projectile=RESOLVE_STR_REF (projectl rr#vrnp) + 1 END 
+	LPF ALTER_SPELL_HEADER INT_VAR projectile=IDS_OF_SYMBOL (projectl rr#vrnp) + 1 END 
 	
 	// move to 324-based immunity system
 	
@@ -252,10 +283,9 @@ BEGIN
 
 	// set projectile
 	
-	LPF ALTER_SPELL_HEADER INT_VAR projectile=RESOLVE_STR_REF (projectl rr#vrnp) + 1 END 
+	LPF ALTER_SPELL_HEADER INT_VAR projectile=IDS_OF_SYMBOL (projectl rr#vrnp) + 1 END 
 	
 	// move to 324-based immunity system
-	
 	LPF DELETE_EFFECT INT_VAR match_opcode=177 END
 	LPF ADD_SPELL_EFFECT INT_VAR insert_point=0 opcode=324 target=2 duration=1 parameter1=IDS_OF_SYMBOL (splstate CONFUSION_IMMUNITY) parameter2=110 STR_VAR resource="%SOURCE_RES%" END
 	LPF ADD_SPELL_EFFECT INT_VAR insert_point=0 opcode=324 target=2 duration=1 parameter2=27 STR_VAR resource="%SOURCE_RES%" END //golems
@@ -281,7 +311,7 @@ BEGIN
 
 	// set projectile
 	
-	LPF ALTER_SPELL_HEADER INT_VAR projectile=RESOLVE_STR_REF (projectl rr#vrnp) + 1 END 
+	LPF ALTER_SPELL_HEADER INT_VAR projectile=IDS_OF_SYMBOL (projectl rr#vrnp) + 1 END 
 	
 	// move to modern save-for-half
 	
@@ -413,6 +443,10 @@ BEGIN
 	INNER_ACTION BEGIN
 		COPY_EXISTING "rr#wspi.cre" override
 			WRITE_BYTE 0x270 5 // controlled
+			
+		// remove the 'become ALLY' block from script (do it this way for CC reasons)
+		
+		LAF script_delete_block STR_VAR script=RR#WSPI match="OnCreation" END
 	END
 
 END
@@ -449,7 +483,7 @@ DEFINE_PATCH_FUNCTION BARD_ENHANCED_SONG BEGIN
 	INNER_ACTION BEGIN
 		COPY_EXISTING "rr#bdf04.spl" override
 			SAY 0x8 @3150
-			LPF ALTER_SPELL_HEADER INT_VAR projectile=RESOLVE_STR_REF (projectl rr#vrpo) + 1 END 
+			LPF ALTER_SPELL_HEADER INT_VAR projectile=IDS_OF_SYMBOL (projectl rr#vrpo) + 1 END 
 			LPF ADD_SPELL_EFFECT INT_VAR insert_point=0 opcode=321 target=2 timing=1 STR_VAR resource="%SOURCE_RES%" END
 	
 	END
@@ -484,7 +518,7 @@ DEFINE_PATCH_FUNCTION SKALD_ENHANCED_SONG BEGIN
 	INNER_ACTION BEGIN
 		COPY_EXISTING "rr#bsk02.spl" override
 			SAY 0x8 @3153
-			LPF ALTER_SPELL_HEADER INT_VAR projectile=RESOLVE_STR_REF (projectl rr#vrpo) + 1 END 
+			LPF ALTER_SPELL_HEADER INT_VAR projectile=IDS_OF_SYMBOL (projectl rr#vrpo) + 1 END 
 			LPF ADD_SPELL_EFFECT INT_VAR insert_point=0 opcode=321 target=2 timing=1 STR_VAR resource="%SOURCE_RES%" END
 	
 	END
@@ -519,7 +553,7 @@ DEFINE_PATCH_FUNCTION JESTER_ENHANCED_SONG BEGIN
 	INNER_ACTION BEGIN
 		COPY_EXISTING "rr#bjs02.spl" override
 			SAY 0x8 @3156
-			LPF ALTER_SPELL_HEADER INT_VAR projectile=RESOLVE_STR_REF (projectl rr#vrnp) + 1 END 
+			LPF ALTER_SPELL_HEADER INT_VAR projectile=IDS_OF_SYMBOL (projectl rr#vrnp) + 1 END 
 			LPF ADD_SPELL_EFFECT INT_VAR insert_point=0 opcode=321 target=2 timing=1 STR_VAR resource="%SOURCE_RES%" END
 			// move to 324-based immunity system
 			
@@ -580,8 +614,8 @@ DEFINE_PATCH_FUNCTION BLADE_FINESSE BEGIN
 	
 	// modify defensive spin
 		COPY_EXISTING "%BLADE_DEFENSIVE_SPIN%.spl" override
-			LPF DELETE_EFFECT INT_VAR match_opcode=176 END
-			LPF ADD_SPELL_EFFECT INT_VAR opcode=318 target=2 duration=1 parameter1=stat_ind parameter2=110 STR_VAR resource="%SOURCE_RES%" END
+			LPF ALTER_EFFECT INT_VAR match_opcode=176 parameter1=50 parameter2=2 END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=318 target=1 duration=1 parameter1=stat_ind parameter2=110 STR_VAR resource="%SOURCE_RES%" END
 			LPF ADD_SPELL_EFFECT INT_VAR opcode=176 target=1 duration=24 parameter2=1 END
 
 	END

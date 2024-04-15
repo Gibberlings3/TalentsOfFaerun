@@ -103,33 +103,20 @@ DEFINE_ACTION_FUNCTION 3e_abilities STR_VAR version=1 BEGIN   /// 1 hybrid, 2 e3
 	
 	// adjust baseline saving throws to compensate
 	
-	COPY "%MOD_FOLDER%/%component_loc%/data/baseline_save_adjust.2da" "%workspace%"
-		COUNT_2DA_COLS colcount
-		COUNT_2DA_ROWS colcount rowcount
-		FOR (col=1;col<colcount; col+=1) BEGIN
-			READ_2DA_ENTRY 0 (col - 1) (colcount - 1) col_name
-			FOR (row=0;row<5;row+=1) BEGIN
-				READ_2DA_ENTRY row col colcount entry
-				SET $adjust("%row%")=entry
-			END
-			INNER_ACTION BEGIN
-				PRINT "adjusting saves in save%col_name%..."
-				COPY_EXISTING "save%col_name%.2da" override
-					COUNT_2DA_COLS colcount2
-					FOR (row=0;row<5;row+=1) BEGIN
-					  FOR (col2=1;col2<colcount;col2+=1) BEGIN
-						READ_2DA_ENTRY row col2 colcount2 old
-						new = old + $adjust("%row%")
-						SET_2DA_ENTRY row col2 colcount2 new
-						
-					  END
+	LAF 2da_read STR_VAR file=baseline_save_adjust.2da location=data RET_ARRAY adjust_array=array END
+	ACTION_FOR_EACH type IN PRS ROG WAR WIZ MONK BEGIN
+		WITH_SCOPE BEGIN
+			COPY_EXISTING "save%type%.2da" override
+				LPF 2da_read RET_ARRAY save_array=array save_rows=rows save_cols=columns END
+				PHP_EACH save_rows AS row=>discard1 BEGIN
+					PHP_EACH save_cols AS col=>discard2 BEGIN
+						SET $save_array("%row%" "%col%") += $adjust_array("%row%" "%type%")
 					END
-				BUT_ONLY
-				PRINT "...done"
-			END
+				END
+				LPF 2da_write STR_VAR array=save_array END
 		END
-	BUT_ONLY
-	
+	END
+
 	// finish implementing paladin save /monk AC changes
 	
 	LAF check_ini STR_VAR ini=cha_affects_paladin_saves RET value END
@@ -200,29 +187,9 @@ DEFINE_ACTION_FUNCTION 3e_abilities STR_VAR version=1 BEGIN   /// 1 hybrid, 2 e3
 		LAF remove_ability_restrictions END
 	END
 	
-	// soften Con penalties for low-con creatures, to avoid killing them
+	// adjust STR/DEX/CON for CRE files
 	
-	ACTION_CLEAR_ARRAY con_3e_adjust_map
-	ACTION_DEFINE_ASSOCIATIVE_ARRAY con_3e_adjust_map BEGIN
-		1=>5
-		2=>6
-		3=>7
-		4=>8
-		5=>8
-		6=>9
-		7=>10
-		8=>10
-		9=>10
-	END
-	PRINT "do we get to here?"
-	COPY_EXISTING_REGEXP GLOB ".*\.cre" override
-		PATCH_IF (BYTE_AT 0x273) <=21 BEGIN // filter for PC classes
-			con=BYTE_AT 0x23d
-			PATCH_IF VARIABLE_IS_SET $con_3e_adjust_map("%con%") BEGIN
-				WRITE_BYTE 0x23d $con_3e_adjust_map("%con%")
-			END
-		END
-	BUT_ONLY
+	LAF run STR_VAR file=adjust_npc_stats END
 
 	// install Force of Personality if appropriate
 	
@@ -349,20 +316,11 @@ END
 
 ///////////////////////////////////////////////////////////////////////////////////////
 
-DEFINE_ACTION_FUNCTION 3e_abil_standard
+DEFINE_DIMORPHIC_FUNCTION 3e_abil_standard
 	INT_VAR ability=0
 	RET modifier
 BEGIN
 	OUTER_SET modifier=$3e_abil_modifiers("%ability%")
-END
-
-DEFINE_PATCH_FUNCTION 3e_abil_standard
-	INT_VAR ability=0
-	RET modifier
-BEGIN
-	INNER_ACTION BEGIN
-		LAF 3e_abil_standard INT_VAR ability RET modifier END
-	END
 END
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -387,11 +345,14 @@ BEGIN
 	[
 		m.ab.add{}
 		m.ab_fx.add{s_opcode=33+entry_index s_target=2 s_parameter1="-2" s_parameter2=0 s_timing=1|number:i=5}
+		m.ab_fx.add{s_opcode=318 s_target=2 s_duration=1 s_resource:=%spl_paladin_lower_saves%}
 	]
+	// apply every level, because level-up resets it (immunity is to handle stacking when multilevelling). We use timing=1 rather than=9 to avoid
+	// messing up the character sheet display
 	
 	kit.edit_all[paladin]
 	[
-		k.kit_apply_powers{%spl_paladin_lower_saves% 1}
+		k.kit_apply_powers{%spl_paladin_lower_saves% 1 1}
 	]
 	
 	// edit paladin description

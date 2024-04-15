@@ -359,6 +359,13 @@ BEGIN
 		ACTION_TO_LOWER path
 		LAF bonus_spells_from_list STR_VAR kit path class=mage END
 	END
+	
+	// apply the level 1 spell that grants dualclassed characters their extra spell per level
+	
+	kit.edit[%kit%]
+	[
+		k.kit_apply_powers{dwdcmb 1|class=mage}
+	]
 
 END
 

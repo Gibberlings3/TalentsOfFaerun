@@ -418,7 +418,7 @@ Advantages:
 - SPHERE_PLACEHOLDER
 - Immune to (most) effects that cause pain - while the character feels the pain, <PRO_HESHE> can endure it without affecting <PRO_HISHER> actions.
 - May cast Remove Fear once per day, as the first level priest spell. An additional use is gained at 5th level and every 4 levels thereafter.
-- 3rd level: May cast Favor of Ilmater once per day, as the third level priest spell. An additional use is gained at 8th level and every 5 levels thereafter.
+- 3rd level: May cast Favor of the Martyr once per day, as the third level priest spell. An additional use is gained at 8th level and every 5 levels thereafter.
 - 7th level: can cast Ilmater's Endurance once per day, as detailed below. 
 
 ILMATER'S ENDURANCE: The caster draws upon Ilmater to be able to shoulder the burden of trials ahead. For 1 round per level of the caster, the caster gains +2 to saves, doubles HP, is immune to panic and disease, and will stand firm in the face of any charge or force.
@@ -438,7 +438,7 @@ Advantages:
 - SPHERE_PLACEHOLDER
 - Immune to (most) effects that cause pain - while the character feels the pain, <PRO_HESHE> can endure it without affecting <PRO_HISHER> actions.
 - May cast Remove Fear once per day, as the first level priest spell. An additional use is gained at 5th level and every 4 levels thereafter.
-- 3rd level cleric: May cast Favor of Ilmater once per day, as the third level priest spell. An additional use is gained at 8th level and every 5 levels thereafter.
+- 3rd level cleric: May cast Favor of the Martyr once per day, as the third level priest spell. An additional use is gained at 8th level and every 5 levels thereafter.
 - 7th level cleric: can cast Ilmater's Endurance once per day, as detailed below. 
 
 ILMATER'S ENDURANCE: The caster draws upon Ilmater to be able to shoulder the burden of trials ahead. For 1 round per level of the caster, the caster gains +2 to saves, doubles HP, is immune to panic and disease, and will stand firm in the face of any charge or force.
@@ -606,12 +606,12 @@ Disadvantages:
 @70="Gray One of Myrkul"
 @71="GRAY ONE OF MYRKUL: Myrkul (pronounced: MER-kul) is the god of the dead. He has a cold, malignant intelligence, and is never known to be other than coldly amused when a mortal succeeds in avoiding his chosen fates. Mykul takes care that all mortals think of him often - he is even known to materialize beside open graves, scythe in hand, just to gaze around at gathering mourners for a few seconds before fading away, to remind everyone that he is waiting for them all.
 
-The faith of Myrkul is not popular, nor is its priests numerous. Myrkulite priests tend to be morbid loners.
+The faith of Myrkul is not popular, nor are its priests numerous. Myrkulite priests tend to be morbid loners.
 
 Advantages:
 - SPHERE_PLACEHOLDER
 - MAGE_SPELL_PLACEHOLDER
-- +2 to Command Undead.
+- Commands Undead as if 2 levels higher.
 - 3rd level: May cast Animate Dead once per day, as the 3rd level cleric spell. An additional use is gained at 8th level and every 5 levels thereafter.
 - 7th level: Gains permanent Negative Plane Protection.
 - 9th level: May cast Dolorous Decay once per day, as the 6th level cleric spell. 
@@ -627,7 +627,7 @@ Cultists of Velsharoon gather in dusty crypts, abandoned mausoleums, and neglect
 Advantages:
 - SPHERE_PLACEHOLDER
 - MAGE_SPELL_PLACEHOLDER
-- +2 to Command Undead.
+- Commands Undead as if 2 levels higher.
 - 3rd level: May cast Animate Dead once per day, as the 3rd level cleric spell. An additional use is gained at 8th level and every 5 levels thereafter.
 - 7th level: Gains permanent Negative Plane Protection.
 - 9th level: May cast Dolorous Decay once per day, as the 6th level cleric spell. 
@@ -1080,7 +1080,7 @@ Advantages:
 - BONUS_SCHOOL_PLACEHOLDER
 - SPHERE_PLACEHOLDER
 - MAGE_SPELL_PLACEHOLDER
-- +2 to Command Undead.
+- Commands Undead as if 2 levels higher.
 - 3rd level cleric: May cast Animate Dead once per day, as the 3rd level cleric spell. An additional use is gained at 8th level and every 5 levels thereafter.
 - 7th level cleric: Gains permanent Negative Plane Protection.
 - 9th level cleric: May cast Dolorous Decay once per day, as the 6th level cleric spell. 
@@ -1098,7 +1098,7 @@ Advantages:
 - BONUS_SCHOOL_PLACEHOLDER
 - SPHERE_PLACEHOLDER
 - MAGE_SPELL_PLACEHOLDER
-- +2 to Command Undead.
+- Commands Undead as if 2 levels higher.
 - 3rd level cleric: May cast Animate Dead once per day, as the 3rd level cleric spell. An additional use is gained at 8th level and every 5 levels thereafter.
 - 7th level cleric: Gains permanent Negative Plane Protection.
 - 9th level cleric: May cast Dolorous Decay once per day, as the 6th level cleric spell. 
@@ -2350,7 +2350,7 @@ Casting Time: 1
 Area of Effect: 15-ft.radius
 Saving Throw: None
 
-The recipients of this spell gain extraordinary luck for the next 3 rounds, receiving a +1 bonus to <PRO_HISHER> Saving Throws, attack rolls, and minimum damage/healing rolls as well as +5% to all thieving skills. Furthermore, damage dice for all effects outside a weapon's base damage is reduced by 1. For example, a 6d6 fireball will do 6d5 damage, and a flaming long sword that deals 1d8+2 slashing plus 1d3 fire damage will deal 1d8+2 slashing plus 1d2 fire damage instead.
+The recipients of this spell gain extraordinary luck for the next 10 rounds, receiving a +1 bonus to <PRO_HISHER> Saving Throws, attack rolls, and minimum damage/healing rolls as well as +5% to all thieving skills. Furthermore, damage dice for all effects outside a weapon's base damage is reduced by 1. For example, a 6d6 fireball will do 6d5 damage, and a flaming long sword that deals 1d8+2 slashing plus 1d3 fire damage will deal 1d8+2 slashing plus 1d2 fire damage instead.
 
 In addition, the first hostile spell of levels 1-5 to directly target a recipient of the spell is harmlessly avoided. This does not apply to area effect spells, nor to certain touch attacks."
 @1013="Tymora's Favor"
@@ -2690,6 +2690,8 @@ The next day, you fled the temple with not a word to your superiors, taking litt
 @3999="Level"
 @4000="Favored Soul"
 // NOTE FOR TRANSLATORS: The line 'May wear any armor and use any weapon' must be translated exactly the same way as the equivalent line from the Fighter description (string 9556 in BG2).
+// The line "May only become Proficient (one slot) in any weapon class" must be translated exactly the same way as the equivalent line from the Cleric description (string 9559 in BG2).
+// The line "May only become Proficient (one slot) in any fighting style" must be translated exactly the same way as the equivalent line from the Cleric description (string 9559 in BG2).
 @4001="FAVORED SOUL: The favored soul follows the path of the cleric but is able to channel divine power with surprising ease. Scholars wonder if favored souls have traces of divine blood from unions centuries ago. Others suggest that divine training awakens the ability, or that favored souls are simply imbued by their god with their gifts by divine will. In any case, favored souls cast their spells as much through force of personality as through study. 
 
 A favored soul must choose a specific god to follow: unlike a cleric, <PRO_HESHE> cannot draw power from more dispersed or generalised worship.
@@ -2697,8 +2699,8 @@ A favored soul must choose a specific god to follow: unlike a cleric, <PRO_HESHE
 CLASS FEATURES:
 
 - May wear any armor and use any weapon.
-- May become Proficient (one slot) in any weapon class.
-- May become Proficient (one slot) in any fighting style.
+- May only become Proficient (one slot) in any weapon class.
+- May only become Proficient (one slot) in any fighting style.
 - May achieve Specialization (two slots) in the weapon type favored by their deity.
 - May cast clerical spells.
 - Does not automatically learn all spells of a given level as Clerics do. Instead, Favored Souls select new spells to learn at each level, which they can cast daily without memorization.
@@ -2963,7 +2965,7 @@ Favored Weapon: FAVORED_WEAPON_PLACEHOLDER
 
 Advantages:
 - SPHERE_PLACEHOLDER
-- +2 to Command Undead.
+- Commands Undead as if 2 levels higher.
 - 3rd level: May cast Animate Dead once per day, as the 3rd level cleric spell. An additional use is gained at 8th level and every 5 levels thereafter.
 - 7th level: Gains permanent Negative Plane Protection.
 - 9th level: May cast Dolorous Decay once per day, as the 6th level cleric spell. 
@@ -3024,7 +3026,7 @@ Favored Weapon: FAVORED_WEAPON_PLACEHOLDER
 
 Advantages:
 - SPHERE_PLACEHOLDER
-- +2 to Command Undead.
+- Commands Undead as if 2 levels higher.
 - 3rd level: May cast Animate Dead once per day, as the 3rd level cleric spell. An additional use is gained at 8th level and every 5 levels thereafter.
 - 7th level: Gains permanent Negative Plane Protection.
 - 9th level: May cast Dolorous Decay once per day, as the 6th level cleric spell. 
@@ -3074,7 +3076,7 @@ Advantages:
 - SPHERE_PLACEHOLDER
 - Immune to (most) effects that cause pain - while the character feels the pain, <PRO_HESHE> can endure it without affecting <PRO_HISHER> actions.
 - May cast Remove Fear once per day, as the first level priest spell. An additional use is gained at 5th level and every 4 levels thereafter.
-- 3rd level: May cast Favor of Ilmater once per day, as the third level priest spell. An additional use is gained at 8th level and every 5 levels thereafter.
+- 3rd level: May cast Favor of the Martyr once per day, as the third level priest spell. An additional use is gained at 8th level and every 5 levels thereafter.
 - 7th level: can cast Ilmater's Endurance once per day, as detailed below. 
 
 ILMATER'S ENDURANCE: The caster draws upon Ilmater to be able to shoulder the burden of trials ahead. For 1 round per level of the caster, the caster gains +2 to saves, doubles HP, is immune to panic and disease, and will stand firm in the face of any charge or force.

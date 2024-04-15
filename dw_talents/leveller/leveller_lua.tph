@@ -120,19 +120,32 @@ function dwXPAdjust()
 	if not xpmin then
 		xpmin=0
 	end	
-	-- reload everyone's XP	
 	dwAvoidRecursion=true
 	my_id=currentID
 	-- get the portrait lookup data
 	local portraitLookup=dwFindPortraitMatch()
+	-- we need to turn off the select sounds temporarily, so log their current value
+	local panelID=7 -- the sound panel
+	local currentSelectSound=60 -- default
+	for i=58,60 do
+		if Infinity_GetOption(i,panelID) ~= 0 then
+			currentSelectSound=i
+		end
+	end
+	Infinity_ChangeOption(60, 1, panelID) -- turn select sounds off
 	for n=0,Infinity_GetNumCharacters() - 1 do
 		Infinity_OnPortraitLClick(n)
+		-- the reason for this step is to load everyone's current XP into memory. But doing so causes the selection sound for
+		-- everyone to play, which is annoying - hence we turn it off temporarily
 	end
 	local myportrait=portraitLookup[my_id]
-	-- change back to it
+	-- change back to it 
 	Infinity_OnPortraitLClick(myportrait)
-	dwAvoidRecursion=false
+	dwAvoidRecursion=false	
+	-- restore select sounds
+	Infinity_ChangeOption(currentSelectSound, 1, panelID)
 	-- find target XP
+
 	local xptarget=0
 	for id,n in pairs (portraitLookup) do
 		local classcount=0

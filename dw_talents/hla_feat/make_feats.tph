@@ -32,7 +32,7 @@ BEGIN
 					defaults="name:i=>~-1~ desc:i=>~-1~ max_count:i=>~1~" 
 					main_default="*" 
 					first_column="id" 
-					force_columns="resref type name:i	desc:i	select_desc	prerequisite max_count:i	require_1		require_2		require_3	require_4	require_5	exclude_kit	 alignment		exclude_hla special special_string checks" 
+					force_columns="resref type name:i	desc:i	select_desc	prerequisite max_count:i	require_1		require_2		require_3	require_4	require_5 require_6 require_7 require_8 require_9 require_10	exclude_kit	 alignment		exclude_hla special special_string checks" 
 		END
 		OUTER_SPRINT location ""
 		OUTER_SPRINT locbase ""
@@ -82,7 +82,7 @@ END
 
 DEFINE_ACTION_FUNCTION make_feats_core
 	INT_VAR name=0 desc=0 max_count=1 
-	STR_VAR id="" resref="" type="" select_desc="" prerequisite="" require_1="" require_2="" require_3="" require_4="" require_5="" exclude_kit="" special="" special_string="" alignment="" exclude_hla="" checks=""
+	STR_VAR id="" resref="" type="" select_desc="" prerequisite="" require_1="" require_2="" require_3="" require_4="" require_5="" require_6="" require_7="" require_8="" require_9="" require_10="" exclude_kit="" special="" special_string="" alignment="" exclude_hla="" checks=""
 BEGIN
 	PRINT "making feat %id%"
 
@@ -240,7 +240,7 @@ BEGIN
 		OUTER_SPRINT sphere ""
 		OUTER_SPRINT req_string ""
 		ACTION_CLEAR_ARRAY req_desc_array
-		OUTER_FOR (req=1;req<=5;++req) BEGIN
+		OUTER_FOR (req=1;req<=10;++req) BEGIN
 			OUTER_SPRINT requirement EVAL "%require_%req%%" 
 			ACTION_IF "%requirement%" STRING_COMPARE "*" BEGIN
 				LAF document_feat_requirement STR_VAR requirement RET string sphere_here=sphere END

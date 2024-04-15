@@ -295,6 +295,20 @@ DEFINE_ACTION_FUNCTION make_ice_paraelementals BEGIN
 	LAF spl_make_aura STR_VAR spell="%spl_ice_elemental_aura_greater%" payload="%spl_ice_elemental_aura_payload_greater%" END
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Ice para-elemental ice storm
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	ACTION_IF VARIABLE_IS_SET "WIZARD_ICE_STORM" BEGIN
+		spl.copy[%WIZARD_ICE_STORM%=>%spl_ice_elemental_ice_storm%]
+		[
+			m_type:=innate
+			m.ab.alter{s_type:=magical;;s_location:=innate;;s_casting_time=0}
+			m.fx.add{s_opcode=172 s_timing=1 s_target=1 s_resource:="%spl_ice_elemental_ice_storm%"}
+			m.fx.add{s_opcode=171 s_timing=4 s_duration=60 s_target=1 s_resource:="%spl_ice_elemental_ice_storm%"}
+		]
+	END
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Slowing effect
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -318,6 +332,13 @@ DEFINE_ACTION_FUNCTION make_ice_paraelementals BEGIN
 		m_resist_fire="-50"
 		m.cre_strip_scripts{%baf_earth_elemental%}
 		m.cre_insert_script{%baf_ice_elemental%|loc=high}
+		m.fx.delete{}
+		m.cre_remove_spells{all}
+		PATCH_IF m_level1>=16 BEGIN
+			m.cre_add_spells{%spl_ice_elemental_ice_storm%}
+		END			
+		m.immunity_spell{%WIZARD_ICE_STORM%}
+		m.immunity_spell{%spl_ice_elemental_ice_storm%}
 	]
 	
 	cre.edit[%cre_ice_elemental_8hd%]

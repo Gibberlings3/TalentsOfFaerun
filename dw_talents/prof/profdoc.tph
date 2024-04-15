@@ -1474,7 +1474,7 @@ BEGIN
 	  WITH_TRA "%scs_tra_loc%/english/profdoc.tra" "%scs_tra_loc%/%LANGUAGE%/profdoc.tra" BEGIN
 		OUTER_SPRINT multiclass_start_string @160
 		ACTION_CLEAR_ARRAY prof_match_array
-		OUTER_SET number_of_match_lines=11
+		OUTER_SET number_of_match_lines=17
 		OUTER_FOR (ind=1;ind<=number_of_match_lines;++ind) BEGIN
 			OUTER_SET tra_ref=200+ind
 			OUTER_SPRINT line (AT tra_ref)

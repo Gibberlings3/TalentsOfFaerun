@@ -57,7 +57,7 @@ DEFINE_ACTION_FUNCTION install_feats INT_VAR is_epic=0 STR_VAR feat_table="" loc
 					defaults="name:i=>~-1~ desc:i=>~-1~ max_count:i=>~1~" 
 					main_default="*" 
 					first_column="id" 
-					force_columns="resref type name:i	desc:i	select_desc	prerequisite max_count:i	require_1		require_2		require_3	require_4	require_5	exclude_kit	 alignment		exclude_hla special special_string checks" 
+					force_columns="resref type name:i	desc:i	select_desc	prerequisite max_count:i	require_1		require_2		require_3	require_4	require_5 require_6 require_7 require_8 require_9 require_10	exclude_kit	 alignment		exclude_hla special special_string checks" 
 		END
 		OUTER_SPRINT directory "%workspace%"
 		OUTER_SPRINT feat_table "hla_table.2da"
@@ -646,7 +646,7 @@ DEFINE_ACTION_FUNCTION install_feats_core INT_VAR is_epic=0 STR_VAR feat_table="
 				SPRINT $lua_lines("%resref%") "%type_prefix%_%resref% * * 1 99 %max_count% %prereq% %exclude% *"
 				SPRINT $lua_lines_no_prereq("%resref%") "%type_prefix%_%resref% * * 1 99 %max_count% * %exclude% *"
 				// get the requirements
-				FOR (num=1;num<=5;++num) BEGIN
+				FOR (num=1;num<=10;++num) BEGIN
 					SPRINT "req_%num%" $feat_array("%row%" "require_%num%")
 				END
 				// get kit exclusions

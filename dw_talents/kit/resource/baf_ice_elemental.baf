@@ -30,18 +30,16 @@ THEN
 		Continue()
 END
 
-/*
 IF
 	!GlobalTimerNotExpired("castspell","LOCALS")
-	HaveSpellRES("%spl_fire_elemental_shroud%")
+	HaveSpellRES("%spl_ice_elemental_ice_storm%")
 	See(NearestEnemyOf(Myself))
 	Allegiance(Myself,ENEMY)
 THEN
 	RESPONSE #100	
 		SetGlobalTimer("castspell","LOCALS",6)
-		ForceSpellRES("%spl_fire_elemental_shroud%",LastSeenBy(Myself))
-	RESPONSE #100
+		ForceSpellRES("%spl_ice_elemental_ice_storm%",LastSeenBy(Myself))
+	RESPONSE #200
 		Continue()
 END
-*/
 	

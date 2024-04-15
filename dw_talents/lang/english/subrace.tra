@@ -65,7 +65,7 @@ Traits:
 - Magic resistance: 25% + 1% per level (in the underdark, drow are even more resistant to magic, but long exposure to the surface weakens their resilience)
 - Innate magic: Faerie Fire 3/day
 - Light sensitivity: Daylight blinds drow for the first round of exposure, and thereafter they suffer a- 2 penalty to attack rolls, saving throws and Dexterity as long as they remain in daylight
-- - 2 to initial Reputation (minimum 8): The fearsome reputation of the dark elves prejudices surface folk against them
+- -2 to initial Reputation (minimum 8): The fearsome reputation of the dark elves prejudices surface folk against them
 - Infravision
 - +1 attack bonus with bows, short swords, and long swords"
 
@@ -194,7 +194,7 @@ Traits:
 
 Traits:
 - Infravision
-- 15% resistance to slashing, piercing and missile damage
+- 10% resistance to piercing and missile damage
 - Innate magic: Mist Ball 1/day"
 
 

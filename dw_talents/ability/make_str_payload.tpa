@@ -100,14 +100,43 @@ DEFINE_ACTION_FUNCTION remove_exceptional_strength_itm_spl BEGIN
 
 	// beast claw - STR->16
 	
-	ACTION_IF VARIABLE_IS_SET "%CLERIC_BEAST_CLAW%" BEGIN
-	  COPY_EXISTING "bclaw.itm" override
-		LPF adjust_exceptional_strength INT_VAR new_str=16 update_desc=0 END
-	  BUT_ONLY
+	ACTION_IF VARIABLE_IS_SET CLERIC_BEAST_CLAW BEGIN
+	  ACTION_IF FILE_EXISTS_IN_GAME "%spl_malar_beast_claw%.spl" BEGIN // do it manually
+		itm.edit[bclaw]
+		[
+			m.fx.alter{s_parameter1=(s_parameter1=18?16:20)|match="s_opcode=44"}
+			m.fx.alter{s_opcode=(s_parameter1=100?44:97) s_parameter1=18|match="s_opcode=97"}	
+			m.fx.delete{s_opcode=97}
+		]
+		LAF 2da_read STR_VAR file=clastext.2da RET_ARRAY clastext_array=array clastext_rows=rows END
+		ACTION_PHP_EACH clastext_rows AS kit=>discard BEGIN
+			ACTION_MATCH "%kit%" WITH
+			"DW_MALAR_.*" BEGIN
+				OUTER_SET desc_strref=$clastext_array("%kit%" "DESCSTR")
+				ACTION_GET_STRREF desc_strref desc_string
+				OUTER_PATCH_SAVE desc_string "%desc_string%" BEGIN
+					REPLACE_TEXTUALLY "18/76" "16"
+					REPLACE_TEXTUALLY "18/00" "18"
+					REPLACE_TEXTUALLY "19" "20"
+				END
+				STRING_SET_EVALUATE desc_strref "%desc_string%"
+			END				
+			DEFAULT
+			END
+		
+		END
+	  END ELSE BEGIN	  
+		  COPY_EXISTING "bclaw.itm" override
+			LPF adjust_exceptional_strength INT_VAR new_str=16 update_desc=0 END
+		  BUT_ONLY
+	  END
 	
 	  COPY_EXISTING "%CLERIC_BEAST_CLAW%.spl" override
 		LPF adjust_exceptional_strength INT_VAR new_str=16 update_fx=0 END
 	  BUT_ONLY
+	  IF_EXISTS
+	END ELSE BEGIN
+		FAIL blart
 	END
 
 	// holy power -> STR->20
@@ -183,7 +212,7 @@ DEFINE_ACTION_FUNCTION remove_exceptional_strength_itm_spl BEGIN
 	COPY_EXISTING_REGEXP 
 	".*\.itm" override
 	".*\.spl" override
-		found=0
+		found=0		
 		PATCH_IF "%SOURCE_EXT%" STRING_EQUAL_CASE itm BEGIN
 		GET_OFFSET_ARRAY fx_arr ITM_V10_GEN_EFFECTS
 		PHP_EACH fx_arr AS fx_ind=>fx_off BEGIN
@@ -208,6 +237,13 @@ DEFINE_ACTION_FUNCTION remove_exceptional_strength_itm_spl BEGIN
 			
 			END
 		END	
+		// special cases
+		PATCH_MATCH "%SOURCE_FILE%" WITH
+		"bclaw.itm" BEGIN
+			found=0
+		END
+		DEFAULT
+		END
 		PATCH_IF found BEGIN
 			LPF adjust_exceptional_strength END
 		END

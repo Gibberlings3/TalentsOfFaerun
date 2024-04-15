@@ -1,6 +1,10 @@
 DEFINE_ACTION_FUNCTION oghma_cleric BEGIN
 		OUTER_SPRINT kit DW_OGHMA_CLERIC
 		LAF oghma_shared END
+		LAF splconv_get_name STR_VAR spell="%WIZARD_IDENTIFY%" new_type=innate RET spl_oghma_identify=new_resref END
+		LAF splconv_get_name STR_VAR spell="%WIZARD_SECRET_WORD%" new_type=innate RET spl_oghma_secret_word=new_resref END
+		LAF splconv_get_name STR_VAR spell="%WIZARD_PIERCE_MAGIC%" new_type=innate RET spl_oghma_pierce_magic=new_resref END
+
 
 		kit.copy[CLERIC=>%kit%]
 		[
@@ -25,6 +29,9 @@ END
 DEFINE_ACTION_FUNCTION diviner_of_oghma BEGIN
 		OUTER_SPRINT kit DW_OGHMA_DIVINER
 		LAF oghma_shared END
+		LAF splconv_get_name STR_VAR spell="%WIZARD_IDENTIFY%" new_type=innate RET spl_oghma_identify=new_resref END
+		LAF splconv_get_name STR_VAR spell="%WIZARD_SECRET_WORD%" new_type=innate RET spl_oghma_secret_word=new_resref END
+		LAF splconv_get_name STR_VAR spell="%WIZARD_PIERCE_MAGIC%" new_type=innate RET spl_oghma_pierce_magic=new_resref END
 
 
 		kit.copy[CLERIC_MAGE=>%kit%]
@@ -51,6 +58,9 @@ END
 DEFINE_ACTION_FUNCTION oghma_favored_soul BEGIN
 
 	LAF oghma_shared END
+		LAF splconv_get_name STR_VAR spell="%WIZARD_IDENTIFY%" new_type=innate RET spl_oghma_identify=new_resref END
+		LAF splconv_get_name STR_VAR spell="%WIZARD_SECRET_WORD%" new_type=innate RET spl_oghma_secret_word=new_resref END
+		LAF splconv_get_name STR_VAR spell="%WIZARD_PIERCE_MAGIC%" new_type=innate RET spl_oghma_pierce_magic=new_resref END
 
 	// make the main kit
 	

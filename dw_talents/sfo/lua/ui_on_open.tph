@@ -1,3 +1,23 @@
+/*
+describe-library{
+
+Part of sfo-lua's core structure, this library hijacks the onOpen command of many menus to run a bunch of functions if they are installed. (I do this in part so as to control
+function run order, irrespective of component install order.)</p>
+}
+
+*/
+
+/*
+document{ui_on_open_setup}
+{
+Sets up the ui_on_open library's systematic hijacking of ui.menu's onOpen command. This function is called automatically by other sfo-lua libraries: it is highly unlikely that any mod will need to call it directly.
+}
+
+
+*/
+
+
+
 DEFINE_ACTION_FUNCTION ui_on_open_setup BEGIN
 
 	// copy over baseline files if they're not there already
@@ -67,7 +87,8 @@ DEFINE_ACTION_FUNCTION ui_on_open_setup BEGIN
 END
 
 
-DEFINE_PATCH_FUNCTION ui_on_open_patch BEGIN
+DEFINE_PATCH_FUNCTION ui_on_open_patch//internal
+BEGIN
 
 	READ_ASCII 0x0 data (BUFFER_LENGTH)
 	REPLACE_EVALUATE CASE_INSENSITIVE ~[ %TAB%]*\(onopen\)[^"]*"\([^"]*\)"~ BEGIN
@@ -80,7 +101,8 @@ DEFINE_PATCH_FUNCTION ui_on_open_patch BEGIN
 	
 END
 
-DEFINE_ACTION_FUNCTION ui_add_missing_on_opens BEGIN
+DEFINE_ACTION_FUNCTION ui_add_missing_on_opens//internal 
+BEGIN
 
 	COPY_EXISTING "ui.menu" override
 		// general
@@ -95,14 +117,16 @@ DEFINE_ACTION_FUNCTION ui_add_missing_on_opens BEGIN
 
 END
 
-DEFINE_PATCH_FUNCTION add_generic_onopen BEGIN
+DEFINE_PATCH_FUNCTION add_generic_onopen//internal 
+BEGIN
 	PATCH_IF INDEX_BUFFER ("onOpen")<0 BEGIN
 		REPLACE_TEXTUALLY "name[ %TAB%]+'\([^']+\)'" ~name '\1'%WNL%%TAB%onOpen "%WNL%%WNL%%TAB%"~
 	END
 
 END
 
-DEFINE_PATCH_FUNCTION add_chargen_bio_onopen BEGIN
+DEFINE_PATCH_FUNCTION add_chargen_bio_onopen//internal 
+BEGIN
 
 	PATCH_IF INDEX_BUFFER ("onOpen")<0 BEGIN
 		REPLACE_TEXTUALLY ~^\([%TAB% ]+\)ignoreesc~ ~\1ignoreesc%WNL%\1onOpen%WNL%\1"%WNL%%WNL%\1"~

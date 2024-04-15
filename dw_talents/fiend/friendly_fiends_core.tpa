@@ -389,7 +389,7 @@ DEFINE_ACTION_FUNCTION friendly_fiends_scripts BEGIN
 			<<<<<<<< .../stratagems-inline/demontop.baf
 
 			IF
-				 OnCreation()
+				 !Global("fiend_allegiance_processed","LOCAL",1)
 				 CheckSpellState(LastSummonerOf(Myself),%splstate%)
 				 Allegiance(LastSummonerOf(Myself),GOODCUTOFF)
 			THEN
@@ -398,13 +398,14 @@ DEFINE_ACTION_FUNCTION friendly_fiends_scripts BEGIN
 				 ChangeAIScript("%newscript%",OVERRIDE)
 				 ChangeAIScript("",DEFAULT)
 			 DestroyItem("dw#sumfi")
+			 SetGlobal("fiend_allegiance_processed","LOCALS",1)
 			 SmallWait(1)
 			 //ChangeEnemyAlly(Myself,ALLY)
 			 
 			END
 
 			IF
-				 OnCreation()
+				 !Global("fiend_allegiance_processed","LOCAL",1)
 				 OR(2)
 					 CheckSpellState(LastSummonerOf(Myself),%splstate%)
 					 CheckSpellState(LastSummonerOf(Myself),%stat_ind_npc%)
@@ -415,20 +416,42 @@ DEFINE_ACTION_FUNCTION friendly_fiends_scripts BEGIN
 				 ChangeAIScript("%newscript%",OVERRIDE)
 				 ChangeAIScript("",DEFAULT)
 			 DestroyItem("dw#sumfi")
+			 SetGlobal("fiend_allegiance_processed","LOCALS",1)
 			 SmallWait(1)
 			 ChangeEnemyAlly(Myself,ENEMY)
 			END
 			
 			IF
-				 OnCreation()
+				 !Global("fiend_allegiance_processed","LOCAL",1)
+				 OR(2)
+					 !CheckSpellState(LastSummonerOf(Myself),%splstate%)
+					 !Allegiance(LastSummonerOf(Myself),GOODCUTOFF)					
+				 Allegiance(LastSummonerOf(Myself),GOODCUTOFF)	 
 			THEN
 			   RESPONSE #100
 			 DestroyItem("dw#sumfi")
 			 Enemy() // this stops the party being able to control a GOODBUTRED creature
+			 SetGlobal("fiend_allegiance_processed","LOCALS",1)
 			 SmallWait(1)
 			   ChangeEnemyAlly(Myself,GOODBUTRED)
 			 Continue()
 			END
+
+
+			IF
+				 !Global("fiend_allegiance_processed","LOCAL",1)
+				 !CheckSpellState(LastSummonerOf(Myself),%splstate%)
+			     !CheckSpellState(LastSummonerOf(Myself),%stat_ind_npc%)			
+				 Allegiance(LastSummonerOf(Myself),EVILCUTOFF)	 
+			THEN
+			   RESPONSE #100
+			 DestroyItem("dw#sumfi")
+			 Enemy() // this stops the party being able to control a GOODBUTRED creature
+			 SetGlobal("fiend_allegiance_processed","LOCALS",1)
+			 SmallWait(1)
+			   ChangeEnemyAlly(Myself,GOODBUTRED)
+			 Continue()
+			END			
 			>>>>>>>>
 
 			EXTEND_TOP "%script%.bcs" ".../stratagems-inline/demontop.baf" EVALUATE_BUFFER

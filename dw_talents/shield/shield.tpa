@@ -1,0 +1,106 @@
+DEFINE_ACTION_FUNCTION shield BEGIN
+
+	// get data
+	
+	LAF 2da_read STR_VAR file=shield_stats.2da location=data RET_ARRAY shield_array=array END
+	LAF array_read STR_VAR file=shield_ident.txt location=data RET_ARRAY shield_equip_map=array END
+
+	// get the 'armor class' string
+	
+	ACTION_IF is_bg2 BEGIN
+		OUTER_SPRINT ac_string @2
+	END ELSE
+	ACTION_IF is_bg BEGIN
+		OUTER_SPRINT ac_string @1
+	END ELSE BEGIN
+		OUTER_SPRINT ac_string @3
+	END
+	OUTER_SPRINT no_cast_string @4
+	OUTER_SPRINT hit_penalty_string @5
+	
+	// apply modifiers
+	
+	// nonmagical shield descriptions
+	
+	ACTION_FOR_EACH shield IN shld01 shld03 shld05 shld09 BEGIN
+		COPY_EXISTING - "%shield%.itm" nowhere
+			READ_ASCII 0x22 equip
+			TO_UPPER equip
+			SPRINT shield_type $shield_equip_map("%equip%")
+			ac_val=$shield_array("%shield_type%" "AC_BONUS")
+			READ_LONG 0x50 desc_strref
+			SET $shield_desc_patch("%desc_strref%")=1
+			GET_STRREF desc_strref desc_string
+			INNER_PATCH_SAVE desc_string "%desc_string%" BEGIN
+				REPLACE_TEXTUALLY "\(%ac_string%[ %TAB%]*\+\)[0-9]+" "\1%ac_val%"
+				PATCH_IF $shield_array("%shield_type%" "DISABLE_CASTING")=1 BEGIN
+					REPLACE_TEXTUALLY "\(.*\)\(%ac_string%.*\)" "\1\2%WNL%\1%no_cast_string%"
+				END
+				PATCH_IF !($shield_array("%shield_type%" "HIT_PENALTY") = 0) BEGIN
+					REPLACE_TEXTUALLY "\(.*\)\(%ac_string%.*\)" "\1\2%WNL%\1%hit_penalty_string%"
+					SET penalty = 0 - $shield_array("%shield_type%" "HIT_PENALTY")
+					REPLACE_TEXTUALLY "DW_HIT_PENALTY" "%penalty%"
+				END
+			END
+			INNER_ACTION BEGIN
+				STRING_SET_EVALUATE desc_strref "%desc_string%"
+			END		
+	END
+	
+	COPY_EXISTING_REGEXP ".*\.itm" override
+		READ_ASCII 0x22 equip
+		TO_UPPER equip
+		PATCH_IF VARIABLE_IS_SET $shield_equip_map("%equip%") BEGIN
+			SPRINT shield_type $shield_equip_map("%equip%")
+			mod=$shield_array("%shield_type%" "AC_BONUS")
+			GET_OFFSET_ARRAY fx_arr ITM_V10_GEN_EFFECTS
+			// do base change
+			PHP_EACH fx_arr AS fx_ind=>fx_off BEGIN
+				PATCH_IF SHORT_AT fx_off=0 && ( LONG_AT (0x8+fx_off)=0 ) BEGIN // AC mod
+					ac_val_old=LONG_AT (fx_off+0x4)
+					ac_val=ac_val_old + mod - 1
+					WRITE_LONG (fx_off+0x4) ac_val
+				END
+			END
+			// update null effects
+			PHP_EACH fx_arr AS fx_ind=>fx_off BEGIN
+				PATCH_IF SHORT_AT fx_off=0 BEGIN // AC mod
+					ac_val_here=LONG_AT (fx_off+0x4)
+					PATCH_IF ac_val_here = 0 - ac_val_old BEGIN
+						WRITE_LONG (fx_off+0x4) (0 - ac_val)
+					END
+				END
+			END			
+			PATCH_IF $shield_array("%shield_type%" "DISABLE_CASTING")=1 BEGIN
+				LPF DELETE_EFFECT INT_VAR match_opcode=145 END
+				LPF ADD_ITEM_EQEFFECT INT_VAR opcode=145 target=1 parameter2=0 timing=2 END
+				LPF ADD_ITEM_EQEFFECT INT_VAR opcode=145 target=1 parameter2=1 timing=2 END
+			END
+			PATCH_IF !($shield_array("%shield_type%" "HIT_PENALTY")=0) BEGIN
+				LPF ADD_ITEM_EQEFFECT INT_VAR opcode=278 target=1 parameter1=0 - $shield_array("%shield_type%" "HIT_PENALTY") timing=2 END
+			END
+			READ_LONG 0x54 desc_strref
+			PATCH_IF desc_strref>0 && !VARIABLE_IS_SET $shield_desc_patch("%desc_strref%") BEGIN
+				SET $shield_desc_patch("%desc_strref%")=1
+				GET_STRREF desc_strref desc_string
+				INNER_PATCH_SAVE desc_string "%desc_string%" BEGIN
+					REPLACE_TEXTUALLY "\(%ac_string%[ %TAB%]*\+\)[0-9]+" "\1%ac_val%"
+					PATCH_IF $shield_array("%shield_type%" "DISABLE_CASTING")=1 BEGIN
+						REPLACE_TEXTUALLY "\(.*\)\(%ac_string%.*\)" "\1\2%WNL%\1%no_cast_string%"
+					END
+					PATCH_IF !($shield_array("%shield_type%" "HIT_PENALTY") = 0) BEGIN
+						REPLACE_TEXTUALLY "\(.*\)\(%ac_string%.*\)" "\1\2%WNL%\1%hit_penalty_string%"
+						SET penalty = 0 - $shield_array("%shield_type%" "HIT_PENALTY")
+						REPLACE_TEXTUALLY "DW_HIT_PENALTY" "%penalty%"
+					END
+				END
+				INNER_ACTION BEGIN
+					STRING_SET_EVALUATE desc_strref "%desc_string%"
+				END				
+			END	
+		END
+	BUT_ONLY
+END
+
+
+

@@ -50,7 +50,7 @@ DEFINE_ACTION_FUNCTION ui_system_call_setup BEGIN
 				""
 			END
 			ACTION_IF localize BEGIN
-				ACTION_IF INDEX ("dwSystemCallMainByMenu\[%function_stripped%" "%data%")<0 BEGIN
+				ACTION_IF INDEX ("dwSystemCallMainByMenu\['%function_stripped%" "%data%")<0 BEGIN
 					OUTER_SPRINT data "%data%dwSystemCallMainByMenu['%function_stripped%']={}%WNL%%WNL%"
 				END
 				OUTER_SPRINT data "%data%dwSystemCallMainByMenu['%function_stripped%']['%menu%']=%WNL%{%WNL%"
@@ -67,7 +67,7 @@ DEFINE_ACTION_FUNCTION ui_system_call_setup BEGIN
 				OUTER_SPRINT list $systemcall_array("%function%" "bypass")
 				OUTER_SET counter=0
 				ACTION_IF localize BEGIN
-					ACTION_IF INDEX ("dwSystemCallBypassByMenu\[%function_stripped%" "%data%")<0 BEGIN
+					ACTION_IF INDEX ("dwSystemCallBypassByMenu\['%function_stripped%" "%data%")<0 BEGIN
 						OUTER_SPRINT data "%data%dwSystemCallBypassByMenu['%function_stripped%']={}%WNL%%WNL%"
 					END
 					OUTER_SPRINT data "%data%dwSystemCallBypassByMenu['%function_stripped%']['%menu%']=%WNL%{%WNL%"
@@ -140,8 +140,10 @@ function dwSystemCall(fn,menu,arg1,arg2,arg3)
 	local bypasslist=nil
 	if dwSystemCallBypass[fn] then
 		bypasslist=dwSystemCallBypass[fn]
-	else
+	elseif dwSystemCallBypassByMenu[fn] and dwSystemCallBypassByMenu[fn][menu] then
 		bypasslist=dwSystemCallBypassByMenu[fn][menu]
+	else
+		bypasslist=nil
 	end
 	local proceed=true
 	if bypasslist then

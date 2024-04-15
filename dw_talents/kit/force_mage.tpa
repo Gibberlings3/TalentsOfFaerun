@@ -32,6 +32,7 @@ DEFINE_ACTION_FUNCTION force_mage BEGIN
 		m.ab.add{}
 		m.ab_fx.add{s_timing=9 s_target=1 s_opcode=31 s_parameter1=10 s_parameter2=0} // resist magic damage
 		m.ab_fx.add{s_timing=9 s_target=1 s_opcode=332 s_parameter1=5 s_parameter2=20} // extra magic damage
+		m.ab_fx.add{s_timing=9 s_target=1 s_opcode=326 s_resource:=dwmcmb} // bonus spell for dualclass characters
 	]
 	
 	// make the kit

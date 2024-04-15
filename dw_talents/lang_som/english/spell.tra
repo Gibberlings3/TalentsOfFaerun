@@ -240,6 +240,7 @@ With this spell, the wizard drains the life force from a target and adds it to <
 // 39 is verbatim copy of first few words of BG2EE Lower Resistance description
 @39="When cast upon a target creature"
 @40="When cast upon a target creature, this spell will lower the Magic Resistance of this creature by 30% + 1% per level of the caster. There is no Saving Throw, and the target's Magic Resistance, if any, does not affect this spell. For example, if a creature has 60% Magic Resistance and this spell is cast on it by a 15th-level Mage, then the target's Magic Resistance would be lowered by 45% automatically. This effect is cumulative for each casting of this spell: If Lower Resistance was cast upon the same creature again, the creature's Magic Resistance would be 60% - 45% (initial casting) - 45% (current casting), which would leave the creature with 0% Magic Resistance (the level cannot drop below 0%). This spell will last until its duration expires and cannot be dispelled."
+@41="Magic resistance lowered by THIS_MUCH%"
 
 @43="2 levels of experience" // must be a substring of Energy Drain description
 @44="5 levels of experience"
@@ -297,7 +298,9 @@ This is the ~
 @211 = ~This spell will also destroy the anti-magic sphere created by a Protection from Magic scroll.~
 @212 = ~will wear off within 10 turns.~
 @213 = ~will wear off within 10 turns. Until then, only extremely powerful magics (such as the Spellstrike spell) can destroy it.~
-@216 = ~Power Word, Blind (conjuration/summoning) 
+@216 = ~Power Word, Blind 
+(Conjuration/Summoning) 
+
 Level: 8
 Range: Visual sight of caster 
 Duration: 6 rounds
@@ -842,6 +845,8 @@ Defensive Harmony grants affected creatures a defensive bonus by bestowing an en
 @41005="Balor"
 @41006="Bone Fiend"
 @41007="Demon Fear"
+
+@41008="Favor of the Martyr"
 
 @50000="Spellbook of Awesome Awesomeness" // NOTE TO TRANSLATORS: don't bother translating this and the next string, it's just a testing item
 @50001="Even a glance at this tome suffices to give its reader knowledge of every spell known to exist, as well as the godlike intellect required to comprehend them all. It disappears after a single use.

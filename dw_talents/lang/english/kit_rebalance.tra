@@ -48,7 +48,7 @@ Depending on the character's level, the Enrage power also grants immunities to v
 Advantages:
 - May cast Detect Invisibility once per day, as the second level wizard spell. An additional use is gained at 5th level.
 - 3rd level: May cast Dispel Magic once per day. The spell is cast at Speed Factor 1 and acts at twice the Inquisitor's character level. An additional use is gained at 7th level and every 4 levels thereafter.
-- 5th level: Gains immunity to paralysis.
+- 5th level: Gains immunity to hold effects.
 - 7th level: Gains immunity to charm effects.
 - 9th level: May cast True Sight once per day, as the fifth level cleric spell. An additional use is gained at 13th level and every 4 levels thereafter. 
 
@@ -319,6 +319,8 @@ GREATER WEREWOLF: AC -4, Strength 21, Dexterity 20, 3 attacks per round for 1d10
 
 WEREWOLF LORD: AC -8, Strength 23, Dexterity 20, 3 attacks per round for 1d12 slashing damage (as +4 weapon), 50% magic resistance, 50% elemental resistance, regenerates 1 hit point per second."
 
+
+@59="Gains immunity to paralyzing effects"
 @60="DRAGON DISCIPLE: Dragon Disciples are powerful Sorcerers with dragons' blood somewhere in their lineage. Their natural magical talents bring out their draconic heritage, allowing them to cast powerful magical spells and exhibit dragon-like abilities.
 
 Advantages:
@@ -375,3 +377,7 @@ SUMMON SPIRIT ANIMAL: The Totemic Druid summons a special spirit animal (spirit 
 
 Disadvantages:
 - Cannot use shapeshift."
+
+@113="Summon Spirit Animal
+
+The summoner calls on a special spirit animal (spirit bear, spirit wolf, spirit lion, or spirit snake) to aid <PRO_HIMHER> for 6 turns. The spirit animal has 1 HD at level 1, 3 HD at level 3, 5 HD at level 5, 7 HD at level 7, 10 HD at level 10, 13 HD at level 13, and 16 HD at level 16."

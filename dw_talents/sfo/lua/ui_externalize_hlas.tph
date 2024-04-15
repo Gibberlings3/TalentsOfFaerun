@@ -1,3 +1,21 @@
+/*
+describe-library{
+Functions in this library develop an externalized version of the HLA (high-level ability) system, that permits (e.g.) gaining HLAs only every few levels, or various constraints on HLA availability.
+
+}
+*/
+
+/*
+document{ui_externalize_hlas}
+{
+This (idempotent) function sets up the HLA system to grant HLAs every few levels (starting with level min, and then after every step levels). In doing so it sets up an HLA
+menu if (as in IWD or BG) none is active; it also removes the icon column from the BG2 HLA menu, since that requires multiple icons for applied powers that aren't really
+needed and which push the art requirements.
+
+}
+*/
+
+
 DEFINE_ACTION_FUNCTION ui_externalize_hlas 
 	INT_VAR min=0
 			step=0
@@ -132,7 +150,8 @@ END
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-DEFINE_ACTION_FUNCTION make_discard_hla BEGIN
+DEFINE_ACTION_FUNCTION make_discard_hla//internal 
+BEGIN
 
 	CREATE spl dw-null
 	LAF hide_hla STR_VAR resref=dw-null END
@@ -148,7 +167,8 @@ END
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-DEFINE_ACTION_FUNCTION skip_hla_menu BEGIN
+DEFINE_ACTION_FUNCTION skip_hla_menu//internal 
+BEGIN
 
 	COPY_EXISTING "ui.menu" override
 		PATCH_IF is_iwd BEGIN
@@ -176,7 +196,8 @@ END
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-DEFINE_ACTION_FUNCTION hide_hla_setup BEGIN
+DEFINE_ACTION_FUNCTION hide_hla_setup//internal 
+BEGIN
 
 	COPY_EXISTING "ui.menu" override
 		LPF UI_alter_object STR_VAR object=CHARGEN_HIGH_LEVEL_ABILITIES object_type=menu patch=hide_hla_patch END
@@ -208,7 +229,8 @@ DEFINE_ACTION_FUNCTION hide_hla STR_VAR resref="" BEGIN
 END
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-DEFINE_ACTION_FUNCTION override_hla_name_description_setup BEGIN
+DEFINE_ACTION_FUNCTION override_hla_name_description_setup//internal 
+BEGIN
 
 	COPY_EXISTING "ui.menu" override
 		LPF UI_alter_object STR_VAR object=CHARGEN_HIGH_LEVEL_ABILITIES object_type=menu patch=override_name_patch END
@@ -223,7 +245,20 @@ END
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-DEFINE_ACTION_FUNCTION override_hla_description INT_VAR strref=0 STR_VAR resref="" BEGIN
+/*
+document{override_hla_description}
+{
+This replaces the description shown on the HLA select screen for HLA 'resref' with the strref 'strref'. It requires ui_externalize_hlas to have been run.
+}
+
+
+
+*/
+
+DEFINE_ACTION_FUNCTION override_hla_description 
+	INT_VAR strref=0 
+	STR_VAR resref="" 
+BEGIN
 
 	ACTION_TO_UPPER resref
 	APPEND "m_dw_hld.lua" "dwHLADescriptionOverride['%resref%']=%strref%" KEEP_CRLF
@@ -239,6 +274,17 @@ DEFINE_ACTION_FUNCTION override_hla_name INT_VAR strref=0 STR_VAR resref="" BEGI
 END
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/*
+document{set_basic_hla_progression}
+{
+This function sets the HLA progression (prior to crossing the threshold for 'genuine' HLAs, i.e. 3M XP in BG2, so that you start getting them at level
+min and then get another one every step levels.
+
+}
+
+
+*/
 
 DEFINE_ACTION_FUNCTION set_basic_hla_progression 
 	INT_VAR min=0
@@ -262,7 +308,7 @@ BEGIN
 END
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-DEFINE_ACTION_FUNCTION lightweight_hla_adder
+DEFINE_ACTION_FUNCTION lightweight_hla_adder//internal
 	INT_VAR min_level=1
 			max_level=99
 			num_allowed=99
@@ -317,7 +363,8 @@ END
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-DEFINE_ACTION_FUNCTION baseline_lua BEGIN
+DEFINE_ACTION_FUNCTION baseline_lua//internal
+BEGIN
 
 	ACTION_CLEAR_ARRAY class_abbrev
 	ACTION_DEFINE_ASSOCIATIVE_ARRAY class_abbrev BEGIN
@@ -428,7 +475,8 @@ DEFINE_ACTION_FUNCTION baseline_lua BEGIN
 END
 
 
-DEFINE_DIMORPHIC_FUNCTION find_next_unused_lua INT_VAR clone=1 try_next=0 STR_VAR root="" RET lua_short BEGIN
+DEFINE_DIMORPHIC_FUNCTION find_next_unused_lua//internal 
+INT_VAR clone=1 try_next=0 STR_VAR root="" RET lua_short BEGIN
 	ACTION_IF FILE_EXISTS_IN_GAME "LU%root%%try_next%.2da" BEGIN
 		OUTER_SET ++try_next
 		LAF find_next_unused_lua INT_VAR clone try_next STR_VAR root RET lua_short END
@@ -448,7 +496,8 @@ END
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-DEFINE_ACTION_FUNCTION blank_luas BEGIN
+DEFINE_ACTION_FUNCTION blank_luas//internal 
+BEGIN
 
 
 	LAF 2da_read STR_VAR file=luabbr.2da RET_ARRAY rows array END
@@ -471,7 +520,8 @@ END
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-DEFINE_ACTION_FUNCTION bg2_hla_menu BEGIN
+DEFINE_ACTION_FUNCTION bg2_hla_menu//internal
+BEGIN
 
 	// there already is a HLA menu in BG2, of course, but we need to remove the icons
 	
@@ -481,7 +531,8 @@ DEFINE_ACTION_FUNCTION bg2_hla_menu BEGIN
 
 END
 
-DEFINE_PATCH_FUNCTION bg2_hla_menu_edit BEGIN
+DEFINE_PATCH_FUNCTION bg2_hla_menu_edit//internal 
+BEGIN
 
 	PATCH_IF MOD_IS_INSTALLED "leui.tp2" 0 BEGIN 
 		REPLACE_TEXTUALLY "width 16" "width 0"
@@ -688,13 +739,16 @@ function dwNumberHLAs(is_new)
 
 end
 
+function dwHLAsAvailable()
+
+	return (not dwIsChargen) and (not dwIsDualClassing) and createCharScreen:IsHighLevelAbilitiesButtonClickable()
+
+end
+
 function dwHLAClickDoneButton()
 
-	if (not dwIsChargen) and (not dwIsDualClassing) and createCharScreen:IsHighLevelAbilitiesButtonClickable() then
-		createCharScreen:OnHighLevelAbilitiesButtonClick()
-	else
-		createCharScreen:OnDoneButtonClick()
-	end
+	createCharScreen:OnHighLevelAbilitiesButtonClick()
+
 end
 
 function dwHLAName(hla)

@@ -26,6 +26,8 @@ DEFINE_ACTION_FUNCTION hla_elemental_transformations BEGIN
 				grant_natural_form_spell=1
 		STR_VAR weapon=DRUEAR
 				copy_weapon="%itm_earth_elemental_weapon_16hd%"
+				weapon_icon=iearth
+				icon_path="%MOD_FOLDER%/class_race/resource"
 				spell="%CLERIC_ELEMENTAL_TRANSFORMATION_EARTH%"
 				anim=elemental_earth
 	END
@@ -48,6 +50,8 @@ DEFINE_ACTION_FUNCTION hla_elemental_transformations BEGIN
 				grant_natural_form_spell=1
 		STR_VAR weapon=DRUFIR
 				copy_weapon="%itm_fire_elemental_weapon_16hd%"
+				weapon_icon=ifire
+				icon_path="%MOD_FOLDER%/class_race/resource"
 				spell="%CLERIC_ELEMENTAL_TRANSFORMATION_FIRE%"
 				anim=elemental_fire
 				apply_spells="%spl_fire_elemental_aura_greater%"
@@ -72,6 +76,7 @@ DEFINE_ACTION_FUNCTION hla_elemental_transformations BEGIN
 				grant_natural_form_spell=1
 		STR_VAR weapon="%itm_air_elemental_transformation%"
 				copy_weapon="%itm_air_elemental_weapon_16hd%"
+				weapon_icon=ishape06 // matches invisible stalker, best I can do without art
 				spell="%spl_hla_elemental_transformation_air%"
 				copy_spell="%CLERIC_ELEMENTAL_TRANSFORMATION_FIRE%"
 				anim=elemental_air
@@ -79,6 +84,12 @@ DEFINE_ACTION_FUNCTION hla_elemental_transformations BEGIN
 	END
 
 	// water
+
+	ACTION_IF is_iwd BEGIN
+		OUTER_SPRINT anim elemental_water
+	END ELSE BEGIN
+		OUTER_SPRINT anim water_weird
+	END
 	LAF make_shapeshift_spell
 		INT_VAR force_copy=1
 				str=23
@@ -99,9 +110,11 @@ DEFINE_ACTION_FUNCTION hla_elemental_transformations BEGIN
 				grant_natural_form_spell=1
 		STR_VAR weapon="%itm_water_elemental_transformation%"
 				copy_weapon="%itm_water_elemental_weapon_16hd%"
+				weapon_icon=iwatere
+				icon_path="%MOD_FOLDER%/class_race/resource"
 				spell="%spl_hla_elemental_transformation_water%"
 				copy_spell="%CLERIC_ELEMENTAL_TRANSFORMATION_EARTH%"
-				anim=elemental_water
+				anim
 				apply_spells="%spl_water_elemental_aurar%"
 	END	
 	

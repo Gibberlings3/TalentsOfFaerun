@@ -337,6 +337,7 @@ DEFINE_ACTION_FUNCTION druid_shapeshift_build_forms BEGIN
 				resistcold="-50"
 		STR_VAR weapon="%itm_shapeshifter_fire_elemental_lesser%"
 				copy_weapon="%itm_fire_elemental_weapon_8hd%"
+				weapon_icon=ifire
 				spell="%spl_druid_shapeshift_fire_elemental_small%"
 				copy_spell="%DRUID_SHAPESHIFT_BLACKBEAR%"
 				icon=dw-sfel
@@ -367,6 +368,7 @@ DEFINE_ACTION_FUNCTION druid_shapeshift_build_forms BEGIN
 				resistfire=125
 		STR_VAR weapon="%itm_shapeshifter_fire_elemental%"
 				copy_weapon="%itm_fire_elemental_weapon_12hd%"
+				weapon_icon=ifire
 				spell="%spl_druid_shapeshift_fire_elemental%"
 				copy_spell="%DRUID_SHAPESHIFT_BLACKBEAR%"
 				icon=dw-sfel
@@ -393,6 +395,7 @@ DEFINE_ACTION_FUNCTION druid_shapeshift_build_forms BEGIN
 				resistelectricity=100
 		STR_VAR weapon="%itm_shapeshifter_air_elemental_lesser%"
 				copy_weapon="%itm_air_elemental_weapon_8hd%"
+				weapon_icon=ishape06 // matches invisible stalker, best I can do without art
 				spell="%spl_druid_shapeshift_air_elemental_small%"
 				copy_spell="%DRUID_SHAPESHIFT_BLACKBEAR%"
 				icon=dw-sfel // non-ideal, to be sure
@@ -416,6 +419,7 @@ DEFINE_ACTION_FUNCTION druid_shapeshift_build_forms BEGIN
 				resistelectricity=100
 		STR_VAR weapon="%itm_shapeshifter_air_elemental%"
 				copy_weapon="%itm_air_elemental_weapon_12hd%"
+				weapon_icon=ishape06 // matches invisible stalker, best I can do without art
 				spell="%spl_druid_shapeshift_air_elemental%"
 				copy_spell="%DRUID_SHAPESHIFT_BLACKBEAR%"
 				icon=dw-sfel // non-ideal, to be sure
@@ -449,6 +453,7 @@ DEFINE_ACTION_FUNCTION druid_shapeshift_build_forms BEGIN
 				resistmissile=50
 				resistcrushing="-25"
 		STR_VAR weapon="%itm_shapeshifter_earth_elemental_lesser%"
+				weapon_icon=iearth
 				copy_weapon="%itm_earth_elemental_weapon_8hd%"
 				spell="%spl_druid_shapeshift_earth_elemental_small%"
 				copy_spell="%DRUID_SHAPESHIFT_BLACKBEAR%"
@@ -480,6 +485,7 @@ DEFINE_ACTION_FUNCTION druid_shapeshift_build_forms BEGIN
 				resistmissile=50
 				resistcrushing="-25"
 		STR_VAR weapon="%itm_shapeshifter_earth_elemental%"
+				weapon_icon=iearth
 				copy_weapon="%itm_earth_elemental_weapon_12hd%"
 				spell="%spl_druid_shapeshift_earth_elemental%"
 				copy_spell="%DRUID_SHAPESHIFT_BLACKBEAR%"
@@ -513,6 +519,7 @@ DEFINE_ACTION_FUNCTION druid_shapeshift_build_forms BEGIN
 				resistmissile=25
 				resistcrushing=75
 		STR_VAR weapon="%itm_shapeshifter_water_elemental_lesser%"
+				weapon_icon=iwatere
 				copy_weapon="%itm_water_elemental_weapon_8hd%"
 				spell="%spl_druid_shapeshift_water_elemental_small%"
 				copy_spell="%DRUID_SHAPESHIFT_BLACKBEAR%"
@@ -538,6 +545,7 @@ DEFINE_ACTION_FUNCTION druid_shapeshift_build_forms BEGIN
 				resistmissile=25
 				resistcrushing=75
 		STR_VAR weapon="%itm_shapeshifter_water_elemental%"
+				weapon_icon=iwatere
 				copy_weapon="%itm_water_elemental_weapon_12hd%"
 				spell="%spl_druid_shapeshift_water_elemental%"
 				copy_spell="%DRUID_SHAPESHIFT_BLACKBEAR%"

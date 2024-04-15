@@ -105,8 +105,10 @@ DEFINE_ACTION_FUNCTION druid_multiclass BEGIN
 
 	ACTION_PHP_EACH druid_scripts AS script=>discard BEGIN
 		LAF disjunctive_substitution STR_VAR script match="Class(\([^,]*\),DRUID_ALL)" replace="OR()Class(\1,DRUID_ALL)|CheckSpellState(\1,DW_DRUID)" END
+		LAF disjunctive_substitution STR_VAR script match="Class(\([^,]*\),CLERIC_ALL)" replace="Class(\1,CLERIC_ALL)|!CheckSpellState(\1,DW_DRUID)" END
 	END
 	ACTION_PHP_EACH druid_dialogs AS dialog=>discard BEGIN
+		LAF disjunctive_substitution STR_VAR dialog match="Class(\([^,]*\),DRUID_ALL)" replace="OR()Class(\1,DRUID_ALL)|CheckSpellState(\1,DW_DRUID)" END
 		LAF disjunctive_substitution STR_VAR dialog match="Class(\([^,]*\),CLERIC_ALL)" replace="Class(\1,CLERIC_ALL)|!CheckSpellState(\1,DW_DRUID)" END
 	END
 	

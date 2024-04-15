@@ -1,7 +1,7 @@
 BACKUP ~weidu_external/backup/dw_talents~
 AUTHOR "DavidW"
 //MODDER setup_tra none area_variables none missing_extern none missing_resref none ict2_actions none missing_eval none overwriting_file none fun_args warn
-VERSION ~Beta 8~
+VERSION ~Beta 9~
 
 AUTO_EVAL_STRINGS
 README "dw_talents/doc/readme-dw_talents.html"
@@ -27,6 +27,7 @@ LANGUAGE ~English~
 /*
 BEGIN "test" DESIGNATED 0
 
+LAF run STR_VAR file=test location=test END
 
 BEGIN "test prequel" DESIGNATED 1
 */
@@ -1336,6 +1337,17 @@ REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~2240~ @96 // 
 
 LAF run STR_VAR file=revised_thac0 location=thac0 END
 
+//////////////////////////////////////////////////////////////////////
+///	3e-style Shields
+//////////////////////////////////////////////////////////////////////
+
+
+BEGIN @421 DESIGNATED 80160 GROUP @4
+
+REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
+FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
+
+LAF run STR_VAR file=shield location=shield END
 
 //////////////////////////////////////////////////////////////////////
 ///	3e-style Armor Class
@@ -1474,6 +1486,15 @@ REQUIRE_PREDICATE !MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ ~2164~ @96 // 
 
 LAF run STR_VAR file=prof location=prof END
 
+
+//////////////////////////////////////////////////////////////////////
+/// New weapon styles
+//////////////////////////////////////////////////////////////////////
+
+
+BEGIN @422 DESIGNATED 81200 GROUP @4
+
+LAF run STR_VAR file=style location=prof END
 
 //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////

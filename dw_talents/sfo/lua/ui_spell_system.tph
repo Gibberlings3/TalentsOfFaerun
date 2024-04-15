@@ -464,11 +464,11 @@ DEFINE_ACTION_FUNCTION ui_spell_system_setup BEGIN
 		END
 		PATCH_IF memo_label BEGIN
 			INNER_PATCH_SAVE priest_memo_label "label {%WNL%%message_label%%WNL%}%WNL%" BEGIN
-				REPLACE_TEXTUALLY "shouldShowSpecialistMessage()" "chargen.extraSpells==0 and not dwChargenSpecialistRequirementsSatisfied(priestSpells)"
+				REPLACE_TEXTUALLY "shouldShowSpecialistMessage()" "chargen.extraSpells==0 and not dwChargenSpecialistRequirementsSatisfied(priestSpells,true)"
 				REPLACE_TEXTUALLY "text lua.*" ~text lua "dwSpecialistMemoMessage()"~
 			END
 			INNER_PATCH_SAVE mage_memo_label "%priest_memo_label%" BEGIN
-				REPLACE_TEXTUALLY "priestSpells" "mageSpells"
+				REPLACE_TEXTUALLY "priestSpells,true" "mageSpells"
 			END	
 		END
 	
@@ -551,7 +551,7 @@ BEGIN
 							READ_ASCII 0x14+fx_off spell
 							TO_UPPER spell
 							TO_UPPER scroll
-							SPRINT data "%data%%TAB%%scroll%='%spell%',%WNL%"
+							SPRINT data ~%data%%TAB%['%scroll%']='%spell%',%WNL%~
 						END
 					END
 				END	
@@ -576,7 +576,7 @@ END
 DEFINE_PATCH_FUNCTION memorize_priest_spells_edit//internal
 BEGIN
 
-	REPLACE_TEXTUALLY ~clickable lua "createCharScreen:IsDoneButtonClickable()"~ ~clickable lua "createCharScreen:IsDoneButtonClickable() and dwChargenSpecialistRequirementsSatisfied(priestSpells)"~
+	REPLACE_TEXTUALLY ~clickable lua "createCharScreen:IsDoneButtonClickable()"~ ~clickable lua "createCharScreen:IsDoneButtonClickable() and dwChargenSpecialistRequirementsSatisfied(priestSpells,true)"~
 	REPLACE_TEXTUALLY ~currentChargenMemorizePriestSpell ?= ?nil~ ~currentChargenMemorizePriestSpell = nil%WNL%%TAB%%TAB%dwIsPriest=true~
 
 END
@@ -1935,7 +1935,7 @@ function dwLearnSpecialistSpells()
 	end
 end
 
-function dwChargenSpecialistRequirementsSatisfied(spells)
+function dwChargenSpecialistRequirementsSatisfied(spells,is_priest)
 
 	-- get the character's kit
 
@@ -1947,7 +1947,7 @@ function dwChargenSpecialistRequirementsSatisfied(spells)
 
 	-- return true for cleric/mages on the priest screen
 
-	if (class==14 or class==17) and dwIsPriest then
+	if (class==14 or class==17) and is_priest then
 		return true
 	end
 

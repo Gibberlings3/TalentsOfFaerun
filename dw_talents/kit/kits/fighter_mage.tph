@@ -156,6 +156,7 @@ DEFINE_ACTION_FUNCTION berserker_wild_mage BEGIN
 		k_desc:="%desc%"
 		LPF adjust_rage_descriptions INT_VAR tra_ref=194 RET k_desc=desc END
 		k.kit_grant_powers{%BERSERKER_RAGE% 1 5|class=fighter}
+		k.kit_apply_powers{dwdcmb 1|class=mage} // extra spell per level for dual-classed characters
 		k_color_metal=30
 		k_color_minor_cloth=91
 		k_color_main_cloth=93
@@ -233,6 +234,7 @@ DEFINE_ACTION_FUNCTION kensai_force_mage BEGIN
 		k.kit_grant_powers{spcl144 1 4|class=fighter}
 		k.kit_apply_powers{spcl143 1,spcl143 4 4,spcl141 3 3,spcl142 1|class=fighter}
 		k.kit_apply_powers{%spl_force_mage_innate% 1|class=mage}
+		k.kit_apply_powers{dwdcmb 1|class=mage} // extra spell per level for dual-classed characters
 		k.kit_match_usability{kensai}
 		k_swordandshield=0
 		k_c_g=0

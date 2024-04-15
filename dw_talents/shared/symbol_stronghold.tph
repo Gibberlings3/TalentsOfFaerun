@@ -20,8 +20,8 @@ BEGIN
 			LPF ALTER_EFFECT INT_VAR match_opcode=122 STR_VAR resource="%resref%" END
 
 		COPY_EXISTING "CDHLYSYM.spl" override
-			LPF ADD_SPELL_EFFECT INT_VAR insert_point=0 opcode=318 target=1 timing=0 duration=1 STR_VAR resource=cdhlysym END
-			LPF ADD_SPELL_EFFECT INT_VAR insert_point=0 opcode=326 target=1 timing=9 parameter1=kit_id parameter2=stat_ind_equal STR_VAR resource="%resref%" END
+			LPF ADD_SPELL_EFFECT INT_VAR insert_point=0 opcode=318 target=1 timing=0 parameter1=IDS_OF_SYMBOL (kit "%kit%") parameter2=stat_ind_equal duration=1 STR_VAR resource=cdhlysym END
+			LPF ADD_SPELL_EFFECT INT_VAR insert_point=0 opcode=326 target=1 timing=9 parameter1=IDS_OF_SYMBOL (kit "%kit%") parameter2=stat_ind_equal STR_VAR resource="%resref%" END
 		BUT_ONLY
 		
 		// sort out the item itself
@@ -38,7 +38,8 @@ BEGIN
 				m_identified_description:="%desc%"
 				m_icon:="%inv_bam%"
 				m_desc_image:="%desc_bam%"
-				m.fx.add{s_opcode=319 s_target=2 s_timing=2 s_power=1 s_parameter1:="%kit_id%" s_parameter2=9}
+				m_unusable_evil=0
+				m.fx.add{s_opcode=319 s_target=2 s_timing=2 s_power=1 s_parameter1=IDS_OF_SYMBOL (kit "%kit%") s_parameter2=9}
 			]
 			ACTION_FOR_EACH bam IN "%inv_bam%" "%desc_bam%" BEGIN
 				ACTION_IF FILE_EXISTS "%MOD_FOLDER%/%component_loc%/%bam_path%/%bam%.bam" BEGIN

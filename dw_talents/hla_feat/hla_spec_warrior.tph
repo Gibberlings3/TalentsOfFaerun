@@ -5,20 +5,47 @@ DEFINE_PATCH_FUNCTION KENSAI_TRUE_KAI BEGIN
 	LPF ds_resolve_stat STR_VAR id=KENSAI_KAI RET stat_ind END
 	LPF CLONE_EFFECT INT_VAR opcode=328 target=1 special=1 parameter1=0 parameter2=stat_ind END
 	// set a bespoke icon
-	LPF resolve_statdesc INT_VAR strref=RESOLVE_STR_REF (@3004) STR_VAR bam=tg#gkaib RET stat_num END
+	LPF resolve_statdesc INT_VAR strref=RESOLVE_STR_REF (@3004) STR_VAR bam="tg#gkaib" RET stat_num END
 	LPF ALTER_EFFECT INT_VAR match_opcode=142 parameter2=stat_num END
 
 
 END
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_PATCH_FUNCTION WARRIOR_RESIST_MAGIC BEGIN
+
+	INNER_ACTION BEGIN
+		COPY_EXISTING "%WARRIOR_RESIST_MAGIC%.spl" "override/%spl_hla_resist_magic_extra%.spl"
+			WRITE_LONG 0x8 "-1" 
+			WRITE_LONG 0xc "-1"
+			LPF ALTER_EFFECT INT_VAR match_opcode=166 parameter1=20 parameter2=0 END
+		
+	END
+	
+	LPF resolve_splprot_entry INT_VAR stat=IDS_OF_SYMBOL (stats KIT) val="-1" STR_VAR relation="equal" description="KIT=n" RET splprot=value END
+	PATCH_FOR_EACH kit IN WIZARD_SLAYER DW_BARBARIAN_WS DW_HELM_MAGEHUNTER DW_MAGETRACKER BEGIN	
+		ws_num=IDS_OF_SYMBOL (kit "%kit%")
+		PATCH_IF ws_num>=0 BEGIN
+			LPF add_feat_effect INT_VAR insert_point=0 opcode=318 duration=1 timing=0 parameter1=ws_num parameter2=splprot STR_VAR resource="%SOURCE_RES%" END
+			LPF add_feat_effect INT_VAR insert_point=0 opcode=326 duration=1 timing=0 parameter1=ws_num parameter2=splprot STR_VAR resource="%spl_hla_resist_magic_extra%" END
+		END
+	END
+	monk_num=IDS_OF_SYMBOL (class monk)
+	LPF add_feat_effect INT_VAR insert_point=0 opcode=318 duration=1 timing=0 parameter1=monk_num parameter2=105 STR_VAR resource="%SOURCE_RES%" END
+	LPF add_feat_effect INT_VAR insert_point=0 opcode=326 duration=1 timing=0 parameter1=monk_num parameter2=105 STR_VAR resource="%spl_hla_resist_magic_extra%" END
+	
+
+
+END
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
 DEFINE_PATCH_FUNCTION WARRIOR_WHIRLWIND BEGIN
 
 	LPF ds_resolve_stat STR_VAR id=DW_POWER_UPGRADE_F1 RET stat_ind END
-	LPF add_feat_effect INT_VAR insert_point=0 opcode=318 duration=1 parameter2=110 parameter1=stat_ind STR_VAR resource="%SOURCE_RES%" END
-	LPF add_feat_effect INT_VAR insert_point=0 opcode=326 duration=1 parameter2=110 parameter1=stat_ind STR_VAR resource="%spl_hla_greater_whirlwind%" END
+	LPF add_feat_effect INT_VAR insert_point=0 opcode=318 duration=1 timing=0 parameter2=110 parameter1=stat_ind STR_VAR resource="%SOURCE_RES%" END
+	LPF add_feat_effect INT_VAR insert_point=0 opcode=326 duration=1 timing=0 parameter2=110 parameter1=stat_ind STR_VAR resource="%spl_hla_greater_whirlwind%" END
 
 	// clone greater one, strip descriptive text
 	
@@ -44,8 +71,8 @@ END
 DEFINE_PATCH_FUNCTION WARRIOR_WAR_CRY BEGIN
 
 	LPF ds_resolve_stat STR_VAR id=DW_POWER_UPGRADE_F2 RET stat_ind END
-	LPF add_feat_effect INT_VAR insert_point=0 opcode=318 duration=1 parameter2=110 parameter1=stat_ind STR_VAR resource="%SOURCE_RES%" END
-	LPF add_feat_effect INT_VAR insert_point=0 opcode=326 duration=1 parameter2=110 parameter1=stat_ind STR_VAR resource="%spl_hla_greater_war_cry%" END
+	LPF add_feat_effect INT_VAR insert_point=0 opcode=318 timing=0 duration=1 parameter2=110 parameter1=stat_ind STR_VAR resource="%SOURCE_RES%" END
+	LPF add_feat_effect INT_VAR insert_point=0 opcode=326 timing=0 duration=1 parameter2=110 parameter1=stat_ind STR_VAR resource="%spl_hla_greater_war_cry%" END
 
 END
 
@@ -56,16 +83,20 @@ DEFINE_PATCH_FUNCTION WARRIOR_GREATER_WAR_CRY BEGIN
 	LPF ds_resolve_stat STR_VAR id=DW_POWER_UPGRADE_F2 RET stat_ind END
 	LPF add_feat_effect INT_VAR opcode=328 timing=9 special=1 parameter2=stat_ind END
 
-	// patch original refinements spell
+	// patch original refinements spells
 	
 	INNER_ACTION BEGIN
-	spl.edit[%spl_hla_greater_war_cry%]
+		spl.edit[%spl_hla_greater_war_cry%]
 		[
 			m_name="-1"
-			m.ab.alter{s_projectile:=li#bard1}
+			m.ab.alter{s_projectile:=INAREANP}
+		]
+		
+		spl.edit[li#gcry] // the party-boost bit
+		[
+			m.ab.alter{s_projectile:=INAREAPA}
 		]
 	END
-
 END
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -79,10 +110,11 @@ DEFINE_PATCH_FUNCTION BERSERKER_SCORN_INJURY BEGIN
 	
 	INNER_ACTION BEGIN
 		// this is complicated enough to be worth doing manually
-		COPY_EXISTING "%BERSERKER_ENRAGE%.spl" override
+		COPY_EXISTING "%BERSERKER_RAGE%.spl" override
 			// blockers
 			LPF ADD_SPELL_EFFECT INT_VAR opcode=318 target=1 timing=0 duration=1 parameter1=stat_ind parameter2=111 STR_VAR resource="%SOURCE_RES%" END
 			// placeholders
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=997 END
 			LPF ADD_SPELL_EFFECT INT_VAR opcode=998 END
 			LPF ADD_SPELL_EFFECT INT_VAR opcode=999 END
 			GET_OFFSET_ARRAY ab_arr SPL_V10_HEADERS
@@ -95,9 +127,15 @@ DEFINE_PATCH_FUNCTION BERSERKER_SCORN_INJURY BEGIN
 					END
 					PATCH_IF opcode= 12 BEGIN
 						READ_ASCII fx_off 12_data (0x30)
-					END					
-					PATCH_IF opcode=998 BEGIN
+					END	
+					PATCH_IF opcode = 17 BEGIN
+						READ_ASCII fx_off 17_data (0x30)
+					END
+					PATCH_IF opcode=997 BEGIN
 						WRITE_ASCIIE fx_off "%18_data%"
+					END
+					PATCH_IF opcode=998 BEGIN
+						WRITE_ASCIIE fx_off "%17_data%"
 					END
 					PATCH_IF opcode=999 BEGIN
 						WRITE_ASCIIE fx_off "%12_data%"
@@ -192,8 +230,8 @@ BEGIN
    LPF ds_resolve_stat STR_VAR id=DW_POWER_UPGRADE_F7 RET stat_ind END
    // patch in the advanced version
  
-	LPF add_feat_effect INT_VAR insert_point=0 opcode=318 duration=1 parameter2=110 parameter1=stat_ind STR_VAR resource="%SOURCE_RES%" END
-	LPF add_feat_effect INT_VAR insert_point=0 opcode=326 duration=1 parameter2=110 parameter1=stat_ind STR_VAR resource="%spl_hla_greater_deathblow%" END
+	LPF add_feat_effect INT_VAR insert_point=0 opcode=318 timing=0 duration=1 parameter2=110 parameter1=stat_ind STR_VAR resource="%SOURCE_RES%" END
+	LPF add_feat_effect INT_VAR insert_point=0 opcode=326 timing=0 duration=1 parameter2=110 parameter1=stat_ind STR_VAR resource="%spl_hla_greater_deathblow%" END
 
 	// clone greater one, strip descriptive text
 	
@@ -374,7 +412,7 @@ BEGIN
 	struct.ab_fx.delete{s_opcode=215}
 	struct.ab_fx.alter{s_power=10}
 	struct.ab_fx.alter{s_dicenumber=10 s_dicesize=6|match="s_opcode=12"}
-	struct.ab_fx.clone{s_parameter2b=64|match="s_opcode=12"}
+	struct.ab_fx.clone{s_parameter2=64*0x10000|match="s_opcode=12"}
 	struct.ab_fx.add{s_opcode=324 s_target=2 s_parameter1=121 s_parameter2=104 s_resource:="%spl_hla_profane_fire%"|insert_point:i=0}
 	struct.ab_fx.add{s_opcode=324 s_target=2 s_parameter1=4 s_parameter2=103 s_resource:="%spl_hla_profane_fire%"|insert_point:i=0}
 	LPF struct_write STR_VAR struct END
@@ -600,6 +638,21 @@ DEFINE_PATCH_FUNCTION ARCHER_PRECISION BEGIN
 
 END
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+DEFINE_PATCH_FUNCTION PALADIN_HOLY_AURA BEGIN
+	
+	// set the correct projectile
+	INNER_ACTION BEGIN
+		spl.edit[tg#hol1]
+		[
+			m.ab.alter{s_projectile:=tg#hola}
+			m.ab_fx.delete{s_opcode=215}
+		]
+	END
+END
+
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -613,8 +666,6 @@ BEGIN
    // We use DW_POWER_UPGRADE_F3 to indicate Tireless Rage, DW_POWER_UPGRADE_F4 to indicate Greater Rage,
    // DW_POWER_UPGRADE_F5 to indicate Supernatural Fury, DW_POWER_UPGRADE_F6 and DW_POWER_UPGRADE_F8 to indicate
    // Fiery and Thundering Rage (resp.) and DW_POWER_UPGRADE_F9 to indicate the higher-level versions of those powers
-   // and (since they form a chain) all powers require DW_POWER_UPGRADE as a gateway
-   // (this is about namespace control)
 
    LAF ds_resolve_stat STR_VAR id=DW_POWER_UPGRADE_F3 RET stat1=stat_ind END
    LAF ds_resolve_stat STR_VAR id=DW_POWER_UPGRADE_F4 RET stat2=stat_ind END
@@ -668,8 +719,7 @@ BEGIN
 	spl.make[%spl_barbarian_fiery_rage_payload%]
 	[
 		m.ab.add{}
-		m.ab_fx.add{s_opcode=318 s_target=1 s_parameter1=stat2 s_parameter2=111 s_resource:="%sfo_filename%"}
-		m.ab_fx.add{s_opcode=326 s_target=1 s_parameter1=stat6 s_parameter2=110 s_resource:="%spl_barbarian_volcanic_rage_applicator%"}
+		m.ab_fx.add{s_opcode=326 s_target=1 s_parameter1=stat6 s_parameter2=110 s_resource:="%spl_barbarian_volcanic_rage_payload%"}
 		m.ab_fx.add{s_opcode=318 s_target=1 s_duration=1 s_parameter1=stat6 s_parameter2=110 s_resource:=%sfo_filename%}
 		m.ab_fx.add{s_opcode=321 s_target=1 s_resource:="%sfo_filename%"}
 		m.ab_fx.add{s_opcode=248 s_target=1 s_power=1 s_duration=60 s_resource:="%eff_barbarian_fiery_rage_payload%"}	

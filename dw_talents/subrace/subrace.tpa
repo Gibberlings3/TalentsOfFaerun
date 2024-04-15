@@ -104,10 +104,10 @@ DEFINE_ACTION_FUNCTION planetouched_subraces BEGIN
 		ACTION_IF !FILE_EXISTS_IN_GAME "%resource_new%" BEGIN
 		  ACTION_IF FILE_EXISTS_IN_GAME "%resource%" BEGIN
 			COPY_EXISTING "%resource%" "override/%resource_new%"
-				REPLACE_TEXTUALLY "sppr115" "%spl_aasimar_sunscorch%" (8)		  
+				REPLACE_TEXTUALLY "sppr115" "%spl_aasimar_sunscorch%"		  
 		  END ELSE BEGIN
 			COPY "%MOD_FOLDER%/iwdspells/copyover/cleric_sunscorch/%resource%" "override/%resource_new%"
-				REPLACE_TEXTUALLY "sppr115" "%spl_aasimar_sunscorch%" (8)
+				REPLACE_TEXTUALLY "sppr115" "%spl_aasimar_sunscorch%"
 		  END
 		END
 	END
@@ -254,9 +254,8 @@ DEFINE_ACTION_FUNCTION planetouched_subraces BEGIN
 		LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 timing=1 STR_VAR resource="%spl_subrace_genasi_water%" END
 		LPF ADD_SPELL_EFFECT INT_VAR opcode=63 target=2 timing=9 END // infravision
 		LPF ADD_SPELL_EFFECT INT_VAR opcode=171 target=2 timing=9 STR_VAR resource="%spl_genasi_mist_ball%" END // mist ball
-		LPF ADD_SPELL_EFFECT INT_VAR opcode=86 target=2 timing=9 parameter2=1 parameter1=15 END // damage resistance
-		LPF ADD_SPELL_EFFECT INT_VAR opcode=88 target=2 timing=9 parameter2=1 parameter1=15 END // damage resistance
-		LPF ADD_SPELL_EFFECT INT_VAR opcode=89 target=2 timing=9 parameter2=1 parameter1=15 END // damage resistance
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=88 target=2 timing=9 parameter2=1 parameter1=10 END // damage resistance
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=89 target=2 timing=9 parameter2=1 parameter1=10 END // damage resistance
 	
 	
 	
@@ -395,7 +394,8 @@ DEFINE_ACTION_FUNCTION elf_subraces BEGIN
 	ACTION_IF GAME_IS iwdee BEGIN
 		EXTEND_TOP "ar1006.bcs" ".../stratagems-inline/rep_penalty.baf" EVALUATE_BUFFER
 		EXTEND_TOP "ar9100.bcs" ".../stratagems-inline/rep_penalty.baf" EVALUATE_BUFFER
-	END ELSE
+	END 
+	/* disable for now since you're not supposed to be drow anyway in BG/BG2
 	ACTION_IF GAME_IS bgee BEGIN
 		EXTEND_TOP "ar2600.bcs" ".../stratagems-inline/rep_penalty.baf" EVALUATE_BUFFER
 	END ELSE BEGIN
@@ -403,7 +403,7 @@ DEFINE_ACTION_FUNCTION elf_subraces BEGIN
 		EXTEND_TOP "ar4000.bcs" ".../stratagems-inline/rep_penalty.baf" EVALUATE_BUFFER
 	
 	END
-	
+	*/
 	// main payload
 
 	CREATE spl "%spl_subrace_drow%"

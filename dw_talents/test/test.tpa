@@ -1,34 +1,21 @@
 DEFINE_ACTION_FUNCTION test STR_VAR version=0 BEGIN
 
-/*
-	kit.copy[FIGHTER_CLERIC=>DW_TESTKIT]
+
+
+	cre.copy[es8erth=>%cre_ice_elemental_8hd% elearpr=>%cre_ice_elemental_12hd% elearpr2=>%cre_ice_elemental_16hd% elearpr3=>%cre_ice_elemental_24hd%]
 	[
-		k_name:="Test kit"
-		k_desc:="test kit desc"
-		k.kit_match_proficiencies{barbarian}
-		
+		m_animation:=GOLEM_ICE
+		m_resist_cold=100
+		m_resist_fire="-50"
+		m.cre_strip_scripts{%baf_earth_elemental%}
+		m.cre_insert_script{%baf_ice_elemental%|loc=high}
+		m.fx.delete{}
+		m.cre_remove_spells{all}
+		PATCH_IF m_level1>=16 BEGIN
+			m.cre_add_spells{%spl_ice_elemental_ice_storm%}
+		END			
+		m.immunity_spell{%WIZARD_ICE_STORM%}
+		m.immunity_spell{%spl_ice_elemental_ice_storm%}
 	]
-*/
-
-	OUTER_SET desc_strref=28606
-	// a proper 'class' description
-	
-	WITH_TRA "%sfo_tra_loc%/english/blackguard.tra" "%sfo_tra_loc%/%LANGUAGE%/blackguard.tra" BEGIN
-		OUTER_SPRINT desc @1
-	END
-	LAF 2da_read STR_VAR file=MXSPLPAL.2DA RET_ARRAY pal_spell_rows=rows END
-	OUTER_SET min_spell_level=99
-	ACTION_PHP_EACH pal_spell_rows AS row=>discard BEGIN
-		OUTER_SET min_spell_level= (row<min_spell_level)?row:min_spell_level
-	END
-	OUTER_PATCH_SAVE desc "%desc%" BEGIN
-		REPLACE_TEXTUALLY "MIN_LEVEL_FOR_SPELLS" "%min_spell_level%"
-	END
-	STRING_SET_EVALUATE desc_strref "%desc%"
-
-LAF include STR_VAR file=profdoc.tph locbase=prof END
-LAF update_all_proficiency_descriptions END
-
-
 
 END

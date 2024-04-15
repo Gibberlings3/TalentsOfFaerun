@@ -207,6 +207,7 @@ DEFINE_ACTION_FUNCTION kossuth_shared BEGIN
 		[
 				m.ab_fx.delete{}
 				m.ab.delete{s_level>1}
+				m.ab.alter{s_location:=Innate}
 			m.ab.clone{s_level=2+entry_index|number:i=is_iwd?29:19}
 			m.ab_fx.add{s_opcode=331 s_target=1 s_parameter1=1 s_dispel_resist=3 s_duration=60*p_level s_parameter2=( p_level<13? table_kossuth_1: ( p_level<17? table_kossuth_2: (p_level<21?table_kossuth_3:table_kossuth_4)))}
 		]

@@ -44,6 +44,23 @@ DEFINE_ACTION_FUNCTION move_hlas_into_spcl BEGIN
 		END
 	END
 	
+	// special cases
+	
+	// elemental prince spells have cross-refs that need changing
+	
+	ACTION_FOR_EACH element IN earth air fire water BEGIN
+		OUTER_SPRINT id "cleric_elemental_prince_%element%"
+		ACTION_TO_UPPER id
+		OUTER_SPRINT resref $feat_array("%id%" "RESREF")
+		ACTION_FOR_EACH morality IN good evil BEGIN
+			OUTER_SPRINT id "spl_elemental_prince_%element%_%morality%"
+			OUTER_SPRINT resref_sec EVAL "%%id%%"
+			COPY_EXISTING "%resref_sec%.spl" override
+				LPF ALTER_EFFECT INT_VAR match_opcode=321 STR_VAR resource="%resref%" END
+		END
+	END
+	
+	
 	
 
 END

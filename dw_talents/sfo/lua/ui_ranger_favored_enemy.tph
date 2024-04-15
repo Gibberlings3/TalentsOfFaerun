@@ -1,4 +1,5 @@
-DEFINE_ACTION_FUNCTION ui_ranger_favored_enemy_setup BEGIN
+DEFINE_ACTION_FUNCTION ui_ranger_favored_enemy_setup//internal 
+BEGIN
 
 	ACTION_IF !FILE_EXISTS_IN_GAME "m_dw_fef.lua" BEGIN
 		
@@ -31,7 +32,8 @@ END
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-DEFINE_ACTION_FUNCTION sort_haterace BEGIN
+DEFINE_ACTION_FUNCTION sort_haterace//internal 
+BEGIN
 	
 	LAF 2da_read STR_VAR file=haterace.2da RET_ARRAY haterace_array=array END
 	LAF 2da_sort STR_VAR array=haterace_array rows=~GET_STRREF $haterace_array("%arguments%" "STRREF") value~ RET_ARRAY haterace_array=array END
@@ -42,7 +44,7 @@ END
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-DEFINE_ACTION_FUNCTION externalize_haterace
+DEFINE_ACTION_FUNCTION externalize_haterace//internal
 BEGIN
 	LAF 2da_read STR_VAR file=haterace.2da RET_ARRAY haterace_rows=rows haterace_array=array END
 	OUTER_SPRINT haterace_data ""
@@ -61,7 +63,7 @@ END
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-DEFINE_ACTION_FUNCTION "rechoose_ranger_favored_enemy"
+DEFINE_ACTION_FUNCTION rechoose_ranger_favored_enemy
 	STR_VAR levels=""
 BEGIN
 	LAF ui_ranger_favored_enemy_setup END
@@ -77,7 +79,7 @@ END
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-DEFINE_ACTION_FUNCTION define_favored_enemy_effect
+DEFINE_ACTION_FUNCTION define_favored_enemy_effect//internal
 	INT_VAR id=1
 			hit=4
 			damage=4
@@ -249,7 +251,8 @@ END
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-DEFINE_ACTION_FUNCTION clear_out_haterace BEGIN
+DEFINE_ACTION_FUNCTION clear_out_haterace//internal 
+BEGIN
 
 	COPY_EXISTING "haterace.2da" override
 		LPF 2da_read RET_ARRAY racetext_rows=rows racetext_array=array END
@@ -268,7 +271,8 @@ END
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-DEFINE_ACTION_FUNCTION build_favored_enemy_applicator_spells BEGIN
+DEFINE_ACTION_FUNCTION build_favored_enemy_applicator_spells//internal
+BEGIN
 
 	LAF resolve_splprot_entry INT_VAR stat=49 value="-1" STR_VAR relation=equal RET splprot_value=value END
 
@@ -296,7 +300,8 @@ END
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-DEFINE_ACTION_FUNCTION build_favored_enemy_menu BEGIN
+DEFINE_ACTION_FUNCTION build_favored_enemy_menu//internal 
+BEGIN
 
 
 	// extract the CHARGEN_HATEDRACE menu from the existing ui.menu

@@ -117,6 +117,11 @@
 @210="May only use weapons available to" // from Monk
 @211="May not use these weapons" // from my own code
 @212="May not use missile weapons" // from Kensai
+@213="May only become Proficient (one slot) in any weapon class." // from Mage, Cleric, Thief
+@214="May not place any slots in any fighting style." // from Mage
+@215="May only become Proficient (one slot) in any fighting style." // from Cleric and Thief
+@216="May only become Proficient (one slot) in any fighting style." // whatever string is used in the 'Favored Soul' description, 
+@217="May Specialize (two slots) in any melee weapon available to Thieves." // from Swashbuckler
 
 @250="Advantages:"
 @251="Disadvantages:"
@@ -142,6 +147,11 @@
 @310=NO_DIFFERENCE
 @311=NO_DIFFERENCE
 @312=NO_DIFFERENCE
+@313=NO_DIFFERENCE
+@314=NO_DIFFERENCE
+@315=NO_DIFFERENCE
+@316=NO_DIFFERENCE
+@317=NO_DIFFERENCE
 
 @350=NO_DIFFERENCE
 @351=NO_DIFFERENCE
@@ -163,6 +173,11 @@
 @410=NO_DIFFERENCE
 @411=NO_DIFFERENCE
 @412=NO_DIFFERENCE
+@413=NO_DIFFERENCE
+@414=NO_DIFFERENCE
+@415=NO_DIFFERENCE
+@416=NO_DIFFERENCE
+@417=NO_DIFFERENCE
 
 
 @450=NO_DIFFERENCE

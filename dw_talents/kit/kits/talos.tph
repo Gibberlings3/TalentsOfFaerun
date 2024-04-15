@@ -190,6 +190,10 @@ DEFINE_ACTION_FUNCTION talos_shared BEGIN
 
 		talos_lightning_bolt=pro.copy[pro_minor_lightning_bolt=>dw#tlblt|source_locbase=newspell source_location=resource ]
 
+		//icon
+		
+		COPY "%MOD_FOLDER%/newspell/icon/minor_lightning_b.bam" "override/dw#tlblt.bam"
+
 		//main spell
 		spl.make[%spl_talos_lightning%|icon_locbase=newspell icon_location=icon icon_base_name=minor_lightning_]
 		[
@@ -201,7 +205,7 @@ DEFINE_ACTION_FUNCTION talos_shared BEGIN
 			m_sectype=10
 			m_break_sanctuary=1
 			m.ab.add{}
-			m.ab.alter{s_type:=magical s_location:=innate s_target=1 s_level=1 s_range=50 s_casting_time=1 s_projectile=talos_lightning_bolt}
+			m.ab.alter{s_icon:=dw#tlblt s_type:=magical s_location:=innate s_target=1 s_level=1 s_range=50 s_casting_time=1 s_projectile=talos_lightning_bolt + 1}
 			m.ab.clone{s_level=entry_index+8|number:i=8}
 			m.ab_fx.add{s_opcode=12 s_target=2 s_timing=1 s_power=2 s_parameter2b=4 s_dicenumber=p_level s_dicesize=6 s_save_vs_spell=1 s_save_for_half=1 s_bypass_mirror_image=1 s_dispel_resist=2}	
 		]
