@@ -131,7 +131,7 @@ END
 DEFINE_PATCH_FUNCTION "apply_default_profs" BEGIN // patch function used by UI edit
 
 	REPLACE_TEXTUALLY ~minusButtonClickable(currentChargenProficiency)~ ~minusButtonClickable(currentChargenProficiency) and dwDefaultProficiencyGuard(currentChargenProficiency)~
-	REPLACE_TEXTUALLY ~getMinusFrame(8)~ ~dwProfMinusFrame()~
+	REPLACE_TEXTUALLY ~getMinusFrame([78])~ ~dwProfMinusFrame()~
 
 END	
 

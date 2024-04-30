@@ -1,7 +1,7 @@
 BACKUP ~weidu_external/backup/dw_talents~
 AUTHOR "DavidW"
 //MODDER setup_tra none area_variables none missing_extern none missing_resref none ict2_actions none missing_eval none overwriting_file none fun_args warn
-VERSION ~Beta 9~
+VERSION ~Beta 10~
 
 AUTO_EVAL_STRINGS
 README "dw_talents/doc/readme-dw_talents.html"
@@ -1016,7 +1016,7 @@ BEGIN @711 DESIGNATED 55500 GROUP @8
 
 REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
 FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
-REQUIRE_PREDICATE MOD_IS_INSTALLED "dw_talents/dw_talents.tp2" 50400 || !IS_AN_INT dw_talents_component_50400_installed @90
+REQUIRE_PREDICATE MOD_IS_INSTALLED "dw_talents/dw_talents.tp2" 50400 || IS_AN_INT dw_talents_component_50400_installed @90
 
 REQUIRE_PREDICATE (GAME_IS iwdee 
 					|| MOD_IS_INSTALLED ~iwdification/setup-iwdification.tp2~ 30 
@@ -1063,7 +1063,7 @@ BEGIN @712 DESIGNATED 55600 GROUP @8
 
 REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
 FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
-REQUIRE_PREDICATE MOD_IS_INSTALLED "dw_talents/dw_talents.tp2" 50400 || !IS_AN_INT dw_talents_component_50400_installed @90
+REQUIRE_PREDICATE MOD_IS_INSTALLED "dw_talents/dw_talents.tp2" 50400 || IS_AN_INT dw_talents_component_50400_installed @90
 
 REQUIRE_PREDICATE (GAME_IS iwdee 
 					|| MOD_IS_INSTALLED ~iwdification/setup-iwdification.tp2~ 30 
@@ -1110,7 +1110,7 @@ BEGIN @713 DESIGNATED 55700 GROUP @8
 
 REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
 FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
-REQUIRE_PREDICATE MOD_IS_INSTALLED "dw_talents/dw_talents.tp2" 50400 || !IS_AN_INT dw_talents_component_50400_installed @90
+REQUIRE_PREDICATE MOD_IS_INSTALLED "dw_talents/dw_talents.tp2" 50400 || IS_AN_INT dw_talents_component_50400_installed @90
 
 REQUIRE_PREDICATE (GAME_IS iwdee 
 					|| MOD_IS_INSTALLED ~iwdification/setup-iwdification.tp2~ 30 
@@ -1170,7 +1170,7 @@ BEGIN @715 DESIGNATED 55900 GROUP @8
 
 REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
 FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
-REQUIRE_PREDICATE MOD_IS_INSTALLED "dw_talents/dw_talents.tp2" 50400 || !IS_AN_INT dw_talents_component_50400_installed @90
+REQUIRE_PREDICATE MOD_IS_INSTALLED "dw_talents/dw_talents.tp2" 50400 || IS_AN_INT dw_talents_component_50400_installed @90
 
 REQUIRE_PREDICATE (GAME_IS iwdee 
 					|| MOD_IS_INSTALLED ~iwdification/setup-iwdification.tp2~ 30 

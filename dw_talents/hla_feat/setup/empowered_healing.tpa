@@ -29,6 +29,7 @@ DEFINE_ACTION_FUNCTION empowered_healing BEGIN
 		[
 			m_name="-1"
 		]
+
 		OUTER_SET mult=125
 		spl.copy[%spell_here%=>%spell_here%B] // 3/2 x
 		[
@@ -47,11 +48,13 @@ DEFINE_ACTION_FUNCTION empowered_healing BEGIN
 	
 		spl.edit[%spell_here%]
 		[
-			m.ab.delete{s_level>1 AND s_level<100}
-			m.ab_fx.delete{p_level=1}
-			m.ab_fx.add{s_target=1 s_opcode=326 s_parameter1=stat_ind_low s_parameter2=111 s_resource:="%spell_here%A"}
-			m.ab_fx.add{s_target=1 s_opcode=326 s_parameter1=0 s_parameter2=c1_only s_resource:="%spell_here%B"}
-			m.ab_fx.add{s_target=1 s_opcode=326 s_parameter1=stat_ind_high s_parameter2=110 s_resource:="%spell_here%C"}
+			// delete all effects except the base heal, and gate it off (this is so that heal-on-rest still works)
+			m.ab_fx.delete{p_level<100 AND !(s_opcode=17)}
+			m.ab_fx.add{s_opcode=318 s_target=2 s_resource:=%spell_here%|insert_point:i=0}
+			// add the new payloads
+			m.ab_fx.add{s_target=1 s_opcode=326 s_parameter1=stat_ind_low s_parameter2=111 s_resource:="%spell_here%A"|insert_point:i=0}
+			m.ab_fx.add{s_target=1 s_opcode=326 s_parameter1=0 s_parameter2=c1_only s_resource:="%spell_here%B"|insert_point:i=0}
+			m.ab_fx.add{s_target=1 s_opcode=326 s_parameter1=stat_ind_high s_parameter2=110 s_resource:="%spell_here%C"|insert_point:i=0}
 		]
 
 	END

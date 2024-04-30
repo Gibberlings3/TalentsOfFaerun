@@ -1,45 +1,30 @@
 DEFINE_ACTION_FUNCTION wrap_spell_setup BEGIN
 
- ACTION_IF !FILE_EXISTS_IN_GAME "dw3ewrp.spl"  BEGIN
+	ACTION_IF !FILE_EXISTS_IN_GAME "dw3ewrp.spl"  BEGIN
 
 		CREATE spl dw3ewrp 
-			LPF add_basic_spell_ability END
+			LPF add_basic_spell_ability END			
+
+		LAF extend_worldscripts INT_VAR inline=1 STR_VAR top=ab_install END
 		
-	
-		<<<<<<<< .../stratagems-inline/ab_install.baf
-	IF
-		!GlobalTimerNotExpired("dw_wrap_spell","GLOBAL")
-	THEN
-		RESPONSE #100
-			SetGlobalTimer("dw_wrap_spell","GLOBAL",1)
-			ApplySpellRES("dw3ewrp",Player1)
-			ApplySpellRES("dw3ewrp",Player2)
-			ApplySpellRES("dw3ewrp",Player3)
-			ApplySpellRES("dw3ewrp",Player4)
-			ApplySpellRES("dw3ewrp",Player5)
-			ApplySpellRES("dw3ewrp",Player6)
-			Continue()
-	END	
-	>>>>>>>>
-
-	// get global scripts
-	ACTION_IF FILE_EXISTS_IN_GAME "campaign.2da" BEGIN
-		LAF 2daq_extract STR_VAR resref=campaign column=WORLDSCRIPT RET_ARRAY scripts=array END
-	END ELSE BEGIN
-		ACTION_CLEAR_ARRAY scripts
 	END
-	OUTER_SPRINT $scripts("SOA") "BALDUR"
-	OUTER_SPRINT $scripts("TOB") "BALDUR25"
-
-	ACTION_PHP_EACH scripts AS id=>script BEGIN
-		ACTION_IF FILE_EXISTS_IN_GAME "%script%.bcs" BEGIN
-			EXTEND_TOP "%script%.bcs" ".../stratagems-inline/ab_install.baf"
-		END	
-	END
-	
-	
-	
- END
 	
 	
 END
+
+<<<<<<<< .../stratagems-inline/ab_install.baf
+IF
+	!GlobalTimerNotExpired("dw_wrap_spell","GLOBAL")
+THEN
+	RESPONSE #100
+		SetGlobalTimer("dw_wrap_spell","GLOBAL",1)
+		ApplySpellRES("dw3ewrp",Player1)
+		ApplySpellRES("dw3ewrp",Player2)
+		ApplySpellRES("dw3ewrp",Player3)
+		ApplySpellRES("dw3ewrp",Player4)
+		ApplySpellRES("dw3ewrp",Player5)
+		ApplySpellRES("dw3ewrp",Player6)
+		Continue()
+END	
+>>>>>>>>
+

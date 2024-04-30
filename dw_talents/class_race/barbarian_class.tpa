@@ -89,7 +89,7 @@ DEFINE_ACTION_FUNCTION barbarian_class BEGIN
 		OUTER_SET $barb_mc_hp("%level%" "ROLLS")=1
 		OUTER_SET $barb_mc_hp("%level%" "MODIFIER")=level>=10?2:0
 	END
-	LAF 2da_write STR_VAR file=dwhpbm path="override" array=barb_hp_array default=0 END
+	LAF 2da_write STR_VAR file=dwhpbm.2da path="override" array=barb_hp_array default=0 END
 
 	// build Barbarian/Cleric kit
 	

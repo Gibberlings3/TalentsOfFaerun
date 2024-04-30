@@ -2,25 +2,27 @@ DEFINE_ACTION_FUNCTION manual_prof_edits BEGIN
 
 	// get the list of components
 	
-	LAF 2da_read STR_VAR file=multiclass_kit_components.2da path="%data_loc_shared%" RET_ARRAY mc_array=array mc_rows=rows END
-	ACTION_PHP_EACH mc_rows AS kit=>discard BEGIN
-		ACTION_FOR_EACH col IN CLASS1 CLASS2 CLASS3 BEGIN
-			OUTER_SPRINT component $mc_array("%kit%" "%col%")
-			ACTION_MATCH "%component%" WITH
-			// multiclass DDs get 3 pips in axe/hammer, 2 in everything else 
-			DWARVEN_DEFENDER BEGIN
-				LAF prof_adjust STR_VAR kit arguments="all" patch="value=2" END
-				LAF prof_adjust STR_VAR kit arguments="AXE WARHAMMER" patch="value=3" END
-			END			
-			//multiclass Kensai get only 1 pip in missile weapons
-			KENSAI BEGIN
-				LAF prof_adjust STR_VAR kit arguments="ranged" patch="value=1" END
-			END
-			//multiclass berserkers get 0 pits inmissile weapons
-			BERSERKER BEGIN
-				LAF prof_adjust STR_VAR kit arguments="ranged" patch="value=0" END
-			END 
-			DEFAULT
+	ACTION_IF FILE_EXISTS "%data_loc_shared%/multiclass_kit_components.2da" BEGIN
+		LAF 2da_read STR_VAR file=multiclass_kit_components.2da path="%data_loc_shared%" RET_ARRAY mc_array=array mc_rows=rows END
+		ACTION_PHP_EACH mc_rows AS kit=>discard BEGIN
+			ACTION_FOR_EACH col IN CLASS1 CLASS2 CLASS3 BEGIN
+				OUTER_SPRINT component $mc_array("%kit%" "%col%")
+				ACTION_MATCH "%component%" WITH
+				// multiclass DDs get 3 pips in axe/hammer, 2 in everything else 
+				DWARVEN_DEFENDER BEGIN
+					LAF prof_adjust STR_VAR kit arguments="all" patch="value=2" END
+					LAF prof_adjust STR_VAR kit arguments="AXE WARHAMMER" patch="value=3" END
+				END			
+				//multiclass Kensai get only 1 pip in missile weapons
+				KENSAI BEGIN
+					LAF prof_adjust STR_VAR kit arguments="ranged" patch="value=1" END
+				END
+				//multiclass berserkers get 0 pits inmissile weapons
+				BERSERKER BEGIN
+					LAF prof_adjust STR_VAR kit arguments="ranged" patch="value=0" END
+				END 
+				DEFAULT
+				END
 			END
 		END
 	END

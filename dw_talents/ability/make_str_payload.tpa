@@ -135,9 +135,7 @@ DEFINE_ACTION_FUNCTION remove_exceptional_strength_itm_spl BEGIN
 		LPF adjust_exceptional_strength INT_VAR new_str=16 update_fx=0 END
 	  BUT_ONLY
 	  IF_EXISTS
-	END ELSE BEGIN
-		FAIL blart
-	END
+	END 
 
 	// holy power -> STR->20
 
