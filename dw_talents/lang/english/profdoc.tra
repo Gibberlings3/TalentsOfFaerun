@@ -122,7 +122,7 @@
 @215="May only become Proficient (one slot) in any fighting style." // from Cleric and Thief
 @216="May only become Proficient (one slot) in any fighting style." // whatever string is used in the 'Favored Soul' description, 
 @217="May Specialize (two slots) in any melee weapon available to Thieves." // from Swashbuckler
-
+@218="May achieve Specialization (two stars) with any melee weapon." // from Bloodrager
 @250="Advantages:"
 @251="Disadvantages:"
 @252="CLASS FEATURES:"
@@ -152,6 +152,7 @@
 @315=NO_DIFFERENCE
 @316=NO_DIFFERENCE
 @317=NO_DIFFERENCE
+@318=NO_DIFFERENCE
 
 @350=NO_DIFFERENCE
 @351=NO_DIFFERENCE
@@ -178,6 +179,7 @@
 @415=NO_DIFFERENCE
 @416=NO_DIFFERENCE
 @417=NO_DIFFERENCE
+@418=NO_DIFFERENCE
 
 
 @450=NO_DIFFERENCE

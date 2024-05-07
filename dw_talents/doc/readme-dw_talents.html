@@ -32,7 +32,7 @@
         <strong> On the web: </strong><a href="https://www.gibberlings3.net/mods/tweaks/tof/">Home
         page</a>, <a href="https://www.gibberlings3.net/forums/forum/236-talents-of-faer&ucirc;n/">discussion
         forum</a>, <a href="https://www.gibberlings3.net/gallery/album/42-talents-of-faer&ucirc;n/">image gallery</a>, and <a href="https://discord.gg/yTzjMTb">Discord</a></p>
-      <p> <strong>Version beta 10</strong><br />
+      <p> <strong>Version beta 11</strong><br />
         <strong>Languages: </strong>English<br />
         <strong>Platforms: </strong>Windows, macOS, Linux </p>
       <p> Talents of Faer&ucirc;n (ToF) is a collection of about 85 mini-mods for the Enhanced Edition versions of Baldur's Gate, Baldur's Gate II, and Icewind Dale, partially inspired by existing mods and tabletop Dungeons and Dragons resources. It contains many optional tweaks to various parts of gameplay, focusing on expanding and rebalancing player character abilities. Features include 150-odd new high-level abilities, a new 'feat' system where lower-level characters gain abilities every few levels, revisions to existing kits, new classes, new kits for multi-class characters, new types of magical specialization, a dozen or so new spells, many spell tweaks, 20-odd new gods for clerics to worship, a subrace system, a revised system of cleric/druid spells, and tweaks to the rules for ability scores and proficiencies. </p>
@@ -1055,7 +1055,7 @@ There are, however, a number of exceptions. (All in-game documentation has been 
         <li>Characters begin with a number of weapon proficiencies: roughly, they begin proficient in any weapon that they could use previously. So fighters begin proficient in all weapons; clerics begin proficient in blunt weapons, and so forth. (Fighter multi-classes are somewhat restricted compared to single-class fighters.) In addition, most classes can use crossbows and daggers.</li>
         <li>Dwarves and elves also gain proficiency with certain weapons: axes and hammers for dwarves; bows and longswords for elves.</li>
         <li>If you are using the cleric kits introduced by Talents of Faer&ucirc;n, clerics receive a bonus weapon proficiency point in the favored weapon of their deity.</li>
-        <li>All characters can at least become Specialized (two slots) with all weapons, and can specialize in any fighting style (other than weapon/shield, for characters who can't use shields). Characters who could already become Specialized improve their maximum achievable level by one slot.</li>
+        <li>All characters can at least become Specialized (two slots) with all weapons, and can put two points into any fighting style (other than weapon/shield, for characters who can't use shields), and three points into two-weapon fighting. Characters who could already become Specialized improve their maximum achievable level by one slot.</li>
         <li>Characters receive fewer proficiency points at first level: single-classed fighters receive two, multi-classed fighters, rangers, and paladins receive one, and all other classes receive none.</li>
         <li>A few other kits are modified to allow for these changes: for instance, blades and swashbucklers receive proficiency in two-weapon fighting style for free at first level, and swashbucklers receive a bonus proficiency slot.</li>
       </ul>
@@ -1398,7 +1398,6 @@ href="https://gibberlings3.github.io/iesdp/">Infinity Engine Structure Descripti
 <li>Tweaked Chromatic orb now correctly gives no saving throw against damage, for real this time.</li>
 <li>Fixed several issues with Strength of Stone.</li>
 <li>Under-the-hood change: new arcane and divine spells are added in 'normal' slots for spells if there are any available, and only added in 'extended' slots if normal slots are full.</li>
-<li>
 </ul>
 
 </div>  
@@ -1509,6 +1508,47 @@ href="https://gibberlings3.github.io/iesdp/">Infinity Engine Structure Descripti
 <li>HP table for barbarian multiclass is generated properly.</li>
 <li>Simulacra and projected images are now correctly blocked from using items if you have installed the appropriate tweak.</li>
 <li>The various cleric multiclass kits now install correctly on batch mode.</li>
+</ul>
+</div>  
+   <div class="ribbon_rectangle_h3"><h3>Version beta 11 (7th May 2024)</h3></div>
+    <div class="ribbon_triangle_h2-l"></div>
+    <div class="ribbon_triangle_h2-r"></div>
+<div class="section"> 
+<p>
+<ul>
+<li>'NPC Customization and Management' should avoid Imoen-related UI glitches on EET now.</li>
+<li>Fixed a library issue which caused kit installation to choke if a 3rd-party kit was missing a LUABBR entry.</li>
+<li>Fixed a library issue where dummy kits with no weapon entry could cause install failures (this was the weap_array_LATHANDER_X bug).</li>
+<li>Fixed an issue that could sometimes cause the Militant Wizards component to fail to install, depending what else you have installed.</li>
+<li>The proficiency system no longer breaks for unkitted sorcerers.</li>
+<li>Escaping out of the ranger Favored Enemy screen no longer breaks the UI (but please still don't do it; it shouldn't be possible at all but I can't immediately work out how to block it, so this is a temporary workaround.)</li>
+<li>Rakes of Sune are now more chivalrous and no longer get backstab.</li>
+<li>Chanthalas Ulbright has loosened up a bit and is now willing to talk to people who aren't followers of Tymora.</li>
+<li>'Improved NPC Customization and Management' should cope better with characters imported from one game into another (e.g. in EET or Endless BG).</li>
+<li>Adjusted strength scores for joinable NPCs are now slightly higher.</li>
+<li>Finger of Destruction is now available only to evil monks.</li>
+<li>We now properly enforce the rule that you can only take one Elemental Immunity HLA.</li>
+<li>Favored of the Spirits now correctly has Spirit Form as a prerequisite.</li>
+<li>Paladin protection from evil no longer loses its animation.</li>
+<li>Inquisitors (who can't cast spells) can no longer take the Empowered Casting ability.</li>
+<li>Undead Hunter and Cavalier versions of Smite Evil now correctly do double damage against appropriate foes.</li>
+<li>The 'Smite Undead' HLA now bypasses magic resistance.</li>
+<li>The 'Death Field' HLA now has an icon and is treated correctly as a (L10) spell.</li>
+<li>The 'Dark Pact' HLA now correctly doubles the target undead's hit points.</li>
+<li>Fixed some cosmetic issues with the 'Smite Undead' HLA.</li>
+<li>Fixed some cosmetic issues with the description of the Bloodrager kit.</li>
+<li>Fixed some cosmetic issues with the layout of some mage HLA descriptions.</li>
+<li>Fixed various issues with Conjure Flesh Golem (most importantly, golems are no longer hostile to the summoner.</li>
+<li>Adamantine Body correctly grants Grandmaster proficiency with its fists.</li>
+<li>The spell tweak that makes Truesight remove blindness no longer adds multiple 'this removes blindness' messages to Truesight's description.</li>
+<li>The spell tweak to Grease now correctly updates its description.</li>
+<li>Fixed a nasty interaction between two spell tweaks which caused the Mind Flayer shapechange effect to crash the game.</li>
+<li>A bunch of HLA animations, including the ones for Malavon's Fury, were missing and have now been restored.</li>
+<li>The gaze attack granted by the Shapechange spell's Basilisk ability is now correctly restored each round.</li>
+<li>Shamans may take the Spirit Form HLA more than once.</li>
+<li>Fixed a missing icon for Abyssal Fury which was causing it to crash the game.</li>
+<li>When using 'Improved NPC Customization and Management', Minsc (hopefully) no longer complains about his hit points immediately on joining.</li>
+
 </ul>
 </p>
 </div>

@@ -78,8 +78,10 @@ DEFINE_ACTION_FUNCTION leveller_2 BEGIN
 	
 	// Imoen needs to be high enough level to get her mage levels back
 	ACTION_IF is_bg2 BEGIN
-		APPEND "m_dw_lvd.lua" "dwLevellerDualClass['imoen'].final_xp=90000"
 		APPEND "m_dw_lvd.lua" "dwLevellerDualClass['imoen2'].final_xp=90000"
+		ACTION_IF !is_eet BEGIN
+			APPEND "m_dw_lvd.lua" "dwLevellerDualClass['imoen'].final_xp=90000"
+		END
 	END
 	
 	// bespoke fix - Imoen shouldn't run away till she's levelled
@@ -97,6 +99,12 @@ DEFINE_ACTION_FUNCTION leveller_2 BEGIN
 			REMOVE_MEMORIZED_SPELL "%BLACKGUARD_ABSORB_HEALTH%" "%ASSASSIN_POISON%" "%BLACKGUARD_AURA_OF_DESPAIR%" 
 		BUT_ONLY
 		IF_EXISTS
+	END
+	
+	// bespoke fix - Minsc shouldn't complain about low hit points until he's levelled
+	
+	ACTION_IF is_bg2 BEGIN
+		LAF script_alter_block STR_VAR script=minsc match1=~InParty(Myself)~ match2=~HPLT(Myself,20)~ match3=~IncrementGlobal("MinscComplain","LOCALS",1)~ swap_out=~!HP(Myself,1)~ swap_in=~!HP(Myself,1)CheckStatGT(Myself,1,LEVEL)~ END
 	END
 
 	// on SoD, need to add the aulel spell to the initial join-party script
@@ -427,6 +435,7 @@ END
 
 IF
 	InPartyAllowDead(Myself)
+	CheckStat(Myself,0,LEVEL)
 	!Global("dw#aulel","LOCALS",1) // apply setup spell if not done already (for safety)
 THEN
 	RESPONSE #100

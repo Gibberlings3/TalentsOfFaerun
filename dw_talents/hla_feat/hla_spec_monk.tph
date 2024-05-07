@@ -252,7 +252,8 @@ BEGIN
 	INNER_ACTION BEGIN
 		// create the new fx
 		COPY_EXISTING "monkchil.eff" "override/%eff_dark_moon_soul_of_ice%.eff"
-			WRITE_LONG 0x1c 4
+			WRITE_LONG 0x1c 5
+			WRITE_LONG 0x38 0
 	END
 
 

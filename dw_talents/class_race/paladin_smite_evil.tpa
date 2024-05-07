@@ -27,14 +27,19 @@ DEFINE_ACTION_FUNCTION paladin_smite_evil BEGIN
 		m.ab.alter{s_level=1 s_projectile=66}
 	]
 	
-	// make an extra-damage copy of the payload spell for undead hunters/cavaliers
-	
-	spl.copy[%spl_smite_evil_payload%=>%spl_smite_evil_extra_damage%]
-	[
-		m_name="-1"
-		m.ab.alter{s_projectile=0}
-		m.ab_fx.delete{!(s_opcode=12)}
-	]
+	// make extra-damage copies of the payload spell for undead hunters/cavaliers
+	PRINT "ook"
+	OUTER_FOR (level=1;level<=30;level+=2) BEGIN
+		spl.copy[%spl_smite_evil_payload%=>dwsmex%level%]
+		[
+			m_name="-1"
+			m.ab.alter{s_projectile=0}
+			m.ab.delete{!(s_level=level)}
+			m.ab.alter{s_level=1}
+			m.ab_fx.delete{!(s_opcode=12)}
+		]
+	END
+	PRINT "blook"
 	
 	// make blackguard version
 	
@@ -70,17 +75,22 @@ DEFINE_ACTION_FUNCTION paladin_smite_evil BEGIN
 	spl.copy[%spl_smite_evil_payload%=>%spl_smite_evil_undead_hunter_payload%]
 	[
 		m.ab_fx.alter{s_resource:=%spl_smite_evil_undead_hunter_payload%|match="s_opcode=324"}
-		m.ab_fx.add{s_opcode=326 s_target=2 s_timing=9 s_parameter1=0 s_parameter2=1 s_resource:="%spl_smite_evil_extra_damage%"}
+		m.ab_fx.add{s_opcode=326 s_target=2 s_timing=9 s_parameter1=0 s_parameter2=1 s_resource:="dwsmex%p_level%"}
 	]
 	
-	COPY_EXISTING "%spl_smite_evil_payload%.spl" "override/%spl_smite_evil_cavalier_payload%.spl"
-		LPF ALTER_EFFECT INT_VAR match_opcode=324 STR_VAR resource="%spl_smite_evil_cavalier_payload%" END
+	
+	spl.copy[%spl_smite_evil_payload%=>%spl_smite_evil_cavalier_payload%]
+	[
+		m.ab_fx.alter{s_resource:=%spl_smite_evil_undead_cavalier_payload%|match="s_opcode=324"}
 		PATCH_FOR_EACH race IN demonic darkplanatar antisolar salamander BEGIN
-			LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 timing=1 parameter1=IDS_OF_SYMBOL (race "%race%") parameter2=104 STR_VAR resource="%spl_smite_evil_extra_damage%" END
+			m.ab_fx.add{s_opcode=326 s_target=2 s_timing=9 s_parameter1=IDS_OF_SYMBOL (race "%race%") s_parameter2=104 s_resource:="dwsmex%p_level%"}
 		END
 		PATCH_FOR_EACH class IN red_dragon shadow_dragon genie_dao genie_efreeti genie_noble_efreet BEGIN
-			LPF ADD_SPELL_EFFECT INT_VAR opcode=326 target=2 timing=1 parameter1=IDS_OF_SYMBOL (class "%class%") parameter2=105 STR_VAR resource="%spl_smite_evil_extra_damage%" END		
-		END
+			m.ab_fx.add{s_opcode=326 s_target=2 s_timing=9 s_parameter1=IDS_OF_SYMBOL (class "%class%") s_parameter2=105 s_resource:="dwsmex%p_level%"}
+		END	
+	
+	]
+
 	
 	cre.edit[icasa|allow_missing:i=1]
 	[

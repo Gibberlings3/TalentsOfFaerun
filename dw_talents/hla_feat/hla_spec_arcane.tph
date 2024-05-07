@@ -29,6 +29,17 @@ DEFINE_PATCH_FUNCTION WIZARD_ADAMANTITE_BODY BEGIN
 	LPF scs_style_hla END
 	LPF DELETE_EFFECT STR_VAR match_function="READ_SHORT 0x0 opcode   value=(opcode=12 OR opcode=40 OR opcode=45 OR opcode=60 OR opcode=93)" END
 	LPF CLONE_EFFECT INT_VAR match_opcode=0 opcode=189 parameter1="-4" parameter2=0 END	
+	
+	INNER_ACTION BEGIN
+		COPY_EXISTING "tg#adam.itm" override
+		// remove ad hoc THAC0/APR changes
+			LPF DELETE_EFFECT INT_VAR match_opcode=54 END
+			LPF DELETE_EFFECT INT_VAR match_opcode=1 END
+		// actually grant proficiency
+			READ_BYTE 0x31 prof
+			LPF ADD_ITEM_EQEFFECT INT_VAR opcode=233 timing=2 target=2 parameter1=5 parameter2=prof END
+
+	END
 
 END
 
@@ -55,11 +66,12 @@ DEFINE_PATCH_FUNCTION WIZARD_CREATE_FLESH_GOLEM BEGIN
 	LPF ALTER_EFFECT INT_VAR resist_dispel=0 dicenumber=99 dicesize=13 END // split by level
 	LPF CLONE_EFFECT INT_VAR dicenumber=12 dicesize=0 save_vs_polymorph=0 END
 	LPF ADD_SPELL_EFFECT INT_VAR target=2 opcode=324 duration=1 parameter2=1 insert_point=0 STR_VAR resource="%resref" END // undead
-	LPF ADD_SPELL_EFFECT INT_VAR target=2 opcode=324 duration=1 parameter2=113 parameter1=2 insert_point=0 STR_VAR resource="%resref%" END // animal
-	LPF ADD_SPELL_EFFECT INT_VAR target=2 opcode=324 duration=1 parameter2=113 parameter1=255 insert_point=0 STR_VAR resource="%resref%" END // monster
+	LPF ADD_SPELL_EFFECT INT_VAR target=2 opcode=324 duration=1 parameter2=103 parameter1=2 insert_point=0 STR_VAR resource="%resref%" END // animal
+	LPF ADD_SPELL_EFFECT INT_VAR target=2 opcode=324 duration=1 parameter2=103 parameter1=255 insert_point=0 STR_VAR resource="%resref%" END // monster
 	LPF ADD_SPELL_EFFECT INT_VAR target=2 opcode=324 duration=1 parameter2=9 insert_point=0 STR_VAR resource="%resref%" END // elementals
 	LPF ADD_SPELL_EFFECT INT_VAR target=2 opcode=324 duration=1 parameter2=27 insert_point=0 STR_VAR resource="%resref%"  END // golems
 	LPF ADD_SPELL_EFFECT INT_VAR target=2 opcode=326 timing=4 duration=1 STR_VAR resource="%spl_flesh_golem_payload_high%" END
+	LPF ALTER_EFFECT INT_VAR match_opcode=177 target=1 END // we want the target to be the caster, to manage allegiance
 END
 
 //////////////////////////////////////////////////////////////
@@ -452,7 +464,7 @@ DEFINE_PATCH_FUNCTION WIZARD_DARK_PACT BEGIN
 
 	duration=600
 	//hit points +100%
-	LPF ADD_SPELL_EFFECT INT_VAR opcode=18 target=2 parameter1=100 parameter2=2 duration END
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=18 target=2 parameter1=200 parameter2=2 duration END
 	//+2 to hit
 	LPF ADD_SPELL_EFFECT INT_VAR opcode=54 target=2 parameter1=2 duration END
 	//+2 damage
@@ -742,13 +754,14 @@ END
 
 DEFINE_PATCH_FUNCTION WIZARD_ABYSSAL_FURY BEGIN
 
+	SPRINT resref "%SOURCE_RES%"
 	LPF scs_style_hla END
 	INNER_ACTION BEGIN
 		ACTION_FOR_EACH bam IN S077CRVS S077SCRT  BEGIN
 			COPY "%MOD_FOLDER%/%component_loc%/resource/%bam%.bam" override
 		END
 		
-		COPY "%MOD_FOLDER%/%component_loc%/resource/abyssal_fury_icon.bam" "override/%resref%.bam"
+		COPY "%MOD_FOLDER%/%component_loc%/resource/SP057.bam" "override/%resref%.bam"
 
 		COPY "%MOD_FOLDER%/%component_loc%/resource/abyssal_fury_2.bam" "override/dw-abf2.bam"
 		COPY "%MOD_FOLDER%/%component_loc%/resource/abyssal_fury_3.bam" "override/dw-abf3.bam"
@@ -847,7 +860,7 @@ DEFINE_PATCH_FUNCTION WIZARD_ABYSSAL_FURY BEGIN
 	END
 
 	LPF DELETE_SPELL_HEADER INT_VAR header_type="-1" min_level=100 END
-	LPF ALTER_SPELL_HEADER INT_VAR speed=3 STR_VAR icon="%resref%" END
+	LPF ALTER_SPELL_HEADER INT_VAR speed=3 target=1 STR_VAR icon="%resref%" END
 	LPF DELETE_EFFECT END
 	LPF resolve_splprot_entry INT_VAR stat=0x102 val="-1" STR_VAR relation=greater_equal RET splprot_num=value END // circle size>=N
 	LPF ADD_SPELL_EFFECT INT_VAR target=2 opcode=324 duration=1 parameter1=10 parameter2=splprot_num STR_VAR resource="%resref%" END // dragons

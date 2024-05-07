@@ -353,7 +353,7 @@ END
 
 // block the first block of chanth
 
-ADD_STATE_TRIGGER chanth 0 ~Global("dw-tymora-kit","GLOBAL",1)~
+ADD_STATE_TRIGGER chanth 0 ~!Global("dw-tymora-kit","GLOBAL",1)~
 
 // block off the exits from block 0 of chanth (might seem redundant, but we want to COPY_TRANS them for future-proofing reasons)
 

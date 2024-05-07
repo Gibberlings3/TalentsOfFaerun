@@ -41,12 +41,19 @@ DEFINE_ACTION_FUNCTION swashbuckler_of_sune BEGIN
 	LAF splconv_get_name STR_VAR spell="%WIZARD_MANTLE%" new_type=innate RET spl_sune_mantle=new_resref END
 	OUTER_SPRINT kit DW_SUNE_SW
 
+	spl.make[%spl_disable_backstab%]
+	[
+		m.ab.add{}
+		m.ab_fx.add{s_opcode=263 s_target=2 s_timing=9 s_parameter1=1 s_parameter2=1}
+	]
+
+
 	kit.copy[CLERIC_THIEF=>%kit%]
 	[
 		k_name:=@173
 		k_desc:=@174
 		k.kit_grant_powers{%spl_sune_charm% 1 6,%spl_sune_veil% 5 8,%spl_sune_flame_strike% 7 5,%spl_sune_emotion_hope% 9,%spl_sune_emotion_hopelessness% 9,%spl_sune_mantle% 12|class=cleric}
-		k.kit_apply_powers{splcl441 1,splcl441 5 5,splcl141 5 5|class=thief}
+		k.kit_apply_powers{splcl441 1,splcl441 5 5,splcl141 5 5,%spl_disable_backstab% 1|class=thief}
 		k_mod_chr=2
 		k_2weapon=3
 		k_color_metal=35

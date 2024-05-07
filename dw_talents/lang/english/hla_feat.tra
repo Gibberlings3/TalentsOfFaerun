@@ -452,7 +452,7 @@ By choosing this passive ability the cavalier's Charisma will be permanently inc
 
 This ability lasts for 10 rounds."
 @3042="Smite Undead"
-@3043="Channeling <PRO_HISHER> god's antipathy for the undead, the Undead Hunter creates a golden ray of light that burns the undead with heavenly flames. Undead foes suffer 20d6 points of magic damage (save vs. breath for half), and must save vs. spells to avoid instant disruption. Even if the saves are successful, the target becomes slowed for one round. The paladin has to be close enough to touch the creature (but there is no need for a successful touch attack) in order to use this ability. Smite Undead does not have any effect on living creatures, elementals, extra-planar creatures or constructs."
+@3043="Channeling <PRO_HISHER> god's antipathy for the undead, the Undead Hunter creates a golden ray of light that burns the undead with heavenly flames. Undead foes suffer 20d6 points of magic damage (save vs. breath for half), and must save vs. spells to avoid instant disruption. Even if the saves are successful, the target becomes slowed for one round. The paladin has to be close enough to touch the creature (but there is no need for a successful touch attack) in order to use this ability. Smite Undead only affects undead creatures."
 
 @3044="Profane Fire"
 @3045="Channeling blasphemous power from the Lower Planes, the blackguard calls forth a pillar of hellfire that consumes mortal foes. The victim suffers 20d6 points of damage (save vs. spells for half), of which half is fire and half is magic damage. Profane fire has no effect on undead or lower-planar creatures."
@@ -575,7 +575,7 @@ Note that powerful creatures - like Demons or Dragons - will still be able to se
 @3098="Searing Fists"
 @3099="The monk's greater attunement to <PRO_HISHER> ki increases the purity of <PRO_HISHER> Flaming Fists power. It now inflicts 3d6 damage per hit."
 @3100="Soul of Ice"
-@3101="The monk's greater understanding of the teachings of Shar allows <PRO_HIMHER> to enhance the power of <PRO_HISHER> Frozen Fist ability, and to maintain it permanently. It now inflicts 4 points of damage per hit and is always active."
+@3101="The monk's greater understanding of the teachings of Shar allows <PRO_HIMHER> to enhance the power of <PRO_HISHER> Frozen Fist ability, and to maintain it permanently. It now inflicts 5 points of damage per hit and is always active."
 @3102=~You clumsily attempt to kick yourself, but you don't manage to accomplish the deed. The ability is wasted.~
 @3103="Avoid Danger"
 @3104 = "A rogue's natural sense of preservation becomes heightened with the use of the Avoid Danger ability. Avoid Danger gives a +4 bonus to AC and a +2 bonus to all Saving Throws. The effect lasts for 3 rounds.
@@ -682,7 +682,9 @@ This ability completely ignores any magic resistance of the targets. However, re
 @3158="With proper training and skills, the blade can achieve perfection in <PRO_HISHER> special spin stances. This passive ability improves both the Offensive and Defensive spin innates. Activating Offensive Spin will grant an extra 5% to the Critical Hit chance for the duration of the ability. While in Defensive Spin, the blade will be able to move around, though <PRO_HISHER> movement rate will be reduced to 50%."
 
 @3159="Aegis"
-@3160="Aegis (Abjuration)
+@3160="Aegis 
+(Abjuration)
+
 Level: 10
 Range: 0
 Duration: 5 rounds
@@ -693,7 +695,9 @@ Saving Throw: None
 This spell confers upon the mage very powerful protection for a short time. Physical resistances (Slashing, Piercing, Crushing, and Missile) and Elemental resistances are all set to 100%, Magic Damage resistance is set to 60%. The mage gains a total AC bonus of 5 and <PRO_HISHER> saving throws are improved by 3 points. In addition to these bonuses Aegis protects the caster from the first spell that would normally remove combat or spell protections. The spell lasts for 5 rounds."
 
 @3161="Rune of Immunity"
-@3162="Rune of Immunity (Abjuration)
+@3162="Rune of Immunity 
+(Abjuration)
+
 Level: 10
 Range: Visual range of the caster
 Duration: 10 rounds
@@ -706,7 +710,9 @@ Upon the casting of this spell, an enchanted rune is placed under the target cre
 Rune of Immunity can only be dispelled by Pierce Shield or Spell Strike."
 
 @3163="Adamantite Body"
-@3164="Adamantite Body (Alteration)
+@3164="Adamantite Body 
+(Alteration)
+
 Level: 10
 Range: 1
 Duration: 6 rounds +1 round/5 levels
@@ -714,13 +720,13 @@ Casting Time: 7
 Area of Effect: Creature Touched
 Saving Throw: Special
 
-This is an improved version of the mage spell Iron Body; it turns the target creature's body into living adamantite. 
-
-The new metallic body has many advantages: it reduces AC by 5, grants complete immunity to elemental and poison based attacks, and offers 90% resistance to magical and physical attacks. The target's Magic Damage Resistance is also set to 25%. In addition, the adamantite body can only be harmed by +3 weapons or better. While the new form doesn't allow the use of
+This is an improved version of the mage spell Iron Body; it turns the target creature's body into living adamantite. The new metallic body has many advantages: it reduces AC by 5, grants complete immunity to elemental and poison based attacks, and offers 90% resistance to magical and physical attacks. The target's Magic Damage Resistance is also set to 25%. In addition, the adamantite body can only be harmed by +3 weapons or better. While the new form doesn't allow the use of
 weapons, the hands will be more than capable for battle - they both act as +4 weapons, deal 4d6 points of damage and are used with grandmaster level of proficiency. However, the target's casting time is increased by 4 as long as the spell lasts."
 
 @3165="Create Flesh Golem"
-@3166="Create Flesh Golem (Alteration)
+@3166="Create Flesh Golem 
+(Alteration)
+
 Level: 10
 Range: 20
 Duration: Permanent
@@ -733,7 +739,9 @@ By casting this terrible spell, the caster attempts to magically destroy the tar
 Normally golems are created in a long and arduous process. The magical bonds in their bodies require tremendous amounts of time and enchantments to be made permanent. The hastened method of this spell's transformation has its drawbacks naturally: any Flesh Golems created by this spell will decay into nothing after 1 hour."
 
 @3167="Wildstrike"
-@3168="Wildstrike (Conjuration/Summoning)
+@3168="Wildstrike 
+(Conjuration/Summoning)
+
 Level: 10
 Range: 30 yards
 Duration: 2 turns
@@ -884,6 +892,7 @@ Shadowcloak swathes the caster in a powerful and persistent illusion. The effect
 @3203="Comet"
 @3204="Comet
 (Evocation)
+
 Level: 10
 Range: 90 yards
 Duration: Instantaneous
@@ -898,6 +907,7 @@ This spell will not damage allies of the caster, who are momentarily shielded by
 @3205="Malavon's Fury"
 @3206="Malavon's Fury 
 (Invocation)
+
 Level: 10
 Range: Self
 Duration: Special
@@ -912,6 +922,7 @@ Malavon's Fury does not affect the caster."
 @3207="Death Field"
 @3208="Death Field 
 (Necromancy)
+
 Level: 10
 Range: 0
 Duration: instant
@@ -924,6 +935,7 @@ By casting this powerful necromantic spell, the wizard attacks the life force of
 @3209="Dark Pact"
 @3210="Dark Pact
 (Necromancy)
+
 Level: 10
 Range: 0
 Duration: 1 hour
@@ -940,6 +952,7 @@ By means of this spell necromancers can increase the power of their undead serva
 @3213="Create Greater Boneguard"
 @3214="Create Greater Boneguard 
 (Necromancy)
+
 Level: 10
 Range: 20 yards
 Duration: Special

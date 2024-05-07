@@ -68,6 +68,29 @@ END
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
+DEFINE_PATCH_FUNCTION UNDEAD_HUNTER_SMITE_UNDEAD BEGIN
+
+	// screen off non-undead
+	
+	LPF add_feat_effect INT_VAR insert_point=0 opcode=324 timing=0 duration=1 parameter2=2 STR_VAR resource="%SOURCE_RES%" END
+	
+	// correct bug in graphics
+	
+	LPF ALTER_EFFECT INT_VAR match_opcode=215 timing=0 duration=2 END
+	
+	//bypass resistance
+	
+	LPF ALTER_EFFECT INT_VAR resist_dispel=0 END
+	
+	// change timing to be instant
+	
+	LPF ALTER_EFFECT INT_VAR match_timing=4 timing=1 duration=0 END
+
+END
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
 DEFINE_PATCH_FUNCTION WARRIOR_WAR_CRY BEGIN
 
 	LPF ds_resolve_stat STR_VAR id=DW_POWER_UPGRADE_F2 RET stat_ind END

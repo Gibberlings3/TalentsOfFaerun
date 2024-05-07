@@ -1,21 +1,47 @@
 DEFINE_ACTION_FUNCTION test STR_VAR version=0 BEGIN
+	OUTER_SPRINT component_loc spell 
+	LOAD_TRA "%sfo_tra_loc%/english/spell.tra"
+
+	//LAF include STR_VAR file=lib_shapeshift.tph locbase=shared_som END
+	//LAF shapechange_check END
+	LAF run STR_VAR file=revise_shapechange END
+
+END
+
+DEFINE_ACTION_FUNCTION shapechange_check BEGIN
+
+
+	//////////////////
+	// mind flayer
+	//////////////////
+	
+	LAF make_shapeshift_spell
+		INT_VAR str=10
+				dex=10
+				ac=3
+				thac0=11
+				apr=4
+				enchantment=2
+				dicenumber=1
+				dicesize=2
+				name=50043
+				description=50044
+				resistmagic=90
+				resistslashing=50
+				resistcrushing=50
+				resistpiercing=50
+				resistmissile=50
+				block_spellcasting=0
+				timing=1
+				casting_time=0
+				auto_renew=1
+		STR_VAR weapon=cdmindfl
+				spell="%SHAPECHANGE_MIND_FLAYER%"
+				grant_spells="%spl_shapeshift_mind_flayer_psionic_blast%"
+	END
 
 
 
-	cre.copy[es8erth=>%cre_ice_elemental_8hd% elearpr=>%cre_ice_elemental_12hd% elearpr2=>%cre_ice_elemental_16hd% elearpr3=>%cre_ice_elemental_24hd%]
-	[
-		m_animation:=GOLEM_ICE
-		m_resist_cold=100
-		m_resist_fire="-50"
-		m.cre_strip_scripts{%baf_earth_elemental%}
-		m.cre_insert_script{%baf_ice_elemental%|loc=high}
-		m.fx.delete{}
-		m.cre_remove_spells{all}
-		PATCH_IF m_level1>=16 BEGIN
-			m.cre_add_spells{%spl_ice_elemental_ice_storm%}
-		END			
-		m.immunity_spell{%WIZARD_ICE_STORM%}
-		m.immunity_spell{%spl_ice_elemental_ice_storm%}
-	]
+
 
 END

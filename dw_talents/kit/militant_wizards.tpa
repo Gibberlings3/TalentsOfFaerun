@@ -69,12 +69,6 @@ DEFINE_ACTION_FUNCTION militant_wizards BEGIN
 	// process scroll usability
 	LAF process_scroll_usability_now END
 
-	// if appropriate, rebuild dual-class grid
-	
-	ACTION_IF FILE_EXISTS_IN_GAME "m_dw_dud.lua" BEGIN
-		LAF collect_dual_class_kit_data END
-	END
-	LAF 3p_kit END
 
 
 END

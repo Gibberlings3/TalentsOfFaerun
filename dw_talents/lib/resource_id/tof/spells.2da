@@ -580,3 +580,4 @@ spl_familiar_thrall							dw-ffto
 spl_dual_class_mage_bonus					dw-dcmb
 spl_dual_class_mage_bonus_payload			dw-dcmp
 spl_larloch_foebane							dw-lafb
+spl_disable_backstab						dw-nstb
