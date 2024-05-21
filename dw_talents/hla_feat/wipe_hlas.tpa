@@ -1,4 +1,4 @@
-//// Remove all original-game HLAs, leaving 3rd-party-added HLAs.
+//// Remove all original-game HLAs (except extra spells), leaving 3rd-party-added HLAs.
 ////
 
 DEFINE_ACTION_FUNCTION wipe_hlas BEGIN
@@ -8,10 +8,12 @@ DEFINE_ACTION_FUNCTION wipe_hlas BEGIN
 		OUTER_SPRINT $wipe_this_hla("SPCL%n%") ""
 	END
 
-	// extra spells
+	// extra spells - don't wipe these!
+	/*
 	OUTER_FOR (n=928;n<931;++n) BEGIN
 		OUTER_SPRINT $wipe_this_hla("SPCL%n%") ""
 	END
+	*/
 	
 	// 10th level spells
 

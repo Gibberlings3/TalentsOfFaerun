@@ -123,7 +123,7 @@ DEFINE_ACTION_FUNCTION planetouched_subraces BEGIN
 		SAY 0x8 @710
 		SAY 0x50 @711
 		WRITE_SHORT 0x1c 4
-		LPF ALTER_SPELL_HEADER INT_VAR projectile=sunscoh speed=1 location=4 END
+		LPF ALTER_SPELL_HEADER INT_VAR projectile=sunscoh+1 speed=1 location=4 END
 	
 	// payload
 	

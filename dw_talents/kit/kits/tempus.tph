@@ -15,7 +15,7 @@ DEFINE_ACTION_FUNCTION tempus_cleric BEGIN
 	
 	LAF prof_adjust STR_VAR kit arguments=melee patch="value=(arguments=0)?0:arguments + 1" END
 	LAF cleric_kit_substitutions STR_VAR kit god=tempus END
-	LAF assign_spheres STR_VAR kit default=cleric add=tempus_allow subtract="evil charm good divination" END
+	LAF assign_spheres STR_VAR kit default=cleric add=tempus_allow subtract="evil charm good divination_cleric" END
 	LAF assign_bonus_spells STR_VAR kit spells="STRENGTH HASTE IMPROVED_HASTE POWER_WORD_STUN" END
 	LAF adjust_cleric_stronghold STR_VAR talos="c_e" lathander="n_n c_g c_n" kit END
 
@@ -44,7 +44,7 @@ DEFINE_ACTION_FUNCTION berserkerpriest_of_tempus BEGIN
 	LAF prof_adjust STR_VAR kit arguments=ranged patch="value=0" END
 	LAF prof_adjust STR_VAR kit arguments=melee patch="value=(arguments>0)?arguments+1:0" END
 	LAF cleric_kit_substitutions STR_VAR kit god=tempus END
-	LAF assign_spheres STR_VAR kit default=cleric add=tempus_allow subtract="evil charm good divination" END
+	LAF assign_spheres STR_VAR kit default=cleric add=tempus_allow subtract="evil charm good divination_cleric" END
 	LAF assign_bonus_spells STR_VAR kit spells="STRENGTH HASTE IMPROVED_HASTE POWER_WORD_STUN" END
 	LAF adjust_cleric_stronghold STR_VAR talos="c_e" lathander="n_n c_g c_n" kit END
 
@@ -73,7 +73,7 @@ DEFINE_ACTION_FUNCTION shaman_of_tempus BEGIN
 
 	LAF prof_copy INT_VAR only_if_nonzero=1 STR_VAR copy_from=BARBARIAN copy_to=DW_TEMPUS_BARBARIAN END
 	LAF cleric_kit_substitutions STR_VAR kit god=tempus END
-	LAF assign_spheres STR_VAR kit default=cleric add=tempus_allow subtract="evil charm good divination" END
+	LAF assign_spheres STR_VAR kit default=cleric add=tempus_allow subtract="evil charm good divination_cleric" END
 	LAF assign_bonus_spells STR_VAR kit spells="STRENGTH HASTE IMPROVED_HASTE POWER_WORD_STUN" END
 	LAF adjust_cleric_stronghold STR_VAR talos="c_e" lathander="n_n c_g c_n" kit END
 

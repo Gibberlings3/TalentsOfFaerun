@@ -34,7 +34,7 @@ DEFINE_ACTION_FUNCTION bane_xvim_cleric BEGIN
 	
 	LAF cleric_kit_substitutions STR_VAR kit god=bane_xvim END
 
-	LAF assign_spheres STR_VAR kit default=cleric subtract="good divination wards" END
+	LAF assign_spheres STR_VAR kit default=cleric subtract="good divination_cleric wards" END
 
 	LAF holy_symbol INT_VAR name=2019 follower=2020 category=6 STR_VAR kit desc_bam=cdpxvhly inv_bam=cdixvhly bam_path=dr kit END
 	LAF adjust_cleric_stronghold STR_VAR talos="n_e c_e" helm="l_e" kit END
@@ -79,7 +79,7 @@ DEFINE_ACTION_FUNCTION knight_of_bane_xvim BEGIN
 	
 	LAF cleric_kit_substitutions STR_VAR kit god=bane_xvim END
 
-	LAF assign_spheres STR_VAR kit default=cleric subtract="good divination wards" END
+	LAF assign_spheres STR_VAR kit default=cleric subtract="good divination_cleric wards" END
 
 	LAF holy_symbol INT_VAR name=2019 follower=2020 category=6 STR_VAR kit desc_bam=cdpxvhly inv_bam=cdixvhly bam_path=dr kit END
 	LAF adjust_cleric_stronghold STR_VAR talos="n_e c_e" helm="l_e" kit END
@@ -123,7 +123,7 @@ DEFINE_ACTION_FUNCTION conjurer_of_bane_xvim BEGIN
 	
 	LAF cleric_kit_substitutions STR_VAR kit god=bane_xvim END
 
-	LAF assign_spheres INT_VAR update_scroll_usability=0 STR_VAR kit default=cleric subtract="good divination wards" END
+	LAF assign_spheres INT_VAR update_scroll_usability=0 STR_VAR kit default=cleric subtract="good divination_cleric wards" END
 
 	LAF holy_symbol INT_VAR name=2019 follower=2020 category=6 STR_VAR kit desc_bam=cdpxvhly inv_bam=cdixvhly bam_path=dr kit END
 	LAF adjust_cleric_stronghold STR_VAR talos="n_e c_e" helm="l_e" kit END

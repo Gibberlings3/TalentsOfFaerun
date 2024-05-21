@@ -561,14 +561,22 @@ DEFINE_PATCH_FUNCTION WIZARD_SUMMON_ULTROLOTH BEGIN
 			m_resist_electricity=50
 			
 			// soundset taken from greater shadow
-			m_sound_attack1:=shadbg03
-			m_sound_attack2:=shadbg04
-			m_sound_damage:=shadbg07
-			m_sound_dying:=shadbg09
-			m_sound_battle_cry1:=shadbg01
-			m_sound_battle_cry2:=shadbg02
-			m_sound_select_common1:=shadbg01
-			m_sound_select_common2:=shadbg02
+			m_sound_attack1="-1"
+			m_sound_attack2="-1"
+			m_sound_damage="-1"
+			m_sound_dying="-1"
+			m_sound_battle_cry1="-1"
+			m_sound_battle_cry2="-1"
+			m_sound_select_common1="-1"
+			m_sound_select_common2="-1"
+			m_sound_attack1_sound:=shadbg03
+			m_sound_attack2_sound:=shadbg04
+			m_sound_damage_sound:=shadbg07
+			m_sound_dying_sound:=shadbg09
+			m_sound_battle_cry1_sound:=shadbg01
+			m_sound_battle_cry2_sound:=shadbg02
+			m_sound_select_common1_sound:=shadbg01
+			m_sound_select_common2_sound:=shadbg02
 			
 			// colors
 			
@@ -606,6 +614,14 @@ DEFINE_PATCH_FUNCTION WIZARD_SUMMON_ULTROLOTH BEGIN
 			
 		
 		]
+		
+		// copy over sounds if not present
+		
+		ACTION_FOR_EACH sound IN shadbg01 shadbg02 shadbg03 shadbg04 shadbg07 shadbg09 BEGIN
+			ACTION_IF !FILE_EXISTS_IN_GAME "%sound%.wav" BEGIN
+				COPY "%MOD_FOLDER%/%component_loc%/resource/%sound%.wav" override
+			END
+		END
 		
 		LAF script_install STR_VAR script=baf_ultroloth location=resource END
 		

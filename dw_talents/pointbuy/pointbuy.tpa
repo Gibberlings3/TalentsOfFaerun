@@ -154,9 +154,16 @@ function dwAbilityPointBuy()
 
 	-- reroll until we get the right points total
 	if points_total>0 then
-	  while points_total~=chargen.totalRoll - adjust do
-		createCharScreen:OnAbilityReRollButtonClick()	
-	  end
+		try=0
+		target=points_total+adjust
+		if target<75 then
+			target=75
+		end
+	  	while target~=chargen.totalRoll and try<999 do
+			createCharScreen:OnAbilityReRollButtonClick()	
+			print('total roll = '..chargen.totalRoll)
+			try=try+1
+	  	end
 	end
 	-- reduce everything to the minimum
 	for abil=1,6 do

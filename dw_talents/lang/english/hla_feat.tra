@@ -786,6 +786,7 @@ This passive ability causes summoned or created undead to appear with a +4 bonus
 
 @3179="Foresight"
 @3180="Foresight (Divination)
+
 Level: 10
 Range: Self
 Duration: 2 turns
@@ -831,7 +832,7 @@ Casting Time: 6
 Area of Effect: 1 creature
 Saving Throw: Special
 
-This high level spell infects the subject with progressive forgetfulness. On a failed save, every round the subject loses his highest-level spell or spell slot. Each subsequent round the subject loses another spell or spell slot, moving to lower level spells once all the higher level spells are gone. In the first round the target is allowed a saving throw vs. spells at a -4 penalty. Every round thereafter there is a chance that the affected victim will lose a spell from the repertoire. The chance of this spell loss is reduced every 5th round by 5% (e.g. the target has 100% chance to lose a spell every round in the first five rounds, and only 75% in the 26-30th rounds). While fighting the effects of a Spell Worm, the caster has a 25% greater chance of spell failure every time he attempts to cast a spell, unless a successful save vs. spell (at -4) is made in the first round. Even if the save is successful however, the mental distraction causes the affected creature to fail every spellcasting attempt for 2 rounds. The spell's effects last for 5 turns."
+This high level spell infects the subject with progressive forgetfulness. On a failed save, every round the subject loses his highest-level spell (excluding 10th level or Quest spells) or spell slot. Each subsequent round the subject loses another spell or spell slot, moving to lower level spells once all the higher level spells are gone. In the first round the target is allowed a saving throw vs. spells at a -4 penalty. Every round thereafter there is a chance that the affected victim will lose a spell from the repertoire. The chance of this spell loss is reduced every 5th round by 5% (e.g. the target has 100% chance to lose a spell every round in the first five rounds, and only 75% in the 26-30th rounds). While fighting the effects of a Spell Worm, the caster has a 25% greater chance of spell failure every time he attempts to cast a spell, unless a successful save vs. spell (at -4) is made in the first round. Even if the save is successful however, the mental distraction causes the affected creature to fail every spellcasting attempt for 2 rounds. The spell's effects last for 5 turns."
 
 @3190="True Dominion"
 @3191="True Dominion 
@@ -861,6 +862,7 @@ The Mass Domination spell enables the caster to control the actions of multiple 
 
 @3195="Mirrored Clones 
 (Illusion/Phantasm)
+
 Level: 10
 Range: 0
 Duration: 1 turn
@@ -875,6 +877,7 @@ Mirrored Clones creates two copies of the caster, perfect duplicates except for 
 @3197="Shadowcloak"
 @3198="Shadowcloak 
 (Illusion/Phantasm)
+
 Level: 10
 Range: 0
 Duration: 5 rounds
@@ -971,7 +974,7 @@ The caster sends a powerful call to the long dead corpses buried deep beneath th
 @3218="Arcane Knowledge: PLACEHOLDER
 
 The time and effort powerful wizards put into the study of complex spells, magical artifacts and the very essence of magic does not happen without rewards. The wizard's studies open <PRO_HISHER> mind to new ways of thinking and perceiving the multiverse. 
-<PRO_HISHER> extensive knowledge will give <PRO_HIMHER> the answer to even the most obscure problem; the broadening of <PRO_HISHER> mental faculties make <PRO_HIMHER> capable of learning and memorizing an even greater variety of magic.
+This extensive knowledge will give <PRO_HIMHER> the answer to even the most obscure problem; the broadening of <PRO_HISHER> mental faculties make <PRO_HIMHER> capable of learning and memorizing an even greater variety of magic.
 
 
 This passive ability grants the character a +15 bonus to Lore and a +2 bonus to saving throws against spells from the PLACEHOLDER school. More importantly, it gives the character the ability to select high-level abilities associated with the PLACEHOLDER school."
