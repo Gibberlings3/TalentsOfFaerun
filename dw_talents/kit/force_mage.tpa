@@ -90,7 +90,7 @@ DEFINE_ACTION_FUNCTION force_mage BEGIN
 	
 	
 	LAF 3p_kit END
-
+	LAF make_label STR_VAR label=dw-force_mage END
 END
 
 
