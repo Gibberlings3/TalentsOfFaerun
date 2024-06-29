@@ -271,7 +271,7 @@ DEFINE_PATCH_FUNCTION analyse_elemental_type_core INT_VAR opcode=0 resource_offs
 			END		
 		END
 		12 BEGIN
-			READ_SHORT 0xa+fx_off dmg_type
+			READ_SHORT 0xa+resource_offset dmg_type
 			PATCH_MATCH "%dmg_type%" WITH 
 			1 BEGIN
 				earth=1
