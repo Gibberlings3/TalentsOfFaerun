@@ -9,7 +9,6 @@ DEFINE_ACTION_FUNCTION kit_cm BEGIN
 
 	
 	ACTION_DEFINE_ASSOCIATIVE_ARRAY cm_list BEGIN
-		force_mage_of_mystra=>""
 		wild_mage_of_mystra=>""
 		illusionist_of_baervan=>""
 		abjurer_of_ilmater=>""
