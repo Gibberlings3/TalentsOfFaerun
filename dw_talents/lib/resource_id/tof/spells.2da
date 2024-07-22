@@ -1,4 +1,5 @@
 name							    		resref
+spl_int_plus_0								dw-int-0
 spl_int_plus_1								dw-int-1
 spl_int_plus_2								dw-int-2
 spl_int_plus_3								dw-int-3

@@ -89,7 +89,7 @@ DEFINE_ACTION_FUNCTION barbarian_class BEGIN
 		OUTER_SET $barb_mc_hp("%level%" "ROLLS")=1
 		OUTER_SET $barb_mc_hp("%level%" "MODIFIER")=level>=10?2:0
 	END
-	LAF 2da_write STR_VAR file=dwhpbm.2da path="override" array=barb_hp_array default=0 END
+	LAF 2da_write STR_VAR file=dwhpbm.2da path="override" array=barb_mc_hp default=0 END
 
 	// build Barbarian/Cleric kit
 	
@@ -186,5 +186,17 @@ DEFINE_ACTION_FUNCTION barbarian_class BEGIN
 	// rebuild dual-class grid
 	
 	LAF collect_dual_class_kit_data END
+	
+	// go through items and handle all those marked as unusable by both Barbarian and Fighter
+	
+	ACTION_CLEAR_ARRAY barb_item_array 
+	COPY_EXISTING_REGEXP ".*\.itm" override
+		PATCH_IF ((BYTE_AT 0x29) BAND BIT6) && ((BYTE_AT 0x1f) BAND BIT3 && !((LONG_AT 0x1e = "-1"))) BEGIN // has barbarian unusable flag, has fighter unusable flag, isn't just unusable by anyone
+			WRITE_BYTE 0x29 (THIS BAND BNOT BIT6) // turn off barbarian exclusion flag
+			SPRINT $barb_item_array("%SOURCE_RES%") "" // log for unusability description
+		END		
+	BUT_ONLY
+	
+	LAF ui_externalize_usability_descriptions STR_VAR item_array=barb_item_array kit=barbarian END
 
 END

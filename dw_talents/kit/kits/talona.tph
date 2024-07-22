@@ -1,4 +1,4 @@
-DEFINE_ACTION_FUNCTION talona_cleric BEGIN
+ DEFINE_ACTION_FUNCTION talona_cleric BEGIN
 
     LAF talona_shared END
 	OUTER_SPRINT kit DW_TALONA_CLERIC

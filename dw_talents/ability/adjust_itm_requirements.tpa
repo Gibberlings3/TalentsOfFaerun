@@ -1,0 +1,37 @@
+DEFINE_ACTION_FUNCTION adjust_itm_requirements BEGIN
+
+	// load data
+	
+	LAF 2da_read STR_VAR file=str_adjust.2da location=data RET_ARRAY str_adjust_array=array END
+	ACTION_GET_STRREF 1145 str_string
+	
+	// implement
+	
+	COPY_EXISTING_REGEXP ".*\.itm" override
+		READ_SHORT 0x26 str_req
+		PATCH_IF str_req>10 && VARIABLE_IS_SET $str_adjust_array("%str_req%" NEW_VAL) BEGIN
+			 str_req_new=$str_adjust_array("%str_req%" NEW_VAL)
+			 WRITE_SHORT 0x26 str_req_new
+			 PATCH_IF (LONG_AT 0x54>0) BEGIN
+				desc_strref=LONG_AT 0x54
+			 END ELSE 
+			 PATCH_IF (LONG_AT 0x50>0) BEGIN
+				desc_strref=LONG_AT 0x50
+			 END ELSE BEGIN
+				desc_strref="-1"
+			 END
+			 PATCH_IF desc_strref>0 && !VARIABLE_IS_SET $fixed_str_strrefs("%desc_strref%") BEGIN
+				GET_STRREF desc_strref desc_string
+				INNER_PATCH_SAVE desc_string "%desc_string%" BEGIN
+					REPLACE_TEXTUALLY "%str_req% +%str_string%" "%str_req_new% %str_string%"
+				END
+				INNER_ACTION BEGIN
+					STRING_SET_EVALUATE desc_strref "%desc_string%"
+				END
+			 END
+		END
+	BUT_ONLY
+
+
+END
+

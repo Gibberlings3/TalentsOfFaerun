@@ -30,7 +30,7 @@ DEFINE_ACTION_FUNCTION rebalance_traps BEGIN
 	OUTER_SPRINT level_one_desc @30
 	OUTER_SPRINT level_six_desc @31
 	
-	class.edit[THIEF|edit_strrefs_in_place:i=0]
+	class.edit[THIEF|edit_strrefs_in_place:i=1]
 	[
 		k_clastext_descstr=k_clastext_descstr.patch
 		{
@@ -74,7 +74,7 @@ DEFINE_ACTION_FUNCTION rebalance_bounty_hunter BEGIN
 	OUTER_SPRINT level_one_desc @45
 	OUTER_SPRINT level_six_desc @46
 	
-	kit.edit[BOUNTY_HUNTER|edit_strrefs_in_place:i=0]
+	kit.edit[BOUNTY_HUNTER|edit_strrefs_in_place:i=1]
 	[
 		k_clastext_descstr=k_clastext_descstr.patch
 		{

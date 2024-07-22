@@ -47,7 +47,7 @@ DEFINE_ACTION_FUNCTION bloodrager BEGIN
 
 	// sort out item usability
 	
-	LAF kit_get_id STR_VAR kit=DW_BLOODRAGER RET kit_id END
+	OUTER_SET kit_id=IDS_OF_SYMBOL (kit DW_BLOODRAGER)
 	COPY_EXISTING_REGEXP ".*\.itm" override
       // is it droppable?
 	  SET proceed= (((BYTE_AT 0x18) BAND 0b00000100) = 0b00000100)

@@ -3,7 +3,7 @@
 					NAME		DESC			PARENT			FINAL_RACE	ICON	ICON_STRREF	COLOR_SKIN	COLOR_HAIR	COLOR_MAJOR	COLOR_MINOR	STR	DEX	CON	INT	WIS	CHA	EXTRA_PROF	BIO_OLD		BIO_NEW	PP 	OL 	FT  MS  HS  DI  ST		SPL_INIT						SPL_RECUR
 DWARF_SHIELD		@13			@113			DWARF			*			dwico23	@601		-1			-1			-1			-1			0	0	1	0	0	-1	0			-1			-1		0	10	15	0	0	5	10		%spl_subrace_shield_dwarf%		-1
 DWARF_GOLD			@14			@114			DWARF			*			dwico23	@601		23			1			-1			-1			0	-1	1	0	0	0	0			@501		@512	0	10	15	0	0	5	10		%spl_subrace_gold_dwarf%		-1
-DWARF_DUERGAR		@10			@110			DWARF			DUERGAR		-1		-1			0			24			-1			-1			0	0	1	0	0	-2	0			@501		@513	0	0	10	40	0	20	0		%spl_subrace_duergar%			-1
+DWARF_DUERGAR		@10			@110			DWARF			*			-1		-1			0			24			-1			-1			0	0	1	0	0	-2	0			@501		@513	0	0	10	40	0	20	0		%spl_subrace_duergar%			-1
 HALFLING_LIGHTFOOT	@16			@116			HALFLING		*			dwicosm	@603		-1			-1			-1			-1			-1	1	0	0	0	0	0			-1			-1		5	5	5	10	15	0	0		%spl_subrace_lightfoot_halfling%	-1	
 HALFLING_STRONGHEART @15		@115			HALFLING		*			dwicosm	@603		-1			-1			-1			-1			-1	1	0	0	0	0	1			-1			-1		5	5	5	10	15	0	0		%spl_subrace_strongheart_halfling% -1
 HALFLING_GHOSTWISE  @17			@117			HALFLING		*			dwicosm	@603		-1			-1			-1			-1			-1	1	0	0	0	-1	0			@504		@519	0	0	10	15	20	0	10		%spl_subrace_ghostwise_halfling% -1	

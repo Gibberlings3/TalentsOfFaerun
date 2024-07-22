@@ -195,16 +195,20 @@ BEGIN
 		m.ab_fx.add{s_opcode=318 s_target=1 s_parameter1=stat_ind_1 s_parameter2=111 s_resource:=%sfo_filename% s_duration=1}
 		m.ab_fx.add{s_opcode=173 s_target=1 s_parameter1=40 s_duration=60}
 		m.ab_fx.add{s_opcode=318 s_target=1 s_parameter1=stat_ind_2 s_parameter2=111 s_resource:=%sfo_filename% s_duration=1}
-		m.ab_fx.add{s_opcode=173 s_target=1 s_parameter1=75 s_duration=60}
+		m.ab_fx.add{s_opcode=173 s_target=1 s_parameter1=25 s_duration=60}
 		m.ab_fx.add{s_opcode=27 s_target=1 s_parameter1=20 s_duration=60}
 		m.ab_fx.add{s_opcode=28 s_target=1 s_parameter1=20 s_duration=60}
 		m.ab_fx.add{s_opcode=29 s_target=1 s_parameter1=20 s_duration=60}
 		m.ab_fx.add{s_opcode=30 s_target=1 s_parameter1=20 s_duration=60}
+		m.ab_fx.add{s_opcode=84 s_target=1 s_parameter1=20 s_duration=60}
+		m.ab_fx.add{s_opcode=85 s_target=1 s_parameter1=20 s_duration=60}
 		m.ab_fx.add{s_opcode=318 s_target=1 s_parameter1=stat_ind_3 s_parameter2=111 s_resource:=%sfo_filename% s_duration=1}
 		m.ab_fx.add{s_opcode=27 s_target=1 s_parameter1=20 s_duration=60}
 		m.ab_fx.add{s_opcode=28 s_target=1 s_parameter1=20 s_duration=60}
 		m.ab_fx.add{s_opcode=29 s_target=1 s_parameter1=20 s_duration=60}
 		m.ab_fx.add{s_opcode=30 s_target=1 s_parameter1=20 s_duration=60}
+		m.ab_fx.add{s_opcode=84 s_target=1 s_parameter1=20 s_duration=60}
+		m.ab_fx.add{s_opcode=85 s_target=1 s_parameter1=20 s_duration=60}
 		m.ab_fx.add{s_opcode=166 s_target=1 s_parameter1=20 s_duration=60}
  		m.ab_fx.add{s_opcode=318 s_target=1 s_parameter1=stat_ind_4 s_parameter2=111 s_resource:=%sfo_filename% s_duration=1}
 		m.ab_fx.add{s_opcode=31 s_target=1 s_parameter1=30 s_duration=60}

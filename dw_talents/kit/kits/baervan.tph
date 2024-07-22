@@ -26,7 +26,7 @@ DEFINE_ACTION_FUNCTION baervan_cleric BEGIN
 	]
 	LAF cleric_kit_substitutions STR_VAR kit god=baervan END
 	LAF holy_symbol INT_VAR name=2040 follower=2041 STR_VAR inv_bam=ibeltbw desc_bam=cbeltbw kit END
-	LAF assign_spheres STR_VAR kit default=cleric add="air water animal plant fey moon" subtract="evil necromantic combat summoning wards" END
+	LAF assign_spheres STR_VAR kit default=cleric add="earth water animal plant fey moon" subtract="evil necromantic combat summoning wards" END
 
 
 END
@@ -74,7 +74,7 @@ DEFINE_ACTION_FUNCTION forester_of_baervan BEGIN
 	LAF cleric_kit_substitutions STR_VAR kit god=baervan END
 
 	LAF holy_symbol INT_VAR name=2040 follower=2041 STR_VAR inv_bam=ibeltbw desc_bam=cbeltbw kit END
-	LAF assign_spheres INT_VAR update_scroll_usability=0 STR_VAR kit default=cleric add="air water animal plant fey moon" subtract="evil necromantic combat summoning wards" END
+	LAF assign_spheres INT_VAR update_scroll_usability=0 STR_VAR kit default=cleric add="earth water animal plant fey moon" subtract="evil necromantic combat summoning wards" END
 	LAF set_multiclass_components STR_VAR kit components="archer dw_baervan_cleric"  END
 
 
@@ -109,7 +109,7 @@ DEFINE_ACTION_FUNCTION illusionist_of_baervan BEGIN
 	LAF cleric_kit_substitutions STR_VAR kit god=baervan END
 
 	LAF holy_symbol INT_VAR name=2040 follower=2041 STR_VAR inv_bam=ibeltbw desc_bam=cbeltbw kit END
-	LAF assign_spheres INT_VAR update_scroll_usability=0 STR_VAR kit default=cleric add="air water animal plant fey moon" subtract="evil necromantic combat summoning wards" END
+	LAF assign_spheres INT_VAR update_scroll_usability=0 STR_VAR kit default=cleric add="earth water animal plant fey moon" subtract="evil necromantic combat summoning wards" END
 
  
  	LAF make_multiclass_specialist STR_VAR kit school=illusion END
@@ -147,7 +147,7 @@ DEFINE_ACTION_FUNCTION air_elementalist_of_baervan BEGIN
 	LAF cleric_kit_substitutions STR_VAR kit god=baervan END
 
 	LAF holy_symbol INT_VAR name=2040 follower=2041 STR_VAR inv_bam=ibeltbw desc_bam=cbeltbw kit END
-	LAF assign_spheres INT_VAR update_scroll_usability=0 STR_VAR kit default=cleric add="air water animal plant fey moon" subtract="evil necromantic combat summoning wards" END
+	LAF assign_spheres INT_VAR update_scroll_usability=0 STR_VAR kit default=cleric add="earth water animal plant fey moon" subtract="evil necromantic combat summoning wards" END
 
 		LAF set_elem_spells INT_VAR school_tra=13 school_tra2=14 STR_VAR kit elem_spec=air elem_block=earth tra=elementalist END
 		LAF bonus_spells_from_list STR_VAR kit path="%MOD_FOLDER%/class_race/bonus_spell_lists/air.txt" class=mage END

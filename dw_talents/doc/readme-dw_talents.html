@@ -294,7 +294,7 @@
     <div class="ribbon_triangle_h3-r"></div>
     <div class="section">
       <p><strong>Eliminate Class/Race Restrictions and Most Class/Ability Score Restrictions</strong></p>
-      <p>This component makes all classes available to PCs of any race, allows PC mages of any race to specialize in any school of magic, and allows both humans and non-humans to dual-class and multi-class. It reduces all ability score requirements to 10, and eliminates the high ability score requirements for dual-classing. In-game text descriptions during character creation are altered to allow for these changes.</p>
+      <p>This component makes all classes available to PCs of any race, allows PC mages of any race to specialize in any school of magic, and allows both humans and non-humans to dual-class and multi-class (though 'exotic' races, like Tieflings and Vampires, still cannot dual-class). It reduces all ability score requirements to 10, and eliminates the high ability score requirements for dual-classing. In-game text descriptions during character creation are altered to allow for these changes.</p>
       <p>Kit race restrictions are lifted when they coincide with their parent class's race restrictions, but not otherwise. In an otherwise-unmodded game, the only kit not available to all races in this fashion is the Dwarven Defender.</p>
       <p>There are no animations available for non-human monks, so I repurpose the priest animation for them. As a consequence, non-human monks won't have the flashy unarmed-combat animation that human monks do.</p>
       <p>If this component is installed, multi-class gnome mages will no longer be illusionists. If you want to create gnome illusionists, use the 'Allow Multi-Class Mages to Specialize' component.</p>
@@ -613,7 +613,7 @@
       <p>(Priests of Cyric, game-mechanically, are pretty much equivalent to priests of Bhaal; priests of Velsharoon are pretty much equivalent to priests of Myrkul; priests of Iyachtu Xvim are pretty much equivalent to priests of Bane.)</p>
       <p>Unless otherwise noted, all gods and goddesses introduced may be worshiped by clerics of any race.</p>
       <p>By default, priests of Auril, Myrkul and Talona are not available as player characters in Icewind Dale, and priestesses of Lolth and Umberlee are not available as player characters in Baldur's Gate and Baldur's Gate II. In both cases, this is for plot reasons: having a priest of that deity in your party would mess with the plot in significant ways. These gods are installed in any case and are usable by enemy NPCs (if you install Sword Coast Stratagems). You can enable these choices for player characters via the ini if you want, though in-game dialog will not really respond appropriately.</p>
-      <p>On a BG or BG2 install, Viconia becomes a cleric of Shar.</p>
+      <p>On a BG or BG2 install, Viconia becomes a cleric of Shar. (This can be disabled or modified by editing dw_talents/3p/original_game.ini, or you can change his class/kit using the 'Improved NPC Customization and Management' component.)</p></p>
       <p>This component requires you to be using the Icewind Dale arcane and divine spells (either because you are playing IWD:EE, or because you have them installed from Sword Coast Stratagems, IWDification, or Talents of Faer&ucirc;n) and the 'Add Nine New Arcane Spells' and 'Add Six New Divine Spells' components of ToF.</p>
      <p>Full documentation for the Talents of Faer&ucirc;n cleric speciality priests may be found <a href="subdocuments_dw/all_priest_desc.html">here</a>. </p>
  
@@ -672,12 +672,12 @@
         <li>Templar of Lathander (fighter/priest of Lathander)</li>
         <li>Wrathful Spear of Gruumsh (barbarian/priest of Gruumsh; half-orcs only)</li>
       </ul>
-      <p>On a BG install, Yeslick becomes an Axe of Clangeddin.</p>
+      <p>On a BG install, Yeslick becomes an Axe of Clangeddin. (This can be disabled or modified by editing dw_talents/3p/original_game.ini, or you can change his class/kit using the 'Improved NPC Customization and Management' component.)</p>
       <p>The Dark Knight of Bane and the Knight of Iyachtu Xvim are mechanically identical. This component requires you to be using the Icewind Dale arcane and divine spells (either because you are playing IWD:EE, or because you have them installed) and the 'Add Nine New Arcane Spells' and 'Add Six New Divine Spells' components of ToF.</p>
       <p><strong>New Multi-Class/Dual-Class for Fighter/Druids</strong></p>
       <p>This component introduces one new kit each for barbarian/druids and fighter/druids: the Totemic Shaman (barbarian/totemic druid) and the Raging Shifter (berserker/shapeshifter).</p>
       <p><strong>New Multi-Class/Dual-Class for Fighter/Mages</strong></p>
-      <p>This component introduces up to 6 new kits for fighter/mages. The component always includes these kits:</p>
+      <p>This component introduces up to six new kits for fighter/mages. The component always includes these kits:</p>
       <ul>
         <li>Abjurant Defender (abjurer/dwarven defender; dwarves only)</li>
         <li>Berserker/Invoker</li>
@@ -694,7 +694,7 @@
         <li>Silent Sword (Kensai/Thief)</li>
       </ul>
       <p><strong>New Multi-Class/Dual-Class for Cleric/Mages</strong></p>
-      <p>This component introduces up to 26 new kits for cleric/mages. The component always includes these kits:</p>
+      <p>This component introduces up to 27 new kits for cleric/mages. The component always includes these kits:</p>
       <ul>
         <li>Abjurer of Ilmater</li>
         <li>Abjurer of Mystra</li>
@@ -709,6 +709,7 @@
         <li>Illusionist of Baervan (elves/half-elves/gnomes only)</li>
         <li>Illusionist of Shar</li>
         <li>Invoker of Lathander</li>
+        <li>Invoker of Mystra</li>
         <li>Invoker of Talos</li>
         <li>Necromancer of Velsharoon (BG/BG2 only)</li>
         <li>Necromancer of Talona (BG/BG2 only)</li>
@@ -729,9 +730,9 @@
       <p>If you have installed the 'New Wizard Specialization: Force Mage' component, the Force Mage of Mystra is also available. </p>
       <p>The conjurer of Bane and the conjurer of Iyachtu Xvim are game-mechanically identical. Multi-class clerics of Auril and Talona are disabled by default on IWD (as is a hidden 'necromancer of Myrkul'), and multi-class clerics of Umberlee are disabled by default on BG/BG2, because having a cleric of these gods in your party causes problems with the plot. If you want to ignore this and play one anyway, you can reactivate them via the ini.</p>
       <p>This component requires you to be using the Icewind Dale arcane and divine spells (either because you are playing IWD:EE, or because you have them installed) and the 'Add Nine New Arcane Spells' and 'Add Six New Divine Spells' components of ToF.</p>
-      <p>On BG2 installs, Aerie becomes an air elementalist of Baervan.</p>
+      <p>On BG2 installs, Aerie becomes an air elementalist of Baervan. (This can be disabled or modified by editing dw_talents/3p/original_game.ini, or you can change his class/kit using the 'Improved NPC Customization and Management' component.)</p></p>
       <p><strong>New Multi-Class/Dual-Class for Cleric/Rangers and Druid/Rangers</strong></p>
-      <p> This component introduces up to six new kits for cleric/rangers: </p>
+      <p> This component introduces up to seven new kits for cleric/rangers. The component always includes these kits: </p>
       <ul>
         <li>Forester of Baervan (Archer/Priest of Baervan; gnomes/elves/half-elves only)</li>
         <li>Hunter of Sel&ucirc;ne (Ranger/Priest of Sel&ucirc;ne) </li>
@@ -742,19 +743,19 @@
       <p>This component requires you to be using the Icewind Dale arcane and divine spells (either because you are playing IWD:EE, or because you have them installed) and the 'Add Nine New Arcane Spells' and 'Add Six New Divine Spells' components of ToF.</p>
 	  <p>This component also grants cleric/rangers the ability to use shortbows and longbows.</li>
       <p><strong>New Multi-Class/Dual-Class for Cleric/Thieves and Druid/Thieves</strong></p>
-      <p> This component introduces six new kits for cleric/thieves: </p>
+      <p> This component introduces seven new kits for cleric/thieves: </p>
       <ul>
-        <li>Assassin of Talona (BG/BG2 only)</li>
         <li>Assassin of Bhaal (IWD only)</li>
-        <li>Assassin of Cyric (BG/BG2 only)</li>
-        <li>Bounty Hunter of Malar</li>
-        <li>Swashbuckler of Sune</li>
-        <li>Thief of Mask</li>
-        <li>Thief of Tymora</li>
+        <li>Dread Death of Cyric (BG/BG2 only)</li>
+        <li>Hunter of Malar</li>
+        <li>Plague-Rat of Talona (BG/BG2 only)</li>
+        <li>Rake of Sune</li>
+        <li>Scoundrel of Tymora</li>
+        <li>Shadow of Mask</li>
       </ul>
       <p>If you have installed the 'Druids May Multi-Class as Mages, Rangers, and Thieves' component, this component also adds one new kit for druid/thieves, the Silent Avenger (avenger/assassin). Druids and rangers cannot dual-class as druid/rangers and so cannot dual-class into a druid/ranger kit.</p>
       <p>The assassin of Bhaal is game-mechanically nearly identical to the assassin of Cyric. The assassin of Talona is disabled by default on Icewind Dale installs because having a priest of Talona in your party would break the story. If you want to ignore this and play one anyway, you can re-enable the kit via the ini.</p>
-      <p> On a BG install, Tiax becomes an assassin of Cyric.</p>
+      <p> On a BG install, Tiax becomes an assassin of Cyric. (This can be disabled or modified by editing dw_talents/3p/original_game.ini, or you can change his class/kit using the 'Improved NPC Customization and Management' component.)</p></p>
       <p>This component requires you to be using the Icewind Dale arcane and divine spells (either because you are playing IWD:EE, or because you have them installed) and the 'Add Nine New Arcane Spells' and 'Add Six New Divine Spells' components of ToF.</p>
       <p><strong>New Multi-Class/Dual-Class for Mage/Thieves</strong></p>
       <p> This component introduces three new kits for mage/thieves: </p>
@@ -950,34 +951,35 @@ title="Non-Player Characters">NPCs</acronym> and to make sure they keep up with 
         </tr>
         <tr>
           <td>17</td>
-          <td>+2 spells at level 1, +1 spell at levels 2-5</td>
+          <td>+2 spells at level 1, +1 spell at levels 2-4</td>
           <td>+1 spell at levels 1-3</td>
         </tr>
         <tr>
           <td>18</td>
-          <td>+2 spells at level 1-2, +1 spell at levels 3-6</td>
+          <td>+2 spells at level 1-2, +1 spell at levels 3-4</td>
           <td>+1 spell at levels 1-4</td>
         </tr>
         <tr>
           <td>19</td>
-          <td>+2 spells at level 1-3, +1 spell at levels 4-7</td>
+          <td>+2 spells at level 1-3, +1 spell at level 4</td>
           <td>+1 spell at levels 1-4</td>
         </tr>
         <tr>
           <td>20</td>
-          <td>+2 spells at level 1-4, +1 spell at levels 5-8</td>
+          <td>+2 spells at level 1-3, +1 spell at levels 4-5</td>
           <td>+2 spells at level 1, +1 spell at levels 2-5</td>
         </tr>
         <tr>
           <td>21+</td>
-          <td>+3 spells at level 1, +2 spells at level 2-5, +1 spell at levels 6-9</td>
-          <td>+2 spells at level 1, +1 spell at levels 2-5</td>
+          <td>+2 spells at level 1-4, +2 spells at levels 5-6</td>
+          <td>+2 spells at level 1, +1 spell at levels 2-6</td>
         </tr>
         <tr></tr>
       </table>
       <p>The component also changes a few other rules, to fit better with this revised system: </p>
       <ul>
         <li>Base saving throws are slightly weakened, to compensate for the bonuses gained by high ability scores. (This only applies to party members.)</li>
+		<li>Base known spells are slightly reduced for wizards and bards, to compensate for the bonus they are likely to get from high INT.</li>
         <li>Gnomes, halflings and dwarves now receive a flat saving throw bonus (+2 in each case) instead of a Constitution-dependent bonus.</li>
         <li>If you are using the low-level abilities component, a new ability, Force of Personality, is available; this allows a character to use their Charisma bonus in place of their Wisdom bonus for saves vs. spells.</li>
       </ul>
@@ -1576,7 +1578,77 @@ href="https://gibberlings3.github.io/iesdp/">Infinity Engine Structure Descripti
 <li>Fixed some cosmetic issues in the descriptions of the new arcane spells.</li>
 <li>Fixed some cosmetic issues in the changes to spell descriptions in the spell tweaks components.</li>
 <li>New spell tweak: Otiluke's Freezing Sphere does half damage on a successful save.</li>
-<li>New spell tweak: Gylph of Warding does half damage on a successful save (BG/BG2 only; this is already true on IWD).</li>
+<li>New spell tweak: Glyph of Warding does half damage on a successful save (BG/BG2 only; this is already true on IWD).</li>
 </ul>
+</p>
+</div>
+   <div class="ribbon_rectangle_h3"><h3>Version beta 13 (22nd July 2024)</h3></div>
+    <div class="ribbon_triangle_h2-l"></div>
+    <div class="ribbon_triangle_h2-r"></div>
+<div class="section"> 
+<p>
+<ul>
+					
+					<li>Balancing changes:
+						<ul>
+						<li>Draw upon Holy Might and Bolt of Glory have been added to the Good sphere (they're still in the Combat sphere).</li>
+						<li>The 'custom' version of ability score modifications grants slightly slower bonus-spell progression, and the baseline number of spells for wizards and bards has been adjusted down slightly.</li>
+						<li>Force mages get +40% resistance to magic damage (up from +10%).</li>
+						</ul>
+					</li>
+					<li>Fixed some issues with biographies in 'new races and subraces'.</li>
+					<li>'New races and subraces' now assigns correct saving throw and skill modifiers to joinable NPCs.</li>
+					<li>'New races and subraces' should now display the correct modifiers on a character's saving throws.</li>
+					<li>Duergar PCs now have race=dwarf rather than race=duergar, and deep gnome PCs now have race=gnome rather than race=svirfneblin - on balance the compatibility problems outweigh the advantages.</li>
+					<li>Planetouched PCs are no longer able to use weapons that are restricted to specific races (except their own!)</li>
+					<li>The HLA system now correctly tracks HLA legality when you take many levels at once (and my god, that was a complicated bit of coding).</li>
+					<li>An earlier update broke the in-game documentation of the prerequisites for many HLAs; it's now fixed.</li>
+					<li>Fixed a bug whereby characters taking many levels at once got the wrong number of HLAs.</li>
+					<li>The 'Wildstrike' HLA should now work properly.</li>
+					<li>The 'Hardiness' HLA can now be selected more than once.</li>
+					<li>Fixed some issues with summoning water elemental princes in the revised HLA component.</li>
+					<li>Force mages should now correctly get their +20% magic damage bonus.</li>
+					<li>HP table for barbarian multiclass is generated properly, for real this time.</li>
+					<li>Fixed cosmetic issue with Veil of Djalice.</li>
+					<li>Skald song is now correctly adjusted at levels 1 and 5.</li>
+					<li>Priests of Baervan Wildwanderer now get access to the earth sphere rather than the air sphere. This matches PnP material; it also gives Aerie access to Iron Skins, which partly makes up for her not having Stoneskin.</li>
+					<li>Following a frank and constructive conversation with Lolth, demon queen of spiders, the requirement for certain clerics to be female (or to have certain alignments and/or races) is no longer described as a 'disadvantage'.</li>
+					<li>Fixed an issue with elemental-spell-list generation that was causing compatibility issues with some spell-tweak mods.</li>
+					<li>If the new sphere system is installed, Cleric/Rangers can now use spells from the same spheres as clerics, plus Animal and Plant, minus Good and Evil. (Previously they had the same picks as druids, or the same picks as clerics if 'Multiclassed Druids' was installed.</li>
+					<li>Classes unable to use an item are now presented in a sensible order.</li>
+					<li>Multi-classed barbarians now have sensible item-use restrictions.</li>
+					<li>Improved Defensive Stance now correctly adjusts poison, magic fire, and magic cold resistance.</li>
+					<li>Fixed some issues with UI class-detection library that (among other possible problems) was confusing which spells mages could learn.</li>
+					<li>Fixed a library issue that was allowing certain kits to put 3 proficiencies in a slot at first level.</li>
+					<li>Bloodragers are now correctly blocked from using missile weapons.</li>
+					<li>Planetouched and other exotic races can no-longer dual-class (they can still multiclass).</li>
+					<li>Removed transitory Intelligence shifts that were occurring as a side effect of learning scrolls.</li>
+					<li>Items with a minimum Strength requirement now have that requirement adjusted down if you are using the revised ability score component.</li>
+					<li>Fixed a number of cosmetic problems with spell, class, and kit descriptions.</li>
+					<li>Vitriolic Sphere is now correctly detected as an Earth spell.</li>
+					<li>Spell Revisions (and other mods that put duplicate entries into spell.ids) should no longer confuse the scribe-scrolls component.</li>
+					<li>The changes made by 'rebalanced thief traps' weren't consistently being recorded in the kit/class descriptions.</li>
+					<li>Fixed a compatibility issue where some mod allocations of HLA files to kits could confuse ToF's HLA sytem.</li>
+					<li>Under-the-hood tweak - slight improvements to the system for assigning 3rd-party kits.</li>
+					<li>Improved compatibility management between SCS and ToF versions of shapeshift.</li>
+					<li>The auto-levelling system in 'NPC customization and management' now only affects NPCs, not the player (or other player-created characters).</li>
+					<li>NPC Customization and Management should correctly handle removing a dual class from an NPC.</li>
+					<li>If you use NPC Customization and Management to change a ranger to a different class, their two pips in two-weapon fighting are correctly removed.</li>
+					<li>NPC Customization and Management no longer removes all spells from Baeloth (who it's not supposed to edit).</li>
+					<li>If you use NPC Customization and Management to change a core-game NPC's class or kit, they should no longer be barred from using items that are supposed to be only usable by them.</li>
+					<li>At the start of Siege of Dragonspear, NPC Customization and Management no longer resets the hit points of NPCs who have previously been in the party.</li>
+					<li>Fixed an incompatibility between the Universal Spell Triggers spell tweak and the externalized spell system that was stopping some specialist mages from using spell triggers etc.</li>
+					<li>Scrolls of Shocking Grasp no longer target the caster if you have installed the 'Use IWD Shocking Grasp' tweak.</li>
+					<li>Scrolls of Turn Pebble to Boulder now work properly.</li>
+					<li>The tweak to Protection from Normal Missiles should now work properly.</li>
+					<li>The tweak to Mordenkainen's Sword THAC0 no longer fails if Spell-50 or similar is installed.</li>
+					<li>Wands of Spell Striking now penetrate SI: Abjuration.</li>
+					<li>The 'revised elementals' component is now correctly marked as incompatible with Spell Revisions.</li>
+					<li>For modders: included reasonably detailed SFO documentation in dw_talents/sfo/doc/index.html.</li>
+					<li>Fixed a library bug with SFO patching of EFF files.</li>
+					<li>SFO's 2DA and array functions now handle empty arrays more gracefully.</li>
+					<li>Other misc SFO fixes and tweaks prior to documentation release.</li>
+</ul>
+</p>
 </body>
 </html>

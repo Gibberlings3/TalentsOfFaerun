@@ -11,12 +11,13 @@ DEFINE_ACTION_FUNCTION hla_elemental_princes BEGIN
 		m_alignment:=neutral_good
 		m_allegiance:=controlled
 		xp_value=0
-		script_override:="%baf_ben_hadar%"
-		script_default:="bdsum00"
-		dv:="%cre_ben_hadar%"
+		m_script_override:="%baf_ben_hadar%"
+		m_script_default:="bdsum00"
+		m_dv:="%cre_ben_hadar%"
 	]
 	
-	LAF install_script STR_VAR script=baf_ben_hadar location=resource END
+	COPY_EXISTING "elemhydr.bcs" "override/%baf_ben_hadar%.bcs"
+	LAF extend STR_VAR script="%baf_ben_hadar%" top=baf_ben_hadar location=resource END
 
 	// clone the good princes to make evil princes (safer than doing it via copies of the hostile ones)
 	
@@ -53,8 +54,9 @@ DEFINE_ACTION_FUNCTION hla_elemental_princes BEGIN
 		WRITE_ASCII 0x248 "%baf_olhydra%" (8)
 		WRITE_BYTE 0x27b 35 // alignment
 		WRITE_ASCII 0x280 "%DEST_RES%" (0x20)// dv
-
-	LAF install_script STR_VAR script=baf_olhydra location=resource END
+	COPY_EXISTING "%baf_ben_hadar%.bcs" "override/%baf_olhydra%.bcs" 
+		strref_new=RESOLVE_STR_REF (@3245)
+		REPLACE_TEXTUALLY 72812 "%strref_new%"	
 
 	// summoning effects
 

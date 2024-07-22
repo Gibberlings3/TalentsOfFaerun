@@ -1,7 +1,7 @@
 BACKUP ~weidu_external/backup/dw_talents~
 AUTHOR "DavidW"
 //MODDER setup_tra none area_variables none missing_extern none missing_resref none ict2_actions none missing_eval none overwriting_file none fun_args warn
-VERSION ~Beta 12~
+VERSION ~Beta 13~
 
 AUTO_EVAL_STRINGS
 README "dw_talents/doc/readme-dw_talents.html"
@@ -29,7 +29,9 @@ BEGIN "test" DESIGNATED 0
 
 LAF run STR_VAR file=test location=test END
 
-BEGIN "test prequel" DESIGNATED 1
+BEGIN "test sequel" DESIGNATED 1
+LAF ui_subrace_engine_strings RET_ARRAY enginest END
+LAF add_subraces_lua_setup END
 */
 
 //////////////////////////////////////////////////////////////////////
@@ -308,6 +310,7 @@ BEGIN @1022 DESIGNATED 2520 GROUP @1000
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 2520 @1090
 REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 2520 @1090
 //REQUIRE_PREDICATE !MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 2520 @1090
+FORBID_COMPONENT "spell_rev/setup-spell_rev.tp2" 0 @230
 FORBID_COMPONENT ~stratagems/setup-stratagems.tp2~ 5900 @2001
 
 LAF run STR_VAR file=elemental_cre location=elemental_cre END
@@ -736,7 +739,7 @@ LAF run STR_VAR files=dragon_disciple location=class_race tra=dragon_disciple EN
 ///	Revised vanilla kits
 //////////////////////////////////////////////////////////////////////
 
-BEGIN @521 DESIGNATED 41000 GROUP @5 
+BEGIN @531 DESIGNATED 41000 SUBCOMPONENT @521 GROUP @5 
 
 REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
 FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
@@ -752,7 +755,12 @@ REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_55300_installed @91
 REQUIRE_PREDICATE !IS_AN_INT dw_talents_component_55400_installed @91
 
 
-LAF run STR_VAR files=kit_rebalance location=class_race tra=kit_rebalance END
+LAF run STR_VAR files=kit_rebalance location=class_race tra=kit_rebalance version="default" END
+
+BEGIN @532 DESIGNATED 41001 SUBCOMPONENT @521 GROUP @5 
+
+LAF run STR_VAR files=kit_rebalance location=class_race tra=kit_rebalance version="not_shapeshifter" END
+
 
 //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////

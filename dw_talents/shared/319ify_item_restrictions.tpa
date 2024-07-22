@@ -29,7 +29,7 @@ A reminder of why this is needs lua code:
 	LAF ids_resolve INT_VAR min=150 STR_VAR ids=MAGE_UNUSABLE idsfile=SPECIFIC RET specifics_mage=value END // start at 150 because I don't trust other people not to overwrite the namespace
 	
 	// set up LUA for description edits
-	LAF edit_descriptions_setup END
+	LAF ui_externalize_usability_descriptions_setup END
 	LAF 2daq_extract STR_VAR resref=clastext column=mixed case=lower RET_ARRAY clastext_array=array END
 	ACTION_FOR_EACH class IN cleric_mage cleric_ranger cleric_thief druid shaman mage BEGIN
 		OUTER_SET value=$clastext_array("%class%")
@@ -143,7 +143,9 @@ DEFINE_PATCH_FUNCTION 319ify_item BEGIN
 			// initialise
 			PATCH_IF (is_weapon && unusable_cleric && !unusable_druid) || unusable_druid || unusable_shaman || unusable_mage BEGIN
 				INNER_ACTION BEGIN
-					APPEND "m_dw_itd.lua" "dwUnusable['%SOURCE_RES%']={}%WNL%" KEEP_CRLF
+					ACTION_IF !RESOURCE_CONTAINS "m_dw_itd.lua" "'%SOURCE_RES%'" BEGIN
+						APPEND "m_dw_itd.lua" "dwUnusable['%SOURCE_RES%']={}%WNL%" KEEP_CRLF
+					END
 				END
 			END	
 			// cleric weapons
@@ -275,90 +277,3 @@ DEFINE_PATCH_FUNCTION set_unusable_mage BEGIN
 
 	END
 END
-
-DEFINE_ACTION_FUNCTION edit_descriptions_setup BEGIN
-
-	ACTION_IF !FILE_EXISTS_IN_GAME "m_dw_itf.lua" BEGIN
-	
-		COPY ".../stratagems-inline/m_dw_itf.lua" override
-		COPY ".../stratagems-inline/m_dw_itd.lua" override
-	
-		// make needed menu change
-		COPY_EXISTING "ui.menu" override
-			REPLACE_TEXTUALLY EXACT_MATCH "itemDesc.item.description" "dwItemDescription(itemDesc.item)"
-		BUT_ONLY
-	
-	END
-END
-
-<<<<<<<< .../stratagems-inline/m_dw_itf.lua
-
-function dwItemDescription(item)
-	desc=item.description
-	resref=item.res
-	if (dwUnusable[resref]) then
-		ks={}
-		for k,_ in pairs(dwUnusable[resref]) do
-			table.insert(ks,k)
-		end
-		table.sort(ks,dwItemDescriptionSort)
-		for _,k in ipairs(ks) do
-			desc=desc.."\n".. Infinity_FetchString(k)
-		end
-	end
-	return desc
-end
-
-function dwItemDescriptionSort(a,b)
-
-	n_a=Infinity_FetchString(a)
-	n_b=Infinity_FetchString(b)
-	if string.find(n_a,'/') and not string.find(n_b,'/') then
-		return false
-	end
-	if not string.find(n_a,'/') and string.find(n_b,'/') then
-		return true
-	end
-	return n_a<n_b
-
-end
->>>>>>>>
-
-<<<<<<<< .../stratagems-inline/m_dw_itf_old.lua
-
-function dwItemDescription(item)
-	desc=item.description
-	resref=item.res
-	ks={}
-	for k,_ in pairs(dwUnusable) do
-		table.insert(ks,k)
-	end
-	table.sort(ks,dwItemDescriptionSort)
-	for _,k in ipairs(ks) do
-		itemlist=dwUnusable[k]
-		if itemlist[resref] then
-			desc=desc.."\n".. Infinity_FetchString(k)
-		end	
-	end
-	return desc
-end
-
-function dwItemDescriptionSort(a,b)
-
-	n_a=Infinity_FetchString(a)
-	n_b=Infinity_FetchString(b)
-	if string.find(n_a,'/') and not string.find(n_b,'/') then
-		return false
-	end
-	if not string.find(n_a,'/') and string.find(n_b,'/') then
-		return true
-	end
-	return n_a<n_b
-
-end
->>>>>>>>
-
-<<<<<<<< .../stratagems-inline/m_dw_itd.lua
-dwUnusable={}
-
->>>>>>>>

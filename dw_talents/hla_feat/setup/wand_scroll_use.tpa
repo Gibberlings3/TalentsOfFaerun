@@ -7,7 +7,7 @@ DEFINE_ACTION_FUNCTION wand_scroll_use BEGIN
 	// load needed resources
 	
 	LAF include STR_VAR file=319ify_item_restrictions.tpa locbase=shared END
-	LAF edit_descriptions_setup END
+	LAF ui_externalize_usability_descriptions_setup END
 
 	// initialize
 	LAF 2daq_extract STR_VAR resref=clastext case=lower column=mixed RET_ARRAY clastext_array=array END
@@ -47,7 +47,7 @@ DEFINE_ACTION_FUNCTION wand_scroll_use BEGIN
 			END		
 		END	
 	END ELSE BEGIN
-		LAF edit_descriptions_setup END
+		LAF ui_externalize_usability_descriptions_setup END
 		CREATE spl "%spl_zero_specifics%"
 			LPF add_basic_spell_ability END
 			LPF ADD_SPELL_EFFECT INT_VAR opcode=313 target=1 timing=9 STR_VAR resource="dw-ftwnd" END

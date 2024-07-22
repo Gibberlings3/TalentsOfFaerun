@@ -158,8 +158,13 @@ END
                    ACTION_IF !FILE_EXISTS_IN_GAME "%resref%.spl" BEGIN
                       OUTER_SET continue=0
                    END
+				   // have we done it before?
+				   ACTION_IF VARIABLE_IS_SET $sfo_scroll_scribing_done_this("%resref%") BEGIN
+						OUTER_SET continue=0
+				   END				   
                    ACTION_IF continue BEGIN
-                          LAF process_spell_and_scroll INT_VAR level_1_xp no_scroll_string STR_VAR spell resref END
+                          OUTER_SET $sfo_scroll_scribing_done_this("%resref%")=1
+						  LAF process_spell_and_scroll INT_VAR level_1_xp no_scroll_string STR_VAR spell resref END
                    END
 				END
            END

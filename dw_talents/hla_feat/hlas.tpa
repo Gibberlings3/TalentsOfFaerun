@@ -2,7 +2,7 @@ DEFINE_ACTION_FUNCTION hlas STR_VAR version=0 BEGIN // version is for testing. v
 
 	ACTION_IF version=0 || version=1 BEGIN
 		LAF run STR_VAR file=wipe_hlas END
-		LAF ui_externalize_hlas END
+		LAF ui_externalize_hlas INT_VAR activate_feats=0 END
 		
 		component_loc:==spell
 		WITH_TRA "%sfo_tra_loc%/english/spell.tra" "%sfo_tra_loc%/%LANGUAGE%/spell.tra" BEGIN

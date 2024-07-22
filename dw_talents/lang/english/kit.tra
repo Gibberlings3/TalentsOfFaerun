@@ -159,7 +159,7 @@ The most feared and reviled deity in the Forgotten Realms, Bane is the lord of s
 
 Advantages:
 - SPHERE_PLACEHOLDER
-- MAGE_SPELL_PLACEHOLDER.
+- MAGE_SPELL_PLACEHOLDER
 - Immunity to fear effects.
 - 5th level cleric: May cast Cloak of Fear once per day, as the 4th level priest spell. An additional use is gained at 10th level and every 5 levels thereafter.
 - 7th level cleric: May cast Greater Malison once per day, as the 4th level wizard spell. An additional use is gained at 12th level and every 5 levels thereafter.
@@ -182,7 +182,7 @@ Xvim was imprisoned under Zhentil Keep during the Time of Troubles, where he was
 
 Advantages:
 - SPHERE_PLACEHOLDER
-- MAGE_SPELL_PLACEHOLDER.
+- MAGE_SPELL_PLACEHOLDER
 - Immunity to fear effects.
 - 5th level cleric: May cast Cloak of Fear once per day. An additional use is gained at 10th level and every 5 levels thereafter.
 - 7th level cleric: May cast Greater Malison once per day. An additional use is gained at 12th level and every 5 levels thereafter.
@@ -425,7 +425,7 @@ ILMATER'S ENDURANCE: The caster draws upon Ilmater to be able to shoulder the bu
 
 - 9th level: can cast Heal once per day, as the sixth level priest spell. An additional use is gained at 15th level and every 6 levels thereafter.
 
-Disadvantages:
+Requirements:
 - Alignment restricted to lawful good, neutral good, and lawful neutral.~
 
 @49="Abjurer of Ilmater"
@@ -447,6 +447,8 @@ ILMATER'S ENDURANCE: The caster draws upon Ilmater to be able to shoulder the bu
 
 Disadvantages:
 - BARRED_SCHOOL_PLACEHOLDER
+
+Requirements:
 - Alignment restricted to lawful good, neutral good, and lawful neutral.~
 
 
@@ -463,7 +465,7 @@ TYMORA'S FAVOR: For 10 rounds, all allies in the area gain a +1 luck bonus. In a
 
 - Level 9: May cast Lower Resistance once per day. An additional use is gained at level 14 and every 5 levels thereafter.
 
-Disadvantages:
+Requirements:
 - Alignment restricted to Neutral Good, Chaotic Good, Neutral, or Chaotic Neutral."
 
 
@@ -480,7 +482,7 @@ BOON OF LATHANDER: This spell lasts 1 round per level of the caster. It gives th
 
 - 9th level: May cast False Dawn once per day. An additional use is gained at 14th level and every 5 levels thereafter.
 
-Disadvantages:
+Requirements:
 - Alignment restricted to lawful good, neutral good, chaotic good, and true neutral."
 @56="Stormlord of Talos"
 // largely adjusted from the vanilla description
@@ -496,7 +498,7 @@ Advantages:
 
 LIGHTNING OF TALOS: This spell conjures a bolt of lightning which unerringly strikes a single target, inflicting 1d6 points of electrical damage per level of the priest (maximum 15d6). A successful saving throw vs. spells halves the damage.
 
-Disadvantages:
+Requirements:
 - Alignment restricted to neutral evil, chaotic evil, and chaotic neutral."
 @58="Watcher of Helm"
 // largely adjusted from the vanilla description
@@ -512,7 +514,7 @@ SEEKING SWORD: This spell creates a sword in the Cleric's hand (that cannot be d
 
 - 7th level: May cast Truesight once per day. An additional use is gained at 12th level and every 5 levels thereafter.
 
-Disadvantages:
+Requirements:
 - Alignment restricted to lawful good, lawful neutral, lawful evil, and true neutral."
 @60="Battleguard of Tempus"
 @61="BATTLEGUARD OF TEMPUS: Tempus (pronounced: TEM-pus), also known as the Lord of Battles or the Foehammer, is random in his favors, yet his chaotic nature favors all sides equally. Lord Tempus may be on an army's side one day and against them the next; such is the nature of war. Tempuran clergy can be found on both sides of a conflict, as none can ever truly know whom the war god will favor.
@@ -528,7 +530,7 @@ Advantages:
 
 CHAOS OF BATTLE: Chaos of Battle applies bonuses to all allies and penalties to all enemies within a 30-ft. radius of the caster. The spell lasts 1 turn and will randomly affect the targets' Armor Class, Hit Points, THAC0, saves, or luck. The magnitude of the effect starts at 1 (5 for Hit Points) at level 1 and will improve by 1 (5 for Hit Points) every 6 levels of the caster.
 
-Disadvantages:
+Requirement:
 - Alignment restricted to chaotic good, chaotic neutral, chaotic evil, or true neutral."
 @62="Champion of Tyr"
 @63="CHAMPION OF TYR
@@ -550,7 +552,7 @@ EXALTATION: This spell enables a priest to aid and protect any one being other t
 
 - 11th level cleric: May cast Holy Word once per day. 
 
-Disadvantages:
+Requirements:
 - Alignment restricted to lawful good, neutral good, or lawful neutral."
 @64="Heartwarder of Sune"
 @65="HEARTWARDER OF SUNE: Sune (pronounced: SUE-nee) Firehair is said to be the fairest of all the powers. When she is represented, she is shown as the most beautiful woman in the Realms, with sweeping, radiant, red hair and incredible charms. The Sunite faith is a popular one in large metropolitan areas and among the nobility. Those of a literary or artistic bent, as well as people falling in love or looking for lifemates, often venerate the Lady Firehair.
@@ -571,7 +573,7 @@ VEIL OF DJALICE: The caster temporarily augments <PRO_HISHER> beauty to unearthl
 - 9th level: May use Emotion: Hope once per day and Emotion: Hopelessness once per day.
 - 12th level: May use Mantle once per day.
 
-Disadvantages:
+Requirements:
 - Alignment restricted to neutral good, chaotic good, and chaotic neutral."
 @66="Dreadmaster of Bane"
 @67="DREADMASTER OF BANE: The most feared and reviled deity in the Forgotten Realms, Bane is the lord of strife, hatred, and tyranny. His followers fight each other almost as much as enemy faiths, which is one of the prime reasons their devious priesthood has not dominated the Realms.
@@ -585,7 +587,7 @@ Advantages:
 - 9th level: May cast Control Undead once per day, as the 6th level wizard spell. An additional use is gained at 14th level and every 5 levels thereafter.
 - 12th level: May cast Symbol of Fear once per day, as the 7th level priest spell. An additional use is gained at 17th level and every 5 levels thereafter.
 
-Disadvantages:
+Requirements:
 - Alignment restricted to Lawful Evil, Neutral Evil or Chaotic Evil."
 @68="Authlim of Iyachtu Xvim"
 @69="AUTHLIM OF IYACHTU XVIM: Iyachtu Xvim (pronounced: Ee-YAK-too ZVIHM) is said to be the result of a union between the Black Lord, Bane, and a greater or a true tanar'ri, and thus the blood of Bane runs through his veins. Another tale says he is the spawn of the Black Lord and a corrupted Paladin. Also called the Godson and the Son of Bane, Xvim has served as Bane's instrument in the Realms, carrying out the will of his father. He appears either as a gaunt, naked man with a great scimitar or a black cloud with glowing green eyes.
@@ -601,7 +603,7 @@ Advantages:
 - 9th level: May cast Control Undead once per day. An additional use is gained at 14th level and every 5 levels thereafter.
 - 12th level: May cast Symbol of Fear once per day. An additional use is gained at 17th level and every 5 levels thereafter.
 
-Disadvantages:
+Requirements:
 - Alignment restricted to Lawful Evil, Neutral Evil, or Chaotic Evil."
 @70="Gray One of Myrkul"
 @71="GRAY ONE OF MYRKUL: Myrkul (pronounced: MER-kul) is the god of the dead. He has a cold, malignant intelligence, and is never known to be other than coldly amused when a mortal succeeds in avoiding his chosen fates. Mykul takes care that all mortals think of him often - he is even known to materialize beside open graves, scythe in hand, just to gaze around at gathering mourners for a few seconds before fading away, to remind everyone that he is waiting for them all.
@@ -617,7 +619,7 @@ Advantages:
 - 9th level: May cast Dolorous Decay once per day, as the 6th level cleric spell. 
 - 12th level: May cast Wither once per day, as the 7th level cleric spell. 
 
-Disadvantages:
+Requirements:
 - Alignment restricted to Lawful Evil, Neutral Evil, or Chaotic Evil."
 @72="Necrophant of Velsharoon"
 @73="NECROPHANT OF VELSHAROON: Velsharoon (pronounced: VEL-shah-roon) is the Archmage of Necromancy, a demipower who has gathered the study, practice, and practitioners of necromancy and evil liches into his portfolio and who is striving to add general undeath as well. Newly elevated to a divine state, the Lord of the Forgotten Crypt is only beginning to create a cult of worshipers in the Realms. Although many prognosticators, mortals and immortals alike, have predicted the quick destruction of this arrogant necromancer, Velsharoon has played one power off against another, and he has begun to establish himself in the Faerûnian pantheon.
@@ -633,7 +635,7 @@ Advantages:
 - 9th level: May cast Dolorous Decay once per day, as the 6th level cleric spell. 
 - 12th level: May cast Wither once per day, as the 7th level cleric spell. 
 
-Disadvantages:
+Requirements:
 - Alignment restricted to Lawful Evil, Neutral Evil, or Chaotic Evil."
 @74="Strifeleader of Cyric"
 @75="STRIFELEADER OF CYRIC: Cyric (pronounced: SEER-ick) is a megalomaniacal deity with an immense following. One of the three greater powers of evil on Faerûn, he is petty and self-centered, and enjoys misleading individuals of all inclinations so that they perform acts that ruin their lives or so that they make fatal mistakes. He drinks the tears of disillusioned dreamers and broken-hearted lovers. He is not above an alliance with another deity as long as he thinks he can betray the other divine power and come out ahead.
@@ -661,7 +663,7 @@ DREAD BLAST: the priest creates a ray of negative energy that deals 4d8 damage +
 - 10th level: May cast Invisible Stalker once per day, as the 6th level wizard spell.
 - 12th level: May cast Chaos once per day, as the 5th level wizard spell. An additional use is gained at level 18 and every 6 levels thereafter.
 
-Disadvantages: 
+Requirements:
 - Alignment restricted to Chaotic Neutral, Lawful Evil, Neutral Evil, or Chaotic Evil."
 @76="Deathstalker of Bhaal"
 @77="DEATHSTALKER OF BHAAL: Bhaal (pronounced: Bahl) is the god of death, particularly of slaying, assassination, and violent death. The Lord of Murder is venerated by numerous assassins, violent mercenaries, and other brutal and fiendish killers. 
@@ -685,7 +687,7 @@ DREAD BLAST: the priest creates a ray of negative energy that deals 4d8 damage +
 - 10th level: May cast Invisible Stalker once per day, as the 6th level wizard spell.
 - 12th level: May cast Finger of Death once per day, as the 7th level cleric spell.
 
-Disadvantages: 
+Requirements:
 - Alignment restricted to Lawful Evil, Neutral Evil, and Chaotic Evil."
 @78 =~Firewalker of Kossuth~
 @79 =~FIREWALKER OF KOSSUTH: Kossuth (pronounced: Koh-SOOTH), Firelord, the Tyrant among Fire, is an Elemental Lord from the Elemental Plane of Fire. He is generally uncaring to his faithful, but continues to grant his priests their powers since their worship increases his power on his home plane. To maintain continued worship he does take a limited interest in his followers' mortal problems, and occasionally makes his presence known with a manifestation, but never an avatar.
@@ -716,7 +718,7 @@ Advantages:
 - 5th level: May cast Remove Magic once per day, as the 3rd level mage spell. An additional use is granted at 11th level and every 6 levels thereafter.
 - 9th level: May cast Spell Turning once per day, as the 7th level wizard spell. An additional use is granted at 15th level and every 6 levels thereafter.
 
-Disadvantages:
+Requirements:
 - Alignment restricted to Lawful Good, Neutral Good, Chaotic Good, Lawful Neutral, Chaotic Neutral, and Lawful Evil."
 
 @82="Magistrate of Azuth"
@@ -731,7 +733,7 @@ Advantages:
 - 7th level: May cast Fireball once per day, as the 3rd level mage spell. An additional use is granted at 13th level and every 6 levels thereafter.
 - 9th level: May cast Mordenkainen's Force Missiles once per day, as the 4th level mage spell. An additional use is granted at 15th level and every 6 levels thereafter.
 
-Disadvantages: 
+Requirements:
 - Alignment restricted to Lawful Good, Lawful Neutral, True Neutral, Chaotic Neutral, and Lawful Evil."
 @84="Nightcloak of Shar"
 @85="NIGHTCLOAK OF SHAR: Shar is the goddess of darkness, night, loss, and forgetfulness. Her main aspect is worshipped by those who deal in the night (such as thieves), who hate the light (such as goblin races and their allies), and who feel bitterness and loss. Her symbol is a black disk with a border of deep purple.
@@ -752,7 +754,7 @@ DARK BOLT: This spell creates small chakrams in the casters hand (one per level 
 - 9th level: May cast Confusion once per day, as the 4th level mage spell. An additional use is gained at 17th level and every 8 levels thereafter.
 - 13th level: May cast Power Word: Blind once per day, as the 8th level mage spell.
 
-Disadvantages:
+Requirements:
 - Alignment restricted to True Neutral, Lawful Evil, Neutral Evil, and Chaotic Evil."
 @86="Conjurer of Azuth"
 @87="CONJURER OF AZUTH: Azuth (pronounced: Ah-ZOOTH) is the god of wizards and mages and to a much lesser degree, all spellcasters, as opposed to Mystra, who is the goddess of all magic. Azuth is Mystra's servant, friend, and advisor.
@@ -769,6 +771,8 @@ Advantages:
 
 Disadvantages: 
 - BARRED_SCHOOL_PLACEHOLDER
+
+Requirements:
 - Alignment restricted to Lawful Good, Lawful Neutral, True Neutral, Chaotic Neutral, and Lawful Evil."
 @88="Conjurer of Bane"
 @89="CONJURER OF BANE: The most feared and reviled deity in the Forgotten Realms, Bane is the lord of strife, hatred, and tyranny. His followers fight each other almost as much as enemy faiths, which is one of the prime reasons their devious priesthood has not dominated the Realms.
@@ -778,7 +782,7 @@ Among those followers of Bane who study the arcane arts, conjuration is a popula
 Advantages:
 - BONUS_SCHOOL_PLACEHOLDER
 - SPHERE_PLACEHOLDER
-- MAGE_SPELL_PLACEHOLDER.
+- MAGE_SPELL_PLACEHOLDER
 - Immunity to fear effects.
 - 5th level cleric: May cast Cloak of Fear once per day, as the 4th level priest spell. An additional use is gained at 10th level and every 5 levels thereafter.
 - 7th level cleric: May cast Greater Malison once per day, as the 4th level wizard spell. An additional use is gained at 12th level and every 5 levels thereafter.
@@ -787,6 +791,8 @@ Advantages:
 
 Disadvantages:
 - BARRED_SCHOOL_PLACEHOLDER
+
+Requirements:
 - Alignment restricted to Lawful Evil, Neutral Evil, and Chaotic Evil."
 @90="Conjurer of Xvim"
 @91="CONJURER OF IYACHTU XVIM: Iyachtu Xvim (pronounced: Ee-YAK-too XVIHM) is said to the result of a union between the Black Lord, Bane, and a greater or a true tanar'ri, and thus the blood of Bane runs through his veins. Another tale says he is the spawn of the Black Lord and a corrupted Paladin. Also called the Godson and the Son of Bane, Xvim has served as Bane's instrument in the Realms, carrying out the will of his father. He appears either as a gaunt, naked man with a great scimitar or a black cloud with glowing green eyes.
@@ -798,7 +804,7 @@ Among those followers of Iyachtu Xvim who study the arcane arts, conjuration is 
 Advantages:
 - BONUS_SCHOOL_PLACEHOLDER
 - SPHERE_PLACEHOLDER
-- MAGE_SPELL_PLACEHOLDER.
+- MAGE_SPELL_PLACEHOLDER
 - Immunity to fear effects.
 - 5th level cleric: May cast Cloak of Fear once per day, as the 4th level priest spell. An additional use is gained at 10th level and every 5 levels thereafter.
 - 7th level cleric: May cast Greater Malison once per day, as the 4th level wizard spell. An additional use is gained at 12th level and every 5 levels thereafter.
@@ -807,6 +813,8 @@ Advantages:
 
 Disadvantages:
 - BARRED_SCHOOL_PLACEHOLDER
+
+Requirements:
 - Alignment restricted to Lawful Evil, Neutral Evil, and Chaotic Evil."
 @92="Bloodspear of Gruumsh"
 @93="BLOODSPEAR OF GRUUMSH: Gruumsh (pronounced: GROOMSH) is the undisputed head of the pantheon of the orcs. He is a fearsome, brutal god who revels in warface, and ever seeks new territory for his race. Gruumsh has an abiding hatred for the elves after the elvish deity Corellon Larethian defeated him in battle, and seeks to have his people raze and destroy elvish homelands wherever possible.
@@ -824,7 +832,7 @@ SPEAR OF GRUUMSH: This spell creates an enchanted spear which travels from the c
 
 - 7th level: May cast Champion's Strength once per day, as the 5th level priest spell. 
 
-Disadvantages:
+Requirements:
 - Alignment restricted to Chaotic Neutral, Neutral Evil and Chaotic Evil."
 @94="Feywarden of Corellon"
 @95="FEYWARDEN OF CORELLON: The leader of the elven pantheon, Corellon Larethian (pronounced: CORE-ehlon Lah-RETH-ee-yen) is said to have given birth to the entire elven race, although sometimes Sehanine or Angharradh are given credit as well. Elven lore states that the Fair Folk sprang from drops of blood Corellon shed in epic battles with Gruumsh mingled with Sehanine's (or Angharradh's) tears. The Creator of the Elves embodies the highest ideals of elvenkind, and he is the patron of most aesthetic endeavors, including art, magic, music, poetry, and warfare. He is venerated by all the Fair Folk, except the drow and those who have turned to Lolth, Ghaunadaur, Vhaeraun, and other dark powers. Corellon is especially popular with elf and half-elf mages, musicians, and poets.
@@ -838,7 +846,7 @@ Advantages:
 - 7th level: May cast Flame Arrow once per day, as the 3rd level mage spell. An additional use is gained at 13th level and every 6 levels thereafter.
 - 11th level: May cast Prismatic Spray once per day, as the 7th level mage spell.
 
-Disadvantages:
+Requirements:
 - Race restricted to elf or half-elf.
 - Alignment restricted to Lawful Good, Neutral Good, or Chaotic Good."
 @96="Priestess of Lolth"
@@ -854,7 +862,7 @@ Advantages:
 - 8th level: May cast True Seeing once per day, as the 5th level priest spell. An additional use is gained at 16th level and every 8 levels thereafter.
 - 10th level: May cast Mental Domination once per day, as the 4th level priest spell. Males have a -4 penalty to their saving throw.
 
-Disadvantages:
+Requirements:
 - Race restricted to elf or half-elf.
 - Alignment restricted to Chaotic Neutral, Neutral Evil, or Chaotic Evil.
 - Must be female."
@@ -870,7 +878,7 @@ Advantages:
 - 5th level: May cast Animal Summoning I once per day, as the 4th level priest spell. At 7th level this becomes Animal Summoning II and at 9th level, Animal Summoning III.
 - 7th level: May cast Improved Invisibility once per day, as the 4th level mage spell except that only the Fastpaw can be affected. An additional use is gained at 14th level and every 7 levels thereafter.
 
-Disadvantages:
+Requirements:
 - Race restricted to gnome, elf or half-elf.
 - Alignment restricted to Lawful Good, Neutral Good, or Chaotic Good."
 @100="Valiant One of Clangeddin"
@@ -885,7 +893,7 @@ Advantages:
 - 5th level: May cast Strength of One once per day, as the 3rd level priest spell. An additional use is gained at level 11 and every 6 levels thereafter.
 - 7th level: May cast Champion's Strength once per day, as the 5th level priest spell.
 
-Disadvantages:
+Requirements:
 - Race restricted to dwarf.
 - Alignment must be Lawful Good, Neutral Good, or Lawful Neutral."
 
@@ -904,7 +912,7 @@ Advantages:
 
 CONJURE ICE PARAELEMENTAL: The caster opens a special gate to the Paraelemental Plane of Ice and calls forth a powerful ice paraelemental bound to the service of Auril. The strength of the paraelemental depends on the power of the caster: initially, an 8-HD paraelemental is summoned, but this increases to 12HD at 13th level, to 16HD at 17th level, and to a maximum of 24HD at 21st level. The paraelemental will obey the commands of the priest, but the priest does not have to concentrate on it to control it, leaving <PRO_HIMHER> free to perform other actions while the ice paraelemental turns its enemies to frozen shards. The paraelemental will last until the spell duration expires or the paraelemental is slain.
 
-Disadvantages:
+Requirements:
 - Alignment must be Lawful Evil, Neutral Evil or Chaotic Evil."
 @104="Malagent of Talona"
 @105="MALAGENT OF TALONA: Talona (pronounced: Tah-LOW-nah), also called the Lady of Poisons, Mistress of Disease, and Mother of All Plagues, is the goddess of poison and disease. Like most chaotic evil gods, she is more feared than worshipped and is propitiated to avoid her attentions, not to draw them.
@@ -929,7 +937,7 @@ POISON WEAPON: Each successful hit within the next 5 rounds will inject poison i
 
 - 7th level: May cast Cloud of Pestilence once per day, as the 4th level priest spell. An additional use is gained at 13th level and every 6 levels thereafter.
 
-Disadvantages: 
+Requirements:
 - Alignment must be Lawful Evil, Neutral Evil or Chaotic Evil."
 @106="Waveservant of Umberlee"
 @107="WAVESERVANT OF UMBERLEE: Umberlee the Bitch Queen (pronounced: Um-ber-LEE) rules from her watery lair in a flooded level of the Abyss. She is worshiped by most out of fear as opposed to adoration. Ship crews toss her gems over the sides of their vessels to calm storm-tossed waters. She has a large number of shrines in coastal cities, and sailors often leave flowers, candles, small candies, or coins on her altars in hopes that Umberlee will spare them on the next voyage. Others who pay tribute to her include merchants sending goods by sea, port cities, and island nations and settlements who would be devastated by her wrath and have not a powerful patron deity to counter her menacing demands.
@@ -944,7 +952,7 @@ Advantages:
 - 6th level: May cast Smashing Wave once per day, as the 4th level priest spell. An additional use is gained at 12th level and every 6 levels thereafter.
 - 9th level: May summon an 8HD Water Elemental once per day. The power of the elemental increases to 12HD at level 13, to 16HD at level 17, and to 24HD at level 21.
 
-Disadvantages:
+Requirements:
 - Alignment must be Chaotic Neutral, Neutral Evil, or Chaotic Evil."
 
 @108="Talon of Malar"
@@ -960,7 +968,7 @@ Advantages:
 - 9th level: May cast Animal Rage once per day, as the 5th level priest spell. An additional use is gained at 15th level and every 6 levels thereafter.
 - 11th level: When using Beast Claw, Strength increases to 19 (rather than 18/76) and the priest gains 3 attacks per round (rather than 2).
 
-Disadvantages:
+Requirements:
 - Alignment must be Chaotic Neutral, Lawful Evil, Neutral Evil, or Chaotic Evil."
 @110="Enchanter of Sune"
 @111="ENCHANTER OF SUNE: Sune (pronounced: SUE-nee) Firehair is said to be the fairest of all the powers. When she is represented, she is shown as the most beautiful woman in the Realms, with sweeping, radiant, red hair and incredible charms. The Sunite faith is a popular one in large metropolitan areas and among the nobility. Those of a literary or artistic bent, as well as people falling in love or looking for lifemates, often venerate the Lady Firehair.
@@ -984,6 +992,8 @@ VEIL OF DJALICE: The Enchanter temporarily augments <PRO_HISHER> beauty to unear
 
 Disadvantages:
 - BARRED_SCHOOL_PLACEHOLDER
+
+Requirements:
 - Alignment restricted to neutral good, chaotic good, and chaotic neutral."
 @112="Illusionist of Shar"
 @113="ILLUSIONIST OF SHAR: Shar is the goddess of darkness, night, loss, and forgetfulness. Her main aspect is worshipped by those who deal in the night (such as thieves), who hate the light (such as goblin races and their allies), and who feel bitterness and loss. Her symbol is a black disk with a border of deep purple.
@@ -1007,6 +1017,8 @@ DARK BOLT: This spell creates small chakrams in the casters hand (one per level 
 
 Disadvantages:
 - BARRED_SCHOOL_PLACEHOLDER
+
+Requirements:
 - Alignment restricted to True Neutral, Lawful Evil, Neutral Evil, and Chaotic Evil."
 @114="Invoker of Lathander"
 @115="INVOKER OF LATHANDER: Lathander (pronounced: Lah-THAN-der) is the good god of renewal, creativity, and youth, and is celebrated nearly everywhere. His followers are very popular throughout the realms, and there are numerous wealthy temples devoted to him.
@@ -1025,6 +1037,8 @@ BOON OF LATHANDER: This spell lasts 1 round per level of the caster. It gives th
 
 Disadvantages:
 - BARRED_SCHOOL_PLACEHOLDER
+
+Requirements:
 - Alignment restricted to lawful good, neutral good, chaotic good, and true neutral."
 @116="Invoker of Talos"
 @117="INVOKER OF TALOS: Talos (pronounced: TAHL-os) is the evil god of storms, destruction, and rebellion. Clerics of the Stormlord warn that Talos must be appeased or he will rain destruction upon the land.
@@ -1044,6 +1058,8 @@ LIGHTNING OF TALOS: This spell conjures a bolt of lightning which unerringly str
 
 Disadvantages:
 - BARRED_SCHOOL_PLACEHOLDER
+
+Requirements:
 - Alignment restricted to neutral evil, chaotic evil, and chaotic neutral."
 @118="Necromancer of Talona"
 @119="NECROMANCER OF TALONA: Talona (pronounced: Tah-LOW-nah), also called the Lady of Poisons, Mistress of Disease, and Mother of All Plagues, is the goddess of poison and disease. Like most chaotic evil gods, she is more feared than worshipped and is propitiated to avoid her attentions, not to draw them.
@@ -1070,6 +1086,8 @@ POISON WEAPON: Each successful hit within the next 5 rounds will inject poison i
 
 Disadvantages: 
 - BARRED_SCHOOL_PLACEHOLDER
+
+Requirements:
 - Alignment must be Lawful Evil, Neutral Evil or Chaotic Evil."
 @120="Necromancer of Myrkul"
 @121="NECROMANCER OF MYRKUL: Myrkul (pronounced: MER-kul) is the god of the dead. He has a cold, malignant intelligence, and is never known to be other than coldly amused when a mortal succeeds in avoiding his chosen fates. Mykul takes care that all mortals think of him often - he is even known to materialize beside open graves, scythe in hand, just to gaze around at gathering mourners for a few seconds before fading away, to remind everyone that he is waiting for them all.
@@ -1088,6 +1106,8 @@ Advantages:
 
 Disadvantages:
 - BARRED_SCHOOL_PLACEHOLDER
+
+Requirements:
 - Alignment restricted to Lawful Evil, Neutral Evil, or Chaotic Evil."
 @122="Necromancer of Velsharoon"
 @123="NECROMANCER OF VELSHAROON: Velsharoon (pronounced: VEL-shah-roon) is the Archmage of Necromancy, a demipower who has gathered the study, practice, and practitioners of necromancy and evil liches into his portfolio and who is striving to add general undeath as well. Newly elevated to a divine state, the Lord of the Forgotten Crypt is only beginning to create a cult of worshipers in the Realms. Although many prognosticators, mortals and immortals alike, have predicted the quick destruction of this arrogant necromancer, Velsharoon has played one power off against another, and he has begun to establish himself in the Faerûnian pantheon.
@@ -1106,6 +1126,8 @@ Advantages:
 
 Disadvantages:
 - BARRED_SCHOOL_PLACEHOLDER
+
+Requirements:
 - Alignment restricted to Lawful Evil, Neutral Evil, or Chaotic Evil."
 @124="Diviner of Selûne"
 @125="DIVINER OF SELÛNE: Selûne (pronounced: Seh-LOON-ay), Our Lady of Silver, is the goddess of the moon, the stars, and those who use them to navigate. Her eternal foe is the evil Shar, goddess of darkness, night, loss, and forgetfulness. Selûne is often called the Moonmaiden for her connection to the silver moon that orbits Faerûn. She is the goddess of the moon and travelers. Selûne's home plane is The Gates of the Moon with her home a shining hall of silver called Argentil.
@@ -1123,6 +1145,8 @@ Advantages:
 
 Disadvantages:
 - BARRED_SCHOOL_PLACEHOLDER
+
+Requirements:
 - Alignment restricted to chaotic good, neutral good, and chaotic neutral."
 @126="Transmuter of Selûne"
 @127="TRANSMUTER OF SELÛNE: Selûne (pronounced: Seh-LOON-ay), Our Lady of Silver, is the goddess of the moon, the stars, and those who use them to navigate. Her eternal foe is the evil Shar, goddess of darkness, night, loss, and forgetfulness. Selûne is often called the Moonmaiden for her connection to the silver moon that orbits Faerûn. She is the goddess of the moon and travelers. Selûne's home plane is The Gates of the Moon with her home a shining hall of silver called Argentil.
@@ -1140,6 +1164,8 @@ Advantages:
 
 Disadvantages:
 - BARRED_SCHOOL_PLACEHOLDER
+
+Requirements:
 - Alignment restricted to chaotic good, neutral good, and chaotic neutral."
 @128="Enchanter of Cyric"
 @129="ENCHANTER OF CYRIC: Cyric (pronounced: SEER-ick) is a megalomaniacal deity with an immense following. One of the three greater powers of evil on Faerûn, he is petty and self-centered, and enjoys misleading individuals of all inclinations so that they perform acts that ruin their lives or so that they make fatal mistakes. He drinks the tears of disillusioned dreamers and broken-hearted lovers. He is not above an alliance with another deity as long as he thinks he can betray the other divine power and come out ahead.
@@ -1170,6 +1196,8 @@ DREAD BLAST: the priest creates a ray of negative energy that deals 4d8 damage +
 
 Disadvantages: 
 - BARRED_SCHOOL_PLACEHOLDER
+
+Requirements:
 - Alignment restricted to Chaotic Neutral, Lawful Evil, Neutral Evil, or Chaotic Evil."
 @130="Transmuter of Mystra"
 @131="TRANSMUTER OF MYSTRA: Mystra (pronouced: MISS-trah) is the goddess of magic and with that the goddess of possibilities, which makes her arguably the most powerful deity in Faerûn. She is said to have taught the first spellcaster of the Realms, and to have enabled many of the races to use magic. She supposedly weighs and judges each new spell or magical item to determine whether it should be permitted into the Realms. She is most venerated by wizards and those who use magic or magical items in their daily use. She differs from Azuth in that Azuth is the god of wizards (as to a much lesser degree, all spellcasters), while Mystra is the goddess of the essential force that makes all spellcasting possible. She provides and tends the Weave, the conduit to enable mortal spellcasters and magical crafters to safely access the raw force that is magic.
@@ -1188,6 +1216,8 @@ Advantages:
 
 Disadvantages:
 - BARRED_SCHOOL_PLACEHOLDER
+
+Requirements:
 - Alignment restricted to Lawful Good, Neutral Good, Chaotic Good, Lawful Neutral, Chaotic Neutral, and Lawful Evil."
 
 @132="Illusionist of Azuth"
@@ -1205,6 +1235,8 @@ Advantages:
 
 Disadvantages: 
 - BARRED_SCHOOL_PLACEHOLDER
+
+Requirements:
 - Alignment restricted to Lawful Good, Lawful Neutral, True Neutral, Chaotic Neutral, and Lawful Evil."
 @134="Abjurer of Mystra"
 @135="ABJURER OF MYSTRA: Mystra (pronounced: MISS-trah) is the goddess of magic and with that the goddess of possibilities, which makes her arguably the most powerful deity in Faerûn. She is said to have taught the first spellcaster of the Realms, and to have enabled many of the races to use magic. She supposedly weighs and judges each new spell or magical item to determine whether it should be permitted into the Realms. She is most venerated by wizards and those who use magic or magical items in their daily use. She differs from Azuth in that Azuth is the god of wizards (as to a much lesser degree, all spellcasters), while Mystra is the goddess of the essential force that makes all spellcasting possible. She provides and tends the Weave, the conduit to enable mortal spellcasters and magical crafters to safely access the raw force that is magic.
@@ -1223,6 +1255,8 @@ Advantages:
 
 Disadvantages:
 - BARRED_SCHOOL_PLACEHOLDER
+
+Requirements:
 - Alignment restricted to Lawful Good, Neutral Good, Chaotic Good, Lawful Neutral, Chaotic Neutral, and Lawful Evil."
 @136 =~Elementalist of Kossuth~
 @137 =~FIRE ELEMENTALIST OF KOSSUTH: Kossuth (pronounced: Koh-SOOTH), Firelord, the Tyrant among Fire, is an Elemental Lord from the Elemental Plane of Fire. He is generally uncaring to his faithful, but continues to grant his priests their powers since their worship increases his power on his home plane. To maintain continued worship he does take a limited interest in his followers' mortal problems, and occasionally makes his presence known with a manifestation, but never an avatar.
@@ -1270,6 +1304,8 @@ CONJURE ICE PARAELEMENTAL: The caster opens a special gate to the Paraelemental 
 Disadvantages:
 - May not learn or cast any spells related to fire. The complete list of such spells is: BLOCKED_SPELL_PLACEHOLDER.
 - Receives a -15% penalty when scribing scrolls of non-elemental spells.
+
+Requirements:
 - Alignment must be Lawful Evil, Neutral Evil or Chaotic Evil."
 
 @140="Elementalist of Talos"
@@ -1294,6 +1330,8 @@ LIGHTNING OF TALOS: This spell conjures a bolt of lightning which unerringly str
 Disadvantages:
 - May not learn or cast any spells related to earth, stone, metal, or acid. The complete list of such spells is: BLOCKED_SPELL_PLACEHOLDER.
 - Receives a -15% penalty when scribing scrolls of non-elemental spells.
+
+Requirements:
 - Alignment restricted to neutral evil, chaotic evil, and chaotic neutral."
 
 @142="Elementalist of Moradin"
@@ -1314,6 +1352,8 @@ Advantages:
 Disadvantages:
 - May not learn or cast any spells related to air, clouds, wind, or electricity. The complete list of such spells is: BLOCKED_SPELL_PLACEHOLDER.
 - Receives a -15% penalty when scribing scrolls of non-elemental spells.
+
+Requirements:
 - Race restricted to dwarf.
 - Alignment must be Lawful Good, Neutral Good, or Lawful Neutral."
 @144="Elementalist of Baervan"
@@ -1335,6 +1375,8 @@ Advantages:
 Disadvantages:
 - May not learn or cast any spells related to earth, stone, metal, or acid. The complete list of such spells is: BLOCKED_SPELL_PLACEHOLDER.
 - Receives a -15% penalty when scribing scrolls of non-elemental spells.
+
+Requirements:
 - Race restricted to gnome, elf or half-elf.
 - Alignment restricted to Lawful Good, Neutral Good, or Chaotic Good."
 @146="Illusionist of Baervan"
@@ -1352,6 +1394,8 @@ Advantages:
 
 Disadvantages:
 - BARRED_SCHOOL_PLACEHOLDER
+
+Requirements:
 - Race restricted to gnome, elf or half-elf.
 - Alignment restricted to Lawful Good, Neutral Good, or Chaotic Good."
 @148="Elementalist of Umberlee"
@@ -1374,6 +1418,8 @@ Advantages:
 Disadvantages:
 - May not learn or cast any spells related to fire. The complete list of such spells is: BLOCKED_SPELL_PLACEHOLDER.
 - Receives a -15% penalty when scribing scrolls of non-elemental spells.
+
+Requirements:
 - Alignment must be Chaotic Neutral, Neutral Evil, or Chaotic Evil."
 
 @150="Elementalist of Sune"
@@ -1402,6 +1448,8 @@ VEIL OF DJALICE: The caster temporarily augments <PRO_HISHER> beauty to unearthl
 Disadvantages:
 - May not learn or cast any spells related to water, ice, or cold. The complete list of such spells is: BLOCKED_SPELL_PLACEHOLDER.
 - Receives a -15% penalty when scribing scrolls of non-elemental spells.
+
+Requirements:
 - Alignment restricted to neutral good, chaotic good, and chaotic neutral."
 
 @152="Wild Mage of Mystra"
@@ -1429,7 +1477,7 @@ Advantages:
 - 5th level cleric: May cast Remove Magic once per day, as the 3rd level mage spell. An additional use is granted at 11th level and every 6 levels thereafter.
 - 9th level cleric: May cast Spell Turning once per day, as the 7th level wizard spell. An additional use is granted at 15th level and every 6 levels thereafter.
 
-Disadvantages:
+Requirements:
 - Alignment restricted to Lawful Good, Neutral Good, Chaotic Good, Lawful Neutral, Chaotic Neutral, and Lawful Evil."
 
 @154="Force Mage of Mystra"
@@ -1451,6 +1499,8 @@ Advantages:
 
 Disadvantages:
 - May not learn or cast any mage spells related to elemental earth (including acid), water (including cold), fire, or air (including lightning).
+
+Requirements:
 - Alignment restricted to Lawful Good, Neutral Good, Chaotic Good, Lawful Neutral, Chaotic Neutral, and Lawful Evil."
 @156="Force Mage"
 @157="Battlerager of Clangeddin"
@@ -1474,6 +1524,8 @@ ENRAGE: BERSERKER_RAGE_PLACEHOLDER
 Disadvantages:
 - Becomes winded after berserking: -2 penalty to Armor Class, to-hit rolls, and damage rolls.
 - May not become Proficient in ranged weapons.
+
+Requirements:
 - Race restricted to dwarf.
 - Alignment must be Neutral Good or Chaotic Good."
 
@@ -1504,6 +1556,8 @@ RAGE: BARBARIAN_RAGE_PLACEHOLDER
 
 Disadvantages:
 - May not wear armor heavier than splint mail.
+
+Requirements:
 - Alignment restricted to Chaotic Neutral, Neutral Evil or Chaotic Evil."
 @161="Axe of Clangeddin"
 
@@ -1521,7 +1575,7 @@ Advantages:
 - 5th level cleric: May cast Strength of One once per day, as the 3rd level priest spell. An additional use is gained at level 11 and every 6 levels thereafter.
 - 7th level cleric: May cast Champion's Strength once per day, as the 5th level priest spell.
 
-Disadvantages:
+Requirements:
 - Race restricted to dwarf.
 - Alignment must be Lawful Good, Neutral Good, or Lawful Neutral."
 
@@ -1550,6 +1604,8 @@ ENRAGE: BERSERKER_RAGE_PLACEHOLDER
 Disadvantages:
 - Becomes winded after berserking: -2 penalty to Armor Class, to-hit rolls, and damage rolls.
 - May not become Proficient in ranged weapons.
+
+Requirements:
 - Alignment may not be Lawful."
 
 @165="Plague-Rat of Talona"
@@ -1577,6 +1633,8 @@ POISON WEAPON: POISON_WEAPON_PLACEHOLDER
 
 Disadvantages: 
 - May only distribute 15 skill points per level among thieving skills.
+
+Requirements:
 - Alignment must be Lawful Evil, Neutral Evil or Chaotic Evil."
 
 @167="Dread Death of Cyric"
@@ -1605,6 +1663,8 @@ DREAD BLAST: the priest creates a ray of negative energy that deals 4d8 damage +
 
 Disadvantages: 
 - May only distribute 15 skill points per level among thieving skills.
+
+Requirements:
 - Alignment restricted to Chaotic Neutral, Lawful Evil, Neutral Evil, or Chaotic Evil."
 @169="Assassin of Bhaal"
 @170="ASSASSIN OF BHAAL
@@ -1630,12 +1690,14 @@ DREAD BLAST: the priest creates a ray of negative energy that deals 4d8 damage +
  
 Disadvantages: 
 - May only distribute 15 skill points per level among thieving skills.
+
+Requirements:
 - Alignment restricted to Lawful Evil, Neutral Evil, or Chaotic Evil."
 @171="Scoundrel of Tymora"
 @172="SCOUNDREL OF TYMORA
 (Thief / Priest of Tymora)
 
- Tymora (pronounced: Tie-MORE-ah), often called Lady Luck, is the goddess of good fortune. Tymora is fickle but playful and never vengeful or malicious. 
+Tymora (pronounced: Tie-MORE-ah), often called Lady Luck, is the goddess of good fortune. Tymora is fickle but playful and never vengeful or malicious. 
 
 Tymora's faith is one of the most common in the realms, especially among adventurers. Thieves, rogues and scoundrels often say a prayer to her before their latest caper, and some of her priesthood dabble in rogueish matters themselves.
 
@@ -1649,13 +1711,13 @@ TYMORA'S FAVOR: For 10 rounds, all allies in the area gain a +1 luck bonus. In a
 
 - 9th level cleric: May cast Lower Resistance once per day. An additional use is gained at level 14 and every 5 levels thereafter.
 
-Disadvantages:
+Requirements:
 - Alignment restricted to Neutral Good, Chaotic Good, Neutral, or Chaotic Neutral."
 @173="Rake of Sune"
 @174="RAKE OF SUNE
 (Swashbuckler / Priest of Sune)
 
- Sune (pronounced: SUE-nee) Firehair is said to be the fairest of all the powers. When she is represented, she is shown as the most beautiful woman in the Realms, with sweeping, radiant, red hair and incredible charms. The Sunite faith is a popular one in large metropolitan areas and among the nobility. Those of a literary or artistic bent, as well as people falling in love or looking for lifemates, often venerate the Lady Firehair.
+Sune (pronounced: SUE-nee) Firehair is said to be the fairest of all the powers. When she is represented, she is shown as the most beautiful woman in the Realms, with sweeping, radiant, red hair and incredible charms. The Sunite faith is a popular one in large metropolitan areas and among the nobility. Those of a literary or artistic bent, as well as people falling in love or looking for lifemates, often venerate the Lady Firehair.
 
 Sune's priests generally shun martial training, preferring softer and subtler ways of pursuing their goals. Those who do dabble in combat usually prefer a light fighting style, unencumbered by heavy - and unattractive - armor.
 
@@ -1679,13 +1741,15 @@ VEIL OF DJALICE: The caster temporarily augments <PRO_HISHER> beauty to unearthl
 
 Disadvantages:
 - May not use Backstab ability.
+
+Requirements:
 - Alignment restricted to neutral good, chaotic good, and chaotic neutral."
 
 @175="Hunter of Malar"
 @176="HUNTER OF MALAR
 (Bounty Hunter / Priest of Malar)
 
- Malar (pronounced: MAH-larr) the Beastlord is the god of the savage wild. He is worshipped by hunters who revel in the kill or who hunt for sport or to excess, evil rangers, sentient carnivores, and lycanthropes. Those who suffer the depradations of wild beasts attempt to placate the Beastlord with offerings of freshly killed and bloody meat, but Malar rarely recognizes their entreaties. In his more favorable aspects he is revered by beings who identify with the untamed nature, grace, and amorality of predators.
+Malar (pronounced: MAH-larr) the Beastlord is the god of the savage wild. He is worshipped by hunters who revel in the kill or who hunt for sport or to excess, evil rangers, sentient carnivores, and lycanthropes. Those who suffer the depradations of wild beasts attempt to placate the Beastlord with offerings of freshly killed and bloody meat, but Malar rarely recognizes their entreaties. In his more favorable aspects he is revered by beings who identify with the untamed nature, grace, and amorality of predators.
 
 Some few followers of Malar make a doubtful living as hunters of men, skilled in tracking quarry and bringing them back alive—whether for lawful authorities or more often for underworld masters. 
 
@@ -1703,6 +1767,8 @@ SET SPECIAL SNARE: SET_SNARE_PLACEHOLDER
 
 Disadvantages:
 - May only distribute 20 skill points per level among thieving skills.
+
+Requirements:
 - Alignment must be Chaotic Neutral, Lawful Evil, Neutral Evil, or Chaotic Evil."
 @177="Totemic Shaman"
 @178="TOTEMIC SHAMAN
@@ -1731,7 +1797,7 @@ Disadvantages:
 This Druid has willingly allowed <PRO_HIMHER>self to become infected with lycanthropy, but due to intense study and training <PRO_HESHE> has the ability to control <PRO_HISHER> affliction. The form <PRO_HESHE> takes is that of the werewolf, the most famous of the lycanthrope shape changers. <PRO_HISHER> animal instinct is close to the surface, and emerges in bouts of violent rage in battle.
 
 Advantages:
-- SHAPESHIFTER_PLACEHOLDER
+SHAPESHIFTER_PLACEHOLDER
 - May use Enrage ability once per day, as detailed below. Gains one use at level 1 and an additional use every 4 fighter levels thereafter.
 
 ENRAGE: BERSERKER_RAGE_PLACEHOLDER
@@ -1760,6 +1826,8 @@ RAGE: BARBARIAN_RAGE_PLACEHOLDER
 Disadvantages:
 - May not learn or cast any spells related to water, ice, or cold. The complete list of such spells is: BLOCKED_SPELL_PLACEHOLDER.
 - Receives a -15% penalty when scribing scrolls of non-elemental spells.
+
+Requirements:
 - May not be Lawful."
 @183="Barbarian/Water Elementalist"
 @184="BARBARIAN / WATER ELEMENTALIST: Wizard magic is generally disdained among the barbarian tribes of Faerûn. Those few barbarians who practice the Art hone their battle skills - and their battle rage - in order to maintain the respect of their peers. Even so, many are outcasts driven from their tribes. Barbarian mages often specialize in elemental magic; water elementalists specialize in spells related to water, ice, or cold, at the cost of being unable to use spells related to the opposing elemental plane of Fire.
@@ -1779,6 +1847,8 @@ RAGE: BARBARIAN_RAGE_PLACEHOLDER
 Disadvantages:
 - May not learn or cast any spells related to fire. The complete list of such spells is: BLOCKED_SPELL_PLACEHOLDER.
 - Receives a -15% penalty when scribing scrolls of non-elemental spells.
+
+Requirements:
 - May not be Lawful."
 @185="Barbarian/Air Elementalist"
 @186="BARBARIAN / AIR ELEMENTALIST: Wizard magic is generally disdained among the barbarian tribes of Faerûn. Those few barbarians who practice the Art hone their battle skills - and their battle rage - in order to maintain the respect of their peers. Even so, many are outcasts driven from their tribes. Barbarian mages often specialize in elemental magic; air elementalists specialize in spells related to air, clouds, wind, or electricity, at the cost of being unable to use spells related to the opposing elemental plane of Earth.
@@ -1798,6 +1868,8 @@ RAGE: BARBARIAN_RAGE_PLACEHOLDER
 Disadvantages:
 - May not learn or cast any spells related to earth, stone, metal, or acid. The complete list of such spells is: BLOCKED_SPELL_PLACEHOLDER.
 - Receives a -15% penalty when scribing scrolls of non-elemental spells.
+
+Requirements:
 - May not be Lawful."
 @187="Barbarian/Earth Elementalist"
 @188="BARBARIAN / EARTH ELEMENTALIST: Wizard magic is generally disdained among the barbarian tribes of Faerûn. Those few barbarians who practice the Art hone their battle skills - and their battle rage - in order to maintain the respect of their peers. Even so, many are outcasts driven from their tribes. Barbarian mages often specialize in elemental magic; earth elementalists specialize in spells related to earth, stone, metal, or acid, at the cost of being unable to use spells related to the opposing elemental plane of Air.
@@ -1817,6 +1889,8 @@ RAGE: BARBARIAN_RAGE_PLACEHOLDER
 Disadvantages:
 - May not learn or cast any spells related to air, clouds, wind, or electricity. The complete list of such spells is: BLOCKED_SPELL_PLACEHOLDER.
 - Receives a -15% penalty when scribing scrolls of non-elemental spells.
+
+Requirements:
 - May not be Lawful."
 @189="Barbarian/Transmuter"
 @190="BARBARIAN / TRANSMUTER: Wizard magic is generally disdained among the barbarian tribes of Faerûn. Those few barbarians who practice the Art hone their battle skills - and their battle rage - in order to maintain the respect of their peers. Even so, many are outcasts driven from their tribes. 
@@ -1848,6 +1922,8 @@ Disadvantages:
 - BARRED_SCHOOL_PLACEHOLDER
 - Becomes winded after berserking: -2 penalty to Armor Class, to-hit rolls, and damage rolls.
 - May not become Proficient in ranged weapons.
+
+Requirements:
 - Alignment may not be Lawful."
 
 @193="Berserker/Wild Mage"
@@ -1874,6 +1950,8 @@ ENRAGE: BERSERKER_RAGE_PLACEHOLDER
 Disadvantages:
 - Becomes winded after berserking: -2 penalty to Armor Class, to-hit rolls, and damage rolls.
 - May not become Proficient in ranged weapons.
+
+Requirements:
 - Alignment may not be Lawful."
 
 @195="Kensai/Enchanter"
@@ -2037,14 +2115,14 @@ Magetrackers are bounty hunters that specialize in hunting spellcasters, and ret
 Advantages:
 - Each successful hit bestows a 25% cumulative chance of spell failure on the target.
 - WIZARD_SLAYER_PLACEHOLDER
-– +15% bonus to Set Traps.
+- +15% bonus to Set Traps.
 - May use the Set Special Snare ability once per day in addition to the normal Thief's Set Snare. Gains one use at thief level 1 and an additional use every 5 thief levels thereafter.
 
 SET SPECIAL SNARE: SET_SNARE_PLACEHOLDER
 
 Disadvantages:
-– May only distribute 20 skill points per level among thieving skills.
-– May not use any magic items apart from weapons and armor."
+- May only distribute 20 skill points per level among thieving skills.
+- May not use any magic items apart from weapons and armor."
 @214="Magetracker"
 
 
@@ -2089,7 +2167,7 @@ Advantages:
 - May cast Barkskin once per day, as the 2nd level priest spell except that only the Fastpaw can be affected. An additional use is gained at 7th level and every 6 levels thereafter.
 - +1 to hit and damage rolls with any missile weapon every 3 ranger levels.
 - May achieve Mastery (4 slots) in longbows and shortbows.
-– May use Called Shot ability once per day every 4 ranger levels.
+- May use Called Shot ability once per day every 4 ranger levels.
 
 CALLED SHOT: All successful ranged attacks within the next 10 seconds have the following cumulative effects besides normal damage, according to the level of the Archer:
  4th level: -1 penalty to target's THAC0.
@@ -2105,6 +2183,8 @@ Disadvantages:
 - May not wear any metal armor.
 - May only become Proficient (one slot) with melee weapons.
 - May not use Charm Animal ability.
+
+Requirements:
 - Race restricted to gnome, elf or half-elf.
 - Alignment restricted to Lawful Good, Neutral Good, or Chaotic Good."
 
@@ -2131,6 +2211,8 @@ Advantages:
 
 Disadvantages:
 - May not wear armor heavier than studded leather.
+
+Requirements:
 - Race restricted to elf or half-elf.
 - Alignment restricted to Lawful Good, Neutral Good, or Chaotic Good."
 
@@ -2141,7 +2223,7 @@ Disadvantages:
 A Night Wolf is a relentless hunter of the enemies of Nature: <PRO_HESHE> has willingly allowed <PRO_HIMHER>self to become infected with lycanthropy, but due to intense study and training <PRO_HESHE> has the ability to control <PRO_HISHER> affliction. The form <PRO_HESHE> takes is that of the werewolf, and <PRO_HESHE> has gained a mastery in stealth and surprise from <PRO_HISHER> affliction.
 
 Advantages:
-- SHAPESHIFTER_PLACEHOLDER
+SHAPESHIFTER_PLACEHOLDER
 - +20% to Move Silently and Hide In Shadows.
 - May use Backstab ability, although for a lower damage multiplier than Thieves:
   Level 1-8: x2
@@ -2150,8 +2232,8 @@ Advantages:
 - 12th level ranger: May memorize 3 Mage spells: Haste, Protection From Normal Missiles, and Minor Spell Deflection.
 
 Disadvantages:
-– May not wear any armor.
-– No other shapeshifting abilities due to the effort required in maintaining balance in <PRO_HISHER> primary forms."
+- May not wear any armor.
+- No other shapeshifting abilities due to the effort required in maintaining balance in <PRO_HISHER> primary forms."
 
 
 @224="Silent Avenger"
@@ -2178,8 +2260,8 @@ POISON WEAPON: POISON_WEAPON_PLACEHOLDER
 AVENGER_SHAPESHIFT_PLACEHOLDER
 
 Disadvantages:
-– May only distribute 15 skill points per level among thieving skills.
-– Incurs a -2 penalty to Strength and Constitution."
+- May only distribute 15 skill points per level among thieving skills.
+- Incurs a -2 penalty to Strength and Constitution."
 @226="Scrying Hunter"
 @227="SCRYING HUNTER
 (Diviner/Bounty Hunter)
@@ -2188,14 +2270,14 @@ Scrying hunters are bounty hunters who use the magical arts to track and locate 
 
 Advantages:
 - BONUS_SCHOOL_PLACEHOLDER
-– +15% bonus to Set Traps.
+- +15% bonus to Set Traps.
 - May use the Set Special Snare ability once per day in addition to the normal Thief's Set Snare. Gains one use at thief level 1 and an additional use every 5 thief levels thereafter.
 
 SET SPECIAL SNARE: SET_SNARE_PLACEHOLDER
 
 Disadvantages: 
 - BARRED_SCHOOL_PLACEHOLDER
-– May only distribute 20 skill points per level among thieving skills."
+- May only distribute 20 skill points per level among thieving skills."
  
 @228="Adventurer of Tymora"
 @229="ADVENTURER OF TYMORA
@@ -2216,6 +2298,8 @@ TYMORA'S FAVOR: For 10 rounds, all allies in the area gain a +1 luck bonus. In a
 
 Disadvantages:
 - BARRED_SCHOOL_PLACEHOLDER
+
+Requirements:
 - Alignment restricted to Neutral Good, Chaotic Good, Neutral, or Chaotic Neutral."
 
 @230="Polymath of Mystra"
@@ -2238,6 +2322,8 @@ Advantages:
 
 Disadvantages:
 - BARRED_SCHOOL_PLACEHOLDER
+
+Requirements:
 - Alignment restricted to Lawful Good, Neutral Good, Chaotic Good, Lawful Neutral, Chaotic Neutral, and Lawful Evil."
 
 @232="Guardian of Corellon"
@@ -2263,13 +2349,34 @@ KAI: All successful attacks within the next 10 seconds deal maximum damage.
 - 11th level: May cast Prismatic Spray once per day, as the 7th level mage spell.
 
 Disadvantages:
-- Race restricted to elf or half-elf.
 - May not wear any armor, including mage robes.
 - May not use missile weapons.
 - May not wear gauntlets or bracers.
+
+Requirements:
+- Race restricted to elf or half-elf.
 - Alignment restricted to Lawful Good, Neutral Good, or Chaotic Good."
 
+@234="Invoker of Mystra"
+@235="INVOKER OF MYSTRA: Mystra (pronounced: MISS-trah) is the goddess of magic and with that the goddess of possibilities, which makes her arguably the most powerful deity in Faerûn. She is said to have taught the first spellcaster of the Realms, and to have enabled many of the races to use magic. She supposedly weighs and judges each new spell or magical item to determine whether it should be permitted into the Realms. She is most venerated by wizards and those who use magic or magical items in their daily use. She differs from Azuth in that Azuth is the god of wizards (as to a much lesser degree, all spellcasters), while Mystra is the goddess of the essential force that makes all spellcasting possible. She provides and tends the Weave, the conduit to enable mortal spellcasters and magical crafters to safely access the raw force that is magic.
 
+A great many of Mystra's priests also practise the Art of wizardry. Invokers of Mystra focus on the raw power of the Weave, channelling it into elemental energy and pure force.
+
+Advantages:
+- BONUS_SCHOOL_PLACEHOLDER
+- SPHERE_PLACEHOLDER
+- MAGE_SPELL_PLACEHOLDER
+- +1 to saving throws against spells from any school of magic.
+- Unaffected by (most) wild-magic and dead-magic areas.
+- 3rd level cleric: +1 to casting speed. This benefit increases to +2 at 11th level and to a maximum of +3 at 19th level.
+- 5th level cleric: May cast Remove Magic once per day, as the 3rd level mage spell. An additional use is granted at 11th level and every 6 levels thereafter.
+- 9th level cleric: May cast Spell Turning once per day, as the 7th level wizard spell. An additional use is granted at 15th level and every 6 levels thereafter.
+
+Disadvantages:
+- BARRED_SCHOOL_PLACEHOLDER
+
+Requirements:
+- Alignment restricted to Lawful Good, Neutral Good, Chaotic Good, Lawful Neutral, Chaotic Neutral, and Lawful Evil."
 
 @1000 =~Moon Shield~ // Divine Remix string 10307
 

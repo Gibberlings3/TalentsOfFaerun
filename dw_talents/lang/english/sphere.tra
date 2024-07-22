@@ -24,6 +24,7 @@
 @1020="Water"
 @1021="Evil"
 
+// not sure these are actually used any more...
 @1030="May cast druidic spells" // should be the first few words of the description of spellcasting for, e.g., rangers and druids
 @1031="May cast priest spells" // should be the first few words of the description of spellcasting for, e.g., paladins and clerics
 @1032="May cast priest spells from the spheres of All, Charm, Combat, Divination, Divine, Evil, Good, Healing, Necromantic, Protection, Summoning, and Wards"
@@ -32,9 +33,7 @@
 @1035="May cast priest spells from the spheres of All, Combat, Divine, Healing, Protection, and Good"
 @1036="May cast priest spells from the spheres of All, Animal, Plant, Healing, and Nature"
 @1037="May cast priest spells from the spheres of All, Combat, Divine, Evil, Necromantic, and Protection."
+@1038="May cast priest spells from the spheres of All, Animal, Combat, Divination, Divine, Healing, Necromantic, Plant, Protection, Summmoning, and Wards"
 
 @2027 = ~^\(Level:\)\( *.+\)~ // should be 1-7 or 'Quest'
 
-/*	OUTER_SPRINT cleric_spheres_default "all charm combat divination divine evil good healing necromantic protection summoning wards"
-	OUTER_SPRINT druid_spheres_default "all air animal divination earth fey fire healing moon nature plant protection sun water"
-E*/

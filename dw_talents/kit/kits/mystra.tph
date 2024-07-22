@@ -162,10 +162,42 @@ DEFINE_ACTION_FUNCTION abjurer_of_mystra BEGIN
 
  	LAF make_multiclass_specialist STR_VAR kit school=abjuration END
 	LAF set_multiclass_components STR_VAR kit components="DW_MYSTRA_CLERIC ABJURER"  END
-
-
  
 END
+
+DEFINE_ACTION_FUNCTION invoker_of_mystra BEGIN
+
+    LAF mystra_shared END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_REMOVE_MAGIC%" new_type=innate RET spl_mystra_remove_magic=new_resref END
+	LAF splconv_get_name STR_VAR spell="%WIZARD_SPELL_TURNING%" new_type=innate RET spl_mystra_spell_turning=new_resref END
+	OUTER_SPRINT kit DW_MYSTRA_INVOKER
+	
+	kit.copy[CLERIC_MAGE=>%kit%]
+	[
+		k_name:=@234
+		k_desc:=@235
+		k.kit_apply_powers{%spl_mystra_innate% 1,%spl_mystra_casting_time% 3,%spl_mystra_casting_time% 11,%spl_mystra_casting_time% 19|class=cleric}
+		k.kit_grant_powers{%spl_mystra_remove_magic% 5 6,%spl_mystra_spell_turning% 9 6|class=cleric}
+		k_color_minor_cloth=105
+		k_color_main_cloth=58
+		k.kit_set_alignment{lg ng cg ln cn le}	
+		IF {is_iwd} {{k_bio:=@1033}}
+	]
+	
+	LAF cleric_kit_substitutions STR_VAR kit god=mystra END
+
+	LAF assign_spheres INT_VAR update_scroll_usability=0 STR_VAR kit default=cleric subtract="evil good" add="earth air fire water sun moon" END
+	LAF holy_symbol INT_VAR name=2028 follower=2029 STR_VAR kit desc_bam=dwmysphl inv_bam=dwmysihl bam_path=resource kit END
+	LAF adjust_cleric_stronghold STR_VAR lathander="l_g n_g c_g c_n" helm="l_n l_e" kit END
+	LAF assign_bonus_spells STR_VAR kit spells="SHIELD VOCALIZE MINOR_GLOBE_OF_INVULNERABILITY BREACH SEVEN_EYES" class=cleric END
+
+ 	LAF make_multiclass_specialist STR_VAR kit school=invocation END
+	LAF set_multiclass_components STR_VAR kit components="DW_MYSTRA_CLERIC INVOKER"  END
+ 
+END
+
+
+
 
 DEFINE_ACTION_FUNCTION polymath_of_mystra BEGIN
 

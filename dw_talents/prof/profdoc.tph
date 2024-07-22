@@ -633,11 +633,12 @@ BEGIN
 END
 
 DEFINE_ACTION_FUNCTION get_class_pips //internal
-	STR_VAR class=""
+	STR_VAR class="" kit=""
 	RET first_level
 		interval
 		line
 BEGIN
+	PRINT "kit is %kit%"
 	LAF check_label STR_VAR label="dw#prof" RET new_system=value END
 	ACTION_IF !VARIABLE_IS_SET template_singular BEGIN
 	 // set some strings
@@ -733,7 +734,20 @@ BEGIN
 		OUTER_SPRINT mainclass ""
 	 END
 	END ELSE BEGIN
-		OUTER_SPRINT mainclass $mainclass_string("%class%")
+		PRINT "finding mainclass for kit %kit%"
+		ACTION_MATCH "%kit%" WITH 
+		"DW_DRUID_MAGE" "DW_DRUID_THIEF" BEGIN
+			COPY_EXISTING - "enginest.2da"nowhere
+				REPLACE_EVALUATE "STRREF_GUI_MIXED_DRUID[ %TAB%]+\([0-9]+\)" BEGIN
+					GET_STRREF "%MATCH1%" mainclass
+					SPRINT mainclass "%mainclass% "
+				END
+				""
+			BUT_ONLY			
+		END 
+		DEFAULT
+			OUTER_SPRINT mainclass $mainclass_string("%class%")
+		END
 	END
 	// generate line
 	ACTION_IF first_level=1 BEGIN
@@ -1466,7 +1480,7 @@ BEGIN
 	ACTION_IF is_multiclass<0 BEGIN
 		OUTER_SET is_multiclass=INDEX ("_" "%class%")>=0
 	END
-	ACTION_IF "%parent_class%" STRING_EQUAL "" BEGIN
+	ACTION_IF "%parent_class%" STR_EQ "" BEGIN
 		OUTER_SPRINT parent_class "%class%"
 	END
 	// get some strings
@@ -1518,7 +1532,7 @@ BEGIN
 	// get the data
 	ACTION_CLEAR_ARRAY weapon_array
 	ACTION_CLEAR_ARRAY style_array
-	LAF get_class_pips STR_VAR class="%parent_class%" RET pip_line=line END
+	LAF get_class_pips STR_VAR kit="%class%" class="%parent_class%" RET pip_line=line END
 	LAF get_class_weapon_use STR_VAR class RET usability RET_ARRAY weapon_array=string_array END
 	LAF get_class_style_use STR_VAR class RET_ARRAY style_array=style_string_array END
 	ACTION_CLEAR_ARRAY all_array

@@ -13,7 +13,8 @@ DEFINE_ACTION_FUNCTION move_hlas_into_spcl BEGIN
 						READ_SHORT (2+LONG_AT 0x64) type
 					ACTION_IF type=2 BEGIN
 						LAF spl_make_hla_class_ability INT_VAR force_innate=0 STR_VAR resref RET new_resref END
-						OUTER_SPRINT $feat_array("%feat%" RESREF) "%new_resref%"	
+						OUTER_SPRINT $feat_array("%feat%" RESREF) "%new_resref%"
+						OUTER_SPRINT $resref_map("%resref%") "%new_resref%"
 						OUTER_SPRINT $ga_map("GA_%resref%") "GA_%new_resref%"
 					END			
 				END
@@ -21,7 +22,8 @@ DEFINE_ACTION_FUNCTION move_hlas_into_spcl BEGIN
 		END
 		LPF 2da_write STR_VAR array=feat_array END
 	BUT_ONLY
-	// the LUA files
+	LAF ids_sort STR_VAR idsfile=spell END
+	// the LU files
 	LAF 2da_read STR_VAR file=luabbr.2da RET_ARRAY luabbr_array=array END
 	ACTION_PHP_EACH luabbr_array AS k=>abbr BEGIN
 		OUTER_SPRINT file "lu%abbr%"
@@ -43,11 +45,23 @@ DEFINE_ACTION_FUNCTION move_hlas_into_spcl BEGIN
 			IF_EXISTS
 		END
 	END
+	// the LUA data
+	COPY_EXISTING "m_dw_hld.lua" override
+		REPLACE_EVALUATE "\['\([^']*\)'\]" BEGIN
+			SPRINT payload "%MATCH1%"
+			PATCH_IF VARIABLE_IS_SET $resref_map("%payload%") BEGIN
+				SPRINT payload $resref_map("%payload%")
+			END
+		END
+		"['%payload%']"
+		
 	
 	// special cases
 	
 	// elemental prince spells have cross-refs that need changing
-	
+
+
+
 	ACTION_FOR_EACH element IN earth air fire water BEGIN
 		OUTER_SPRINT id "cleric_elemental_prince_%element%"
 		ACTION_TO_UPPER id

@@ -82,7 +82,7 @@ END
 
 DEFINE_ACTION_FUNCTION make_feats_core
 	INT_VAR name=0 desc=0 max_count=1 
-	STR_VAR id="" resref="" type="" select_desc="" prerequisite="" require_1="" require_2="" require_3="" require_4="" require_5="" require_6="" require_7="" require_8="" require_9="" require_10="" exclude_kit="" special="" special_string="" alignment="" exclude_hla="" checks=""
+	STR_VAR id="" resref="" type="*" select_desc="*" prerequisite="*" require_1="*" require_2="*" require_3="*" require_4="*" require_5="*" require_6="*" require_7="*" require_8="*" require_9="*" require_10="*" exclude_kit="*" special="*" special_string="*" alignment="*" exclude_hla="*" checks="*"
 BEGIN
 	PRINT "making feat %id%"
 
@@ -1201,4 +1201,33 @@ BEGIN
 	END
 	
 	
+END
+
+
+///////////////////////////////////////////////////////////////////////////////////
+///Testing suite
+///////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION test_feat_system
+BEGIN
+	
+	LAF run STR_VAR file=wipe_hlas END
+	LAF ui_externalize_hlas END
+
+	// get some basic data
+	
+
+	OUTER_SPRINT data ""
+	OUTER_SPRINT data "%data%[TEST_FEAT_UNIVERSAL]%WNL%resref=dwtf0%WNL%name:i=10000%WNL%desc:i=10000%WNL%type=apply%WNL%max_count:i=99%WNL%require_1=NONE%WNL%special=copy[SPWI113]%WNL%%WNL%"
+	ACTION_FOR_EACH level IN 1 3 5 7 9 11 13 BEGIN
+		OUTER_SET name=10000+level
+		OUTER_SPRINT data "%data%[TEST_FEAT_MAGE_%level%]%WNL%resref=dwtfm%level%%WNL%name:i=%name%%WNL%desc:i=%name%%WNL%type=apply%WNL%max_count:i=99%WNL%require_1=MAGE_%level%%WNL%special=copy[SPWI113]%WNL%%WNL%"
+		OUTER_SET name=10100+level
+		OUTER_SPRINT data "%data%[TEST_FEAT_FIGHTER_%level%]%WNL%resref=dwtff%level%%WNL%name:i=%name%%WNL%desc:i=%name%%WNL%type=apply%WNL%max_count:i=99%WNL%require_1=FIGHTER_%level%%WNL%special=copy[SPWI113]%WNL%%WNL%"
+	END
+	LAF new_file STR_VAR file=hla_test_table.ini path="%workspace%" arguments="%data%" END
+	LAF make_feats STR_VAR feat_table=hla_test_table.ini path="%workspace%" END
+	LAF install_feats STR_VAR feat_table=hla_test_table.ini path="%workspace%" END
+
+
 END

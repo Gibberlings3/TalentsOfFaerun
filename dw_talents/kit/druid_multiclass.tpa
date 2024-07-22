@@ -46,12 +46,6 @@ DEFINE_ACTION_FUNCTION druid_multiclass BEGIN
 	LAF check_label STR_VAR label=dw-elementalist RET value2=value END
 	OUTER_SET druid_elementalists=(value1 && value2)
 
-	// set up the sphere system if druid/elementalists are used
-	
-	ACTION_IF druid_elementalists BEGIN
-		LAF ui_spell_system_spheres END
-	END
-
 	// the actual kits
 
 
@@ -111,8 +105,6 @@ DEFINE_ACTION_FUNCTION druid_multiclass BEGIN
 		LAF disjunctive_substitution STR_VAR dialog match="Class(\([^,]*\),DRUID_ALL)" replace="OR()Class(\1,DRUID_ALL)|CheckSpellState(\1,DW_DRUID)" END
 		LAF disjunctive_substitution STR_VAR dialog match="Class(\([^,]*\),CLERIC_ALL)" replace="Class(\1,CLERIC_ALL)|!CheckSpellState(\1,DW_DRUID)" END
 	END
-	
-	// cleric/rangers use cleric spells
 	
 	LAF assign_spheres STR_VAR class=CLERIC_RANGER default=cleric END
 	

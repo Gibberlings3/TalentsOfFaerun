@@ -38,10 +38,12 @@ DEFINE_ACTION_FUNCTION 3e_class BEGIN
 	
 	LAF 3e_class_desc_updates END
 	
-	// allow for non-core races
+	// allow for non-core races [currently deprecated]
+	/*
 	ACTION_IF FILE_EXISTS "%data_loc_shared%/dw_subrace_data.2da" BEGIN
 		LAF run STR_VAR file=UI_dualclass_hack END
 	END
+	*/
 	
 	// get rid of the note saying that multiclass gnomes are illusionists
 

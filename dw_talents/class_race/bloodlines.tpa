@@ -6,6 +6,7 @@ DEFINE_ACTION_FUNCTION bloodlines BEGIN
 	
 	LAF run STR_VAR file=one_fewer_spell locbase=shared END
 
+
 	// install HLA labels for mage specialists (harmless to do it now, and it builds resources we need)
 	
 	LAF include STR_VAR file=mageschools_shared.tph locbase=shared END

@@ -1,5 +1,6 @@
 DEFINE_ACTION_FUNCTION subrace BEGIN
 
+
 	OUTER_SPRINT table_path "%MOD_FOLDER%/%component_loc%/data"
 
 	OUTER_SET how_compatibility=0
@@ -21,7 +22,16 @@ DEFINE_ACTION_FUNCTION subrace BEGIN
 	LAF subrace_resources_shared END
 	LAF subrace_resources_underdark END
 	
-	ACTION_FOR_EACH type IN planetouched_subraces human_subraces elf_subraces dwarf_halfling_subraces gnome_subraces half-orc_subraces half-elf_subraces  BEGIN
+	
+	ACTION_FOR_EACH type IN 
+		planetouched_subraces 
+		human_subraces 
+		elf_subraces 
+		dwarf_halfling_subraces 
+		gnome_subraces 
+		half-orc_subraces 
+		half-elf_subraces  
+	BEGIN
 		LAF check_ini STR_VAR ini="install_%type%" RET value END
 		ACTION_IF value BEGIN
 			LAF "%type%" END
@@ -43,6 +53,7 @@ DEFINE_ACTION_FUNCTION subrace BEGIN
 
 	LAF build_subraces INT_VAR delay_mode=how_compatibility END
 
+
 	LAF assign_npc_subraces END
 	
 	// prohibit MR-having classes from the Wizard Slayer kit
@@ -52,6 +63,11 @@ DEFINE_ACTION_FUNCTION subrace BEGIN
 	// let scripts and dialogs recognise the new races
 	
 	LAF update_race_recognition END
+
+	
+	// adjust weapons only usable by specific races
+	
+	LAF ui_subrace_item_use END
 	
 	// if on IWD and not HOW-compatible, block HOW
 	
@@ -63,6 +79,7 @@ DEFINE_ACTION_FUNCTION subrace BEGIN
 
 	
 	END
+
 	
 	
 END
@@ -268,7 +285,7 @@ DEFINE_ACTION_FUNCTION planetouched_subraces BEGIN
 				pseudorace_table=planetouched_pseudorace
 				table_path
 	END
-
+	
 
 
 END
@@ -439,7 +456,7 @@ END
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 DEFINE_ACTION_FUNCTION gnome_subraces BEGIN
 
-	// set existing gnome resistances to a flat +2
+	// set existing gnome resistances to zero (we want the plus displayed)
 	
 	COPY_EXISTING "savecng.2da" override
 		COUNT_2DA_COLS colcount
@@ -457,6 +474,7 @@ DEFINE_ACTION_FUNCTION gnome_subraces BEGIN
 		END
 	BUT_ONLY
 	
+	/*
 	// add 'svirfneblin' to race.ids (only present on IWDEE atm)
 	
 	COPY_EXISTING "race.ids" override
@@ -466,6 +484,7 @@ DEFINE_ACTION_FUNCTION gnome_subraces BEGIN
 			PRETTY_PRINT_2DA
 		CLEAR_IDS_MAP
 	END
+	*/
 
 	// attack bonuses against various creature types
 	
@@ -516,6 +535,9 @@ DEFINE_ACTION_FUNCTION gnome_subraces BEGIN
 		LPF ADD_SPELL_EFFECT INT_VAR opcode=142 target=2 timing=9 parameter2=stat_num END
 		// lore bonus
 		LPF ADD_SPELL_EFFECT INT_VAR opcode=21 target=2 timing=9 parameter1=40 END
+		// save modifiers
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=34 target=2 timing=9 parameter1=2 END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=37 target=2 timing=9 parameter1=2 END
 
 	
 	
@@ -563,6 +585,10 @@ DEFINE_ACTION_FUNCTION gnome_subraces BEGIN
 		// magic resistance
 		LPF ADD_SPELL_EFFECT INT_VAR opcode=166 target=2 parameter1=base+inc parameter2=0 timing=9 END // MR	
 		LPF ADD_SPELL_EFFECT INT_VAR opcode=142 target=2 timing=9 parameter2=63 END
+		// save modifiers
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=34 target=2 timing=9 parameter1=2 END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=37 target=2 timing=9 parameter1=2 END
+
 
 	CREATE spl "%spl_subrace_svirfneblin_recurring%"
 		LPF add_basic_spell_ability END
@@ -587,7 +613,7 @@ END
 
 DEFINE_ACTION_FUNCTION dwarf_halfling_subraces BEGIN
 
-	// set existing dwarf/halfling resistances to a flat +2
+	// zero dwarf/halfling resistances 
 	
 	COPY_EXISTING "savecndh.2da" override
 		COUNT_2DA_COLS colcount
@@ -597,7 +623,7 @@ DEFINE_ACTION_FUNCTION dwarf_halfling_subraces BEGIN
 			PATCH_MATCH "%savetype%" WITH
 				DEATH WANDS SPELL BEGIN
 					FOR (col=1;col<colcount;++col) BEGIN
-						SET_2DA_ENTRY row col colcount 2
+						SET_2DA_ENTRY row col colcount 0
 					END
 				END
 				DEFAULT
@@ -652,6 +678,12 @@ DEFINE_ACTION_FUNCTION dwarf_halfling_subraces BEGIN
 			SPRINT resource $dwarf_attack_bonus("%race%")
 			LPF ADD_SPELL_EFFECT INT_VAR target=2 opcode=177 timing=1 STR_VAR resource END
 		END
+		// +2 to poison, wands, spell
+		LPF ADD_SPELL_EFFECT INT_VAR target=2 opcode=177 timing=9 opcode=33 parameter1=2 STR_VAR resource END
+		LPF ADD_SPELL_EFFECT INT_VAR target=2 opcode=177 timing=9 opcode=34 parameter1=2 STR_VAR resource END
+		LPF ADD_SPELL_EFFECT INT_VAR target=2 opcode=177 timing=9 opcode=37 parameter1=2 STR_VAR resource END
+		
+	
 	
 	////////////////////////////////////
 	// gold dwarves
@@ -665,6 +697,10 @@ DEFINE_ACTION_FUNCTION dwarf_halfling_subraces BEGIN
 			SPRINT resource $dwarf_attack_bonus("%race%")
 			LPF ADD_SPELL_EFFECT INT_VAR target=2 opcode=177 timing=1 STR_VAR resource END
 		END		
+		// +2 to poison, wands, spell
+		LPF ADD_SPELL_EFFECT INT_VAR target=2 opcode=177 timing=9 opcode=33 parameter1=2 STR_VAR resource END
+		LPF ADD_SPELL_EFFECT INT_VAR target=2 opcode=177 timing=9 opcode=34 parameter1=2 STR_VAR resource END
+		LPF ADD_SPELL_EFFECT INT_VAR target=2 opcode=177 timing=9 opcode=37 parameter1=2 STR_VAR resource END
 
 	////////////////////////////////////
 	// Resources- duergar
@@ -745,11 +781,11 @@ DEFINE_ACTION_FUNCTION dwarf_halfling_subraces BEGIN
 		LPF add_basic_spell_ability END
 		LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 timing=1 STR_VAR resource="%spl_subrace_lightfoot_halfling%" END
 		// saving throw modifier
-		LPF ADD_SPELL_EFFECT INT_VAR opcode=33 target=2 timing=9 parameter1="-1" END// cancel dwarf bonuses, add luck
-		LPF ADD_SPELL_EFFECT INT_VAR opcode=34 target=2 timing=9 parameter1="-1" END 
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=33 target=2 timing=9 parameter1=1 END// add luck
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=34 target=2 timing=9 parameter1=1 END 
 		LPF ADD_SPELL_EFFECT INT_VAR opcode=35 target=2 timing=9 parameter1=1 END
 		LPF ADD_SPELL_EFFECT INT_VAR opcode=36 target=2 timing=9 parameter1=1 END 
-		LPF ADD_SPELL_EFFECT INT_VAR opcode=37 target=2 timing=9 parameter1="-1" END
+		LPF ADD_SPELL_EFFECT INT_VAR opcode=37 target=2 timing=9 parameter1=1 END
 		LPF ADD_SPELL_EFFECT INT_VAR opcode=142 target=2 timing=9 parameter2=stat_num END
 		// halfling AC modifier
 		LPF ADD_SPELL_EFFECT INT_VAR opcode=0 target=2 timing=9 parameter1=1 END
@@ -762,10 +798,6 @@ DEFINE_ACTION_FUNCTION dwarf_halfling_subraces BEGIN
 	CREATE spl "%spl_subrace_strongheart_halfling%"
 		LPF add_basic_spell_ability END
 		LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 timing=1 STR_VAR resource="%spl_subrace_strongheart_halfling%" END
-		// saving throw modifier
-		LPF ADD_SPELL_EFFECT INT_VAR opcode=33 target=2 timing=9 parameter1="-2" END// cancel dwarf bonuses
-		LPF ADD_SPELL_EFFECT INT_VAR opcode=34 target=2 timing=9 parameter1="-2" END 
-		LPF ADD_SPELL_EFFECT INT_VAR opcode=37 target=2 timing=9 parameter1="-2" END
 		// halfling AC modifier
 		LPF ADD_SPELL_EFFECT INT_VAR opcode=0 target=2 timing=9 parameter1=1 END
 
@@ -777,10 +809,6 @@ DEFINE_ACTION_FUNCTION dwarf_halfling_subraces BEGIN
 	CREATE spl "%spl_subrace_ghostwise_halfling%"
 		LPF add_basic_spell_ability END
 		LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 timing=1 STR_VAR resource="%spl_subrace_ghostwise_halfling%" END
-		// saving throw modifier
-		LPF ADD_SPELL_EFFECT INT_VAR opcode=33 target=2 timing=9 parameter1="-2" END// cancel dwarf bonuses
-		LPF ADD_SPELL_EFFECT INT_VAR opcode=34 target=2 timing=9 parameter1="-2" END 
-		LPF ADD_SPELL_EFFECT INT_VAR opcode=37 target=2 timing=9 parameter1="-2" END
 		// halfling AC modifier
 		LPF ADD_SPELL_EFFECT INT_VAR opcode=0 target=2 timing=9 parameter1=1 END
 		// 1/day barbarian rage
@@ -861,11 +889,12 @@ DEFINE_ACTION_FUNCTION subrace_resources_underdark BEGIN
 	// install races
 	/////////////////////////////////////
 
-	
+	/*
 	LAF add_to_subrace_tables
 		STR_VAR race_table=underdark_races
 				table_path
 	END
+	*/
 
 
 END
@@ -914,6 +943,7 @@ DEFINE_ACTION_FUNCTION update_race_recognition BEGIN
 		END
 	BUT_ONLY
 
+	/*
 	// dwarf to duergar
 	
 	OUTER_SPRINT match "Race(\([^,]*\),DWARF)"
@@ -937,6 +967,7 @@ DEFINE_ACTION_FUNCTION update_race_recognition BEGIN
 	ACTION_PHP_EACH race_dlg AS dialog=>discard BEGIN
 		LAF disjunctive_substitution_dlg STR_VAR dialog match replace END
 	END
+	*/
 
 	// human to aasimar/genasi/tiefling
 

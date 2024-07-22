@@ -1,7 +1,9 @@
 DEFINE_ACTION_FUNCTION test STR_VAR version=0 BEGIN
 
-	LAF ui_on_open_setup END
-
-
+	OUTER_SPRINT component_loc prof
+	LAF include STR_VAR file=profdoc.tph END
+	WITH_TRA "%sfo_tra_loc%/english/profdoc.tra" BEGIN
+		LAF update_all_proficiency_descriptions END
+	END
 END
 

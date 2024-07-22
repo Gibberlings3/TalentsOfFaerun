@@ -231,6 +231,7 @@ DEFINE_ACTION_FUNCTION sune_shared BEGIN
 		[
 			m_name:=@1022
 			m_description:=@1023
+			m.ab_fx.alter{s_save_vs_spell=2 s_savebonus="-2"|match="s_opcode=141"}
 		]
 		
 		// spell list

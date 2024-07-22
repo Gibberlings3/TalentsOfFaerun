@@ -1,4 +1,4 @@
-DEFINE_ACTION_FUNCTION kit_rebalance BEGIN
+DEFINE_ACTION_FUNCTION kit_rebalance STR_VAR version="default" BEGIN
 
 	
 	ACTION_FOR_EACH kit IN 
@@ -19,8 +19,10 @@ DEFINE_ACTION_FUNCTION kit_rebalance BEGIN
 	BEGIN
 		LAF check_ini STR_VAR ini="rebalance_%kit%" RET value END
 		ACTION_IF value BEGIN
-			LAF "rebalance_%kit%" END	
-			LAF make_label STR_VAR label="dw#rebalance_%kit%" END
+			ACTION_IF "%version%" STR_CMP "not_shapeshifter" || "%kit%" STR_CMP "%shapeshifter" BEGIN
+				LAF "rebalance_%kit%" END	
+				LAF make_label STR_VAR label="dw#rebalance_%kit%" END
+			END
 		END
 		
 	END
@@ -764,9 +766,9 @@ DEFINE_ACTION_FUNCTION rebalance_skald BEGIN
 		// new L5, L10 changes
 		m.ab.clone{s_level=(1+entry_index)*5|number:i=2 match="s_level=1"}
 		// damp down L1 changes
-		m.ab_fx.alter{ s_parameter2=1| match="p_level=1 AND (s_opcode=0 OR s_opcode=73 OR s_opcode=278)"}
+		m.ab_fx.alter{ s_parameter1=1| match="p_level=1 AND (s_opcode=0 OR s_opcode=73 OR s_opcode=278)"}
 		// damp down L5 changes
-		m.ab_fx.alter{ s_parameter2=1| match="p_level=5 AND s_opcode=278"}
+		m.ab_fx.alter{ s_parameter1=1| match="p_level=5 AND s_opcode=278"}
 	]
 	// update description
 

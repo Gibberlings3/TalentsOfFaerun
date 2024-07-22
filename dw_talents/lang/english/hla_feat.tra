@@ -1572,5 +1572,20 @@ Special: only one elemental immunity ability may be taken."
 
 Special: only one elemental immunity ability may be taken."
 
+@10000="Universal feat"
+@10001="Mage level 1 feat"
+@10003="Mage level 3 feat"
+@10005="Mage level 5 feat"
+@10007="Mage level 7 feat"
+@10009="Mage level 9 feat"
+@10011="Mage level 11 feat"
+@10013="Mage level 13 feat"
 
+@10101="Fighter level 1 feat"
+@10103="Fighter level 3 feat"
+@10105="Fighter level 5 feat"
+@10107="Fighter level 7 feat"
+@10109="Fighter level 9 feat"
+@10111="Fighter level 11 feat"
+@10113="Fighter level 13 feat"
 

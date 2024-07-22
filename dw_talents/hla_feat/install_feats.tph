@@ -2,9 +2,9 @@ DEFINE_ACTION_FUNCTION install_feats INT_VAR is_epic=0 STR_VAR feat_table="" loc
 
 	LAM data_spells_by_level
 
-	// externalize (this is idempotent)
+	// externalize (this is idempotent). Do not turn low level on here (it needs to be turned on explicitly.)
 	
-	LAF ui_externalize_hlas END
+	LAF ui_externalize_hlas INT_VAR activate_feats=0 END
 
 	/////////////////////////////////////////////////////////////////
 
@@ -67,7 +67,7 @@ DEFINE_ACTION_FUNCTION install_feats INT_VAR is_epic=0 STR_VAR feat_table="" loc
 		LAF sfo_path STR_VAR location locbase path RET directory=path END
 	END
 	LAF install_feats_core INT_VAR is_epic STR_VAR feat_table="%directory%/%feat_table%" RET_ARRAY assign_array END
-	
+
 
 	
 	// allocate multiclass kits their HLAs
@@ -97,18 +97,27 @@ DEFINE_ACTION_FUNCTION install_feats INT_VAR is_epic=0 STR_VAR feat_table="" loc
 	END
 
 	// insert into LU files
+	// only do this once per file, inter alia to catch mods like Lava's 'In love, undeath' that gets a kit to piggback on another class's HLA file.
 	
-	
-	COPY_EXISTING "luabbr.2da" "%workspace%"
-		READ_2DA_ENTRIES_NOW luabbr_data 2
-		FOR (row=0;row<luabbr_data;++row) BEGIN
-			READ_2DA_ENTRY_FORMER luabbr_data row 0 kit
+	COPY_EXISTING - "luabbr.2da" nowhere
+		LPF array_read RET_ARRAY lu_array=array END
+		// initialize do-once-only array
+		PHP_EACH lu_array AS kit=>abbr BEGIN
+			SET $lu_file_done("%abbr%")=0
+		END
+		// main pass
+		PHP_EACH lu_array AS kit=>abbr BEGIN
 			TO_UPPER kit
+			TO_LOWER abbr
 			PATCH_MATCH "%kit%" WITH 
-			DW_DUMMY 2DA BEGIN		
+			DW_DUMMY 2DA BEGIN		// dummy placeholder kit
+			END
+			"2DA" WHEN "%abbr%" STR_EQ "v1.0" BEGIN // top row of 2da file
+			END
+			ANY VARIABLE_IS_SET $lu_file_done("%abbr%") BEGIN // done this one already
 			END
 			DEFAULT
-				READ_2DA_ENTRY_FORMER luabbr_data row 1 abbr
+				SET $lu_file_done("%abbr%")=1
 				PATCH_IF FILE_EXISTS_IN_GAME "lu%abbr%.2da" BEGIN
 					INNER_ACTION BEGIN
 						COPY_EXISTING "lu%abbr%.2da" override

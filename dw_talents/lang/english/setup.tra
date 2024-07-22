@@ -79,6 +79,7 @@
 
 @200=~Introduce new races and subraces~
 
+@230=~This component is incompatible with the Spell Revisions mod~
 
 @400=~Revised ability score modifiers~
 @401=~Point-buy system for choosing ability scores~
@@ -135,6 +136,8 @@
 @528=~Make Wizard Slayer Kit Available to Barbarians~
 @529="Revised Paladins and Blackguards"
 @530="This component has already been installed as part of the 'Revised Paladins and Blackguards' component"
+@531="Default (affects all kits)"
+@532="Skip shapeshifters (use this if you want to use another mod that messes with shapeshifting)"
 
 @600="Tidy up class-selection menu"
 
