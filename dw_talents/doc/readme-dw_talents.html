@@ -32,7 +32,7 @@
         <strong> On the web: </strong><a href="https://www.gibberlings3.net/mods/tweaks/tof/">Home
         page</a>, <a href="https://www.gibberlings3.net/forums/forum/236-talents-of-faer&ucirc;n/">discussion
         forum</a>, <a href="https://www.gibberlings3.net/gallery/album/42-talents-of-faer&ucirc;n/">image gallery</a>, and <a href="https://discord.gg/yTzjMTb">Discord</a></p>
-      <p> <strong>Version beta 12</strong><br />
+      <p> <strong>Version beta 14</strong><br />
         <strong>Languages: </strong>English<br />
         <strong>Platforms: </strong>Windows, macOS, Linux </p>
       <p> Talents of Faer&ucirc;n (ToF) is a collection of about 85 mini-mods for the Enhanced Edition versions of Baldur's Gate, Baldur's Gate II, and Icewind Dale, partially inspired by existing mods and tabletop Dungeons and Dragons resources. It contains many optional tweaks to various parts of gameplay, focusing on expanding and rebalancing player character abilities. Features include 150-odd new high-level abilities, a new 'feat' system where lower-level characters gain abilities every few levels, revisions to existing kits, new classes, new kits for multi-class characters, new types of magical specialization, a dozen or so new spells, many spell tweaks, 20-odd new gods for clerics to worship, a subrace system, a revised system of cleric/druid spells, and tweaks to the rules for ability scores and proficiencies. </p>
@@ -47,7 +47,7 @@
       <ol>
         <li><a href="#over">Overview </a> </li>
         <li><a href="#install">Installation</a></li>
-        <li><a href="#compat">Compatibility with other mods</a></li>
+        <li><a href="#compat">Compatibility</a></li>
         <li><a href="#content">Detailed content</a>
           <ul>
             <li><a href="#spelltweaks">Spell System Revisions and New Spells </a></li>
@@ -114,10 +114,13 @@
         <li>ToF really needs to be installed as late as possible in the install order. It should go before Sword Coast Stratagems and can <em>probably</em> cope with going before Tweaks Anthology; otherwise, install it last. If you have another mod that insists on being installed last because it makes large-scale changes to the game, that other mod is fairly likely to be incompatible with ToF.</li>
         <li>ToF <em>absolutely cannot be installed before any UI mod</em>; doing so will almost certainly break your game. It <em>might</em> be able to cope with being installed after a UI mod, but I haven't tested this.</li>
         <li>ToF will be incompatible with any other mod that makes the sort of changes to the game system that ToF does. For instance, it will be incompatible with other mods that introduce a sphere system (like Divine Remix), that add subraces (like Tipun's subrace mod), or that require specialists to learn spells from their school. Because of the way mods like these work, ToF will probably be incompatible with them even if you don't use the specific bit of ToF that overlaps with them. (I hope to be able to reduce the incompatibilities here in the medium term by sharing the code base that ToF uses.)</li>
+		<li>There are various ways in which ToF may cause compatibility problems with mods that alter the proficiency system. In some cases this can happen even if you don't install proficiency-changing ToF components.</li>
 		<li>ToF is <em>probably</em> compatible with mods that use OlvynChuru's ClassSpellTool (such as OlvynChuru's Spell Pack), provided it is installed after them. (It is definitely not compatible with them if installed before them.)</li>
         <li>The good news is that ToF ought to be compatible with most 'simple' (i.e., not systematically-rule-changing) kit, spell, item, quest, and NPC mods.</li>
 		<li>ToF should be compatible with my 'Sword Coast Stratagems' (SCS) mod, provided ToF is installed before SCS. SCS will detect ToF and respond to some of its components (it will use the new priest kits, new spells, and new HLAs, for instance).</li>
       </ul>
+	  <h3>Manual editing</h3>
+	  <p>Be <b>extremely</b> careful using manual editors, like Near Infinity or EEKeeper, to modify the game or your saved games after ToF is installed. ToF externalizes quite a lot of information to the UI instead of the usual game files, stores information in odd places (e.g. the proficiency system) and then gets the UI to hide that from you. Changes you make with an editor may not do what you expect and have some chance of breaking your game. At the very least, make sure you back up your changes.</p>
     </div>
     <div class="ribbon_rectangle_h2">
       <h2><a name="install" id="install"></a>Installation</h2>
@@ -821,7 +824,7 @@ title="Non-Player Characters">NPCs</acronym> and to make sure they keep up with 
         <li><b>Constitution</b>: Now affects saving throws vs. Poison and Paralysis. Still affects hit points (the variable fighter/non-fighter effect has been removed).</li>
         <li><b>Intelligence</b>: Now affects maximum number of memorizable spells for wizards. Still affects chance of learning arcane spells from scrolls.</li>
         <li><b>Wisdom</b>: Now affects number of spell slots for shamans, saving throws vs. Spell, and Monk AC. Still affects maximum number of memorizable spells for priests.</li>
-        <li><b>Charisma</b>: Affects maximum number of memorizable spells for bards and number of spell slots for sorcerers and favored souls, the effective level of a cleric or paladin turning the undead, and (still) also the price you are charged in stores. Paladins receive an additional bonus to their saving throws based on Charisma.</li>
+        <li><b>Charisma</b>: Affects maximum number of memorizable spells for bards and number of spell slots for sorcerers and favored souls, the effective level of a cleric or paladin turning the undead (at half the normal modifier), and (still) also the price you are charged in stores. Paladins receive an additional bonus to their saving throws based on Charisma.</li>
       </ul>
       <p>Bonuses and penalties to attack rolls, hit points, armor class, and saving throws now use a common set of modifiers. (The change to a cleric or paladin's level for turning undead is half this modifier.) For ability scores between 1-18, that system is the same in both versions: </p>
       <table summary="Ability score modifiers (value 1-18)">
@@ -1650,5 +1653,41 @@ href="https://gibberlings3.github.io/iesdp/">Infinity Engine Structure Descripti
 					<li>Other misc SFO fixes and tweaks prior to documentation release.</li>
 </ul>
 </p>
+   <div class="ribbon_rectangle_h3"><h3>Version beta 14 (9th September 2024)</h3></div>
+	<ul>
+		<li>Fixed a couple of library bug sthat would sometimes cause the proficiency screen to resolve wrongly, or the ability screen to hang, when levelling.</li>
+		<li>Fixed an intermittent bug with the bit of code in 'Revised ability scores' that adjusts learned spells.</li>
+		<li>Party-joinable humans are no longer turned into Aasimars (!)</li>
+		<li>The 'use IWD Chromatic Orb' spell tweak no longer brings over Icewind Dale opposition schools (and so can now be scribed by conjurers).</li>
+		<li>Removed an erroneous check from Supernatural Fury.</li>
+		<li>Paladins can now only take Summon Deva once.</li>
+		<li>Fixed a typo that was corrupting the script for summoned fiends.</li>
+		<li>Fixed a bunch of issues with the aura effects for druid elemental forms.</li>
+		<li>Duration of Rune of Immunity now matches description.</li>
+		<li>Seven Eyes spell now works correctly.</li>
+		<li>Blood to Ice now grants appropriate saving throws.</li>
+		<li>Sorcerers with the Rimefrost bloodline can no longer learn Comet, Dragon's Breath, Elemental Immunity:Fire, or Spirit of Flame; they get Necromancy rather than Invocation as their free school at high levels, and can select Elemental Immunity: Cold without taking Arcane Knowledge: Abjuration.</li>
+		<li>Sorcerers with the Efreeti bloodline can no longer learn Blood to Ice, Thunderstorm, or Aegis of Rime; they can select Elemental Immunity:Fire without taking Arcane Knowledge: Abjuration; their default colors are more appropriate.</li>
+		<li>Sorcerers with the Deep Earth bloodline can no longer learn Thunderstorm or Scion of Storms; they can select Elemental Immunity:Acid without taking Arcane Knowledge: Abjuration.</li>
+		<li>Sorcerers with the Stormborn bloodline can no longer learn Gaze of the Medusa, Malavon's Fury, or Aqua Mortis; they can select Elemental Immunity:Electricity without taking Arcane Knowledge: Abjuration.</li>
+		<li>Sorcerers with the Fiendish bloodline can no longer learn Summon Planetar.</li>
+		<li>The 'enhanced bard song' HLA, and the Jester and Skald versions, should now correctly grant an ability to reuse them.</li>
+		<li>The new Blackguard kits should now be selectable even if you haven't installed another component that makes Blackguard a class.</li>
+		<li>Fixed a cosmetic issue with the descriptions of bard songs.</li>
+		<li>Favored Souls no longer try to detect traps when using the default AI.</li>
+		<li>On IWDEE, armor and scroll descriptions are no longer hidden.</li>
+		<li>Scorn Injury should now work properly.</li>
+		<li>"NPC Customization and Management" was failing to fully remove dual class flags from dual-class characters, leading to awkward consequences if they multiclassed.</li>
+		<li>Fixed an issue where, if you install 'New races and subraces' without 'IWD bard songs', specialist mages didn't their subrace allocated correctly. (How could I possibly have missed that?)</li>
+		<li>Fixed a compatibility issue with some mods that change the XP table, that caused first-level mages and bards to get far too many spells.</li>
+		<li>Added a readme warning about manually editing the game after installing ToF.</li>
+	</ul>
+    <div class="ribbon_triangle_h2-l"></div>
+    <div class="ribbon_triangle_h2-r"></div>
+<div class="section"> 
+<p>
+<ul>
+	<li></li>
+</ul>
 </body>
 </html>

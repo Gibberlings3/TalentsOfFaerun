@@ -201,7 +201,7 @@ DEFINE_ACTION_FUNCTION 3e_abilities STR_VAR version=1 BEGIN   /// 1 hybrid, 2 e3
 		"mxsplwiz.2da" override
 		"mxsplbrd.2da" override
 		LPF 2da_read RET_ARRAY wiz_rows=rows wiz_array=array END
-		PHP_EACH rows AS row=>discard BEGIN
+		PHP_EACH wiz_rows AS row=>discard BEGIN
 			FOR (col=1;col<6;++col) BEGIN
 				PATCH_IF $wiz_array("%row%" "%col%")=4 BEGIN
 					SET $wiz_array("%row%" "%col%")=3 

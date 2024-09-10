@@ -20,8 +20,12 @@ DEFINE_ACTION_FUNCTION monk_staff BEGIN
 	LAF 2da_read STR_VAR file=weapprof.2da RET_ARRAY weapprof_array=array weapprof_cols=columns END
 	ACTION_PHP_EACH weapprof_cols AS col=>discard BEGIN
 		ACTION_IF VARIABLE_IS_SET $monk_kits("%col%") || "%col%" STR_EQ "MONK" BEGIN
-			OUTER_SET $weapprof_array("QUARTERSTAFF" "%col%")=1
+			ACTION_IF IS_AN_INT $weapprof_array("QUARTERSTAFF" "%col%") && $weapprof_array("QUARTERSTAFF" "%col%")=0 BEGIN
+				OUTER_SET $weapprof_array("QUARTERSTAFF" "%col%")=1
+			END
+			ACTION_IF IS_AN_INT $weapprof_array("2HANDED" "%col%") && $weapprof_array("2HANDED" "%col%")=0 BEGIN
 			OUTER_SET $weapprof_array("2HANDED" "%col%")=1
+			END
 		END
 	END
 	LAF 2da_write STR_VAR file=weapprof.2da array=weapprof_array default="0" END

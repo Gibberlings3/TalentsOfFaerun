@@ -2,7 +2,7 @@
 *
 				NAME		DESC			PARENT			FINAL_RACE	ICON	ICON_STRREF	COLOR_SKIN	COLOR_HAIR	COLOR_MAJOR	COLOR_MINOR	STR	DEX	CON	INT	WIS	CHA	EXTRA_PROF	BIO_OLD	BIO_NEW	PP 	OL 	FT  MS  HS  DI  ST		SPL_INIT						SPL_RECUR
 AASIMAR			@2			@102			PLANETOUCHED	AASIMAR		-1		-1			29			 0			-1			-1			0	0	-1	0	1	1	0			@500	@516	0	0	0	0	0	0	0		%spl_subrace_aasimar%			-1
-TIEFLING		@3			@103			PLANETOUCHED	TIEFLING	-1	    -1			6			24			-1			-1			0	1	0	1	0	-1	0			@500	@515	5	0	0	10	10	0	0		%spl_subrace_tiefling%			-1
+TIEFLING		@3			@103			PLANETOUCHED	TIEFLING	-1		-1			6			24			-1			-1			0	1	0	1	0	-1	0			@500	@515	5	0	0	10	10	0	0		%spl_subrace_tiefling%			-1
 GENASI_AIR		@20			@120			PLANETOUCHED	GENIE		dwiconb	@604		39			23			-1			-1			0	1	0	1	-1	-1	0			@500	@517	0	0	0	0	0	0	0		%spl_subrace_genasi_air%		-1
 GENASI_EARTH	@21			@121			PLANETOUCHED	GENIE		dwico10	R_10		25			 1			-1			-1			1	0	1	0	-1	-1	0			@500	@517	0	0	0	0	0	0	0		%spl_subrace_genasi_earth%		-1
 GENASI_FIRE		@22			@122			PLANETOUCHED	GENIE		dwico26	R_26		19			14			-1			-1			0	0	0	1	0	-1	0			@500	@517	0	0	0	0	0	0	0		%spl_subrace_genasi_fire%		-1

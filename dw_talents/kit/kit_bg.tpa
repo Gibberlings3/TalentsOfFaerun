@@ -1,5 +1,10 @@
 DEFINE_ACTION_FUNCTION kit_bg BEGIN
 
+	// sort out the menu
+
+    LAF run STR_VAR file=setup_menus locbase=shared END // also INCLUDEs the virtual_class tools
+
+
 	LAF blackguard_class_checks END
 	LAF include STR_VAR file=blackguard.tph location=kits END
 	ACTION_FOR_EACH blackguard IN

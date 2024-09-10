@@ -88,6 +88,7 @@ DEFINE_ACTION_FUNCTION level_one_find_starting_xp RET xp BEGIN
 		END
 		DEFAULT
 			WARN "hla_feat function start_at_level_1: unrecognized value %value% for ini start_eet, assuming BG"
+			OUTER_SPRINT startare bgstarta
 		END
 	END ELSE
 	ACTION_IF GAME_IS "BG2EE" BEGIN

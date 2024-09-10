@@ -24,8 +24,8 @@ DEFINE_ACTION_FUNCTION subrace BEGIN
 	
 	
 	ACTION_FOR_EACH type IN 
-		planetouched_subraces 
 		human_subraces 
+		planetouched_subraces 
 		elf_subraces 
 		dwarf_halfling_subraces 
 		gnome_subraces 

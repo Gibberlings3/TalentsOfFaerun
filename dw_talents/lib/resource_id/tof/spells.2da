@@ -357,6 +357,7 @@ spl_hla_greater_whirlwind					dw-hlgww
 spl_hla_greater_war_cry						tg#gcry
 spl_upgrade_war_cry							dw-gcry
 spl_hla_scorn_injury						dw-scrn
+spl_scorn_injury_block_enrage				dw-scrna
 spl_hla_dd_boost							dw-hldd1
 spl_hla_dd_boost_2							dw-hldd2
 spl_hla_dd_boost_3							dw-hldd3

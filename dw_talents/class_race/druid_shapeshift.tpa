@@ -552,7 +552,7 @@ DEFINE_ACTION_FUNCTION druid_shapeshift_build_forms BEGIN
 				icon=dw-swel 
 				ability_icon=dw-swel
 				icon_path="%MOD_FOLDER%/%component_loc%/resource"
-				apply_spells="%spl_air_elemental_aura%"
+				apply_spells="%spl_water_elemental_aura%"
 				anim
 	END
 

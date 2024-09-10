@@ -18,6 +18,11 @@ END
 DEFINE_PATCH_FUNCTION WIZARD_RUNE_OF_IMMUNITY BEGIN
 
 	LPF scs_style_hla END
+	LPF ALTER_EFFECT INT_VAR match_duration=24 duration=60 END
+	INNER_ACTION BEGIN
+		COPY_EXISTING "li#run2.spl" override
+			LPF ALTER_EFFECT INT_VAR match_duration=22 duration=58 END
+	END
 	
 
 END
@@ -929,15 +934,19 @@ DEFINE_PATCH_FUNCTION WIZARD_BLOOD_TO_ICE BEGIN
 	LPF ADD_SPELL_EFFECT INT_VAR target=2 opcode=324 duration=1 parameter1=10 parameter2=splprot_num STR_VAR resource="%resref%" END // golems
 	// hold 6 seconds, save for 1/2
 	LPF ADD_SPELL_EFFECT INT_VAR opcode=185 target=2 power=10 resist_dispel=3 duration=3 parameter2=2 END 
-	LPF ADD_SPELL_EFFECT INT_VAR opcode=185 target=2 power=10 timing=4 resist_dispel=3 duration=3 parameter2=2 savebonus save_vs_spell=1 END 
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=185 target=2 power=10 timing=0 resist_dispel=3 duration=6 parameter2=2 savebonus END 
+	LPF ALTER_EFFECT INT_VAR match_opcode=185 match_duration=6 save_vs_spell=1 END
 	// cold damage (no save)
 	LPF ADD_SPELL_EFFECT INT_VAR opcode=12 target=2 power=10 resist_dispel=3 parameter1=17 timing=0 parameter2b=2 END
 	LPF ADD_SPELL_EFFECT INT_VAR opcode=12 target=2 power=10 resist_dispel=3 parameter1=16 timing=4 duration=1 parameter2b=2 END
 	LPF ADD_SPELL_EFFECT INT_VAR opcode=12 target=2 power=10 resist_dispel=3 parameter1=17 timing=4 duration=2 parameter2b=2 END
 	// cold damage (save to avoid)
-	LPF ADD_SPELL_EFFECT INT_VAR opcode=12 target=2 power=10 resist_dispel=3 parameter1=17 timing=4 duration=3 parameter2b=2 savebonus save_vs_spell=1 END
-	LPF ADD_SPELL_EFFECT INT_VAR opcode=12 target=2 power=10 resist_dispel=3 parameter1=16 timing=4 duration=4 parameter2b=2 savebonus save_vs_spell=1 END
-	LPF ADD_SPELL_EFFECT INT_VAR opcode=12 target=2 power=10 resist_dispel=3 parameter1=17 timing=4 duration=5 parameter2b=2 savebonus save_vs_spell=1 END
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=12 target=2 power=10 resist_dispel=3 parameter1=17 timing=4 duration=3 parameter2b=2 savebonus END
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=12 target=2 power=10 resist_dispel=3 parameter1=16 timing=4 duration=4 parameter2b=2 savebonus END
+	LPF ADD_SPELL_EFFECT INT_VAR opcode=12 target=2 power=10 resist_dispel=3 parameter1=17 timing=4 duration=5 parameter2b=2 savebonus END
+	LPF ALTER_EFFECT INT_VAR match_opcode=12 match_duration=3 save_vs_spell=1 END
+	LPF ALTER_EFFECT INT_VAR match_opcode=12 match_duration=4 save_vs_spell=1 END
+	LPF ALTER_EFFECT INT_VAR match_opcode=12 match_duration=5 save_vs_spell=1 END
 	//sparkle
 	LPF ADD_SPELL_EFFECT INT_VAR opcode=141 target=2 power=10 resist_dispel=0 parameter2=2 timing=1 END
 	// sound effect (icelance travel)

@@ -487,10 +487,10 @@ DEFINE_PATCH_FUNCTION BARD_ENHANCED_SONG BEGIN
 			LPF ADD_SPELL_EFFECT INT_VAR insert_point=0 opcode=321 target=2 timing=1 STR_VAR resource="%SOURCE_RES%" END
 	
 	END
-	PATCH_IF FILE_EXISTS_IN_GAME "dw-920.spl" BEGIN // do we have the IWD bard songs?
+	PATCH_IF FILE_EXISTS_IN_GAME "#bard7.spl" BEGIN // do we have the IWD bard songs?
 		// put in the new ability 
 		INNER_ACTION BEGIN
-			COPY_EXISTING "dw-920.spl" "override"
+			COPY_EXISTING "#bard7.spl" "override"
 				REPLACE_TEXTUALLY "spcl920a" "rr#bdf04" (8)
 				SAY 0x8 @3150
 				SAY 0x50 @3149
@@ -503,7 +503,6 @@ DEFINE_PATCH_FUNCTION BARD_ENHANCED_SONG BEGIN
 		// patch in the new song
 	
 		REPLACE_TEXTUALLY "spcl920a" "rr#bdf04" (8)
-	
 	END
 
 END
@@ -522,12 +521,12 @@ DEFINE_PATCH_FUNCTION SKALD_ENHANCED_SONG BEGIN
 			LPF ADD_SPELL_EFFECT INT_VAR insert_point=0 opcode=321 target=2 timing=1 STR_VAR resource="%SOURCE_RES%" END
 	
 	END
-	PATCH_IF FILE_EXISTS_IN_GAME "dw-920.spl" BEGIN // do we have the IWD bard songs?
+	PATCH_IF FILE_EXISTS_IN_GAME "#bard7.spl" BEGIN // do we have the IWD bard songs?
 		// put in the new ability 
 		INNER_ACTION BEGIN
-			COPY_EXISTING "dw-920.spl" "override/%spl_skald_enhanced_song_payload%"
+			COPY_EXISTING "#bard7.spl" "override/%spl_skald_enhanced_song_payload%"
 				REPLACE_TEXTUALLY "spcl920a" "rr#bsk02" (8)
-				REPLACE_TEXTUALLY "dw-920" "%spl_skald_enhanced_song_payload%" (8)
+				REPLACE_TEXTUALLY "#bard7" "%spl_skald_enhanced_song_payload%" (8)
 				SAY 0x8 @3153
 				SAY 0x50 @3152
 		END
@@ -573,12 +572,12 @@ DEFINE_PATCH_FUNCTION JESTER_ENHANCED_SONG BEGIN
 			
 	
 	END
-	PATCH_IF FILE_EXISTS_IN_GAME "dw-920.spl" BEGIN // do we have the IWD bard songs?
+	PATCH_IF FILE_EXISTS_IN_GAME "#bard7.spl" BEGIN // do we have the IWD bard songs?
 		// put in the new ability 
 		INNER_ACTION BEGIN
-			COPY_EXISTING "dw-920.spl" "override/%spl_jester_enhanced_song_payload%"
+			COPY_EXISTING "#bard7.spl" "override/%spl_jester_enhanced_song_payload%"
 				REPLACE_TEXTUALLY "spcl920a" "rr#bjs02" (8)
-				REPLACE_TEXTUALLY "dw-920" "%spl_jester_enhanced_song_payload%" (8)
+				REPLACE_TEXTUALLY "#bard7" "%spl_jester_enhanced_song_payload%" (8)
 				SAY 0x8 @3156
 				SAY 0x50 @3155
 		END

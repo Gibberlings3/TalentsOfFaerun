@@ -54,7 +54,7 @@ DEFINE_ACTION_FUNCTION hla_elemental_transformations BEGIN
 				icon_path="%MOD_FOLDER%/class_race/resource"
 				spell="%CLERIC_ELEMENTAL_TRANSFORMATION_FIRE%"
 				anim=elemental_fire
-				apply_spells="%spl_fire_elemental_aura_greater%"
+				apply_spells="%spl_fire_elemental_aura%"
 	END
 	
 	// air
@@ -80,7 +80,7 @@ DEFINE_ACTION_FUNCTION hla_elemental_transformations BEGIN
 				spell="%spl_hla_elemental_transformation_air%"
 				copy_spell="%CLERIC_ELEMENTAL_TRANSFORMATION_FIRE%"
 				anim=elemental_air
-				apply_spells="%spl_air_elemental_aura_greater%"
+				apply_spells="%spl_air_elemental_aura%"
 	END
 
 	// water
@@ -115,7 +115,7 @@ DEFINE_ACTION_FUNCTION hla_elemental_transformations BEGIN
 				spell="%spl_hla_elemental_transformation_water%"
 				copy_spell="%CLERIC_ELEMENTAL_TRANSFORMATION_EARTH%"
 				anim
-				apply_spells="%spl_water_elemental_aurar%"
+				apply_spells="%spl_water_elemental_aura%"
 	END	
 	
 END

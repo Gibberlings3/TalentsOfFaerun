@@ -333,8 +333,7 @@ BEGIN
 			OUTER_SET add_name_to_desc=1
 		END ELSE BEGIN
 			OUTER_PATCH "%desc_string%" BEGIN
-				READ_ASCII 0x0 name_check (STRING_LENGTH "%name_string%")
-				add_name_to_desc= "%name_check%" STR_CMP "%name_string%" 
+				add_name_to_desc= INDEX_BUFFER ("%name_string%") <0
 			END
 		END
 		ACTION_IF add_name_to_desc BEGIN

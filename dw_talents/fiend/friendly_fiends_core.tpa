@@ -389,7 +389,7 @@ DEFINE_ACTION_FUNCTION friendly_fiends_scripts BEGIN
 			<<<<<<<< .../stratagems-inline/demontop.baf
 
 			IF
-				 !Global("fiend_allegiance_processed","LOCAL",1)
+				 !Global("fiend_allegiance_processed","LOCALS",1)
 				 CheckSpellState(LastSummonerOf(Myself),%splstate%)
 				 Allegiance(LastSummonerOf(Myself),GOODCUTOFF)
 			THEN
@@ -405,7 +405,7 @@ DEFINE_ACTION_FUNCTION friendly_fiends_scripts BEGIN
 			END
 
 			IF
-				 !Global("fiend_allegiance_processed","LOCAL",1)
+				 !Global("fiend_allegiance_processed","LOCALS",1)
 				 OR(2)
 					 CheckSpellState(LastSummonerOf(Myself),%splstate%)
 					 CheckSpellState(LastSummonerOf(Myself),%stat_ind_npc%)
@@ -422,7 +422,7 @@ DEFINE_ACTION_FUNCTION friendly_fiends_scripts BEGIN
 			END
 			
 			IF
-				 !Global("fiend_allegiance_processed","LOCAL",1)
+				 !Global("fiend_allegiance_processed","LOCALS",1)
 				 OR(2)
 					 !CheckSpellState(LastSummonerOf(Myself),%splstate%)
 					 !Allegiance(LastSummonerOf(Myself),GOODCUTOFF)					
@@ -439,7 +439,7 @@ DEFINE_ACTION_FUNCTION friendly_fiends_scripts BEGIN
 
 
 			IF
-				 !Global("fiend_allegiance_processed","LOCAL",1)
+				 !Global("fiend_allegiance_processed","LOCALS",1)
 				 !CheckSpellState(LastSummonerOf(Myself),%splstate%)
 			     !CheckSpellState(LastSummonerOf(Myself),%stat_ind_npc%)			
 				 Allegiance(LastSummonerOf(Myself),EVILCUTOFF)	 

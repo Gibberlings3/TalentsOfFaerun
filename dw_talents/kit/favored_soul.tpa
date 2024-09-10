@@ -173,6 +173,15 @@ DEFINE_ACTION_FUNCTION build_favored_soul_kit INT_VAR god=0 name=0 desc=0  god_g
 	
 	END
 	
+	// edit main AI so favored souls don't check for traps
+	
+	COPY_EXISTING "bddefai.bcs" override
+		DECOMPILE_AND_PATCH BEGIN
+			REPLACE_TEXTUALLY "!ModalState(DETECTTRAPS)" "!ModalState(DETECTTRAPS)%WNL%!CheckSpellState(Myself,%favored_soul_splstate%)"		
+		END
+	BUT_ONLY
+	IF_EXISTS
+	
 	// get god
 	
 	OUTER_SPRINT god_id "not_found"
