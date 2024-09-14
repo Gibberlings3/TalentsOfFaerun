@@ -58,11 +58,11 @@ DEFINE_ACTION_FUNCTION night_wolf RET kit BEGIN
 		IF {value}
 		{{
 		k.kit_grant_powers{%spl_shapeshifter_lesser_werewolf% 1 3 4,spcl643 10,spcl644 16,%spl_shapeshifter_werewolf_lord% 22 3|class=cleric}
-		k.kit_apply_powers{%spl_shapeshifter_werewolf_applicator% 7,%spl_shapeshifter_greater_werewolf_applicator% 13,spl_shapeshifter_werewolf_lord_applicator% 19|class=cleric}
+		k.kit_apply_powers{%spl_shapeshifter_werewolf_applicator% 7,%spl_shapeshifter_greater_werewolf_applicator% 13,%spl_shapeshifter_werewolf_lord_applicator% 19|class=cleric}
 		}}
 		ELSE
 		{{
-		k.kit_grant_powers{%SHAPESHIFTER_SHAPESHIFT_WEREWOLF% 1 2 12,%SHAPESHIFTER_SHAPESHIFT_GREATERWEREWOLF% 13 2}
+		k.kit_grant_powers{%SHAPESHIFTER_SHAPESHIFT_WEREWOLF% 1 2 12,%SHAPESHIFTER_SHAPESHIFT_GREATERWEREWOLF% 13 2|class=cleric}
 		}}
 	]
 
