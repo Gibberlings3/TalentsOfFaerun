@@ -20,6 +20,7 @@ END
 DEFINE_ACTION_FUNCTION fighter_assassin BEGIN
 
 	OUTER_SPRINT kit DW_FIGHTER_ASSASSIN
+	LAF check_label STR_VAR label=dw-3e_align RET 3e_align=value END
 
 	kit.copy[FIGHTER_THIEF=>%kit%]
 	[
@@ -27,6 +28,10 @@ DEFINE_ACTION_FUNCTION fighter_assassin BEGIN
 		LPF adjust_assassin_descriptions INT_VAR tra_ref=206 RET k_desc=desc END
 		k.kit_grant_powers{%ASSASSIN_POISON% 1 4|class=thief}
 		k.kit_copy_from{clascolr thiefskl|source=ASSASIN}
+		IF {3e_align}
+		{{
+			k.kit_set_alignment{ln le cn ce nn ne}
+		}}
 	]
 
 	LAF copy_backstab STR_VAR kit copy_from=ASSASIN END

@@ -29,7 +29,6 @@ END
 DEFINE_ACTION_FUNCTION diviner_of_oghma BEGIN
 		OUTER_SPRINT kit DW_OGHMA_DIVINER
 		LAF oghma_shared END
-		LAF splconv_get_name STR_VAR spell="%WIZARD_IDENTIFY%" new_type=innate RET spl_oghma_identify=new_resref END
 		LAF splconv_get_name STR_VAR spell="%WIZARD_SECRET_WORD%" new_type=innate RET spl_oghma_secret_word=new_resref END
 		LAF splconv_get_name STR_VAR spell="%WIZARD_PIERCE_MAGIC%" new_type=innate RET spl_oghma_pierce_magic=new_resref END
 
@@ -58,7 +57,6 @@ END
 DEFINE_ACTION_FUNCTION oghma_favored_soul BEGIN
 
 	LAF oghma_shared END
-		LAF splconv_get_name STR_VAR spell="%WIZARD_IDENTIFY%" new_type=innate RET spl_oghma_identify=new_resref END
 		LAF splconv_get_name STR_VAR spell="%WIZARD_SECRET_WORD%" new_type=innate RET spl_oghma_secret_word=new_resref END
 		LAF splconv_get_name STR_VAR spell="%WIZARD_PIERCE_MAGIC%" new_type=innate RET spl_oghma_pierce_magic=new_resref END
 
@@ -97,10 +95,9 @@ DEFINE_ACTION_FUNCTION oghma_shared BEGIN
 		spl.make[%spl_oghma_innate%]
 		[
 			m.ab.add{}
-			m.ab_fx.add{s_opcode=21 s_target=2 s_timing=0 s_parameter1=9 s_duration=9999999}
+			m.ab_fx.add{s_opcode=21 s_target=2 s_timing=0 s_parameter1=14 s_duration=9999999}
 		]
 
-		LAF splconv STR_VAR spell="%WIZARD_IDENTIFY%" new_type=innate RET_ARRAY splconv_array END
 		LAF splconv STR_VAR spell="%WIZARD_SECRET_WORD%" new_type=innate RET_ARRAY splconv_array END
 		LAF splconv STR_VAR spell="%WIZARD_PIERCE_MAGIC%" new_type=innate RET_ARRAY splconv_array END
 

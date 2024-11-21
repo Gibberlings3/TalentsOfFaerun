@@ -55,7 +55,7 @@ Requirements:
 
 @5="Disciple of Asmodeus"
 
-@6="DISCIPLE OF ASMODEUS: this is a blackguard who has made an unholy pack with Asmodeus, Lord of the Nine Hells. A disciple of Asmodeus is a lordly, domineering warrior who craves unlimited power. <PRO_HESHE> is ruthless in <PRO_HISHER> pursuits and uncaring of any who get in <PRO_HISHER> way.
+@6="DISCIPLE OF ASMODEUS: This is a blackguard who has made an unholy pack with Asmodeus, Lord of the Nine Hells. A disciple of Asmodeus is a lordly, domineering warrior who craves unlimited power. The disciple is ruthless in <PRO_HISHER> pursuits and uncaring of any who get in <PRO_HISHER> way.
 
 Advantages: 
 – Replaces Smite Good with Smite Chaos, which affects chaotic creatures such as tanar'ri (demons), most vampires, and red, black, and shadow dragons.
@@ -110,13 +110,5 @@ This spell enables the Thrall of Orcus to attempt to summon a quasit familiar to
 
 Note: This spell can only be cast by the protagonist.
 
-The Thrall of Orcus has an empathic link with the familiar and can issue it mental commands. The Thrall receives half the familiar's total Hit Points (rounded down) as bonus Hit Points. However, the Thrall must take care to treat <PRO_HISHER> familiar well, for if the familiar should die, the Thrall loses the bonus Hit Points and the familiar's Hit Points again as damage. Also, when a familiar dies, the Thrall loses 1 point of Constitution PERMANENTLY.
-
-The familiar has these statistics:
-
-– Hit Points: 12
-– Armor Class: 4
-– Magic Resistance: 15%
-– Combat: 2 attacks per round at 15 THAC0 for 1d6 damage
-– Special Abilities: Has 100% resistance to fire, cold, and electricity. Can cast Horror once per day. Regenerates 1 HP/round."
+The Thrall of Orcus has an empathic link with the familiar and can issue it mental commands. The Thrall receives half the familiar's total Hit Points (rounded down) as bonus Hit Points. However, the Thrall must take care to treat <PRO_HISHER> familiar well, for if the familiar should die, the Thrall loses the bonus Hit Points and the familiar's Hit Points again as damage. Also, when a familiar dies, the Thrall loses 1 point of Constitution PERMANENTLY."
 

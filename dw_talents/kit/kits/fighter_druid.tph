@@ -64,11 +64,13 @@ DEFINE_ACTION_FUNCTION fighter_druid_shared BEGIN
 			LPF add_basic_spell_ability END
 			PATCH_IF FILE_EXISTS_IN_GAME "%spl_druid_shapeshift_base%.spl" BEGIN // ToF improved shapeshifting 
 				LPF ADD_SPELL_EFFECT INT_VAR opcode=172 target=1 timing=1 STR_VAR resource="%spl_druid_shapeshift_base%" END
+				LPF ADD_SPELL_EFFECT INT_VAR opcode=318 target=1 timing=1 STR_VAR resource="%spl_druid_shapeshift_base%" END
 			END ELSE BEGIN
 				PATCH_FOR_EACH shapeshift IN DRUID_SHAPESHIFT_POLAR_BEAR DRUID_SHAPESHIFT_WINTER_WOLF DRUID_SHAPESHIFT_BORING_BEETLE DRUID_SHAPESHIFT_ELEMENTAL_FIRE DRUID_SHAPESHIFT_ELEMENTAL_WATER DRUID_SHAPESHIFT_ELEMENTAL_FIRE DRUID_SHAPESHIFT_BROWNBEAR DRUID_SHAPESHIFT_WOLF DRUID_SHAPESHIFT_BLACKBEAR BEGIN
 					PATCH_IF VARIABLE_IS_SET "%shapeshift%" BEGIN
 						SPRINT resource EVAL "%%shapeshift%%"
 						LPF ADD_SPELL_EFFECT INT_VAR opcode=172 target=1 timing=1 STR_VAR resource END
+						LPF ADD_SPELL_EFFECT INT_VAR opcode=318 target=1 timing=9 STR_VAR resource END
 					END
 				END
 			END

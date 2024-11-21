@@ -1,6 +1,13 @@
 DEFINE_ACTION_FUNCTION test STR_VAR version=0 BEGIN
 
-	OUTER_SPRINT component_loc hla_feat
-	LAF run STR_VAR file=start_at_level_one END
+	spl.make[testspel]
+	[
+		m.ab.add{}
+		m.ab_fx.add{s_opcode=144 s_target=1 s_timing=9 s_parameter2=2}
+		m.ab_fx.add{s_opcode=145 s_target=1 s_parameter2=1 s_special=1}
+	]
+
+
+
 END
 

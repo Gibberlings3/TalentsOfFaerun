@@ -865,7 +865,7 @@ DEFINE_PATCH_FUNCTION WIZARD_ABYSSAL_FURY BEGIN
 			WRITE_BYTE 0x25 6
 			LPF ADD_SPELL_EFFECT INT_VAR opcode=213 target=2 timing=0 duration=time_in_abyss parameter2=1 END
 			LPF ADD_SPELL_EFFECT INT_VAR opcode=174 target=2 timing=1 STR_VAR resource=dw-abf2 END
-			LPF ADD_SPELL_EFFECT INT_VAR opcode=13 target=2 timing=4 duration=time_in_abyss parameter2=8 save_vs_spell=1 END
+			LPF ADD_SPELL_EFFECT INT_VAR opcode=13 target=2 timing=4 duration=time_in_abyss parameter2=8 savingthrow=BIT0 END
 			LPF ADD_SPELL_EFFECT INT_VAR opcode=215 target=2 parameter2=1 timing=4 duration=time_in_abyss+1 STR_VAR resource=dw-abf1 END
 			LPF ADD_SPELL_EFFECT INT_VAR opcode=174 target=2 timing=4 duration=time_in_abyss+1 STR_VAR resource=dw-abf3  END
 			LPF ADD_SPELL_EFFECT INT_VAR opcode=215 target=2 parameter2=1 timing=4 duration=time_in_abyss+2 STR_VAR resource=dw-abf1  END
@@ -937,13 +937,13 @@ DEFINE_PATCH_FUNCTION WIZARD_BLOOD_TO_ICE BEGIN
 	LPF ADD_SPELL_EFFECT INT_VAR opcode=185 target=2 power=10 timing=0 resist_dispel=3 duration=6 parameter2=2 savebonus END 
 	LPF ALTER_EFFECT INT_VAR match_opcode=185 match_duration=6 save_vs_spell=1 END
 	// cold damage (no save)
-	LPF ADD_SPELL_EFFECT INT_VAR opcode=12 target=2 power=10 resist_dispel=3 parameter1=17 timing=0 parameter2b=2 END
-	LPF ADD_SPELL_EFFECT INT_VAR opcode=12 target=2 power=10 resist_dispel=3 parameter1=16 timing=4 duration=1 parameter2b=2 END
-	LPF ADD_SPELL_EFFECT INT_VAR opcode=12 target=2 power=10 resist_dispel=3 parameter1=17 timing=4 duration=2 parameter2b=2 END
+	LPF ADD_EFFECT INT_VAR opcode=12 target=2 power=10 resist_dispel=3 parameter1=17 timing=0 parameter2=2*0x10000 END
+	LPF ADD_EFFECT INT_VAR opcode=12 target=2 power=10 resist_dispel=3 parameter1=16 timing=4 duration=1 parameter2=2*0x10000 END
+	LPF ADD_EFFECT INT_VAR opcode=12 target=2 power=10 resist_dispel=3 parameter1=17 timing=4 duration=2 parameter2=2*0x10000 END
 	// cold damage (save to avoid)
-	LPF ADD_SPELL_EFFECT INT_VAR opcode=12 target=2 power=10 resist_dispel=3 parameter1=17 timing=4 duration=3 parameter2b=2 savebonus END
-	LPF ADD_SPELL_EFFECT INT_VAR opcode=12 target=2 power=10 resist_dispel=3 parameter1=16 timing=4 duration=4 parameter2b=2 savebonus END
-	LPF ADD_SPELL_EFFECT INT_VAR opcode=12 target=2 power=10 resist_dispel=3 parameter1=17 timing=4 duration=5 parameter2b=2 savebonus END
+	LPF ADD_EFFECT INT_VAR opcode=12 target=2 power=10 resist_dispel=3 parameter1=17 timing=4 duration=3 parameter2=2*0x10000 savebonus END
+	LPF ADD_EFFECT INT_VAR opcode=12 target=2 power=10 resist_dispel=3 parameter1=16 timing=4 duration=4 parameter2=2*0x10000 savebonus END
+	LPF ADD_EFFECT INT_VAR opcode=12 target=2 power=10 resist_dispel=3 parameter1=17 timing=4 duration=5 parameter2=2*0x10000 savebonus END
 	LPF ALTER_EFFECT INT_VAR match_opcode=12 match_duration=3 save_vs_spell=1 END
 	LPF ALTER_EFFECT INT_VAR match_opcode=12 match_duration=4 save_vs_spell=1 END
 	LPF ALTER_EFFECT INT_VAR match_opcode=12 match_duration=5 save_vs_spell=1 END
@@ -955,10 +955,10 @@ DEFINE_PATCH_FUNCTION WIZARD_BLOOD_TO_ICE BEGIN
 	END
 	LPF ADD_SPELL_EFFECT INT_VAR opcode=174 target=2 power=10 resist_dispel=0 timing=1 STR_VAR resource="%resref%" END
 	//color
-	LPF ADD_SPELL_EFFECT INT_VAR opcode=8 target=2 power=10 resist_dispel=3 parameter1=93*0x100+155*0x10000+255*0x1000000 parameter2=255 duration=3 END
-	LPF ADD_SPELL_EFFECT INT_VAR opcode=8 target=2 power=10 resist_dispel=3 parameter1=93*0x100+155*0x10000+255*0x1000000 parameter2=255 duration=3 timing=4 save_vs_spell=1 savebonus END
+	LPF ADD_EFFECT INT_VAR opcode=8 target=2 power=10 resist_dispel=3 parameter1=93*0x100+155*0x10000+255*0x1000000 parameter2=255 duration=3 END
+	LPF ADD_EFFECT INT_VAR opcode=8 target=2 power=10 resist_dispel=3 parameter1=93*0x100+155*0x10000+255*0x1000000 parameter2=255 duration=3 timing=4 save_vs_spell=1 savebonus END
 	// remove effect, ending second hold
-	LPF ADD_SPELL_EFFECT INT_VAR opcode=321 target=2 power=10 duration=6 timing=4 STR_VAR resource="%resref%" END
+	LPF ADD_EFFECT INT_VAR opcode=321 target=2 power=10 duration=6 timing=4 STR_VAR resource="%resref%" END
 END
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////

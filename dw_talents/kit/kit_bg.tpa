@@ -20,8 +20,12 @@ DEFINE_ACTION_FUNCTION kit_bg BEGIN
 		
 	END
 
+
 	// update the kit-identification LUA
 	LAF ui_detect_class_kit END
+
+	// disable spellcasting for both kits
+	LAF ui_hide_spellbook INT_VAR skip_dk_reload=1 STR_VAR kit="DW_BLACKGUARD_ORCUS DW_BLACKGUARD_ASMODEUS" END
 
 
 	// re-externalize proficiencies if appropriate

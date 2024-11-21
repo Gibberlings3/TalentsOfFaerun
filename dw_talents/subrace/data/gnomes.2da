@@ -2,4 +2,4 @@
 *
 				NAME		DESC			PARENT			FINAL_RACE	ICON	ICON_STRREF	COLOR_SKIN	COLOR_HAIR	COLOR_MAJOR	COLOR_MINOR	STR	DEX	CON	INT	WIS	CHA	EXTRA_PROF	BIO_OLD		BIO_NEW	PP 	OL 	FT  MS  HS  DI  ST		SPL_INIT					SPL_RECUR
 GNOME_ROCK		@7			@107			GNOME			*			dwicosm	@603		-1			-1			-1			-1			-1	0	1	1	-1	0	0			-1			-1		0	5	10	5	5	10	5		%spl_subrace_rock_gnome%	-1
-GNOME_DEEP		@8			@108			GNOME			*			dwicosm	@603		19			1			-1			-1			-1	1	0	0	1	-2	0			@503		2514	-5	0	10	10	30	10	5		%spl_subrace_svirfneblin% %spl_subrace_svirfneblin_recurring%
+GNOME_DEEP		@8			@108			GNOME			*			dwicosm	@603		19			1			-1			-1			-1	1	0	0	1	-2	0			@503		@514	-5	0	10	10	30	10	5		%spl_subrace_svirfneblin% %spl_subrace_svirfneblin_recurring%

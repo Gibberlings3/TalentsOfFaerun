@@ -169,18 +169,12 @@ DEFINE_ACTION_FUNCTION build_favored_soul_kit INT_VAR god=0 name=0 desc=0  god_g
 			m.ab.add{}
 			m.ab_fx.add{s_opcode=328 s_target=2 s_timing=9 s_parameter2=favored_soul_splstate s_special=1} 
 			m.ab_fx.add{s_opcode=144 s_target=2 s_timing=9 s_parameter2=10} // deactivate spirit dance
+			m.ab_fx.add{s_opcode=144 s_target=2 s_timing=9 s_parameter2=14} // deactivate find traps
 		]
 	
 	END
 	
-	// edit main AI so favored souls don't check for traps
-	
-	COPY_EXISTING "bddefai.bcs" override
-		DECOMPILE_AND_PATCH BEGIN
-			REPLACE_TEXTUALLY "!ModalState(DETECTTRAPS)" "!ModalState(DETECTTRAPS)%WNL%!CheckSpellState(Myself,%favored_soul_splstate%)"		
-		END
-	BUT_ONLY
-	IF_EXISTS
+
 	
 	// get god
 	
@@ -347,6 +341,15 @@ END
 DEFINE_ACTION_FUNCTION favored_soul_detection_general BEGIN
 
 	LAF run STR_VAR file= amalgamate_class_checks locbase=shared END
+
+	// edit main AI so favored souls don't check for traps
+	
+	COPY_EXISTING "bddefai.bcs" override
+		DECOMPILE_AND_PATCH BEGIN
+			REPLACE_TEXTUALLY "!ModalState(DETECTTRAPS)" "!ModalState(DETECTTRAPS)%WNL%!CheckSpellState(Myself,%favored_soul_splstate%)"		
+		END
+	BUT_ONLY
+	IF_EXISTS
 
 	LAF ds_resolve_stat STR_VAR id=DW_VIRTUAL_CLASS_MARKER RET favored_soul_splstate=stat_ind END
 

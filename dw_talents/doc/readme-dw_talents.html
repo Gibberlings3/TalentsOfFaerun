@@ -32,7 +32,7 @@
         <strong> On the web: </strong><a href="https://www.gibberlings3.net/mods/tweaks/tof/">Home
         page</a>, <a href="https://www.gibberlings3.net/forums/forum/236-talents-of-faer&ucirc;n/">discussion
         forum</a>, <a href="https://www.gibberlings3.net/gallery/album/42-talents-of-faer&ucirc;n/">image gallery</a>, and <a href="https://discord.gg/yTzjMTb">Discord</a></p>
-      <p> <strong>Version beta 14</strong><br />
+      <p> <strong>Version beta 15</strong><br />
         <strong>Languages: </strong>English<br />
         <strong>Platforms: </strong>Windows, macOS, Linux </p>
       <p> Talents of Faer&ucirc;n (ToF) is a collection of about 85 mini-mods for the Enhanced Edition versions of Baldur's Gate, Baldur's Gate II, and Icewind Dale, partially inspired by existing mods and tabletop Dungeons and Dragons resources. It contains many optional tweaks to various parts of gameplay, focusing on expanding and rebalancing player character abilities. Features include 150-odd new high-level abilities, a new 'feat' system where lower-level characters gain abilities every few levels, revisions to existing kits, new classes, new kits for multi-class characters, new types of magical specialization, a dozen or so new spells, many spell tweaks, 20-odd new gods for clerics to worship, a subrace system, a revised system of cleric/druid spells, and tweaks to the rules for ability scores and proficiencies. </p>
@@ -625,7 +625,14 @@
       <p>Favored souls must select a god/goddess to serve at character creation, chosen from almost all of those included in Talents of Faer&ucirc;n as well as the 'core five' in the unmodded game. For the purposes of dialog options, strongholds, and the like, they are treated as clerics of their chosen deity. ('Under the hood', favored souls are formally a set of kits for shamans, but hopefully this should not be visible in-game.)</p>
       <p>This component requires the 'Revised speciality priests of Lathander/Helm/Talos/Tempus/Tyr' and 'New Choices of God/Goddess for Speciality Priests' components to be installed. It also requires you to be using the Icewind Dale arcane and divine spells (either because you are playing IWD:EE, or because you have them installed) and the 'Add Nine New Arcane Spells' and 'Add Six New Divine Spells' components of ToF.</p>
       <p>This component automatically installs the contents of the <a href="#tidy-up-class">'Tidy Up Class-Selection Menu' component</a>, and makes use of the ToF revised sphere system, which is documented <a href="subdocuments_dw/spheres.html">here</a>.</p>
-      <p><strong>Druids May Multi-Class as Mages, Rangers, and Thieves</strong></p>
+       <p><strong>New Kits for Blackguards</strong></p>
+	  <p><em>Requires the 'Revised Paladins and Blackguards' component to be installed.</em></p>
+      <p>This component introduces two new kits for Blackguards:</p>
+      <ul>
+        <li>Disciple of Asmodeus</li>
+        <li>Thrall of Orcus</li>
+      </ul>
+	<p><strong>Druids May Multi-Class as Mages, Rangers, and Thieves</strong></p>
       <p>This component introduces three new multi-class options: druid/mage, druid/ranger, and druid/thief. All three are legal 2nd edition Advanced Dungeons and Dragons classes, but were omitted from Baldur's Gate. These work as you would expect: all three are restricted to druid weapon choices, druid/mages cannot cast spells in armor, and druid/thieves cannot use thief skills in armor heavier than studded leather. All three classes are correctly treated as druid multi-classes in in-game conversations (for instance, in Baldur's Gate II they all will be offered the druid stronghold, as well as the stronghold corresponding to their other class). The component also adjusts cleric/rangers so as to use the cleric spell list (in the unmodded game they used the druid list).</p>
       <p>These classes are available to the same races as (respectively) the cleric/mage, cleric/ranger, and cleric/thief. So in an otherwise unmodded game, only half-elves can be druid/mages and druid/rangers, and only gnomes can be druid/thieves. If you install the 'Eliminate Class/Race Restrictions and Most Class/Ability Score Restrictions' component, all races can select these classes.</p>
       <p>Druid/mages cannot specialize in a school of magic, even if you have 'Allow Multi-Classed and Dual-Classed Mages to Become Specialists and Wild Mages' installed. They can, however, become elementalists if 'New Wizard Specializations: Elemental Specialists' and 'Allow Multi-Classed and Dual-Classed Mages to Become Specialists and Wild Mages' are both installed. Druid/Elementalists cannot use priest spells associated with their opposing element, and (if you are using Icewind Dale and/or 'Revised Druid Shapeshifting') cannot shapeshift into an elemental of the opposed type.</p>
@@ -637,13 +644,7 @@
       </ul>
       <p>('Under the hood', these limitations reflect the fact that technically these are all kits of the respective cleric multi-classes&mdash;but hopefully this should be pretty much invisible in game!)</p>
       <p>This component automatically installs the contents of the <a href="#tidy-up-class">'Tidy Up Class-Selection Menu' component</a>, and makes use of the ToF revised sphere system, which is documented <a href="subdocuments_dw/spheres.html">here</a>.</p>
-      <p><strong>New Kits for Blackguards</strong></p>
-	  <p><em>Requires the 'Revised Paladins and Blackguards' component to be installed.</em></p>
-      <p>This component introduces two new kits for Blackguards:</p>
-      <ul>
-        <li>Disciple of Asmodeus</li>
-        <li>Thrall of Orcus</li>
-      </ul> 
+ 
 
  </div>
     <div class="ribbon_rectangle_h3">
@@ -1653,7 +1654,12 @@ href="https://gibberlings3.github.io/iesdp/">Infinity Engine Structure Descripti
 					<li>Other misc SFO fixes and tweaks prior to documentation release.</li>
 </ul>
 </p>
+</div>
    <div class="ribbon_rectangle_h3"><h3>Version beta 14 (9th September 2024)</h3></div>
+    <div class="ribbon_triangle_h2-l"></div>
+    <div class="ribbon_triangle_h2-r"></div>
+<div class="section"> 
+<p>
 	<ul>
 		<li>Fixed a couple of library bug sthat would sometimes cause the proficiency screen to resolve wrongly, or the ability screen to hang, when levelling.</li>
 		<li>Fixed an intermittent bug with the bit of code in 'Revised ability scores' that adjusts learned spells.</li>
@@ -1682,12 +1688,52 @@ href="https://gibberlings3.github.io/iesdp/">Infinity Engine Structure Descripti
 		<li>Fixed a compatibility issue with some mods that change the XP table, that caused first-level mages and bards to get far too many spells.</li>
 		<li>Added a readme warning about manually editing the game after installing ToF.</li>
 	</ul>
+</div>
+   <div class="ribbon_rectangle_h3"><h3>Version beta 15 (XX)</h3></div>
     <div class="ribbon_triangle_h2-l"></div>
     <div class="ribbon_triangle_h2-r"></div>
 <div class="section"> 
 <p>
-<ul>
-	<li></li>
-</ul>
+	<ul>
+		<li>On IWDEE, subraces should no longer display 'Invalid String' on the character screen.</li>
+		<li>Fixed some issues with NPC auto-levelling that arose when games were saved and loaded.</li>
+		<li>Fixed some issues with the way subrace biographies are handled.</li>
+		<li>Fixed an occasional bug with specialist mages learning spells from scrolls.</li>
+		<li>Druid/mages, druid/thieves, and druid/rangers now have Turn Undead deactivated; Favored Souls now have Find Traps deactivated. (They are normally hidden entirely by the UI) but there are edge cases where it is visible).</li>
+		<li>Clerics and Favored Souls of Oghma no longer get Identify, and instead get 15 lore per level (up from 10).</li>
+		<li>Assassin poisons were not being blocked by Stoneskin or by targeting an elemental/undead/etc.</li>
+		<li>Deathkiss now inflicts poison damage correctly.</li>
+		<li>Fixed a library bug which meant that the 'poison aptitude' and 'poison expertise' HLAs were not working.</li>
+		<li>Fixed issues with Nerve Venom: no longer does damage, no longer grants a saving throw, affects priest as well as wizard spellcasting, does not grant +25 AC vs crushing(!)</li>
+		<li>Nightmare Paste and Carrion Ichor can now be applied once per round instead of once per several rounds.</li>
+		<li>Wyvern Venom is identified in-game when used.</li>
+		<li>Blackguards should now receive their extra uses of Absorb Health if you are using Revised Paladins and Blackguards.</li>
+		<li>Thrall of Orcus and Disciple of Asmodeus Find Familiar abilities no longer list specific stats for the familiar (since they vary between games).</li>
+		<li>Fixed several errors in the allocation of high level abilities to druid/elementalist multiclassed characters.</li>
+		<li>Druid/Elementalists should now get the right shapeshift elemental options (previously fire elementalists could shapeshift into water but not fire elementals, and vice versa).</li>
+		<li>Barbarian wizard-slayer component now requires barbarian-as-a-class component.</li>
+		<li>We now longer try (and fail) to install the Force Mage of Mystra cleric/mage kit if you haven't installed the Force Mages component.</li>
+		<li>Fixed an edge-case incompatibility between SCS and ToF that occurred if the Low-Level abilities from ToF were installed but the High-Level abilities weren't.</li>
+		<li>Blood to Ice was not properly granting a saving throw.</li>
+		<li>Elemental Prince summoning no longer requires you to choose an (irrelevant) target for the spell.</li>
+		<li>Humans (and other races/subraces that grant extra first-level proficiencies) no longer grant them again when you dual-class. (That wasn't exactly a bug, but the consensus seems to be that they shouldn't get them.)</li>
+		<li>Fixed a cosmetic issue with the way spell schools were displayed for multi-school spells.</li>
+		<li>The Perceptive low-level ability now correctly grants +15, not +10, to Detect Illusions.</li>
+		<li>Removed outdated description text saying that Favored Souls of Helm get Ironskins.</li>
+		<li>Shapeshift ability is now correctly removed from Totemic Shamans and Raging Shifters.</li>
+		<li>If 'Revised Class Alignment Rules' is installed, Fighter/Assassins can no longer be good-aligned.</li>
+		<li>The 'extra level 6', 'extra level 7', and 'extra level 8' spells have been moved from the HLA list to the low-level ability list, and no longer have ability prerequisites (as for other extra level X' spells, you need to be able to cast X+1-level spells to take them).</li>
+		<li>Nishruu have been slightly lowered in level so that Death Spell still affects them.</li>
+		<li>The Larloch's Minor Drain tweak no longer does an extra 4 hp of damage.</li>
+		<li>Stonefist now grants the listed +2 bonus to AC.</li>
+		<li>The IWD-style color spray component now installs properly.</li>
+		<li>The Ascension version of the innate Cure Light Wounds bhaalspawn ability is now affected by the Enhance Cure/Cause spell tweak.</li>
+		<li>Slight tweak to the SFO library to handle (unconfirmed) compatibility errors on level-zero creatures.</li>
+		<li>The IWD spells now overwrite previous versions of the spells installed by other mods (except Spell Revisions) - not doing so was leading to subsequent install failures when the other-mod version of an IWD spell was configured differently from our version.</li>
+		<li>Balance change: the extra damage from Deathkiss has been reduced so that it is no longer strictly superior to Wyvern Venom.</li>
+		<li>Balance change: Slightly increased the weight that can be carried at strength 11-15.</li>
+		
+	</ul>
+</div>
 </body>
 </html>

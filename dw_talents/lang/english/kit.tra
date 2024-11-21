@@ -388,8 +388,7 @@ Oghma's followers believe that knowledge is supreme, particularly in its raw for
 
 Advantages:
 - SPHERE_PLACEHOLDER
-- Gains a base of 10 lore/level.
-- May cast Identify once per day. Gains an additional use at level 5 and every 4 levels thereafter.
+- Gains a base of 15 lore/level.
 - 5th level: May cast Secret Word once per day, as the 4th level wizard spell. Gains an additional use at level 10 and every 5 levels thereafter.
 - 9th level: May cast Pierce Magic once per day, as the 6th level wizard spell. Gains an additional use at level 14 and every 5 levels thereafter."
 @41="Lorekeeper"
@@ -401,10 +400,9 @@ It is common for Oghma's followers to study the magical arts as well as the divi
 Advantages:
 - BONUS_SCHOOL_PLACEHOLDER
 - SPHERE_PLACEHOLDER
-- Gains a base of 10 lore/level.
-- May cast Identify once per day. Gains an additional use at level 5 and every 4 levels thereafter.
-- 5th level: May cast Secret Word once per day, as the 4th level wizard spell. Gains an additional use at level 10 and every 5 levels thereafter.
-- 9th level: May cast Pierce Magic once per day, as the 6th level wizard spell. Gains an additional use at level 14 and every 5 levels thereafter.
+- Gains a base of 15 lore/cleric level.
+- 5th level: May cast Secret Word once per day, as the 4th level wizard spell. Gains an additional use at cleric level 10 and every 5 levels thereafter.
+- 9th level: May cast Pierce Magic once per day, as the 6th level wizard spell. Gains an additional use at cleric level 14 and every 5 levels thereafter.
 
 Disadvantages:
 - BARRED_SCHOOL_PLACEHOLDER"
@@ -2860,7 +2858,6 @@ Favored Weapon: FAVORED_WEAPON_PLACEHOLDER
 
 Advantages:
 - SPHERE_PLACEHOLDER
-- May learn the following additional spell: Iron Skins (5th level)
 - 3rd level: May cast Glyph of Warding once per day. An additional use is gained at 8th level and every 5 levels thereafter.
 - 5th level: May cast Seeking Sword once per day, as detailed below. An additional use is gained at 10th level and every 5 levels thereafter.
 
@@ -2995,8 +2992,7 @@ Favored Weapon: FAVORED_WEAPON_PLACEHOLDER
 
 Advantages:
 - SPHERE_PLACEHOLDER
-- Gains a base of 10 lore/level.
-- May cast Identify once per day. Gains an additional use at level 5 and every 4 levels thereafter.
+- Gains a base of 15 lore/level.
 - 5th level: May cast Secret Word once per day. Gains an additional use at level 10 and every 5 levels thereafter.
 - 9th level: May cast Pierce Magic once per day. Gains an additional use at level 14 and every 5 levels thereafter."
 @4045="a temple of the Lord of All Knowledge"

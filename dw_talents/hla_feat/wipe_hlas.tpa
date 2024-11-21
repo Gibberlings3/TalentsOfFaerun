@@ -21,6 +21,11 @@ DEFINE_ACTION_FUNCTION wipe_hlas BEGIN
 		OUTER_SPRINT $wipe_this_hla("SPWI%n%") ""
 	END
 	
+	//6th/7th/8th level extra spells
+	OUTER_FOR (n=928;n<=930;++n) BEGIN
+		OUTER_SPRINT $wipe_this_hla("SPCL%n%") ""
+	END
+	
 	// quest spells
 
 	OUTER_FOR (n=721;n<733;++n) BEGIN
@@ -73,6 +78,21 @@ DEFINE_ACTION_FUNCTION wipe_hlas BEGIN
 				LPF 2da_write STR_VAR array=new_array END
 		END
 	END
+	
+	ACTION_IF FILE_EXISTS "%data_loc_shared%/dw_feat_data.2da" BEGIN
+		COPY "%data_loc_shared%/dw_feat_data.2da" "%data_loc_shared%"
+			LPF 2da_read RET_ARRAY feat_data_array=array feat_data_rows=rows END
+			CLEAR_ARRAY feat_data_array_new
+			PHP_EACH feat_data_rows AS row=>discard BEGIN
+				SPRINT resref $feat_data_array("%row%" "RESREF")
+				TO_UPPER resref
+				PATCH_IF !VARIABLE_IS_SET $wipe_this_hla("%resref%") BEGIN
+					SPRINT $feat_data_array_new("%row%" "RESREF") "%resref%"
+					SPRINT $feat_data_array_new("%row%" "TYPE") $feat_data_array("%row%" "TYPE")
+				END
+			END
+			LPF 2da_write STR_VAR array=feat_data_array_new END	
+	END	
 
 
 

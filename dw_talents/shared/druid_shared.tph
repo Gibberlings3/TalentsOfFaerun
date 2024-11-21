@@ -4,11 +4,11 @@ DEFINE_ACTION_FUNCTION get_cleric_to_druid_string RET c_to_d_apply_string c_to_d
 
 	// apply bit first first
 	ACTION_IF is_iwd BEGIN
-		OUTER_SPRINT c_to_d_apply_string "%spl_druid_unusability_flag% 1,%spl_druid_marker% 1,spcl924 9,spcl939 15"
+		OUTER_SPRINT c_to_d_apply_string "%spl_disable_turn_undead% 1,%spl_druid_unusability_flag% 1,%spl_druid_marker% 1,spcl924 9,spcl939 15"
 	END ELSE BEGIN
-		OUTER_SPRINT c_to_d_apply_string "%spl_druid_unusability_flag% 1,%spl_druid_marker% 1,spcl924 15,spcl925 18,spcl926 21,spcl927 24"
+		OUTER_SPRINT c_to_d_apply_string "%spl_disable_turn_undead% 1,%spl_druid_unusability_flag% 1,%spl_druid_marker% 1,spcl924 15,spcl925 18,spcl926 21,spcl927 24"
 	END
-	OUTER_SPRINT avenger_c_to_d_apply_string ""
+	OUTER_SPRINT avenger_c_to_d_apply_string "%spl_disable_turn_undead% 1"
 	OUTER_SPRINT avenger_c_to_d_grant_string "spdr101 1,spdr201 3,spdr301 5,spdr401 7,spdr501 9,spdr601 11"
 	
 	// grant bit

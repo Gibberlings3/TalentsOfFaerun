@@ -190,7 +190,7 @@ No creature can be affected by the poison more often than once per round.
 
 Characters with this ability can opt to use this poison when they activate their Poison Weapon ability."
 @153="Deathkiss
-This compound causes instant death in weaker victims. Anyone struck by the poison suffers 6 poison damage (no save) and then must make a save vs. poison at -2. Creatures with 60 or fewer hit points die instantly if they fail the saving throw; other creatures who fail their saving throw take 1 hit point of damage per second for 24 seconds.
+This compound causes instant death in weaker victims. Anyone struck by the poison suffers 6 poison damage (no save) and then must make a save vs. poison at -2. Creatures with 60 or fewer hit points die instantly if they fail the saving throw; other creatures who fail their saving throw take 1 hit point of damage per second for 12 seconds.
 
 No creature can be affected by the poison more often than once per round.
 
@@ -225,7 +225,7 @@ Characters with this ability can opt to use this poison when they activate their
 @164= "Blue Whinnis"
 @165= "Poison: Blue Whinnis"
 @166= "Wyvern Venom"
-
+@167="Poison: Wyvern Venom"
 
 @170="Poison absorbed by Stoneskin"
 @171="You will apply this poison next time you use the Poison Weapon ability"

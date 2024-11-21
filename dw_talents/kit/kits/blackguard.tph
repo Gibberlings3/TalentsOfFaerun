@@ -29,8 +29,6 @@ DEFINE_ACTION_FUNCTION disciple_of_asmodeus BEGIN
 		k.kit_grant_powers{%spl_smite_chaos% %smite_evil_level% %smite_evil_interval%}
 		// familiar
 		k.kit_grant_powers{%spl_familiar_disciple% 1}
-		//deactivate spellcasting
-		k.kit_apply_powers{spcl234 1}
 		// alignment
 		k.kit_set_alignment{le}
 	]
@@ -71,8 +69,6 @@ DEFINE_ACTION_FUNCTION thrall_of_orcus BEGIN
 		k.kit_grant_powers{%spl_smite_order% %smite_evil_level% %smite_evil_interval%}
 		// familiar
 		k.kit_grant_powers{%spl_familiar_thrall% 1}
-		//deactivate spellcasting
-		k.kit_apply_powers{spcl234 1}	
 		// alignment
 		k.kit_set_alignment{ce}
 	]

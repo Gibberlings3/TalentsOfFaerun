@@ -52,9 +52,9 @@ DEFINE_ACTION_FUNCTION empowered_healing BEGIN
 			m.ab_fx.delete{p_level<100 AND !(s_opcode=17)}
 			m.ab_fx.add{s_opcode=318 s_target=2 s_resource:=%spell_here%|insert_point:i=0}
 			// add the new payloads
-			m.ab_fx.add{s_target=1 s_opcode=326 s_parameter1=stat_ind_low s_parameter2=111 s_resource:="%spell_here%A"|insert_point:i=0}
+			m.ab_fx.add{s_target=1 s_opcode=326 s_parameter1=0 s_parameter2=c2_set s_resource:="%spell_here%A"|insert_point:i=0}
 			m.ab_fx.add{s_target=1 s_opcode=326 s_parameter1=0 s_parameter2=c1_only s_resource:="%spell_here%B"|insert_point:i=0}
-			m.ab_fx.add{s_target=1 s_opcode=326 s_parameter1=stat_ind_high s_parameter2=110 s_resource:="%spell_here%C"|insert_point:i=0}
+			m.ab_fx.add{s_target=1 s_opcode=326 s_parameter1=0 s_parameter2=c1_not_set s_resource:="%spell_here%C"|insert_point:i=0}
 		]
 
 	END

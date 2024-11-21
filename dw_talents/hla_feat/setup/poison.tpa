@@ -68,14 +68,15 @@ DEFINE_ACTION_FUNCTION poison BEGIN
 
 	   spl.copy[%base_spell%=>dwpsn0]
 	   [
+			m_name:=@167
 			m_description:=@150
-			m.ab_fx.add{s_opcode=324 s_target=2 s_duration=1 s_resource:="%base_spell%" s_parameter1=145 s_parameter2=104} // elementals
-			m.ab_fx.add{s_opcode=324 s_target=2 s_duration=1 s_resource:="%base_spell%" s_parameter1=144 s_parameter2=104} // golems
-			m.ab_fx.add{s_opcode=324 s_target=2 s_duration=1 s_resource:="%base_spell%" s_parameter1=121 s_parameter2=104} // demons
-			m.ab_fx.add{s_opcode=324 s_target=2 s_duration=1 s_resource:="%base_spell%" s_parameter1=4 s_parameter2=103} // undead
-			m.ab_fx.add{s_opcode=326 s_target=2 s_duration=1 s_resource:="%spl_display_poison_stoneskin_string%" s_parameter1=0 parameter2:="%splprot_stoneskin%"}
-			m.ab_fx.add{s_opcode=318 s_target=2 s_duration=1 s_resource:="%base_spell%" s_parameter1=0 s_parameter2:="%splprot_stoneskin%"}
-	   ]
+			m.ab_fx.add{s_opcode=318 s_target=2 s_duration=1 s_resource:="%base_spell%" s_parameter1=0 s_parameter2:="%splprot_stoneskin%"|insert_point:i=0}
+			m.ab_fx.add{s_opcode=326 s_target=2 s_duration=1 s_resource:="%spl_display_poison_stoneskin_string%" s_parameter1=0 parameter2:="%splprot_stoneskin%"|insert_point:i=0}
+			m.ab_fx.add{s_opcode=324 s_target=2 s_duration=1 s_resource:="%base_spell%" s_parameter1=145 s_parameter2=104|insert_point:i=0} // elementals
+			m.ab_fx.add{s_opcode=324 s_target=2 s_duration=1 s_resource:="%base_spell%" s_parameter1=144 s_parameter2=104|insert_point:i=0} // golems
+			m.ab_fx.add{s_opcode=324 s_target=2 s_duration=1 s_resource:="%base_spell%" s_parameter1=121 s_parameter2=104|insert_point:i=0} // demons
+			m.ab_fx.add{s_opcode=324 s_target=2 s_duration=1 s_resource:="%base_spell%" s_parameter1=4 s_parameter2=103|insert_point:i=0} // undead
+		]
 
 	   spl.copy[dwpsn0=>dwpsn2 dwpsn2=>dwpsn4]
 	   [
@@ -122,7 +123,6 @@ DEFINE_ACTION_FUNCTION poison BEGIN
 			m.ab_fx.add{s_opcode=142 s_duration=18 s_target=2 s_parameter2=6}
 			m.ab_fx.add{s_opcode=142 s_duration=18 s_target=2 s_parameter2=13}
 			m.ab_fx.add{s_opcode=139 s_target=2 s_timing=1 s_parameter1=14650}
-			m.ab_fx.add{s_opcode=206 s_target=2 s_duration=18 s_resource:="%sfo_filename%"}
 		]
 
 	   // confusion poison (Nightmare paste)
@@ -142,7 +142,6 @@ DEFINE_ACTION_FUNCTION poison BEGIN
 			m.ab_fx.add{s_opcode=139 s_timing=1 s_target=2 s_parameter1=14782} // display string
 			m.ab_fx.add{s_opcode=142 s_duration=24 s_target=2 s_parameter2=3} // confusion icon
 			m.ab_fx.add{s_opcode=215 s_target=2 s_duration=24 s_parameter2=1 s_resource:=spconfus} // confusion animation
-			m.ab_fx.add{s_opcode=206 s_target=2 s_duration=24 s_resource:="%sfo_filename%"}
 		]
 
 
@@ -152,8 +151,10 @@ DEFINE_ACTION_FUNCTION poison BEGIN
 		[
 			m_name:=@161
 			m_description:=@153
+			m.ab.delete{s_level<13}
+			m.ab.alter{s_level=1}
 			m.ab_fx.clone{s_opcode=146 s_parameter2=2 s_target=2 s_timing=1 s_resource:=dwpsn4p|match="s_opcode=25"}
-			m.ab_fx.delete{s_opcode=25 OR s_opcode=142}
+			m.ab_fx.alter{s_duration=12|match="s_opcode=25 OR s_opcode=142"}
 		]
 
 		spl.make[dwpsn4p]
@@ -168,8 +169,10 @@ DEFINE_ACTION_FUNCTION poison BEGIN
 		[
 			m_name:=@163
 			m_description:=@154
-			m.ab_fx.clone{s_opcode=146 s_parameter2=2 s_target=2 s_timing=1 s_resource:=dwpsn5p|match="s_opcode=25"}
-			m.ab_fx.delete{s_opcode=25 OR s_opcode=142}
+			m.ab.delete{s_level<13}
+			m.ab.alter{s_level=1}
+			m.ab_fx.clone{s_opcode=146 s_parameter2=2 s_target=2 s_timing=1 s_save_vs_poison=0 s_savebonus=0 s_resource:=dwpsn5p|match="s_opcode=25"}
+			m.ab_fx.delete{s_opcode=25 OR s_opcode=142 OR s_opcode=12}
 		]
 
 
@@ -180,7 +183,7 @@ DEFINE_ACTION_FUNCTION poison BEGIN
 			m.ab_fx.add{s_opcode=73 s_parameter1="-4" s_target=2 s_duration=30}
 			m.ab_fx.add{s_opcode=0 s_parameter1="-4" s_target=2 s_duration=30}
 			m.ab_fx.add{s_opcode=60 s_parameter1=25 s_parameter2=0 s_target=2 s_duration=30}
-			m.ab_fx.add{opcode=60 s_parameter1=25 s_parameter2=1 s_target=2 s_duration=30}
+			m.ab_fx.add{s_opcode=60 s_parameter1=25 s_parameter2=1 s_target=2 s_duration=30}
 			m.ab_fx.add{s_opcode=142 s_target=2 s_parameter2=6 s_duration=30}
 			m.ab_fx.add{s_opcode=206 s_target=2 s_duration=30 s_resource:="%sfo_filename%"}
 		]

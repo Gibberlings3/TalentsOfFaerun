@@ -26,6 +26,7 @@ DEFINE_ACTION_FUNCTION paladin_extra_uses BEGIN
 	array.new[patch_data]
 	[
 		"%PALADIN_LAY_ON_HANDS%"=>"%lay_on_hands_level% %lay_on_hands_interval%"
+		"%BLACKGUARD_ABSORB_HEALTH%"=>"%lay_on_hands_level% %lay_on_hands_interval%"
 		"%PALADIN_SMITE_EVIL%" => "%smite_evil_level% %smite_evil_interval%"
 		"%spl_smite_evil_cavalier%" => "%smite_evil_level% %smite_evil_interval%"
 		"%spl_smite_evil_undead_hunter%" => "%smite_evil_level% %smite_evil_interval%"

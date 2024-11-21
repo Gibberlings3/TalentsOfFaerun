@@ -46,6 +46,7 @@
 @96="This component conflicts with a similar component from tweaks Anthology; check the readme for details."
 @97="This component requires the 'Revised speciality priests of Lathander/Helm/Talos/Tempus/Tyr' component to be installed"
 @98="This component requires the 'Revised Paladins and Blackguards' component to be installed."
+@99="This component requires the 'Make Barbarian into a Class' component to be installed."
 
 @100="Include arcane spells from Icewind Dale: Enhanced Edition"
 @101="Include divine spells from Icewind Dale: Enhanced Edition"

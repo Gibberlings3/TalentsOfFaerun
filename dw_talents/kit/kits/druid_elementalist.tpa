@@ -16,12 +16,12 @@ DEFINE_ACTION_FUNCTION druid_elementalist STR_VAR version="" BEGIN
 	fire BEGIN
 		OUTER_SET name=34
 		OUTER_SET elem_name=RESOLVE_STR_REF(@1)
-		OUTER_SPRINT oppose fire
+		OUTER_SPRINT oppose water
 	END
 	water BEGIN
 		OUTER_SET name=35
 		OUTER_SET elem_name=RESOLVE_STR_REF(@3)
-		OUTER_SPRINT oppose water
+		OUTER_SPRINT oppose fire
 	END
 	DEFAULT
 		FAIL "druid_elementalist needs to be called with 'version' set to one of earth, air, fire, and water" 

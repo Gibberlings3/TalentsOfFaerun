@@ -1,7 +1,7 @@
 BACKUP ~weidu_external/backup/dw_talents~
 AUTHOR "DavidW"
-//MODDER setup_tra none area_variables none missing_extern none missing_resref none ict2_actions none missing_eval none overwriting_file none fun_args warn
-VERSION ~Beta 134~
+MODDER setup_tra none area_variables none missing_extern none missing_resref none ict2_actions none missing_eval none overwriting_file none fun_args warn
+VERSION ~Beta 15~
 
 AUTO_EVAL_STRINGS
 README "dw_talents/doc/readme-dw_talents.html"
@@ -24,7 +24,7 @@ LANGUAGE ~English~
 /// Test
 //////////////////////////////////////////////////////////////////////
 
-/*
+
 BEGIN "test" DESIGNATED 0
 
 LAF run STR_VAR file=test location=test END
@@ -32,7 +32,7 @@ LAF run STR_VAR file=test location=test END
 BEGIN "test sequel" DESIGNATED 1
 LAF ui_subrace_engine_strings RET_ARRAY enginest END
 LAF add_subraces_lua_setup END
-*/
+
 
 //////////////////////////////////////////////////////////////////////
 
@@ -398,6 +398,8 @@ BEGIN @528 DESIGNATED 40160 GROUP @5
 
 REQUIRE_PREDICATE GAME_IS "bgee bg2ee eet iwdee" @50
 FORBID_COMPONENT "setup-stratagems.tp2" 5900 @70
+REQUIRE_PREDICATE (MOD_IS_INSTALLED "dw_talents/dw_talents.tp2" 40190 || IS_AN_INT dw_talents_component_40150_installed) @99
+
 
 LAF run STR_VAR file=barbarian_wizard_slayer location=class_race tra=barbarian END
 
@@ -561,6 +563,7 @@ REQUIRE_PREDICATE (GAME_IS iwdee
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 1500 
 					|| IS_AN_INT dw_talents_component_1500_installed
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 1500
+					|| FILE_EXISTS "weidu_external/markers/dw_iwdspells_arcane_installed.mrk"
 				   )
 				   @82		   
 				   
@@ -570,6 +573,7 @@ REQUIRE_PREDICATE (GAME_IS iwdee
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 1510 
 					|| IS_AN_INT dw_talents_component_1510_installed
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 1510
+					|| FILE_EXISTS "weidu_external/markers/dw_iwdspells_divine_installed.mrk"
 				   )
 				   @88
 REQUIRE_PREDICATE (
@@ -692,6 +696,7 @@ REQUIRE_PREDICATE (GAME_IS iwdee
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 1500 
 					|| IS_AN_INT dw_talents_component_1500_installed
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 1500
+					|| FILE_EXISTS "weidu_external/markers/dw_iwdspells_arcane_installed.mrk"
 				   )
 				   @82		   
 				   
@@ -701,6 +706,7 @@ REQUIRE_PREDICATE (GAME_IS iwdee
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 1510 
 					|| IS_AN_INT dw_talents_component_1510_installed
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 1510
+					|| FILE_EXISTS "weidu_external/markers/dw_iwdspells_divine_installed.mrk"
 				   )
 				   @88
 REQUIRE_PREDICATE (
@@ -783,6 +789,7 @@ REQUIRE_PREDICATE (GAME_IS iwdee
 					|| MOD_IS_INSTALLED ~stratagems/setup-stratagems.tp2~ 1500 
 					|| IS_AN_INT dw_talents_component_1500_installed 
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 1500 
+					|| FILE_EXISTS "weidu_external/markers/dw_iwdspells_arcane_installed.mrk"
 					|| FILE_CONTAINS "dw_talents/dw_talents.ini" "require_elementalist_spells_installed *= *0"
 				   )
 				   @82
@@ -851,6 +858,7 @@ REQUIRE_PREDICATE (GAME_IS iwdee
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 1500 
 					|| IS_AN_INT dw_talents_component_1500_installed
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 1500
+					|| FILE_EXISTS "weidu_external/markers/dw_iwdspells_arcane_installed.mrk"
 				   )
 				   @82		   
 				   
@@ -860,6 +868,7 @@ REQUIRE_PREDICATE (GAME_IS iwdee
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 1510 
 					|| IS_AN_INT dw_talents_component_1510_installed
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 1510
+					|| FILE_EXISTS "weidu_external/markers/dw_iwdspells_divine_installed.mrk"
 				   )
 				   @88
 REQUIRE_PREDICATE (
@@ -946,6 +955,7 @@ REQUIRE_PREDICATE (GAME_IS iwdee
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 1500 
 					|| IS_AN_INT dw_talents_component_1500_installed
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 1500
+					|| FILE_EXISTS "weidu_external/markers/dw_iwdspells_arcane_installed.mrk"
 				   )
 				   @82		   
 				   
@@ -955,6 +965,7 @@ REQUIRE_PREDICATE (GAME_IS iwdee
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 1510 
 					|| IS_AN_INT dw_talents_component_1510_installed
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 1510
+					|| FILE_EXISTS "weidu_external/markers/dw_iwdspells_divine_installed.mrk"
 				   )
 				   @88
 REQUIRE_PREDICATE (
@@ -1033,6 +1044,7 @@ REQUIRE_PREDICATE (GAME_IS iwdee
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 1500 
 					|| IS_AN_INT dw_talents_component_1500_installed
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 1500
+					|| FILE_EXISTS "weidu_external/markers/dw_iwdspells_arcane_installed.mrk"
 				   )
 				   @82		   
 				   
@@ -1042,6 +1054,7 @@ REQUIRE_PREDICATE (GAME_IS iwdee
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 1510 
 					|| IS_AN_INT dw_talents_component_1510_installed
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 1510
+					|| FILE_EXISTS "weidu_external/markers/dw_iwdspells_divine_installed.mrk"
 				   )
 				   @88
 REQUIRE_PREDICATE (
@@ -1080,6 +1093,7 @@ REQUIRE_PREDICATE (GAME_IS iwdee
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 1500 
 					|| IS_AN_INT dw_talents_component_1500_installed
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 1500
+					|| FILE_EXISTS "weidu_external/markers/dw_iwdspells_arcane_installed.mrk"
 				   )
 				   @82		   
 				   
@@ -1089,6 +1103,7 @@ REQUIRE_PREDICATE (GAME_IS iwdee
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 1510 
 					|| IS_AN_INT dw_talents_component_1510_installed
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 1510
+					|| FILE_EXISTS "weidu_external/markers/dw_iwdspells_divine_installed.mrk"
 				   )
 				   @88
 REQUIRE_PREDICATE (
@@ -1127,6 +1142,7 @@ REQUIRE_PREDICATE (GAME_IS iwdee
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 1500 
 					|| IS_AN_INT dw_talents_component_1500_installed
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 1500
+					|| FILE_EXISTS "weidu_external/markers/dw_iwdspells_arcane_installed.mrk"
 				   )
 				   @82		   
 				   
@@ -1136,6 +1152,7 @@ REQUIRE_PREDICATE (GAME_IS iwdee
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 1510 
 					|| IS_AN_INT dw_talents_component_1510_installed
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 1510
+					|| FILE_EXISTS "weidu_external/markers/dw_iwdspells_divine_installed.mrk"
 				   )
 				   @88
 REQUIRE_PREDICATE (
@@ -1187,6 +1204,7 @@ REQUIRE_PREDICATE (GAME_IS iwdee
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 1500 
 					|| IS_AN_INT dw_talents_component_1500_installed
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 1500
+					|| FILE_EXISTS "weidu_external/markers/dw_iwdspells_arcane_installed.mrk"
 				   )
 				   @82		   
 				   
@@ -1196,6 +1214,7 @@ REQUIRE_PREDICATE (GAME_IS iwdee
 					|| MOD_IS_INSTALLED ~dw_talents/dw_talents.tp2~ 1510 
 					|| IS_AN_INT dw_talents_component_1510_installed
 					|| MOD_IS_INSTALLED ~dw_som/dw_som.tp2~ 1510
+					|| FILE_EXISTS "weidu_external/markers/dw_iwdspells_divine_installed.mrk"
 				   )
 				   @88
 REQUIRE_PREDICATE (

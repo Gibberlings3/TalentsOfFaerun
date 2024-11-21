@@ -542,11 +542,10 @@ DEFINE_ACTION_FUNCTION install_feats_core INT_VAR is_epic=0 STR_VAR feat_table="
 
 	// get the existing table of resref assignments
 	
-	ACTION_IF FILE_EXISTS "%data_loc_shared%/dw_feat_data.2da" BEGIN
-		LAF 2da_read STR_VAR case=mixed file=dw_feat_data.2da path="%data_loc_shared%" RET_ARRAY feat_data=array END
-	END ELSE BEGIN
-		ACTION_CLEAR_ARRAY feat_data
+	ACTION_IF !FILE_EXISTS "%data_loc_shared%/dw_feat_data.2da" BEGIN
+		LAF initialise_hla_feat END
 	END
+	LAF 2da_read STR_VAR case=mixed file=dw_feat_data.2da path="%data_loc_shared%" RET_ARRAY feat_data=array END
 
 	OUTER_SPRINT lua_append ""
 	COPY - "%feat_table%" nowhere
@@ -784,5 +783,61 @@ BEGIN
 
 END
 
+//////////////////////////////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION initialise_hla_feat // slightly adjusted from stratagems one
+   STR_VAR extant_list=""
+		   extant_list_path="%MOD_FOLDER%/hla_feat/data"
+BEGIN
+
+   // if we're bg2 then...
+   
+	ACTION_IF is_bg2 BEGIN
+		// read extant HLAs not in spell.ids onto the list
+		
+		 MAKE_PATCH 
+			USE_ANY_ITEM=>spcl915
+			EXTRA_LEVEL_6=>spcl928
+			EXTRA_LEVEL_7=>spcl929
+			EXTRA_LEVEL_8=>spcl930
+		 END
+		 ACTION_PHP_EACH patch_data AS ids=>resref BEGIN
+			ACTION_TO_UPPER ids
+			ACTION_TO_UPPER resref
+			OUTER_SPRINT "%ids%" "%resref%"
+		END
+		
+		// read in extras
+		
+		ACTION_IF "%extant_list%" STRING_EQUAL_CASE "" BEGIN
+		   ACTION_IF enhanced_edition BEGIN
+			  OUTER_SPRINT extant_list vanilla_hlas
+		   END ELSE BEGIN
+			  OUTER_SPRINT extant_list vanilla_hlas_no_ee
+		   END
+		END
+
+		LAF 2da_read STR_VAR file="%extant_list%.2da" path="%extant_list_path%" case=mixed type=table_header RET_ARRAY rows array_in=array END 
+		ACTION_CLEAR_ARRAY array_out
+		ACTION_PHP_EACH rows AS num=>discard BEGIN
+			OUTER_SPRINT id $array_in("%num%" ids)
+			OUTER_SPRINT $array_out("%id%" RESREF) "%%id%%"
+			OUTER_SPRINT $array_out("%id%" TYPE) $array_in("%num%" type)
+		END
+		LAF 2da_write STR_VAR file="dw_feat_data.2da" path="%data_loc_shared%" array=array_out END
+
+  END ELSE BEGIN
+  // otherwise just create blank data
+  
+<<<<<<<< .../stratagems-inline/dw_feat_data.2da
+2DA V1.0
+*
+                                      resref                                type
+>>>>>>>>
+		COPY ".../stratagems-inline/dw_feat_data.2da" "%data_loc_shared%/dw_feat_data.2da"
+  
+  END
+
+END
 
 
