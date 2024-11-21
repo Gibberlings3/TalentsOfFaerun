@@ -1,6 +1,6 @@
 BACKUP ~weidu_external/backup/dw_talents~
 AUTHOR "DavidW"
-MODDER setup_tra none area_variables none missing_extern none missing_resref none ict2_actions none missing_eval none overwriting_file none fun_args warn
+//MODDER setup_tra none area_variables none missing_extern none missing_resref none ict2_actions none missing_eval none overwriting_file none fun_args warn
 VERSION ~Beta 15~
 
 AUTO_EVAL_STRINGS
@@ -24,7 +24,7 @@ LANGUAGE ~English~
 /// Test
 //////////////////////////////////////////////////////////////////////
 
-
+/*
 BEGIN "test" DESIGNATED 0
 
 LAF run STR_VAR file=test location=test END
@@ -33,7 +33,7 @@ BEGIN "test sequel" DESIGNATED 1
 LAF ui_subrace_engine_strings RET_ARRAY enginest END
 LAF add_subraces_lua_setup END
 
-
+*/
 //////////////////////////////////////////////////////////////////////
 
 
