@@ -256,6 +256,7 @@ DEFINE_ACTION_FUNCTION monster_summoning_iwd BEGIN
 			sw1h01=>comps01
 		]
 		
+		
 		ACTION_PHP_EACH comp_wpns AS old=>new BEGIN
 			ACTION_IF !FILE_EXISTS_IN_GAME "%new%.itm" BEGIN
 				itm.copy[%old%=>%new%]
